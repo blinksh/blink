@@ -174,15 +174,23 @@ struct Field: View {
 struct FieldSSHKey: View {
   @Binding var value: [String]
   var enabled: Bool = true
-  
+  var hasSSHKey: Bool
+
   var body: some View {
     Row(
       content: {
         HStack {
-          FormLabel(text: "Key")
-          Spacer()
-          Text(value.isEmpty ? "None" : value[0])
-            .font(.system(.subheadline)).foregroundColor(.secondary)
+          if (hasSSHKey || value.isEmpty) {
+            FormLabel(text: "Key")
+            Spacer()
+            Text(value.isEmpty ? "None" : value[0])
+              .font(.system(.subheadline)).foregroundColor(.secondary)
+          } else {
+            Label("Key", systemImage: "exclamationmark.icloud.fill")
+            Spacer()
+            Text(value[0])
+              .font(.system(.subheadline)).foregroundColor(.red)
+          }
         }
       },
       details: {
@@ -387,10 +395,14 @@ struct HostView: View {
         Field("Port",      $_port,      next: "User",      placeholder: "22", enabled: _enabled, kbType: .numberPad)
         Field("User",      $_user,      next: "Password",  placeholder: BLKDefaults.defaultUserName(), enabled: _enabled)
         Field("Password",  $_password,  next: "ProxyCmd",  placeholder: "Ask Every Time", secureTextEntry: true, enabled: _enabled)
-        FieldSSHKey(value: $_sshKeyName, enabled: _enabled)
+        FieldSSHKey(value: $_sshKeyName, enabled: _enabled, hasSSHKey: BKPubKey.all().contains(where: {
+          if let keyName = _sshKeyName.first {
+            return $0.id == keyName
+          }
+          return false
+        }))
         Field("ProxyCmd",  $_proxyCmd,  next: "ProxyJump", placeholder: "ssh -W %h:%p bastion", enabled: _enabled)
         Field("ProxyJump", $_proxyJump, next: "Server",    placeholder: "bastion1,bastion2", enabled: _enabled)
-        
         FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
       }
       
@@ -497,7 +509,7 @@ struct HostView: View {
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
       _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt?.intValue ?? 0)
       _agentForwardKeys = host.agentForwardKeys ?? []
-      _enabled = !( _conflictedICloudHost != nil || _iCloudVersion)
+      _enabled = !( _conflictedICloudHost != nil || _iCloudVersion) 
     }
   }
   
