@@ -232,6 +232,29 @@
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
 		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
+		D22277D62A26115300D4C708 /* BlinkSnippets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */; };
+		D22277DD2A26115300D4C708 /* BlinkSnippetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277DC2A26115300D4C708 /* BlinkSnippetsTests.swift */; };
+		D22277DE2A26115300D4C708 /* BlinkSnippets.h in Headers */ = {isa = PBXBuildFile; fileRef = D22277D02A26115300D4C708 /* BlinkSnippets.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D22277E12A26115300D4C708 /* BlinkSnippets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */; };
+		D22277E22A26115300D4C708 /* BlinkSnippets.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D22277EC2A26120D00D4C708 /* fuzzy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277E92A26120C00D4C708 /* fuzzy.swift */; };
+		D22277ED2A26120D00D4C708 /* index.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277EA2A26120D00D4C708 /* index.swift */; };
+		D22277EE2A26120D00D4C708 /* snippet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277EB2A26120D00D4C708 /* snippet.swift */; };
+		D22277FA2A26204900D4C708 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F12A26204800D4C708 /* SearchModel.swift */; };
+		D22277FB2A26204900D4C708 /* SnippetEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F22A26204800D4C708 /* SnippetEditingView.swift */; };
+		D22277FC2A26204900D4C708 /* MarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F32A26204800D4C708 /* MarkerView.swift */; };
+		D22277FD2A26204900D4C708 /* SearchMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F42A26204800D4C708 /* SearchMode.swift */; };
+		D22277FE2A26204900D4C708 /* SnippetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F52A26204900D4C708 /* SnippetView.swift */; };
+		D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F62A26204900D4C708 /* SnippetsListView.swift */; };
+		D22278002A26204900D4C708 /* Accumulators.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F72A26204900D4C708 /* Accumulators.swift */; };
+		D22278012A26204900D4C708 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F82A26204900D4C708 /* EditorViewController.swift */; };
+		D22278022A26204900D4C708 /* SearchTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F92A26204900D4C708 /* SearchTextView.swift */; };
+		D22278052A2620B500D4C708 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D22278042A2620B500D4C708 /* HighlightSwift */; };
+		D22278082A26216900D4C708 /* TreeSitterBash in Frameworks */ = {isa = PBXBuildFile; productRef = D22278072A26216900D4C708 /* TreeSitterBash */; };
+		D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */ = {isa = PBXBuildFile; productRef = D22278092A26216900D4C708 /* TreeSitterBashQueries */; };
+		D222780C2A26216900D4C708 /* TreeSitterBashRunestone in Frameworks */ = {isa = PBXBuildFile; productRef = D222780B2A26216900D4C708 /* TreeSitterBashRunestone */; };
+		D222780F2A26217A00D4C708 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = D222780E2A26217A00D4C708 /* Runestone */; };
+		D22278132A2631E700D4C708 /* SnippetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22278122A2631E700D4C708 /* SnippetsViewController.swift */; };
 		D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D22378FC27A7B8DA002D5C6D /* XCConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = D22378FD27A7B8DA002D5C6D /* XCConfig.m */; };
 		D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */; };
@@ -582,6 +605,27 @@
 			remoteGlobalIDString = D218068625CC277900B98902;
 			remoteInfo = AppKitBridge;
 		};
+		D22277D72A26115300D4C708 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D22277CD2A26115300D4C708;
+			remoteInfo = BlinkSnippets;
+		};
+		D22277D92A26115300D4C708 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EA0BA18A1C0CC57B00719C1A;
+			remoteInfo = Blink;
+		};
+		D22277DF2A26115300D4C708 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D22277CD2A26115300D4C708;
+			remoteInfo = BlinkSnippets;
+		};
 		D24AFD5A222410E700CFD3C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
@@ -635,6 +679,7 @@
 				D2334F0725C1C28F00385378 /* text.xcframework in Embed Frameworks */,
 				D2334EF525C1C28F00385378 /* ios_system.xcframework in Embed Frameworks */,
 				D2334F0525C1C28F00385378 /* tar.xcframework in Embed Frameworks */,
+				D22277E22A26115300D4C708 /* BlinkSnippets.framework in Embed Frameworks */,
 				D2334F0325C1C28F00385378 /* ssh_cmd.xcframework in Embed Frameworks */,
 				D2334EEF25C1C28F00385378 /* awk.xcframework in Embed Frameworks */,
 				D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */,
@@ -898,6 +943,23 @@
 		D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSEKeyView.swift; sourceTree = "<group>"; };
 		D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsView.swift; sourceTree = "<group>"; };
 		D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPickerView.swift; sourceTree = "<group>"; };
+		D22277CE2A26115300D4C708 /* BlinkSnippets.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkSnippets.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D22277D02A26115300D4C708 /* BlinkSnippets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkSnippets.h; sourceTree = "<group>"; };
+		D22277D52A26115300D4C708 /* BlinkSnippetsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkSnippetsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D22277DC2A26115300D4C708 /* BlinkSnippetsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkSnippetsTests.swift; sourceTree = "<group>"; };
+		D22277E92A26120C00D4C708 /* fuzzy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = fuzzy.swift; sourceTree = "<group>"; };
+		D22277EA2A26120D00D4C708 /* index.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = index.swift; sourceTree = "<group>"; };
+		D22277EB2A26120D00D4C708 /* snippet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = snippet.swift; sourceTree = "<group>"; };
+		D22277F12A26204800D4C708 /* SearchModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+		D22277F22A26204800D4C708 /* SnippetEditingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetEditingView.swift; sourceTree = "<group>"; };
+		D22277F32A26204800D4C708 /* MarkerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerView.swift; sourceTree = "<group>"; };
+		D22277F42A26204800D4C708 /* SearchMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchMode.swift; sourceTree = "<group>"; };
+		D22277F52A26204900D4C708 /* SnippetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetView.swift; sourceTree = "<group>"; };
+		D22277F62A26204900D4C708 /* SnippetsListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetsListView.swift; sourceTree = "<group>"; };
+		D22277F72A26204900D4C708 /* Accumulators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accumulators.swift; sourceTree = "<group>"; };
+		D22277F82A26204900D4C708 /* EditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
+		D22277F92A26204900D4C708 /* SearchTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextView.swift; sourceTree = "<group>"; };
+		D22278122A2631E700D4C708 /* SnippetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsViewController.swift; sourceTree = "<group>"; };
 		D22378FC27A7B8DA002D5C6D /* XCConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCConfig.h; sourceTree = "<group>"; };
 		D22378FD27A7B8DA002D5C6D /* XCConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XCConfig.m; sourceTree = "<group>"; };
 		D22A353626C1474200943C71 /* BKMiniLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKMiniLog.h; sourceTree = "<group>"; };
@@ -1196,6 +1258,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D22277CB2A26115300D4C708 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22277D22A26115300D4C708 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D22277D62A26115300D4C708 /* BlinkSnippets.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D265FBB72317DD3C0017EAC4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1207,10 +1284,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */,
+				D22278052A2620B500D4C708 /* HighlightSwift in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
 				D2334F0225C1C28F00385378 /* ssh_cmd.xcframework in Frameworks */,
 				D2334F0625C1C28F00385378 /* text.xcframework in Frameworks */,
 				07FABB9925C9AEC100E1CC2C /* SSH.framework in Frameworks */,
+				D222780F2A26217A00D4C708 /* Runestone in Frameworks */,
 				D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */,
 				BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */,
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
@@ -1220,6 +1300,7 @@
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
 				D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
+				D222780C2A26216900D4C708 /* TreeSitterBashRunestone in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				07FABBC425C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
 				BD7AFC4128E8E98C004BCDA4 /* Base32Kit in Frameworks */,
@@ -1227,11 +1308,13 @@
 				D2F64CA925CAA92700F2225D /* curl_ios_static.framework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				D297F00F29012FDB002A24F9 /* CachedAsyncImage in Frameworks */,
+				D22278082A26216900D4C708 /* TreeSitterBash in Frameworks */,
 				D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */,
 				07FAB90F25C8E94E00E1CC2C /* ArgumentParser in Frameworks */,
 				D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */,
 				D2A6398928CFA0B90066FD18 /* SwiftCBOR in Frameworks */,
 				D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */,
+				D22277E12A26115300D4C708 /* BlinkSnippets.framework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
 				BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */,
@@ -1247,6 +1330,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D22277F02A26200B00D4C708 /* Snippets */,
 				D25DE9C32939EB63008246EB /* NonStdIO */,
 				D264D2AE28F8457A002B1B14 /* WhatsNew */,
 				D2AD8E6027A2BAFA00DED28D /* Subscriptions */,
@@ -1858,6 +1942,42 @@
 			path = DarkAppIcon;
 			sourceTree = SOURCE_ROOT;
 		};
+		D22277CF2A26115300D4C708 /* BlinkSnippets */ = {
+			isa = PBXGroup;
+			children = (
+				D22277E92A26120C00D4C708 /* fuzzy.swift */,
+				D22277EA2A26120D00D4C708 /* index.swift */,
+				D22277EB2A26120D00D4C708 /* snippet.swift */,
+				D22277D02A26115300D4C708 /* BlinkSnippets.h */,
+			);
+			path = BlinkSnippets;
+			sourceTree = "<group>";
+		};
+		D22277DB2A26115300D4C708 /* BlinkSnippetsTests */ = {
+			isa = PBXGroup;
+			children = (
+				D22277DC2A26115300D4C708 /* BlinkSnippetsTests.swift */,
+			);
+			path = BlinkSnippetsTests;
+			sourceTree = "<group>";
+		};
+		D22277F02A26200B00D4C708 /* Snippets */ = {
+			isa = PBXGroup;
+			children = (
+				D22277F72A26204900D4C708 /* Accumulators.swift */,
+				D22277F82A26204900D4C708 /* EditorViewController.swift */,
+				D22277F32A26204800D4C708 /* MarkerView.swift */,
+				D22277F42A26204800D4C708 /* SearchMode.swift */,
+				D22277F12A26204800D4C708 /* SearchModel.swift */,
+				D22277F92A26204900D4C708 /* SearchTextView.swift */,
+				D22277F22A26204800D4C708 /* SnippetEditingView.swift */,
+				D22277F62A26204900D4C708 /* SnippetsListView.swift */,
+				D22277F52A26204900D4C708 /* SnippetView.swift */,
+				D22278122A2631E700D4C708 /* SnippetsViewController.swift */,
+			);
+			path = Snippets;
+			sourceTree = "<group>";
+		};
 		D2334D1221495DAE00D26AC3 /* udptunnel */ = {
 			isa = PBXGroup;
 			children = (
@@ -2137,6 +2257,8 @@
 				BDD6D13827594BF900E76F1F /* BlinkConfigTests */,
 				BDBFA3062728914F00C77798 /* BlinkCode */,
 				BDBFA3102728914F00C77798 /* BlinkCodeTests */,
+				D22277CF2A26115300D4C708 /* BlinkSnippets */,
+				D22277DB2A26115300D4C708 /* BlinkSnippetsTests */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
 				074F30781D062A2800A73445 /* main.m */,
@@ -2165,6 +2287,8 @@
 				BDBFA3052728914F00C77798 /* BlinkCode.framework */,
 				BDBFA30C2728914F00C77798 /* BlinkCodeTests.xctest */,
 				BDD6D13727594BF900E76F1F /* BlinkConfigTests.xctest */,
+				D22277CE2A26115300D4C708 /* BlinkSnippets.framework */,
+				D22277D52A26115300D4C708 /* BlinkSnippetsTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2206,6 +2330,14 @@
 				D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */,
 				BDCB717A268E15A2007D7047 /* UICKeyChainStore.h in Headers */,
 				BDCB7180268E15A2007D7047 /* BlinkPaths.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22277C92A26115300D4C708 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D22277DE2A26115300D4C708 /* BlinkSnippets.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2429,6 +2561,43 @@
 			productReference = D218068725CC277900B98902 /* AppKitBridge.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
+		D22277CD2A26115300D4C708 /* BlinkSnippets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D22277E32A26115400D4C708 /* Build configuration list for PBXNativeTarget "BlinkSnippets" */;
+			buildPhases = (
+				D22277C92A26115300D4C708 /* Headers */,
+				D22277CA2A26115300D4C708 /* Sources */,
+				D22277CB2A26115300D4C708 /* Frameworks */,
+				D22277CC2A26115300D4C708 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BlinkSnippets;
+			productName = BlinkSnippets;
+			productReference = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		D22277D42A26115300D4C708 /* BlinkSnippetsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D22277E62A26115400D4C708 /* Build configuration list for PBXNativeTarget "BlinkSnippetsTests" */;
+			buildPhases = (
+				D22277D12A26115300D4C708 /* Sources */,
+				D22277D22A26115300D4C708 /* Frameworks */,
+				D22277D32A26115300D4C708 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D22277D82A26115300D4C708 /* PBXTargetDependency */,
+				D22277DA2A26115300D4C708 /* PBXTargetDependency */,
+			);
+			name = BlinkSnippetsTests;
+			productName = BlinkSnippetsTests;
+			productReference = D22277D52A26115300D4C708 /* BlinkSnippetsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D265FBB92317DD3C0017EAC4 /* BlinkTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D265FBC12317DD3C0017EAC4 /* Build configuration list for PBXNativeTarget "BlinkTests" */;
@@ -2468,6 +2637,7 @@
 				BDCB7164268E1577007D7047 /* PBXTargetDependency */,
 				BD9EA1D22718E19000874007 /* PBXTargetDependency */,
 				D2A9B2FA272E6F26009FCBDE /* PBXTargetDependency */,
+				D22277E02A26115300D4C708 /* PBXTargetDependency */,
 			);
 			name = Blink;
 			packageProductDependencies = (
@@ -2476,6 +2646,11 @@
 				BD7AFC4028E8E98C004BCDA4 /* Base32Kit */,
 				D297F00E29012FDB002A24F9 /* CachedAsyncImage */,
 				D2DC5D4A295DB43D007E2B9D /* RevenueCat */,
+				D22278042A2620B500D4C708 /* HighlightSwift */,
+				D22278072A26216900D4C708 /* TreeSitterBash */,
+				D22278092A26216900D4C708 /* TreeSitterBashQueries */,
+				D222780B2A26216900D4C708 /* TreeSitterBashRunestone */,
+				D222780E2A26217A00D4C708 /* Runestone */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2488,7 +2663,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = "";
-				LastSwiftUpdateCheck = 1310;
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Carlos Cabañero Projects SL";
 				TargetAttributes = {
@@ -2529,6 +2704,14 @@
 					};
 					D218068625CC277900B98902 = {
 						CreatedOnToolsVersion = 12.4;
+					};
+					D22277CD2A26115300D4C708 = {
+						CreatedOnToolsVersion = 14.3.1;
+						LastSwiftMigration = 1430;
+					};
+					D22277D42A26115300D4C708 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = EA0BA18A1C0CC57B00719C1A;
 					};
 					D265FBB92317DD3C0017EAC4 = {
 						CreatedOnToolsVersion = 11.0;
@@ -2585,6 +2768,9 @@
 				D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				BD7AFC3F28E8E98C004BCDA4 /* XCRemoteSwiftPackageReference "Base32Kit" */,
 				D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
+				D22278032A2620B500D4C708 /* XCRemoteSwiftPackageReference "HighlightSwift" */,
+				D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */,
+				D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -2613,6 +2799,8 @@
 				BDBFA3042728914F00C77798 /* BlinkCode */,
 				BDBFA30B2728914F00C77798 /* BlinkCodeTests */,
 				BDD6D13627594BF900E76F1F /* BlinkConfigTests */,
+				D22277CD2A26115300D4C708 /* BlinkSnippets */,
+				D22277D42A26115300D4C708 /* BlinkSnippetsTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2728,6 +2916,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D218068525CC277900B98902 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22277CC2A26115300D4C708 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22277D32A26115300D4C708 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2946,6 +3148,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D22277CA2A26115300D4C708 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D22277ED2A26120D00D4C708 /* index.swift in Sources */,
+				D22277EE2A26120D00D4C708 /* snippet.swift in Sources */,
+				D22277EC2A26120D00D4C708 /* fuzzy.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22277D12A26115300D4C708 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D22277DD2A26115300D4C708 /* BlinkSnippetsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D265FBB62317DD3C0017EAC4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2992,6 +3212,7 @@
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
+				D22277FD2A26204900D4C708 /* SearchMode.swift in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2FBEC0B27CF505D00FD974A /* browse.swift in Sources */,
@@ -3007,6 +3228,7 @@
 				D264D2B828F96C66002B1B14 /* WhatsNewSceneDelegate.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
+				D22277FB2A26204900D4C708 /* SnippetEditingView.swift in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
 				D25DE9C12939EB36008246EB /* NonStdIO+ArgumentParser.swift in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
@@ -3019,6 +3241,7 @@
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
+				D22277FC2A26204900D4C708 /* MarkerView.swift in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
@@ -3034,9 +3257,11 @@
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */,
+				D22278012A26204900D4C708 /* EditorViewController.swift in Sources */,
 				D266A9DC272A77A100C85EED /* code.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
+				D22278022A26204900D4C708 /* SearchTextView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
@@ -3087,6 +3312,7 @@
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				D264D2B628F84724002B1B14 /* whatsnew.m in Sources */,
+				D22278132A2631E700D4C708 /* SnippetsViewController.swift in Sources */,
 				D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BLKDefaults.m in Sources */,
 				D20394AA29E6B30400FB337F /* Receipt.swift in Sources */,
@@ -3113,6 +3339,7 @@
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
+				D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
@@ -3135,6 +3362,7 @@
 				D2C24420238E44AB0082C69C /* Chevron.swift in Sources */,
 				D2AD8E7427A2BAFA00DED28D /* EntitlementsManager.swift in Sources */,
 				D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */,
+				D22277FA2A26204900D4C708 /* SearchModel.swift in Sources */,
 				D2C24416238E44AB0082C69C /* KBConfig.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
@@ -3147,6 +3375,7 @@
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				D22277FE2A26204900D4C708 /* SnippetView.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */,
 				D2B788852949C53100F19E4F /* BuildView.swift in Sources */,
@@ -3166,6 +3395,7 @@
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
 				D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */,
+				D22278002A26204900D4C708 /* Accumulators.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3273,6 +3503,21 @@
 			platformFilter = maccatalyst;
 			target = D218068625CC277900B98902 /* AppKitBridge */;
 			targetProxy = D218069D25CC27C100B98902 /* PBXContainerItemProxy */;
+		};
+		D22277D82A26115300D4C708 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D22277CD2A26115300D4C708 /* BlinkSnippets */;
+			targetProxy = D22277D72A26115300D4C708 /* PBXContainerItemProxy */;
+		};
+		D22277DA2A26115300D4C708 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EA0BA18A1C0CC57B00719C1A /* Blink */;
+			targetProxy = D22277D92A26115300D4C708 /* PBXContainerItemProxy */;
+		};
+		D22277E02A26115300D4C708 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D22277CD2A26115300D4C708 /* BlinkSnippets */;
+			targetProxy = D22277DF2A26115300D4C708 /* PBXContainerItemProxy */;
 		};
 		D24AFD5B222410E700CFD3C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4208,6 +4453,178 @@
 			};
 			name = Release;
 		};
+		D22277E42A26115400D4C708 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Carlos Cabañero Projects SL. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkSnippets";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		D22277E52A26115400D4C708 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 Carlos Cabañero Projects SL. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkSnippets";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		D22277E72A26115400D4C708 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A2H2CL32AG;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkSnippetsTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blink.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Blink";
+			};
+			name = Debug;
+		};
+		D22277E82A26115400D4C708 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = A2H2CL32AG;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkSnippetsTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blink.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Blink";
+			};
+			name = Release;
+		};
 		D265FBC22317DD3C0017EAC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4408,7 +4825,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4453,7 +4870,7 @@
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4583,6 +5000,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		D22277E32A26115400D4C708 /* Build configuration list for PBXNativeTarget "BlinkSnippets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D22277E42A26115400D4C708 /* Debug */,
+				D22277E52A26115400D4C708 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D22277E62A26115400D4C708 /* Build configuration list for PBXNativeTarget "BlinkSnippetsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D22277E72A26115400D4C708 /* Debug */,
+				D22277E82A26115400D4C708 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		D265FBC12317DD3C0017EAC4 /* Build configuration list for PBXNativeTarget "BlinkTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4627,6 +5062,30 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.0.3;
+			};
+		};
+		D22278032A2620B500D4C708 /* XCRemoteSwiftPackageReference "HighlightSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yury/HighlightSwift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simonbs/treesitterlanguages";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.7;
+			};
+		};
+		D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simonbs/Runestone";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
 			};
 		};
 		D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
@@ -4678,6 +5137,31 @@
 		BDCB7193268E175A007D7047 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SSHConfig;
+		};
+		D22278042A2620B500D4C708 /* HighlightSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D22278032A2620B500D4C708 /* XCRemoteSwiftPackageReference "HighlightSwift" */;
+			productName = HighlightSwift;
+		};
+		D22278072A26216900D4C708 /* TreeSitterBash */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */;
+			productName = TreeSitterBash;
+		};
+		D22278092A26216900D4C708 /* TreeSitterBashQueries */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */;
+			productName = TreeSitterBashQueries;
+		};
+		D222780B2A26216900D4C708 /* TreeSitterBashRunestone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */;
+			productName = TreeSitterBashRunestone;
+		};
+		D222780E2A26217A00D4C708 /* Runestone */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */;
+			productName = Runestone;
 		};
 		D297F00E29012FDB002A24F9 /* CachedAsyncImage */ = {
 			isa = XCSwiftPackageProductDependency;

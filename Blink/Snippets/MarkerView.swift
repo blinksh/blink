@@ -1,13 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>FILEHEADER</key>
-	<string>////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-___YEAR___ Blink Mobile Shell Project
+// Copyright (C) 2016-2023 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -22,7 +17,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Blink. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+// along with Blink. If not, see <http://www.gnu.org/licenses/>.
 //
 // In addition, Blink is also subject to certain additional terms under
 // GNU GPL version 3 section 7.
@@ -30,9 +25,26 @@
 // You should have received a copy of these additional terms immediately
 // following the terms and conditions of the GNU General Public License
 // which accompanied the Blink Source Code. If not, see
-// &lt;http://www.github.com/blinksh/blink&gt;.
+// <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
-</string>
-</dict>
-</plist>
+
+import SwiftUI
+
+class MarkerView: UIView {
+  var label = UILabel()
+  
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    self.addSubview(label)
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    self.label.frame = self.bounds
+  }
+}

@@ -62,6 +62,7 @@ class SpaceController: UIViewController {
   var stuckKeyCode: KeyCode? = nil
   
   private var _kbTrackerView = UIView()
+  private var _snippetsVC: SnippetsViewController? = nil
   
   public var trackingKBFrame: CGRect? {
     self.view.window?.screen.coordinateSpace.convert(_kbTrackerView.frame, from: self.view.coordinateSpace)
@@ -711,6 +712,7 @@ extension SpaceController {
 
     switch cmd {
     case .configShow: showConfigAction()
+    case .snippetsShow: showSnippetsAction()
     case .tab1: _moveToShell(idx: 0)
     case .tab2: _moveToShell(idx: 1)
     case .tab3: _moveToShell(idx: 2)
@@ -743,6 +745,7 @@ extension SpaceController {
     case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
     case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
     case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()
+    
     }
   }
   
@@ -927,6 +930,20 @@ extension SpaceController {
       navCtrl.setViewControllers([s], animated: false)
       self.present(navCtrl, animated: true, completion: nil)
     }
+  }
+  
+  @objc func showSnippetsAction() {
+    
+    let ctrl = SnippetsViewController.create(
+      receiver: self.toAnySnippetReceiver()
+    )
+    
+    ctrl.view.frame = self.view.bounds
+    ctrl.willMove(toParent: self)
+    self.view.addSubview(ctrl.view)
+    self.addChild(ctrl)
+    ctrl.didMove(toParent: self)
+    _snippetsVC = ctrl
   }
   
   @objc func showWhatsNewAction() {
