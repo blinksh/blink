@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BLINK_APP_FONT</key>
+	<string>$(BLINK_APP_FONT)</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>PragmataPro_Mono_B_liga_0828.ttf</string>
-		<string>PragmataPro_Mono_R_liga_0828.ttf</string>
+		<string>app-font-regular.ttf</string>
+		<string>app-font-bold.ttf</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

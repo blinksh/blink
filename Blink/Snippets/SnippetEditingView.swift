@@ -86,6 +86,7 @@ class TextViewBuilder {
   // TODO Language from Snippet information
   static func textView() -> TextView {
     let tv = TextView()
+    tv.theme = PragmataProTheme(originalTheme: DefaultTheme())
     tv.backgroundColor = .clear
     tv.setLanguageMode(TreeSitterLanguageMode(language: .bash))
     tv.autocorrectionType = .no
@@ -97,3 +98,67 @@ class TextViewBuilder {
     return tv
   }
 }
+
+public final class PragmataProTheme<T: Runestone.Theme>: Runestone.Theme {
+  
+  public var font = BlinkFonts.snippetEditContent
+  
+  public var textColor: UIColor {
+    originalTheme.textColor
+  }
+  
+  public var gutterBackgroundColor: UIColor {
+    originalTheme.gutterBackgroundColor
+  }
+  
+  public var gutterHairlineColor: UIColor {
+    originalTheme.gutterHairlineColor
+  }
+  
+  public var lineNumberColor: UIColor {
+    originalTheme.lineNumberColor
+  }
+  
+  public var lineNumberFont: UIFont {
+    originalTheme.font
+  }
+  
+  public var selectedLineBackgroundColor: UIColor {
+    originalTheme.selectedLineBackgroundColor
+  }
+  
+  public var selectedLinesLineNumberColor: UIColor {
+    originalTheme.selectedLinesLineNumberColor
+  }
+  
+  public var selectedLinesGutterBackgroundColor: UIColor {
+    originalTheme.selectedLinesGutterBackgroundColor
+  }
+  
+  public var invisibleCharactersColor: UIColor {
+    originalTheme.invisibleCharactersColor
+  }
+  
+  public var pageGuideHairlineColor: UIColor {
+    originalTheme.pageGuideHairlineColor
+  }
+  
+  public var pageGuideBackgroundColor: UIColor {
+    originalTheme.pageGuideBackgroundColor
+  }
+  
+  public var markedTextBackgroundColor: UIColor {
+    originalTheme.markedTextBackgroundColor
+  }
+  
+  public func textColor(for highlightName: String) -> UIColor? {
+    originalTheme.textColor(for: highlightName)
+  }
+  
+  var originalTheme: T
+  
+  init(originalTheme: T) {
+    self.originalTheme = originalTheme
+  }
+}
+ 

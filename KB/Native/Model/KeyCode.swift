@@ -76,6 +76,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case unidentified = "Unidentified"
   case w = "w"
   case t = "t"
+  case less = "<"
   
   var isOption: Bool {
     switch self {
@@ -116,6 +117,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .unidentified: return "?"
     case .w: return "w"
     case .t: return "t"
+    case .less: return "<"
     default: return rawValue
     }
   }
@@ -207,6 +209,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .underscore: return 189
     case .w: return 87
     case .t: return 84
+    case .less: return 188
     }
   }
   

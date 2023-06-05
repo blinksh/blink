@@ -46,9 +46,9 @@ public struct SnippetView: View {
       self.model.onSnippetTap(snippet)
     } label: {
       VStack(alignment: .leading) {
-        Text(index).font(.body).bold(fuzzyMode)
+        Text(index).font(BlinkFonts.snippetIndex).bold(fuzzyMode)
           .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
-        Text(content).font(.body).monospaced()
+        Text(content).font(BlinkFonts.snippetContent)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
       .textSelection(.enabled)

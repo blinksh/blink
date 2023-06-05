@@ -71,19 +71,26 @@ enum BlinkColors {
 //  #5C7575
 }
 
-enum BlinkFonts {
-  static let header = Font.custom("PragmataPro Mono Liga", size: 34, relativeTo: .title)
-  static let headerCompact = Font.custom("PragmataPro Mono Liga", size: 28, relativeTo: .title)
+let BLINK_APP_FONT_NAME: String = Bundle.main.infoDictionary?["BLINK_APP_FONT"] as? String ?? "JetBrains Mono"
+
+public enum BlinkFonts {
+  static let snippetIndex = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
+  static let snippetContent = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
+  
+  static let snippetEditContent = UIFont(name: BLINK_APP_FONT_NAME, size: 18)!
+  
+  static let header = Font.custom(BLINK_APP_FONT_NAME, size: 34, relativeTo: .title)
+  static let headerCompact = Font.custom(BLINK_APP_FONT_NAME, size: 28, relativeTo: .title)
   
   static let info = Font.system(.title3)
   static let infoCompact = Font.system(.body)
-  static let btn = Font.custom("PragmataPro Mono Liga", size: 16, relativeTo: .body)
-  static let btnSub = Font.custom("PragmataPro Mono Liga", size: 12, relativeTo: .body)
+  static let btn = Font.custom(BLINK_APP_FONT_NAME, size: 16, relativeTo: .body)
+  static let btnSub = Font.custom(BLINK_APP_FONT_NAME, size: 12, relativeTo: .body)
   
-  static let bullet = Font.custom("PragmataPro Mono Liga", size: 24, relativeTo: .body).weight(.bold)
-  static let bulletCompact = Font.custom("PragmataPro Mono Liga", size: 18, relativeTo: .body).weight(.bold)
-  static let bulletText = Font.custom("PragmataPro Mono Liga", size: 18, relativeTo: .body).weight(.bold)
-  static let bulletTextCompact = Font.custom("PragmataPro Mono Liga", size: 14, relativeTo: .body).weight(.bold)
+  static let bullet = Font.custom(BLINK_APP_FONT_NAME, size: 24, relativeTo: .body).weight(.bold)
+  static let bulletCompact = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body).weight(.bold)
+  static let bulletText = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body).weight(.bold)
+  static let bulletTextCompact = Font.custom(BLINK_APP_FONT_NAME, size: 14, relativeTo: .body).weight(.bold)
 }
 
 extension Shape {

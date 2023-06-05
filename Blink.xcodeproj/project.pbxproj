@@ -242,13 +242,12 @@
 		D22277EE2A26120D00D4C708 /* snippet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277EB2A26120D00D4C708 /* snippet.swift */; };
 		D22277FA2A26204900D4C708 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F12A26204800D4C708 /* SearchModel.swift */; };
 		D22277FB2A26204900D4C708 /* SnippetEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F22A26204800D4C708 /* SnippetEditingView.swift */; };
-		D22277FC2A26204900D4C708 /* MarkerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F32A26204800D4C708 /* MarkerView.swift */; };
 		D22277FD2A26204900D4C708 /* SearchMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F42A26204800D4C708 /* SearchMode.swift */; };
 		D22277FE2A26204900D4C708 /* SnippetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F52A26204900D4C708 /* SnippetView.swift */; };
 		D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F62A26204900D4C708 /* SnippetsListView.swift */; };
 		D22278002A26204900D4C708 /* Accumulators.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F72A26204900D4C708 /* Accumulators.swift */; };
 		D22278012A26204900D4C708 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F82A26204900D4C708 /* EditorViewController.swift */; };
-		D22278022A26204900D4C708 /* SearchTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F92A26204900D4C708 /* SearchTextView.swift */; };
+		D22278022A26204900D4C708 /* SearchTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F92A26204900D4C708 /* SearchTextInput.swift */; };
 		D22278052A2620B500D4C708 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D22278042A2620B500D4C708 /* HighlightSwift */; };
 		D22278082A26216900D4C708 /* TreeSitterBash in Frameworks */ = {isa = PBXBuildFile; productRef = D22278072A26216900D4C708 /* TreeSitterBash */; };
 		D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */ = {isa = PBXBuildFile; productRef = D22278092A26216900D4C708 /* TreeSitterBashQueries */; };
@@ -384,6 +383,8 @@
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2B788852949C53100F19E4F /* BuildView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788842949C53100F19E4F /* BuildView.swift */; };
 		D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788872949E8CA00F19E4F /* BuildRegion.swift */; };
+		D2BB5E142A1F718300BB0520 /* app-font-bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2BB5E122A1F718300BB0520 /* app-font-bold.ttf */; };
+		D2BB5E152A1F718300BB0520 /* app-font-regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2BB5E132A1F718300BB0520 /* app-font-regular.ttf */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
@@ -952,13 +953,12 @@
 		D22277EB2A26120D00D4C708 /* snippet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = snippet.swift; sourceTree = "<group>"; };
 		D22277F12A26204800D4C708 /* SearchModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		D22277F22A26204800D4C708 /* SnippetEditingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetEditingView.swift; sourceTree = "<group>"; };
-		D22277F32A26204800D4C708 /* MarkerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerView.swift; sourceTree = "<group>"; };
 		D22277F42A26204800D4C708 /* SearchMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchMode.swift; sourceTree = "<group>"; };
 		D22277F52A26204900D4C708 /* SnippetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetView.swift; sourceTree = "<group>"; };
 		D22277F62A26204900D4C708 /* SnippetsListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnippetsListView.swift; sourceTree = "<group>"; };
 		D22277F72A26204900D4C708 /* Accumulators.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accumulators.swift; sourceTree = "<group>"; };
 		D22277F82A26204900D4C708 /* EditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
-		D22277F92A26204900D4C708 /* SearchTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextView.swift; sourceTree = "<group>"; };
+		D22277F92A26204900D4C708 /* SearchTextInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTextInput.swift; sourceTree = "<group>"; };
 		D22278122A2631E700D4C708 /* SnippetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsViewController.swift; sourceTree = "<group>"; };
 		D22378FC27A7B8DA002D5C6D /* XCConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCConfig.h; sourceTree = "<group>"; };
 		D22378FD27A7B8DA002D5C6D /* XCConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XCConfig.m; sourceTree = "<group>"; };
@@ -1089,6 +1089,8 @@
 		D2B788872949E8CA00F19E4F /* BuildRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildRegion.swift; sourceTree = "<group>"; };
 		D2B9E218268084C60084B2C4 /* Spinner */ = {isa = PBXFileReference; lastKnownFileType = text; name = Spinner; path = xcfs/.build/checkouts/Spinner; sourceTree = SOURCE_ROOT; };
 		D2B9E21C268084D00084B2C4 /* Promise */ = {isa = PBXFileReference; lastKnownFileType = text; name = Promise; path = xcfs/.build/checkouts/Promise; sourceTree = SOURCE_ROOT; };
+		D2BB5E122A1F718300BB0520 /* app-font-bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "app-font-bold.ttf"; sourceTree = "<group>"; };
+		D2BB5E132A1F718300BB0520 /* app-font-regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "app-font-regular.ttf"; sourceTree = "<group>"; };
 		D2BC514C2355C3AE0034FDD4 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		D2BF5F6B2659522C0070F839 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
@@ -1389,6 +1391,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D2E670112A2DB83200DEC4ED /* AppFont */,
 				D21A3FC521943BE200269705 /* DarkAppIcon */,
 				D29FE548208DC860004679D0 /* commandDictionary.plist */,
 				D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */,
@@ -1966,10 +1969,9 @@
 			children = (
 				D22277F72A26204900D4C708 /* Accumulators.swift */,
 				D22277F82A26204900D4C708 /* EditorViewController.swift */,
-				D22277F32A26204800D4C708 /* MarkerView.swift */,
 				D22277F42A26204800D4C708 /* SearchMode.swift */,
 				D22277F12A26204800D4C708 /* SearchModel.swift */,
-				D22277F92A26204900D4C708 /* SearchTextView.swift */,
+				D22277F92A26204900D4C708 /* SearchTextInput.swift */,
 				D22277F22A26204800D4C708 /* SnippetEditingView.swift */,
 				D22277F62A26204900D4C708 /* SnippetsListView.swift */,
 				D22277F52A26204900D4C708 /* SnippetView.swift */,
@@ -2203,6 +2205,15 @@
 				D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D2E670112A2DB83200DEC4ED /* AppFont */ = {
+			isa = PBXGroup;
+			children = (
+				D2BB5E122A1F718300BB0520 /* app-font-bold.ttf */,
+				D2BB5E132A1F718300BB0520 /* app-font-regular.ttf */,
+			);
+			path = AppFont;
 			sourceTree = "<group>";
 		};
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
@@ -2955,6 +2966,7 @@
 				D21A3FDE21943BE200269705 /* dark-app-ipad-76pt.png in Resources */,
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
+				D2BB5E142A1F718300BB0520 /* app-font-bold.ttf in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
@@ -2968,6 +2980,7 @@
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
+				D2BB5E152A1F718300BB0520 /* app-font-regular.ttf in Resources */,
 				D21A3FE121943BE200269705 /* dark-notification-iphone-20pt@2x.png in Resources */,
 				D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */,
 				D266A9DA27295ECE00C85EED /* blink-uio.min.js in Resources */,
@@ -3241,7 +3254,6 @@
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
-				D22277FC2A26204900D4C708 /* MarkerView.swift in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
@@ -3261,7 +3273,7 @@
 				D266A9DC272A77A100C85EED /* code.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
-				D22278022A26204900D4C708 /* SearchTextView.swift in Sources */,
+				D22278022A26204900D4C708 /* SearchTextInput.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
@@ -3905,7 +3917,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3918,7 +3930,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
@@ -3950,7 +3962,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3959,7 +3971,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3987,7 +3999,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -4003,7 +4015,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
@@ -4033,7 +4045,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlinkFileProviderUI/Info.plist;
@@ -4045,7 +4057,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4814,7 +4826,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4834,7 +4846,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				NEW_SETTING = "";
 				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -4864,7 +4876,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 751;
+				CURRENT_PROJECT_VERSION = 761;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -4879,7 +4891,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 16.1.8;
+				MARKETING_VERSION = 16.1.9;
 				NEW_SETTING = "";
 				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (

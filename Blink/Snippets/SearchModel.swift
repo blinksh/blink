@@ -99,8 +99,8 @@ class SearchModel: ObservableObject {
         filterQuery = String(splits[1]).trimmingCharacters(in: .whitespacesAndNewlines)
       }
 
-      var fQuery = String(fuzzyQuery)
-      fQuery.removeFirst()
+      let fQuery = String(fuzzyQuery)
+//      fQuery.removeFirst()
 
       fuzzySearch(fQuery, filterQuery)
     }
@@ -127,23 +127,25 @@ class SearchModel: ObservableObject {
   }
 
   func updateWith(text: String) {
+    print("!!!!text", text)
+    self.mode = .insert
     self.input = text
-
-    if text.hasPrefix("<") {
-      self.mode = .insert
-    } else if text.hasPrefix("@") {
-      self.mode = .host
-    } else if text.hasPrefix("$") {
-      self.mode = .prompt
-    } else if text.hasPrefix(">") {
-      self.mode = .command
-    } else if text.hasPrefix("?") {
-      self.mode = .help
-    } else if text.hasPrefix("!") {
-      self.mode = .history
-    } else {
-      self.mode = .general
-    }
+    
+//    if text.hasPrefix("<") {
+//      self.mode = .insert
+//    } else if text.hasPrefix("@") {
+//      self.mode = .host
+//    } else if text.hasPrefix("$") {
+//      self.mode = .prompt
+//    } else if text.hasPrefix(">") {
+//      self.mode = .command
+//    } else if text.hasPrefix("?") {
+//      self.mode = .help
+//    } else if text.hasPrefix("!") {
+//      self.mode = .history
+//    } else {
+//      self.mode = .general
+//    }
 
   }
 
@@ -182,13 +184,21 @@ class SearchModel: ObservableObject {
     receiver?.receive(content)
     self.isOn = false
     self.editingSnippet = nil
-    self.input = "<"
+    self.input = ""
     self.rootCtrl?.presentedViewController?.dismiss(animated: true, completion: {
       self.rootCtrl?.willMove(toParent: nil)
       self.rootCtrl?.view.removeFromSuperview()
       self.rootCtrl?.removeFromParent()
       self.rootCtrl?.didMove(toParent: nil)
     })
+  }
+  
+  func close() {
+    self.isOn = false
+    self.rootCtrl?.willMove(toParent: nil)
+    self.rootCtrl?.view.removeFromSuperview()
+    self.rootCtrl?.removeFromParent()
+    self.rootCtrl?.didMove(toParent: nil)
   }
   
   @objc func closeEditor() {
@@ -212,7 +222,7 @@ class SearchModel: ObservableObject {
     self.displayResults = []
     self.searchResults.clear()
     self.fuzzyResults.clear()
-    self.input = "<"
+    self.input = ""
     self.editingSnippet = nil
   }
 
@@ -229,6 +239,10 @@ public struct AnySnippetReceiver: SnippetReceiver {
   
   public func receive(_ content: String) {
     self.closure(content)
+  }
+  
+  public func cancel() {
+    
   }
   
   init(closure: @escaping (String) -> Void) {
@@ -263,6 +277,7 @@ extension SpaceController: SnippetReceiver {
 
 extension SearchModel {
   func fuzzySearch(_ query: String, _ searchQuery: String) {
+    print("!!!", query, searchQuery)
     guard self.fuzzyResults.query != query
     else {
       return search(query: searchQuery)

@@ -151,12 +151,12 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       
       KeyShortcut(.tabMoveToOtherWindow, [.command, .shift], "o"),
       
-      KeyShortcut(.zoomIn, .command, "+"),
+      KeyShortcut(.zoomIn, [.command, .shift], "="),
       KeyShortcut(.zoomOut, .command, "-"),
       KeyShortcut(.zoomReset, .command, "="),
       
-      KeyShortcut(.configShow, [.command], ","),
-      KeyShortcut(.snippetsShow, [.command], "<"),
+      KeyShortcut(.configShow, .command, ","),
+      KeyShortcut(.snippetsShow, [.command, .shift], ","),
     ]
   }
 }
