@@ -934,16 +934,8 @@ extension SpaceController {
   
   @objc func showSnippetsAction() {
     
-    let ctrl = SnippetsViewController.create(
-      receiver: self.toAnySnippetReceiver()
-    )
+    self.presentSnippetsController()
     
-    ctrl.view.frame = self.view.bounds
-    ctrl.willMove(toParent: self)
-    self.view.addSubview(ctrl.view)
-    self.addChild(ctrl)
-    ctrl.didMove(toParent: self)
-    _snippetsVC = ctrl
   }
   
   @objc func showWhatsNewAction() {
@@ -1077,4 +1069,32 @@ extension SpaceController: CommandsHUDViewDelegate {
   }
   
   @objc func spaceController() -> SpaceController? { self }
+}
+
+extension SpaceController: SnippetContext {
+  func presentSnippetsController() {
+    let ctrl = SnippetsViewController.create(context: self)
+    
+    ctrl.view.frame = self.view.bounds
+    ctrl.willMove(toParent: self)
+    self.view.addSubview(ctrl.view)
+    self.addChild(ctrl)
+    ctrl.didMove(toParent: self)
+    _snippetsVC = ctrl
+  }
+  
+  func dismissSnippetsController() {
+    self.presentedViewController?.dismiss(animated: true)
+    self._snippetsVC?.willMove(toParent: nil)
+    self._snippetsVC?.view.removeFromSuperview()
+    self._snippetsVC?.removeFromParent()
+    self._snippetsVC?.didMove(toParent: nil)
+    self._snippetsVC = nil
+    self.focusOnShellAction()
+  }
+  
+  func providerSnippetReceiver() -> (any SnippetReceiver)? {
+    self.focusOnShellAction()
+    return self.currentDevice
+  }
 }

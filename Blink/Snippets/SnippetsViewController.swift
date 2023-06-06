@@ -63,9 +63,9 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
     self.view.backgroundColor = .clear
   }
   
-  public static func create(receiver: AnySnippetReceiver?) -> SnippetsViewController {
+  public static func create(context: (any SnippetContext)?) -> SnippetsViewController {
     let model = SearchModel()
-    model.receiver = receiver
+    model.snippetContext = context
     let rootView = SwiftUISnippetsView(model: model)
     let ctrl = SnippetsViewController(rootView: rootView)
     ctrl.model = model

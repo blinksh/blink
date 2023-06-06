@@ -49,7 +49,7 @@ class SearchModel: ObservableObject {
 
   var fuzzyAttributedStrings: [Snippet: AttributedString] = [:]
   
-  public var receiver: AnySnippetReceiver? = nil
+  public var snippetContext: (any SnippetContext)? = nil
   
   @Published var displayResults = [Snippet]() {
     didSet {
@@ -181,24 +181,16 @@ class SearchModel: ObservableObject {
   }
 
   @objc func sendContentToReceiver(content: String) {
-    receiver?.receive(content)
+    self.snippetContext?.providerSnippetReceiver()?.receive(content)
     self.isOn = false
     self.editingSnippet = nil
     self.input = ""
-    self.rootCtrl?.presentedViewController?.dismiss(animated: true, completion: {
-      self.rootCtrl?.willMove(toParent: nil)
-      self.rootCtrl?.view.removeFromSuperview()
-      self.rootCtrl?.removeFromParent()
-      self.rootCtrl?.didMove(toParent: nil)
-    })
+    self.snippetContext?.dismissSnippetsController()
   }
   
   func close() {
     self.isOn = false
-    self.rootCtrl?.willMove(toParent: nil)
-    self.rootCtrl?.view.removeFromSuperview()
-    self.rootCtrl?.removeFromParent()
-    self.rootCtrl?.didMove(toParent: nil)
+    self.snippetContext?.dismissSnippetsController()
   }
   
   @objc func closeEditor() {
@@ -230,48 +222,19 @@ class SearchModel: ObservableObject {
 
 public protocol SnippetReceiver {
   func receive(_ content: String)
-  
-  func toAnySnippetReceiver() -> AnySnippetReceiver
 }
 
-public struct AnySnippetReceiver: SnippetReceiver {
-  fileprivate let closure: (String) -> Void
-  
+public protocol SnippetContext {
+  func presentSnippetsController()
+  func dismissSnippetsController()
+  func providerSnippetReceiver() -> (any SnippetReceiver)?
+}
+
+extension TermDevice: SnippetReceiver {
   public func receive(_ content: String) {
-    self.closure(content)
-  }
-  
-  public func cancel() {
-    
-  }
-  
-  init(closure: @escaping (String) -> Void) {
-    self.closure = closure
-  }
-  
-  public func toAnySnippetReceiver() -> AnySnippetReceiver {
-    self
+    self.write(content)
   }
 }
-
-extension SpaceController: SnippetReceiver {
-  public func receive(_ content: String) {
-    self.focusOnShellAction()
-    currentDevice?.write(content)
-  }
-  
-  public func toAnySnippetReceiver() -> AnySnippetReceiver {
-    AnySnippetReceiver { [weak self] content in
-      self?.receive(content)
-    }
-  }
-}
-
-//class PrintSnippet: SnippetReceiver {
-//  func receive(_ content: String) {
-//    print("!!!!!!!!", content)
-//  }
-//}
 
 // MARK: Search
 
