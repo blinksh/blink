@@ -34,6 +34,7 @@
 #import "BKFont.h"
 #import "UIDevice+DeviceName.h"
 #import "BlinkPaths.h"
+#import "DeviceInfo.h"
 #import "LayoutManager.h"
 
 
@@ -68,7 +69,18 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _keycasts = [coder decodeBoolForKey:@"keycasts"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
-  _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
+  
+  // For Stage Manager compatibility, set default overscan mode with Apple Silicon.
+  if ([coder containsValueForKey:@"overscanCompensation"]) {
+    _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
+  } else {
+    if ([[DeviceInfo shared] hasAppleSilicon]) {
+      _overscanCompensation = BKBKOverscanCompensationMirror;
+    } else {
+      _overscanCompensation = 0;
+    }
+  }
+  
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
   _xCallBackURLKey = [coder decodeObjectOfClasses:strings forKey:@"xCallBackURLKey"];
   _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];

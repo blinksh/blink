@@ -62,7 +62,11 @@
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"] || [marketingName hasPrefix:@"iPhone 14"];
     _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [_machine hasPrefix:@"iPad14"] || [marketingName hasPrefix:@"Mac"];
-    
+    _hasAppleSilicon = [marketingName hasPrefix:@"iPad Pro (11-inch) (3rd generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (11-inch) (4th generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (12.9-inch) (5th generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (12.9-inch) (6th generation)"] ||
+      [marketingName hasPrefix:@"iPad Air (5th generation)"];
   }
   return self;
 }
