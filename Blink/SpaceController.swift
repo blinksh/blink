@@ -54,7 +54,6 @@ class SpaceController: UIViewController {
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
-  private let _commandsHUD = CommandsHUGView(frame: .zero)
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
@@ -63,6 +62,7 @@ class SpaceController: UIViewController {
   
   private var _kbTrackerView = UIView()
   private var _snippetsVC: SnippetsViewController? = nil
+  private var _quickActionsVC: QuickActionsViewController? = nil
   
   public var trackingKBFrame: CGRect? {
     self.view.window?.screen.coordinateSpace.convert(_kbTrackerView.frame, from: self.view.coordinateSpace)
@@ -88,7 +88,17 @@ class SpaceController: UIViewController {
       _overlay.frame = view.bounds
     }
     
-    _commandsHUD.setNeedsLayout()
+    if let vc = _quickActionsVC {
+      vc.view.frame = CGRect(
+        x: _overlay.frame.minX,
+        y: _overlay.frame.maxY - 60,
+        width: _overlay.frame.maxX,
+        height: 60
+      )
+      
+      self.view.bringSubviewToFront(vc.view)
+    }
+    
     
     FaceCamManager.update(in: self)
     PipFaceCamManager.update(in: self)
@@ -171,8 +181,6 @@ class SpaceController: UIViewController {
     _viewportsController.delegate = self
     
     
-    
-    
     addChild(_viewportsController)
     
     if let v = _viewportsController.view {
@@ -187,7 +195,6 @@ class SpaceController: UIViewController {
     _overlay.isUserInteractionEnabled = false
     view.addSubview(_overlay)
     
-    _commandsHUD.delegate = self
     _registerForNotifications()
     
     if _viewportsKeys.isEmpty {
@@ -228,14 +235,14 @@ class SpaceController: UIViewController {
   
   
   
-  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-    // IOS ISSUE: editingInteractionConfiguration doesn't called anymore in iOS/PadOS 16....
-    // Moved attach to focus.
-    DispatchQueue.main.async {
-      self._attachHUD()
-    }
-    return .default
-  }
+//  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+//    // IOS ISSUE: editingInteractionConfiguration doesn't called anymore in iOS/PadOS 16....
+//    // Moved attach to focus.
+//    DispatchQueue.main.async {
+//      self._attachHUD()
+//    }
+//    return .default
+//  }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
@@ -332,16 +339,7 @@ class SpaceController: UIViewController {
     }
     #endif
   }
-  
-  private func _attachHUD() {
-    if
-      sceneRole == .windowApplication,
-      let win = view.window?.windowScene?.windows.last,
-      win !== view.window {
-      _commandsHUD.attachToWindow(inputWindow: win)
-    }
-  }
-  
+    
   @objc func _didBecomeKeyWindow() {
     guard
       presentedViewController == nil,
@@ -479,7 +477,7 @@ class SpaceController: UIViewController {
     device.attachInput(deviceView.webView)
     deviceView.webView.reportFocus(true)
     device.focus()
-    _attachHUD()
+//    _attachHUD()
     if input != KBTracker.shared.input {
       input?.reportFocus(false)
     }
@@ -539,7 +537,6 @@ class SpaceController: UIViewController {
     hud.hide(animated: true, afterDelay: 1)
     
     view.window?.windowScene?.title = sceneTitle
-    _commandsHUD.updateHUD()
   }
   
 }
@@ -933,9 +930,25 @@ extension SpaceController {
   }
   
   @objc func showSnippetsAction() {
-    
     self.presentSnippetsController()
-    
+  }
+  
+  @objc func toggleQuickActionsAction() {
+    if let vc = _quickActionsVC {
+      _quickActionsVC = nil
+      vc.willMove(toParent: nil)
+      vc.view.removeFromSuperview()
+      vc.removeFromParent()
+      vc.didMove(toParent: nil)
+    } else {
+      let vc = QuickActionsViewController()
+      _quickActionsVC = vc
+      vc.willMove(toParent: self)
+      addChild(vc)
+      self.view.addSubview(vc.view)
+      vc.didMove(toParent: self)
+      vc.delegate = self
+    }
   }
   
   @objc func showWhatsNewAction() {

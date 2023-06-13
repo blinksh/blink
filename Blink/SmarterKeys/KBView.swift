@@ -43,6 +43,7 @@ class KBView: UIView {
   private let _indicatorRight = UIView()
   private var _timer: Timer? = nil
   private var _repeatingKeyView: KBKeyView? = nil
+  private var _commandPressTimestamp: TimeInterval = 0
   
   var repeatingSequence: String? = nil
   
@@ -418,6 +419,8 @@ extension KBView: KBKeyViewDelegate {
       stopRepeats()
     }
   }
+ 
+  
   
   func keyViewTouchesBegin(keyView: KBKeyView, touches: Set<UITouch>) {
     guard
@@ -425,6 +428,18 @@ extension KBView: KBKeyViewDelegate {
     else {
       return
     }
+    
+    if keyView.currentValue == .cmd {
+      if touch.timestamp - _commandPressTimestamp > 0.5 {
+        _commandPressTimestamp = touch.timestamp
+      } else {
+        UIApplication.shared.sendAction(#selector(SpaceController.toggleQuickActionsAction), to: nil, from: nil, for: nil)
+         _commandPressTimestamp = 0
+      }
+    } else {
+        _commandPressTimestamp = 0
+    }
+    
     
     for recognizer in touch.gestureRecognizers ?? [] {
       guard

@@ -449,6 +449,7 @@
 		D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
 		D2FBEC0B27CF505D00FD974A /* browse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FBEC0727CF505D00FD974A /* browse.swift */; };
 		D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */; };
+		D2FEA50A2A31B6E4008172A9 /* QuickActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FEA5092A31B6E4008172A9 /* QuickActionsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1154,6 +1155,7 @@
 		D2F64C9525CA99AD00F2225D /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
 		D2FBEC0727CF505D00FD974A /* browse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = browse.swift; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
+		D2FEA5092A31B6E4008172A9 /* QuickActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsViewController.swift; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1332,6 +1334,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D2FEA5082A31B6CB008172A9 /* QuickActions */,
 				D22277F02A26200B00D4C708 /* Snippets */,
 				D25DE9C32939EB63008246EB /* NonStdIO */,
 				D264D2AE28F8457A002B1B14 /* WhatsNew */,
@@ -2246,6 +2249,14 @@
 				BD8152532743FF84002BB169 /* skstore.swift */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		D2FEA5082A31B6CB008172A9 /* QuickActions */ = {
+			isa = PBXGroup;
+			children = (
+				D2FEA5092A31B6E4008172A9 /* QuickActionsViewController.swift */,
+			);
+			path = QuickActions;
 			sourceTree = "<group>";
 		};
 		EA0BA1821C0CC57B00719C1A = {
@@ -3259,6 +3270,7 @@
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
 				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,
 				BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */,
+				D2FEA50A2A31B6E4008172A9 /* QuickActionsViewController.swift in Sources */,
 				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,

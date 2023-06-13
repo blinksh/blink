@@ -109,22 +109,25 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
       cmd.wantsPriorityOverSystemBehavior = true
     }
     
-    self.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+    self.font = UIFont.systemFont(ofSize: 24, weight: .regular)
     
     let label = UILabel(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
     label.font = self.font
-    label.text = "<"
+    label.text = "< "
     
     
     self.leftView = label
     self.leftViewMode = .always
+    
+//    self.placeholder = "FuzzySearch[space]Content Search"
 //    self.textContentType = .password
 //    self.isSecureTextEntry = true
     
 
     self.delegate = self
     
-    
+    self.autocapitalizationType = .none
+    self.autocorrectionType = .no
     self.setNeedsLayout()
   }
   

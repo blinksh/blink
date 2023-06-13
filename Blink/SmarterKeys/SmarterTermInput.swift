@@ -345,6 +345,29 @@ class CaretHider {
   
   override func _keyboardDidShow(_ notification: Notification) {
   }
+  
+  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    super.pressesBegan(presses, with: event)
+    
+    guard presses.count == 1, let press = presses.first, let key = press.key,
+    // left or right cmd
+    key.keyCode.rawValue == 227 || key.keyCode.rawValue == 231
+    else {
+      commandPressTimestamp = 0
+      return
+    }
+    
+    if press.timestamp - commandPressTimestamp > 0.5 {
+      commandPressTimestamp = press.timestamp
+      return
+    }
+    
+    UIApplication.shared.sendAction(#selector(SpaceController.toggleQuickActionsAction), to: nil, from: nil, for: nil)
+    commandPressTimestamp = 0
+  }
+  
+//  var commandPresses: Int = 0
+  var commandPressTimestamp: TimeInterval = 0
 }
 
 // - MARK: Web communication

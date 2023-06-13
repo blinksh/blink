@@ -74,8 +74,8 @@ enum BlinkColors {
 let BLINK_APP_FONT_NAME: String = Bundle.main.infoDictionary?["BLINK_APP_FONT"] as? String ?? "JetBrains Mono"
 
 public enum BlinkFonts {
-  static let snippetIndex = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
-  static let snippetContent = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
+//  static let snippetIndex = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
+//  static let snippetContent = Font.custom(BLINK_APP_FONT_NAME, size: 18, relativeTo: .body)
   
   static let snippetEditContent = UIFont(name: BLINK_APP_FONT_NAME, size: 18)!
   

@@ -127,7 +127,6 @@ class SearchModel: ObservableObject {
   }
 
   func updateWith(text: String) {
-    print("!!!!text", text)
     self.mode = .insert
     self.input = text
     
@@ -240,7 +239,6 @@ extension TermDevice: SnippetReceiver {
 
 extension SearchModel {
   func fuzzySearch(_ query: String, _ searchQuery: String) {
-    print("!!!", query, searchQuery)
     guard self.fuzzyResults.query != query
     else {
       return search(query: searchQuery)

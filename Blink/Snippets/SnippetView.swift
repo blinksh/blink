@@ -46,21 +46,21 @@ public struct SnippetView: View {
       self.model.onSnippetTap(snippet)
     } label: {
       VStack(alignment: .leading) {
-        Text(index).font(BlinkFonts.snippetIndex).bold(fuzzyMode)
+        Text(index).font(.body).monospaced().fontWidth(.condensed).bold(fuzzyMode)
           .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
-        Text(content).font(BlinkFonts.snippetContent)
+        Text(content).font(.body).monospaced().fontWidth(.condensed)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
       .textSelection(.enabled)
       .padding(.all, 6)
       .background(
-        .bar,
+        .ultraThinMaterial,
         in: RoundedRectangle(cornerRadius: 4, style: .continuous)
       )
       .overlay {
         if selected {
           RoundedRectangle(cornerRadius: 4, style: .continuous)
-            .stroke(lineWidth: 2).foregroundColor(.blue)
+            .stroke(lineWidth: 2).foregroundColor(.blue.opacity(0.5))
         }
       }
     }.buttonStyle(SnippetButtonStyle())

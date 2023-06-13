@@ -99,7 +99,7 @@ extension FuzzyAccumulator {
     let attrStr = NSMutableAttributedString(string: snippet.indexable)
 
     for r in ranges {
-      attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow, range: r)
+      attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow.withAlphaComponent(0.3), range: r)
     }
     
     matchesMap[snippet] = AttributedString(attrStr)
@@ -142,7 +142,7 @@ extension SearchAccumulator {
       for range in ranges {
         var res = range
         res.location += lineLoc
-        attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow, range: res)
+        attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow.withAlphaComponent(0.3), range: res)
       }
       lineLoc = line.count + 1
     }
