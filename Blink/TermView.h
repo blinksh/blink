@@ -112,4 +112,6 @@ extern NSString * TermViewBrowserReadyNotificationKey;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;
+
+- (void)pasteString:(NSString *)str;
 @end

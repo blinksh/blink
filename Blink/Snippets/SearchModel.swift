@@ -231,7 +231,8 @@ public protocol SnippetContext {
 
 extension TermDevice: SnippetReceiver {
   public func receive(_ content: String) {
-    self.write(content)
+    self.view?.paste(content)
+//    self.write(content)
   }
 }
 

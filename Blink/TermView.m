@@ -815,6 +815,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self cleanSelection];
 }
 
+- (void)pasteString:(NSString *)str {
+  if (str) {
+    if (_browserView) {
+      [_browserView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    } else {
+      [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    }
+  }
+}
+
 - (NSString *)_detectFontFamilyFromContent:(NSString *)content
 {
   NSRegularExpression *regex = [NSRegularExpression
