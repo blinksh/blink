@@ -84,7 +84,7 @@ struct QuickActionButtons: View {
       .offset(y: self.visible ? 0 : 10)
       .opacity(self.visible ? 1.0 : 0.0)
       .onAppear {
-        withAnimation(.interactiveSpring) {
+        withAnimation {
           self.visible = true
         }
       }
