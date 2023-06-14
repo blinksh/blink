@@ -88,6 +88,8 @@ class SpaceController: UIViewController {
       _overlay.frame = view.bounds
     }
     
+    _snippetsVC?.view.frame = _overlay.frame;
+    
     if let vc = _quickActionsVC {
       vc.view.frame = CGRect(
         x: _overlay.frame.minX,

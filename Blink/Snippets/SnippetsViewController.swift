@@ -46,13 +46,13 @@ struct SwiftUISnippetsView: View {
             .frame(maxWidth: 560)
             .background(
               .ultraThinMaterial,
-              in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+              in: RoundedRectangle(cornerRadius: 9, style: .continuous)
             )
-            .shadow(color: .secondary, radius: 1, x: 0, y: 0)
+            .shadow(color: .secondary, radius: 0.5, x: 0, y: 0)
         }.padding()
         Spacer()
       }
-    }
+    }.ignoresSafeArea(.all)
   }
 }
 

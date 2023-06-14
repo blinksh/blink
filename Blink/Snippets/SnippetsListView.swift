@@ -87,7 +87,9 @@ public struct SnippetsListView: View {
             }
           }
         }
-        SearchView(model: model).frame(maxHeight:44)
+        SearchView(model: model)
+          .frame(maxHeight:44)
+          .padding([.top, .bottom], 3)
           .onAppear {
             model.focusOnInput()
           }
