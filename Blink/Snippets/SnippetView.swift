@@ -60,7 +60,7 @@ public struct SnippetView: View {
       .overlay {
         if selected {
           RoundedRectangle(cornerRadius: 4, style: .continuous)
-            .stroke(lineWidth: 2).foregroundColor(.blue.opacity(0.5))
+            .stroke(lineWidth: 2).foregroundColor(Color(uiColor: UIColor.blinkTint.withAlphaComponent(0.5)))
         }
       }
     }.buttonStyle(SnippetButtonStyle())
