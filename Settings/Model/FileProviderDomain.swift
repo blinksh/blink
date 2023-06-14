@@ -196,6 +196,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
             print("failed to add domain", err)
           }
         }
+        _NSFileProviderManager.excludeDomainFromBackup(domain)
       }
     }
   }
@@ -217,6 +218,25 @@ extension _NSFileProviderManager {
     #else
     let path = Self.default.documentStorageURL.appendingPathComponent(nsDomain.pathRelativeToDocumentStorage)
     try! FileManager.default.removeItem(at: path)
+    #endif
+  }
+  
+  static func excludeDomainFromBackup(_ nsDomain: _NSFileProviderDomain) {
+    #if targetEnvironment(macCatalyst)
+    #else
+    var path = Self.default.documentStorageURL.appendingPathComponent(nsDomain.pathRelativeToDocumentStorage)
+    var resource = URLResourceValues()
+    resource.isExcludedFromBackup = true
+    do {
+      try FileManager.default.createDirectory(
+        at: path,
+        withIntermediateDirectories: true,
+        attributes: nil
+      )
+      try path.setResourceValues(resource)
+    } catch {
+      print("Could not exclude from iCloud backup \(path) - \(error)")
+    }
     #endif
   }
 }
