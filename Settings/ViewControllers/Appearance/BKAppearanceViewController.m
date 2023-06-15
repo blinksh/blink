@@ -33,6 +33,7 @@
 #import "BLKDefaults.h"
 #import "BKFont.h"
 #import "BKTheme.h"
+#import "DeviceInfo.h"
 #import "TermView.h"
 #import "TermDevice.h"
 #import <UserNotifications/UserNotifications.h>
@@ -317,7 +318,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   case BKAppearance_Terminal:
     return @"Configuration will be applied to new terminal sessions.";
   case BKAppearance_Layout:
-    return @"Mirror configuration will be applied after display reconnect.";
+    return @"Configuration will be applied after display reconnect.";
   default:
     return nil;
   }
@@ -380,6 +381,9 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   } else if (indexPath.section == BKAppearance_Layout && indexPath.row == 1) {
     _overscanCompensationSegmentedControl = [cell viewWithTag:OVERSCAN_COMPENSATION_TAG];
     _overscanCompensationSegmentedControl.selectedSegmentIndex = [self _overscanCompensationToIndex:_overscanCompensationValue];
+    if ([[DeviceInfo shared] hasAppleSilicon]) {
+      [_overscanCompensationSegmentedControl setTitle:@"Stage" forSegmentAtIndex:3];
+    }
   }
   
   return cell;

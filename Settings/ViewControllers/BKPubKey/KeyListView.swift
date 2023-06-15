@@ -38,12 +38,14 @@ fileprivate struct KeyCard {
   let name: String
   let keyType: String?
   let certType: String?
+  let isAccessible: Bool
 
   init(key: BKPubKey) {
     self.key = key
     self.name = key.id
     self.keyType = key.keyType
     self.certType = key.certType
+    self.isAccessible = BKPubKey.all().signerWithID(name) != nil ? true : false
   }
 }
 
@@ -61,8 +63,13 @@ struct KeyRow: View {
               .foregroundColor(.secondary)
           }
           Spacer()
-          Text(card.key.storageType.shortName())
-            .font(.system(.subheadline))
+          if card.isAccessible {
+            Text(card.key.storageType.shortName())
+              .font(.system(.subheadline))
+          } else {
+            Image(systemName: "exclamationmark.triangle.fill")
+              .foregroundColor(.yellow)
+          }
         }
       },
       details: {
@@ -155,9 +162,20 @@ struct KeyListView: View {
         )
       } else {
         List {
-          ForEach(_state.list, id: \.name) {
-            KeyRow(card: $0, reloadCards: _state.reloadCards)
-          }.onDelete(perform: _state.deleteKeys)
+          Section {
+            ForEach(_state.list, id: \.name) {
+              KeyRow(card: $0, reloadCards: _state.reloadCards)
+            }.onDelete(perform: _state.deleteKeys)
+          } header: {
+            if _state.list.contains(where: { !$0.isAccessible }) {
+              HStack {
+                Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.yellow)
+                Text("The Private Key component of some identities is missing. The Public Key is still available so  keys can be recycled at the server.")
+              }
+            }
+          } footer: {
+            Text("For security reasons, Blink stores Private Keys within protected areas of your device, ensuring their exclusion from iCloud sync and iCloud backups.")
+          }.textCase(nil)
         }
       }
     }

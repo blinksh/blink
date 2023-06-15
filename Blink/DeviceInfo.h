@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly) BOOL hasNotch;
 @property (readonly) BOOL hasCorners;
+@property (readonly) BOOL hasAppleSilicon;
 
 @end
 
