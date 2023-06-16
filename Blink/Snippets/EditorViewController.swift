@@ -227,7 +227,8 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    textView.frame = self.view.bounds.insetBy(dx: 8, dy: 8)
+    let ins = self.systemMinimumLayoutMargins
+    textView.frame = self.view.bounds.insetBy(dx: ins.leading, dy: ins.top)
   }
   
   override func viewDidAppear(_ animated: Bool) {

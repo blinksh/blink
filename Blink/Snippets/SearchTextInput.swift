@@ -89,11 +89,11 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
     )
     let enter = UIKeyCommand(
       input: "\r", modifierFlags: [],
-      action: #selector(SearchTextInput.enterEditMode)
+      action: #selector(SearchTextInput.enterEditCreateMode)
     )
     let enter2 = UIKeyCommand(
       input: "\n", modifierFlags: [],
-      action: #selector(SearchTextInput.enterEditMode)
+      action: #selector(SearchTextInput.enterEditCreateMode)
     )
     
     self._keyCommands = [
@@ -164,8 +164,8 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
     model.selectPrevSnippet()
   }
   
-  @objc func enterEditMode() {
-    model.editCurrentSelection()
+  @objc func enterEditCreateMode() {
+    model.editSelectionOrCreate()
   }
   
   @objc func close() {

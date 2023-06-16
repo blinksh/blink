@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -340,6 +340,7 @@
 		D27C4DA42987F124008427F2 /* BuildHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C4DA32987F124008427F2 /* BuildHelp.swift */; };
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
 		D27D01272615F1BD00128C23 /* developer_setup.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D27D01232615F1BD00128C23 /* developer_setup.xcconfig */; };
+		D27DD70A2A3B203F009E97BC /* NewSnippetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27DD7092A3B203F009E97BC /* NewSnippetViewController.swift */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
 		D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */; };
 		D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */; };
@@ -1048,6 +1049,7 @@
 		D27C4DA32987F124008427F2 /* BuildHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildHelp.swift; sourceTree = "<group>"; };
 		D27D0117261202A400128C23 /* KeyUIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUIError.swift; sourceTree = "<group>"; };
 		D27D01232615F1BD00128C23 /* developer_setup.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = developer_setup.xcconfig; sourceTree = "<group>"; };
+		D27DD7092A3B203F009E97BC /* NewSnippetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSnippetViewController.swift; sourceTree = "<group>"; };
 		D2887A5522DC676F00701BD5 /* SpaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceController.swift; sourceTree = "<group>"; };
 		D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+UIScene.swift"; sourceTree = "<group>"; };
@@ -1971,6 +1973,7 @@
 			isa = PBXGroup;
 			children = (
 				D22277F72A26204900D4C708 /* Accumulators.swift */,
+				D27DD7092A3B203F009E97BC /* NewSnippetViewController.swift */,
 				D22277F82A26204900D4C708 /* EditorViewController.swift */,
 				D22277F42A26204800D4C708 /* SearchMode.swift */,
 				D22277F12A26204800D4C708 /* SearchModel.swift */,
@@ -3390,6 +3393,7 @@
 				D2C24416238E44AB0082C69C /* KBConfig.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
+				D27DD70A2A3B203F009E97BC /* NewSnippetViewController.swift in Sources */,
 				D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */,
 				D25DE9C02939EB36008246EB /* NonStdIO.swift in Sources */,
 				D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */,

@@ -66,6 +66,7 @@ class SearchModel: ObservableObject {
   @Published var currentSnippetName = ""
   @Published var editingSnippet: Snippet? = nil
   @Published var editingMode: TextViewEditingMode = .template
+  @Published var newSnippetPresented = false
 
   let localSnippets: LocalSnippets
   var index: [Snippet] = []
@@ -148,9 +149,10 @@ class SearchModel: ObservableObject {
 
   }
 
-  func editCurrentSelection() {
+  func editSelectionOrCreate() {
     guard let snippet = currentSelection
     else {
+      openNewSnippet()
       return
     }
     
@@ -178,6 +180,26 @@ class SearchModel: ObservableObject {
     rootCtrl?.present(navCtrl, animated: false)
     
   }
+  
+  func openNewSnippet() {
+    self.newSnippetPresented = true
+    let textView = TextViewBuilder.createForSnippetEditing()
+    let editorCtrl = NewSnippetViewController(textView: textView, model: self)
+    let navCtrl = UINavigationController(rootViewController: editorCtrl)
+    navCtrl.modalPresentationStyle = .formSheet
+    
+    if let sheetCtrl = navCtrl.sheetPresentationController {
+      sheetCtrl.prefersGrabberVisible = true
+      sheetCtrl.prefersEdgeAttachedInCompactHeight = true
+      sheetCtrl.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+      sheetCtrl.detents = [
+        .medium(), .large()
+      ]
+      sheetCtrl.largestUndimmedDetentIdentifier = .large
+    }
+    rootCtrl?.present(navCtrl, animated: true)
+    
+  }
 
   @objc func sendContentToReceiver(content: String) {
     self.snippetContext?.providerSnippetReceiver()?.receive(content)
@@ -194,6 +216,7 @@ class SearchModel: ObservableObject {
   
   @objc func closeEditor() {
     self.editingSnippet = nil
+    self.newSnippetPresented = false
     self.rootCtrl?.presentedViewController?.dismiss(animated: true)
   }
   
@@ -403,7 +426,7 @@ extension SearchModel {
   func onSnippetTap(_ snippet: Snippet) {
     if let index = self.displayResults.firstIndex(of: snippet) {
       self.selectedSnippetIdx = index
-      self.editCurrentSelection()
+      self.editSelectionOrCreate()
     }
   }
 

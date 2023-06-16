@@ -38,10 +38,18 @@ struct SwiftUISnippetsView: View {
   @ObservedObject var model: SearchModel
   var body: some View {
     HStack(alignment: .top) {
-      if model.editingSnippet == nil {
+      if model.editingSnippet == nil && model.newSnippetPresented == false {
         Spacer()
         VStack {
           Spacer()
+          if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
+            HStack {
+              Spacer()
+              Button("Create Snippet") {
+                model.openNewSnippet()
+              }
+            }.frame(maxWidth: 550)
+          }
           SnippetsListView(model: model)
             .frame(maxWidth: 560)
             .background(

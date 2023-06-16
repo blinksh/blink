@@ -34,8 +34,7 @@ import Runestone
 import TreeSitterBashRunestone
 
 enum TextViewEditingMode {
-  case template,
-       code
+  case template, code
 }
 
 enum OutputShellFormatter {
