@@ -306,4 +306,9 @@ class NewSnippetViewController: UIViewController, TextViewDelegate, UINavigation
     
   }
   
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    self.model.closeEditor()
+  }
+  
 }

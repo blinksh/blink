@@ -232,7 +232,13 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   }
   
   override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
     _ = textView.becomeFirstResponder()
+  }
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    self.model.closeEditor()
   }
   
 }
