@@ -268,9 +268,13 @@ class NewSnippetViewController: UIViewController, TextViewDelegate, UINavigation
     
     do {
       try model.localSnippets.saveSnippet(folder: category, name: name, content: content)
+      model.index = try Array(Set(model.localSnippets.listSnippets()))
+      model.updateWith(text: "")
     } catch  {
       self.showAlert(msg: error.localizedDescription)
+      return
     }
+   
     
     model.closeEditor()
   }
