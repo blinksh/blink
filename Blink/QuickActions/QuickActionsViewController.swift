@@ -51,6 +51,7 @@ struct QuickActionButtons: View {
   public var delegate: CommandsHUDViewDelegate? = nil
   @State var visible: Bool = false
   @State var hasCorners = DeviceInfo.shared().hasCorners
+  @State var supportsMultipleWindows = UIApplication.shared.supportsMultipleScenes
   @State var version: Int = 0
   
   var layoutModeText: String {
@@ -91,10 +92,12 @@ struct QuickActionButtons: View {
         delegate?.spaceController()?.showSnippetsAction()
       }.buttonStyle(MaterialButtonStyle())
       
-      Button("New Window") {
-        delegate?.spaceController()?.toggleQuickActionsAction()
-        delegate?.spaceController()?._newWindowAction()
-      }.buttonStyle(MaterialButtonStyle())
+      if self.supportsMultipleWindows {
+        Button("New Window") {
+          delegate?.spaceController()?.toggleQuickActionsAction()
+          delegate?.spaceController()?._newWindowAction()
+        }.buttonStyle(MaterialButtonStyle())
+      }
       
       Button("New Tab") {
         delegate?.spaceController()?.toggleQuickActionsAction()
