@@ -90,12 +90,10 @@ struct QuickActionButtons: View {
         delegate?.spaceController()?.toggleQuickActionsAction()
         delegate?.spaceController()?.showSnippetsAction()
       }.buttonStyle(MaterialButtonStyle())
-//      Button("AI") {
-//        
-//      }.buttonStyle(MaterialButtonStyle())
       
       Button("New Window") {
-        
+        delegate?.spaceController()?.toggleQuickActionsAction()
+        delegate?.spaceController()?._newWindowAction()
       }.buttonStyle(MaterialButtonStyle())
       
       Button("New Tab") {
