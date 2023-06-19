@@ -113,7 +113,7 @@ final class BlinkSnippetsTests: XCTestCase {
     // matches.refine("")
   }
 
-  func testSnippets() throws {
+  func testSnippets() async throws {
     // Setup different snippet locations.
     // Create an index from the snippets.
     // Perform a match on the index.
@@ -136,7 +136,7 @@ final class BlinkSnippetsTests: XCTestCase {
     try local.saveSnippet(folder: "General", name: "Start SSH Connection.sh.enc", content: "ssh host_name")
     try local.saveSnippet(folder: "General", name: "Start SSH Connection.sh.enc", content: "ssh $host")
     
-    let snippets = try local.listSnippets()
+    let snippets = try await local.listSnippets()
     print(snippets)
     let index = Dictionary(uniqueKeysWithValues: snippets.lazy.map { ($0.indexable, $0) })
     
@@ -187,6 +187,20 @@ final class BlinkSnippetsTests: XCTestCase {
     }
   }
 
+  func testGitHubLocation() async throws {
+    let location = try FileManager.default.url(for: .cachesDirectory,
+                                               in: .userDomainMask,
+                                               appropriateFor: nil,
+                                               create: false).appending(path: "test")
+
+    let gh = GitHubSnippets(owner: "blinksh", repo: "build-hacker-tools", cachedAt: location)
+    //let snippets = try await gh.listSnippets(forceUpdate: true)
+    try await gh.refresh()
+    
+    print(try FileManager.default.contentsOfDirectory(at: location, includingPropertiesForKeys: nil))
+    var isDirectory: ObjCBool = true
+    XCTAssertTrue(FileManager.default.fileExists(atPath: location.appending(path: "blinksh-build-hacker-tools").path(), isDirectory: &isDirectory))
+  }
     // func testGitHubLocation() throws {
       // // Setup a GitHub snippet location.
       // // Add a snippet to that location.

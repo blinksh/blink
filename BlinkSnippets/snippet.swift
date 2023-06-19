@@ -116,12 +116,16 @@ public class Snippet: ObservableObject, Hashable, Identifiable {
 // Separate the Snippet itself from the way it is stored. This is important so
 // we can use different backends (ie, Filesystem, iCloud, DB, GitHub...)
 public protocol SnippetContentLocation {
-  func listSnippets() throws -> [Snippet]
+  // It may be better to do it through a parameter, because if you update the snippets,
+  // you are expecting to refresh the lists.
+//  func listSnippets() throws -> [Snippet]
+  func listSnippets(forceUpdate: Bool) async throws -> [Snippet]
   func saveSnippet(folder: String, name: String, content: String) throws
   func deleteSnippet(folder: String, name: String) throws
   func readContent(folder: String, name: String) throws -> String
   func readDescription(folder: String, name: String) throws -> String
   func snippetLocationURL(folder: String, name: String) -> URL?
+//  func updateSnippets()
 }
 
 public class LocalSnippets: SnippetContentLocation {
@@ -131,7 +135,7 @@ public class LocalSnippets: SnippetContentLocation {
     self.sourcePathURL = sourcePathURL
   }
 
-  public func listSnippets() throws -> [Snippet] {
+  public func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
     return try listSnippets(atPath: "")
   }
 
