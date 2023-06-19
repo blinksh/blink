@@ -50,6 +50,39 @@ struct MaterialButtonStyle: ButtonStyle {
 struct QuickActionButtons: View {
   public var delegate: CommandsHUDViewDelegate? = nil
   @State var visible: Bool = false
+  @State var hasCorners = DeviceInfo.shared().hasCorners
+  @State var version: Int = 0
+  
+  var layoutModeText: String {
+    if let mode = delegate?.currentTerm()?.sessionParams.layoutMode {
+      return LayoutManager.layoutMode(toString: BKLayoutMode(rawValue: mode) ?? BKLayoutMode.default)
+    }
+    return LayoutManager.layoutMode(toString: BKLayoutMode.default)
+  }
+  
+  var lockText: String {
+    if delegate?.currentTerm()?.sessionParams.layoutLocked == true {
+      return "Unlock"
+    } else {
+      return "Lock"
+    }
+  }
+  
+  func _nextLayoutMode(mode: BKLayoutMode?) -> BKLayoutMode {
+      switch (mode) {
+      case nil: fallthrough
+      case .default:
+        return .safeFit;
+      case .safeFit:
+        return .fill;
+      case .fill:
+        return .cover;
+      case .cover:
+        return .safeFit;
+      @unknown default:
+        return .safeFit
+      }
+    }
   
   var body: some View {
     HStack {
@@ -57,9 +90,9 @@ struct QuickActionButtons: View {
         delegate?.spaceController()?.toggleQuickActionsAction()
         delegate?.spaceController()?.showSnippetsAction()
       }.buttonStyle(MaterialButtonStyle())
-      Button("AI") {
-        
-      }.buttonStyle(MaterialButtonStyle())
+//      Button("AI") {
+//        
+//      }.buttonStyle(MaterialButtonStyle())
       
       Button("New Window") {
         
@@ -70,13 +103,38 @@ struct QuickActionButtons: View {
         delegate?.spaceController()?.newShellAction()
       }.buttonStyle(MaterialButtonStyle())
       
-      Button("Fill") {
-        
-      }.buttonStyle(MaterialButtonStyle())
       
-      Button("Lock") {
-        delegate?.currentTerm()?.lockLayout()
+      if self.hasCorners {
+        Button(self.layoutModeText) {
+          guard let term = delegate?.currentTerm()
+          else {
+            return
+          }
+          
+          let params = term.sessionParams
+          params.layoutMode = _nextLayoutMode(mode: BKLayoutMode(rawValue: params.layoutMode)).rawValue
+          if (params.layoutLocked) {
+            term.unlockLayout()
+          }
+          term.view?.setNeedsLayout()
+          self.version += 1 // rerender self with new values
+        }.buttonStyle(MaterialButtonStyle())
+          .id("mode-\(self.version)")
+      }
+      
+      Button(lockText) {
+        guard let params = delegate?.currentTerm()?.sessionParams
+        else {
+          return
+        }
+        if params.layoutLocked {
+          delegate?.spaceController()?.currentTerm()?.unlockLayout()
+        } else {
+          delegate?.spaceController()?.currentTerm()?.lockLayout()
+        }
+        self.version += 1
       }.buttonStyle(MaterialButtonStyle())
+        .id("lock-\(self.version)")
       Button("Close Tab") {
         delegate?.spaceController()?.closeShellAction()
       }.buttonStyle(MaterialButtonStyle())
