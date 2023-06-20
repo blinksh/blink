@@ -169,6 +169,7 @@ class SearchModel: ObservableObject {
       sheetCtrl.prefersGrabberVisible = true
       sheetCtrl.prefersEdgeAttachedInCompactHeight = true
       sheetCtrl.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+      
       sheetCtrl.detents = [
         .custom(resolver: { context in
           120

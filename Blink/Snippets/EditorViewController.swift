@@ -71,7 +71,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     }
 
     if nextTokenRangeIndex < text.endIndex,
-      let range = text[nextTokenRangeIndex...].range(of: #"\$\{([\w@\.-]+)\}"#, options: .regularExpression) {
+      let range = text[nextTokenRangeIndex...].range(of: #"\$\{[^\}]+\}"#, options: .regularExpression) {
       let token = String(text[range])
       let nextTokenRanges = text.ranges(of: token).map { NSRange($0, in: text) }
       self.templateTokenRanges = nextTokenRanges
