@@ -215,6 +215,23 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     self.navigationItem.leftBarButtonItem?.action = #selector(cancel)
     self.navigationItem.style = .editor
     self.navigationItem.renameDelegate = self
+    self.navigationItem.titleMenuProvider = { suggestions in
+      var finalMenuElements = suggestions
+      finalMenuElements.append(
+        UICommand(
+          title: "Delete",
+          image: UIImage(systemName: "trash"),
+          action: #selector(self.deleteSnippet),
+          attributes: .destructive
+        )
+      )
+      return UIMenu(children: finalMenuElements)
+    }
+  }
+  
+  @objc  func deleteSnippet() {
+    model.deleteSnippet()
+    model.closeEditor()
   }
   
   @objc func cancel() {
@@ -239,6 +256,14 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     self.model.closeEditor()
+  }
+  
+  override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    if action == #selector(deleteSnippet) {
+      // TODO: check location
+      return true
+    }
+    return super.canPerformAction(action, withSender: sender)
   }
   
 }
