@@ -258,6 +258,16 @@ class SearchModel: ObservableObject {
       self.editingSnippet = newSnippet
     }
   }
+  
+  func cleanString(str: String?) -> String {
+    (str ?? "").lowercased()
+      .replacingOccurrences(of: " ", with: "-")
+      .replacingOccurrences(of: "/", with: "-")
+      .replacingOccurrences(of: ".", with: "-")
+      .replacingOccurrences(of: "~", with: "-")
+      .replacingOccurrences(of: "\\", with: "-")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+  }
 
 }
 

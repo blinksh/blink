@@ -40,8 +40,8 @@ import TreeSitterBashRunestone
 class EditorViewController: UIViewController, TextViewDelegate, UINavigationItemRenameDelegate {
   func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
     let parts = title.split(separator: "/", maxSplits: 1)
-    let category = self.cleanString(str: String(parts[0]))
-    let name = self.cleanString(str:String(parts[1])) + ".sh"
+    let category = model.cleanString(str: String(parts[0]))
+    let name = model.cleanString(str:String(parts[1])) + ".sh"
     
     model.renameSnippet(newCategory: category, newName: name, newContent: self.textView.text)
   }
@@ -66,16 +66,6 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       return false
     }
     return true
-  }
-  
-  func cleanString(str: String?) -> String {
-    (str ?? "").lowercased()
-      .replacingOccurrences(of: " ", with: "-")
-      .replacingOccurrences(of: "/", with: "-")
-      .replacingOccurrences(of: ".", with: "-")
-      .replacingOccurrences(of: "~", with: "-")
-      .replacingOccurrences(of: "\\", with: "-")
-      .trimmingCharacters(in: .whitespacesAndNewlines)
   }
   
   

@@ -208,19 +208,9 @@ class NewSnippetViewController: UIViewController, TextViewDelegate, UINavigation
     self.onFieldChange()
   }
   
-  func cleanString(str: String?) -> String {
-    (str ?? "").lowercased()
-      .replacingOccurrences(of: " ", with: "-")
-      .replacingOccurrences(of: "/", with: "-")
-      .replacingOccurrences(of: ".", with: "-")
-      .replacingOccurrences(of: "~", with: "-")
-      .replacingOccurrences(of: "\\", with: "-")
-      .trimmingCharacters(in: .whitespacesAndNewlines)
-  }
-  
   @objc func onFieldChange() {
-    let category = self.cleanString(str: formView.categoryTextField.text)
-    let name = self.cleanString(str: formView.nameTextField.text)
+    let category = model.cleanString(str: formView.categoryTextField.text)
+    let name = model.cleanString(str: formView.nameTextField.text)
     
     if category.isEmpty || name.isEmpty {
       self.title = nil
@@ -246,13 +236,13 @@ class NewSnippetViewController: UIViewController, TextViewDelegate, UINavigation
   }
   
   @objc func create() {
-    let category = self.cleanString(str: formView.categoryTextField.text)
+    let category = model.cleanString(str: formView.categoryTextField.text)
 
     if category.isEmpty {
       self.showAlert(msg: "Category can't be empty.")
     }
     
-    var name = self.cleanString(str: formView.nameTextField.text)
+    var name = model.cleanString(str: formView.nameTextField.text)
     
     if name.isEmpty {
       self.showAlert(msg: "Name can't be empty.")
