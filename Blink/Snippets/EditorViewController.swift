@@ -39,7 +39,11 @@ import TreeSitterBashRunestone
 
 class EditorViewController: UIViewController, TextViewDelegate, UINavigationItemRenameDelegate {
   func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
+    let parts = title.split(separator: "/", maxSplits: 1)
+    let category = self.cleanString(str: String(parts[0]))
+    let name = self.cleanString(str:String(parts[1])) + ".sh"
     
+    model.renameSnippet(newCategory: category, newName: name, newContent: self.textView.text)
   }
   
   func navigationItemShouldBeginRenaming(_: UINavigationItem) -> Bool {
@@ -47,11 +51,31 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   }
   
   func navigationItem(_: UINavigationItem, willBeginRenamingWith suggestedTitle: String, selectedRange: Range<String.Index>) -> (String, Range<String.Index>) {
-    return (suggestedTitle, suggestedTitle.range(of: suggestedTitle)!)
+    // preselect name part
+    let parts = suggestedTitle.split(separator: "/", maxSplits: 1)
+    if parts.count == 2 {
+      return (suggestedTitle, suggestedTitle.range(of: String(parts[1]))!)
+    } else {
+      return (suggestedTitle, suggestedTitle.range(of: suggestedTitle)!)
+    }
   }
   
   func navigationItem(_: UINavigationItem, shouldEndRenamingWith title: String) -> Bool {
-    true
+    let str = title.trimmingCharacters(in: .whitespacesAndNewlines)
+    if str.hasPrefix("/") || !str.contains("/") || str.hasSuffix("/") {
+      return false
+    }
+    return true
+  }
+  
+  func cleanString(str: String?) -> String {
+    (str ?? "").lowercased()
+      .replacingOccurrences(of: " ", with: "-")
+      .replacingOccurrences(of: "/", with: "-")
+      .replacingOccurrences(of: ".", with: "-")
+      .replacingOccurrences(of: "~", with: "-")
+      .replacingOccurrences(of: "\\", with: "-")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
   }
   
   
@@ -111,6 +135,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       return false
     }
 
+    
     // Replace all appearances in templateTokenRanges.
     // Move the templateTokenRanges to accommodate for the introduced text.
     var newTemplateTokenRanges: [NSRange] = []
@@ -205,6 +230,8 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     } else {
       textView.text = ""
     }
+    
+    
     
     self.navigationItem.rightBarButtonItem =
       UIBarButtonItem(

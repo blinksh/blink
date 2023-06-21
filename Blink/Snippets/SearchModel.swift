@@ -240,6 +240,24 @@ class SearchModel: ObservableObject {
     self.input = ""
     self.editingSnippet = nil
   }
+  
+  func renameSnippet(newCategory: String, newName: String, newContent: String) {
+    guard let snippet = self.editingSnippet else {
+      return
+    }
+    try? localSnippets.deleteSnippet(folder: snippet.folder, name: snippet.name)
+    self.index.removeAll { s in
+      s == snippet
+    }
+    self.displayResults = []
+    self.searchResults.clear()
+    self.fuzzyResults.clear()
+    self.input = ""
+    if let newSnippet = try? localSnippets.saveSnippet(folder: newCategory, name: newName, content: newContent) {
+      self.index.append(newSnippet)
+      self.editingSnippet = newSnippet
+    }
+  }
 
 }
 
