@@ -48,7 +48,7 @@ public class Snippet: ObservableObject, Hashable, Identifiable {
   // public let date: String
   public let title: String
   public let ext: [String]
-  let store: SnippetContentLocation
+  public let store: SnippetContentLocation
 
   public let language: String
   public let isEncrypted: Bool
