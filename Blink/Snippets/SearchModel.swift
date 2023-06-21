@@ -68,8 +68,11 @@ class SearchModel: ObservableObject {
   @Published var editingMode: TextViewEditingMode = .template
   @Published var newSnippetPresented = false
 
-  let localSnippets: LocalSnippets
+  let snippetsLocations = SnippetsLocations()
+  // Stored Index snapshot to search.
   var index: [Snippet] = []
+  var indexFetchCancellable: Cancellable? = nil
+  
   var style: HighlightStyle = .light(.google) {
     didSet {
       searchResults.style = style
@@ -110,21 +113,21 @@ class SearchModel: ObservableObject {
   
 
   init() {
-    
-    generateLocalSnippets()
-    
     self.mode = .general
     self.input = ""
 
-    // TODO Locations from initializer?
-    let docsURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true);
-
-    self.style = UIScreen.main.traitCollection.userInterfaceStyle == .dark ? HighlightStyle.dark(.google) : HighlightStyle.light(.google) 
-    let local = LocalSnippets(from: docsURL)
-
-    self.localSnippets = local
-    self.index = try! Array(Set(localSnippets.listSnippets()))
-
+    self.indexFetchCancellable = self.snippetsLocations
+      .indexPublisher
+      // As we are updating a local variable, we will have race conditions.
+      .receive(on: DispatchQueue.main)
+      .sink(
+      // Handle errors
+      receiveCompletion: { _ in },
+      receiveValue: { snippets in
+        // TODO Refresh should happen on main thread, bc this is publishing changes.
+        self.index = snippets
+        self.input = { self.input }()
+      })
   }
 
   func updateWith(text: String) {
@@ -228,11 +231,9 @@ class SearchModel: ObservableObject {
     guard let snippet = editingSnippet else {
       return
     }
-    try? localSnippets.deleteSnippet(folder: snippet.folder, name: snippet.name)
     
-    self.index.removeAll { s in
-      s == snippet
-    }
+    try? self.snippetsLocations.deleteSnippet(snippet: snippet)
+    
     self.displayResults = []
     self.searchResults.clear()
     self.fuzzyResults.clear()
@@ -325,93 +326,6 @@ extension SearchModel {
 
 // MARK: Snippet Selection
 var generated: Bool = false
-
-public func generateLocalSnippets() {
-  if generated {
-    return
-  }
-  defer {
-    generated = true
-  }
-  let docsURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true);
-  
-  let local = LocalSnippets(from: docsURL)
-  
-  // Find
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "in directory",
-    content: "find . -maxdepth 1 ${name}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "from directory",
-    content: "find . -iname ${name}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "from directory and exec command",
-    // This is one example where having a "template" would be useful,
-    // because the file is substituted with the {}
-    content: "find . -iname ${name} -exec ${exec_command}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "from directory and exec rm",
-    content: "find . -iname ${name} -exec rm {}"
-    // isDangerous: true
-  )
-  
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "files larger than",
-    content: "find . -size +${size}M"
-  )
-  
-  try! local.saveSnippet(
-    folder: "Find",
-    name: "files smaller than",
-    content: "find . -size -${size}M"
-  )
-  
-  // SSH
-  try! local.saveSnippet(
-    folder: "SSH",
-    name: "connect",
-    content: "ssh ${user}@${host}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "SSH",
-    name: "copy from remote to local",
-    content: "scp ${user@hostname#port}:${remote_path}/${file} ${file}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "SSH",
-    name: "copy from local to remote",
-    content: "scp ${file} ${user@hostname#port}:${remote_path}/${file}"
-  )
-  
-  try! local.saveSnippet(
-    folder: "SSH",
-    name: "copy remote to remote",
-    content: "scp ${user@source_hostname#port}:${source_path}/${file} ${user@dest_hostname#port}:${dest_path}/${file}"
-  )
-  
-  // Git
-  try! local.saveSnippet(
-    folder: "Git",
-    name: "config user and email",
-    content: """
-    git config --global user.name "${first_name_last_name}"
-    git config --global user.email "${email}"
-    """
-  )
-}
 
 extension SearchModel {
   var currentSelection: Snippet? {

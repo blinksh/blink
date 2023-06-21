@@ -220,6 +220,11 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [NSURL fileURLWithPath:[self historyFile]];
 }
 
++ (NSURL *)snippetsLocationURL
+{
+  return [NSURL fileURLWithPath:[[self blink] stringByAppendingPathComponent:@"snippets"]];
+}
+
 + (NSString *)knownHostsFile
 {
   return [[self ssh] stringByAppendingPathComponent:@"known_hosts"];

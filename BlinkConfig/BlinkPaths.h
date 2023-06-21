@@ -65,6 +65,8 @@
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 
++ (NSURL *) snippetsLocationURL;
+
 + (NSURL *)fileProviderErrorLogURL;
 + (NSURL *)blinkCodeErrorLogURL;
 

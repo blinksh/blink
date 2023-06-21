@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -102,6 +102,9 @@
 		BD74A7A7290061DE00ED01CF /* WhatsNewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7A6290061DE00ED01CF /* WhatsNewInfo.swift */; };
 		BD74A7C22905BD5800ED01CF /* WhatsNewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
+		BD792A452A3B6A78009EE35F /* GitHubSnippets.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */; };
+		BD792A4F2A3BDAAA009EE35F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = BD792A4E2A3BDAAA009EE35F /* ZIPFoundation */; };
+		BD792A512A3BDAC4009EE35F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = BD792A502A3BDAC4009EE35F /* ZIPFoundation */; };
 		BD7AFC4128E8E98C004BCDA4 /* Base32Kit in Frameworks */ = {isa = PBXBuildFile; productRef = BD7AFC4028E8E98C004BCDA4 /* Base32Kit */; };
 		BD7AFC4328E8E9A9004BCDA4 /* Base32Kit in Frameworks */ = {isa = PBXBuildFile; productRef = BD7AFC4228E8E9A9004BCDA4 /* Base32Kit */; };
 		BD81522027387D1F002BB169 /* Certificates.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81521C27387D1F002BB169 /* Certificates.swift */; };
@@ -154,6 +157,7 @@
 		BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA31F2728925C00C77798 /* WebSocketServer.swift */; };
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
+		BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -821,6 +825,7 @@
 		BD74A7A6290061DE00ED01CF /* WhatsNewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewInfo.swift; sourceTree = "<group>"; };
 		BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewModelTests.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
+		BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitHubSnippets.swift; sourceTree = "<group>"; };
 		BD81521C27387D1F002BB169 /* Certificates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Certificates.swift; sourceTree = "<group>"; };
 		BD8152532743FF84002BB169 /* skstore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = skstore.swift; sourceTree = "<group>"; };
 		BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
@@ -865,6 +870,7 @@
 		BDBFA3112728914F00C77798 /* BlinkCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkCodeTests.swift; sourceTree = "<group>"; };
 		BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServerTests.swift; sourceTree = "<group>"; };
 		BDBFA31F2728925C00C77798 /* WebSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
+		BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsLocations.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1090,7 +1096,6 @@
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
 		D2B788842949C53100F19E4F /* BuildView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildView.swift; sourceTree = "<group>"; };
 		D2B788872949E8CA00F19E4F /* BuildRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildRegion.swift; sourceTree = "<group>"; };
-		D2B9E218268084C60084B2C4 /* Spinner */ = {isa = PBXFileReference; lastKnownFileType = text; name = Spinner; path = xcfs/.build/checkouts/Spinner; sourceTree = SOURCE_ROOT; };
 		D2B9E21C268084D00084B2C4 /* Promise */ = {isa = PBXFileReference; lastKnownFileType = text; name = Promise; path = xcfs/.build/checkouts/Promise; sourceTree = SOURCE_ROOT; };
 		D2BB5E122A1F718300BB0520 /* app-font-bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "app-font-bold.ttf"; sourceTree = "<group>"; };
 		D2BB5E132A1F718300BB0520 /* app-font-regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "app-font-regular.ttf"; sourceTree = "<group>"; };
@@ -1268,6 +1273,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD792A512A3BDAC4009EE35F /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1327,6 +1333,7 @@
 				D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */,
 				D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
+				BD792A4F2A3BDAAA009EE35F /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1445,7 +1452,6 @@
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
 				0732F1261D06323A00AB5438 /* libz.tbd */,
 				D2B9E21C268084D00084B2C4 /* Promise */,
-				D2B9E218268084C60084B2C4 /* Spinner */,
 				0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */,
 				07FAB90925C8E94200E1CC2C /* swift-argument-parser */,
 				D2BF5F6B2659522C0070F839 /* Intents.framework */,
@@ -1953,6 +1959,7 @@
 		D22277CF2A26115300D4C708 /* BlinkSnippets */ = {
 			isa = PBXGroup;
 			children = (
+				BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */,
 				D22277E92A26120C00D4C708 /* fuzzy.swift */,
 				D22277EA2A26120D00D4C708 /* index.swift */,
 				D22277EB2A26120D00D4C708 /* snippet.swift */,
@@ -1982,6 +1989,7 @@
 				D22277F62A26204900D4C708 /* SnippetsListView.swift */,
 				D22277F52A26204900D4C708 /* SnippetView.swift */,
 				D22278122A2631E700D4C708 /* SnippetsViewController.swift */,
+				BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */,
 			);
 			path = Snippets;
 			sourceTree = "<group>";
@@ -2600,6 +2608,9 @@
 			dependencies = (
 			);
 			name = BlinkSnippets;
+			packageProductDependencies = (
+				BD792A502A3BDAC4009EE35F /* ZIPFoundation */,
+			);
 			productName = BlinkSnippets;
 			productReference = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */;
 			productType = "com.apple.product-type.framework";
@@ -2676,6 +2687,7 @@
 				D22278092A26216900D4C708 /* TreeSitterBashQueries */,
 				D222780B2A26216900D4C708 /* TreeSitterBashRunestone */,
 				D222780E2A26217A00D4C708 /* Runestone */,
+				BD792A4E2A3BDAAA009EE35F /* ZIPFoundation */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2796,6 +2808,7 @@
 				D22278032A2620B500D4C708 /* XCRemoteSwiftPackageReference "HighlightSwift" */,
 				D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */,
 				D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */,
+				BD792A4D2A3BDAAA009EE35F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -3179,6 +3192,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD792A452A3B6A78009EE35F /* GitHubSnippets.swift in Sources */,
 				D22277ED2A26120D00D4C708 /* index.swift in Sources */,
 				D22277EE2A26120D00D4C708 /* snippet.swift in Sources */,
 				D22277EC2A26120D00D4C708 /* fuzzy.swift in Sources */,
@@ -3350,6 +3364,7 @@
 				07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
+				BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
@@ -5076,6 +5091,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		BD792A4D2A3BDAAA009EE35F /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.16;
+			};
+		};
 		BD7AFC3F28E8E98C004BCDA4 /* XCRemoteSwiftPackageReference "Base32Kit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jenslauterbach/Base32Kit.git";
@@ -5146,6 +5169,16 @@
 		07FAB90E25C8E94E00E1CC2C /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ArgumentParser;
+		};
+		BD792A4E2A3BDAAA009EE35F /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD792A4D2A3BDAAA009EE35F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+		BD792A502A3BDAC4009EE35F /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD792A4D2A3BDAAA009EE35F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
 		};
 		BD7AFC4028E8E98C004BCDA4 /* Base32Kit */ = {
 			isa = XCSwiftPackageProductDependency;
