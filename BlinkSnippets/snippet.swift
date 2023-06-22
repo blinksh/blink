@@ -142,13 +142,15 @@ public class LocalSnippets: SnippetContentLocation {
   private func listSnippets(atPath path: String) throws -> [Snippet] {
     let folders = try sourcePathURL.appendingPathComponent(path).subDirectories()
 
-    let snippets = try folders.flatMap { folder in
-      let folderName = path == "" ? folder.lastPathComponent : "\(path)/\(folder.lastPathComponent)"
-      return (try listSnippets(atPath: folderName)) +
-        (try folder.files().map { fileName in
-          let name = fileName.lastPathComponent
-          return Snippet(name: name, folder: folderName, store: self)
-         })
+    let snippets = try folders
+      .filter { $0.lastPathComponent.first != "." }
+      .flatMap { folder in
+        let folderName = path == "" ? folder.lastPathComponent : "\(path)/\(folder.lastPathComponent)"
+        return (try listSnippets(atPath: folderName)) +
+          (try folder.files().map { fileName in
+            let name = fileName.lastPathComponent
+            return Snippet(name: name, folder: folderName, store: self)
+           })
       }
 
     return snippets
@@ -192,7 +194,6 @@ public class LocalSnippets: SnippetContentLocation {
 }
 
 // iCloudSnippets can handle the iCloud interface to track changes to files.
-// GitHubSnippets can use GH REST API to get the specific snippets information.
 
 extension URL {
   func subDirectories() throws -> [URL] {

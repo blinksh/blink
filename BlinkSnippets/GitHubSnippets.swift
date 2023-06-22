@@ -34,27 +34,50 @@ import ZIPFoundation
 let GITHUB_API = "https://api.github.com"
 
 public class GitHubSnippets: LocalSnippets {
-  let owner: String
-  let repo: String
-  let location: URL
+  private let owner: String
+  private let repo: String
+  private let location: URL
+  private let rootLocation: URL
 
   public struct InvalidSnippet: Error {
     public let message: String
   }
   
-  public init(owner: String, repo: String, cachedAt location: URL) {
+  public init(owner: String, repo: String, cachedAt location: URL) throws {
     self.owner = owner
     self.repo = repo
-    self.location = location
-    super.init(from: location)
+    self.rootLocation = location.appending(path: "com.github")
+    
+    if !FileManager.default.fileExists(atPath: rootLocation.path()) {
+      try FileManager.default.createDirectory(at: rootLocation, withIntermediateDirectories: false)
+    }
+    
+    self.location = rootLocation.appending(path: "\(self.owner)-\(self.repo)")
+    super.init(from: self.location)
   }
 
   public override func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
-    try await refresh()
+    if forceUpdate {
+      try await update()
+    } else if try await needsUpdate() {
+      try await update()
+    }
+    
     return try await super.listSnippets(forceUpdate: forceUpdate)
   }
   
-  func refresh() async throws {
+  func needsUpdate() async throws -> Bool {
+    let fm = FileManager.default
+    
+    if fm.fileExists(atPath: self.location.path()) {
+      // TODO Check last fetch date and check the commit reference
+      return false
+    } else {
+      return true
+    }
+  }
+  
+  func update() async throws {
     let fm = FileManager.default
     
     // NOTE If we used this format for other parts (ie themes and fonts), we could separate
@@ -62,7 +85,7 @@ public class GitHubSnippets: LocalSnippets {
 
     // Get the repository to a temporary location
     let downloadUrl = URL(string: "\(GITHUB_API)/repos/\(self.owner)/\(self.repo)/zipball")!
-    let (data, _) = try await URLSession.shared.data(from: downloadUrl)
+    let (data, _) = try! await URLSession.shared.data(from: downloadUrl)
     guard let archive = Archive(data: data, accessMode: .read) else {
       throw Archive.ArchiveError.unreadableArchive
     }
@@ -84,35 +107,18 @@ public class GitHubSnippets: LocalSnippets {
     repositoryRef.removeLast()
     
     // Rename the folder to the final name inside the tmp folder
-    var isDirectory: ObjCBool = true
-    let tmpRepositoryDirectoryURL = tmpDirectoryURL.appending(path: repositoryDirectoryPath)
-    if fm.fileExists(atPath: tmpRepositoryDirectoryURL.path(), isDirectory: &isDirectory) {
-      try fm.removeItem(at: tmpRepositoryDirectoryURL)
-    }
-    let finalPathName = "\(self.owner)-\(self.repo)"
-    try! fm.moveItem(at: tmpDirectoryURL.appending(path: repositoryDirectoryPath), to: tmpDirectoryURL.appending(path: finalPathName))
-    
-    // Create the final location - com.github/owner-repo/
-    let finalPathURL = self.location.appending(path: finalPathName)
-    if !fm.fileExists(atPath: self.location.path(), isDirectory: &isDirectory) {
-      try! fm.createDirectory(at: self.location, withIntermediateDirectories: true)
-    }
-    
+    let tmpRepositoryURL = tmpDirectoryURL.appending(path: "\(self.owner)-\(self.repo)")
+    try fm.moveItem(at: tmpDirectoryURL.appending(path: repositoryDirectoryPath), to: tmpRepositoryURL)
+
     // Replace previous collection with new one
-    if fm.fileExists(atPath: finalPathURL.path(), isDirectory: &isDirectory) {
-      try! fm.removeItem(at: finalPathURL)
+    if fm.fileExists(atPath: self.location.path()) {
+      try fm.removeItem(at: self.location)
     }
-    try! fm.moveItem(at: tmpDirectoryURL.appending(path: finalPathName), to: finalPathURL)
+    try fm.moveItem(at: tmpRepositoryURL, to: self.location)
+    try fm.removeItem(at: tmpDirectoryURL)
   }
 }
 
-//extension FileManager {
-//  func temporaryUrl() -> URL {
-//    let tmpDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-//    let tmpFilename = ProcessInfo().globallyUniqueString
-//    return tmpDirectoryURL.appendingPathComponent(tmpFilename)
-//  }
-//}
 extension FileManager {
   public func unzipItem(archive: Archive, to destinationURL: URL) throws {
     let sortedEntries = archive.sorted { (left, right) -> Bool in

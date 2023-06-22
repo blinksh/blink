@@ -48,17 +48,24 @@ class SnippetsLocations {
   
   // The main interface with the SearchModel. Provides the index whenever it has changed in any way.
   // TODO Problem is it does not communicate errors very well.
-  public let indexPublisher = CurrentValueSubject<[Snippet], Error>([])
+  // We could use another publisher for Errors, associated to Progress.
+  public let indexPublisher = CurrentValueSubject<[Snippet], Never>([])
   
   public init() {
-    // TODO Read from .locations and initialize
     let snippetsLocation = BlinkPaths.snippetsLocationURL()!
-    let localSnippetsLocation = LocalSnippets(from: snippetsLocation.appendingPathComponent("local"))
+    let cachedSnippetsLocation = snippetsLocation.appending(path: ".cached")
     
-    //let blinkSnippetsLocation = GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: snippetsLocation.appendingPathComponent("com.github"))
+    // Create main snippets location. Each location then is responsible for its structure.
+    if !FileManager.default.fileExists(atPath: snippetsLocation.path()) {
+      try! FileManager.default.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
+      try! FileManager.default.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+    }
+    
+    let localSnippetsLocation = LocalSnippets(from: snippetsLocation.appendingPathComponent("local"))
+    let blinkSnippetsLocation = try! GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
     
     self.defaultLocation = localSnippetsLocation
-    self.locations = [localSnippetsLocation]//, blinkSnippetsLocation]
+    self.locations = [localSnippetsLocation, blinkSnippetsLocation]
     
     refreshIndex()
   }
@@ -66,19 +73,16 @@ class SnippetsLocations {
   // If the ".locations" file changes, it will be read again
   // on "refresh". Or forced when the change happens.
   // Same with the .ignore file.
-  
-  // Another entry point is to trigger the "refresh" when we request the indexPublisher if it is nil.
-  // That way we know we need to start with the cache, then subsequent ones should perform full refresh.
-  public func refreshIndex() {
-    // Multiple ways on updating the index, we will go easy to start.
-    // Collect cached first and push immediately. Then load the rest.
-    // send(cachedSnippets) -> send(refreshedSnippets)
-    // TODO Communicating errors but still continue the fetch
-    let cachedSnippets: AnyPublisher<[[Snippet]], Error> = Publishers.MergeMany(locations.map { loc in
-      Future { try await loc.listSnippets(forceUpdate: false) }
-    }).collect().eraseToAnyPublisher()
+  public func refreshIndex(forceUpdate: Bool = false) {
+    let listSnippets: AnyPublisher<[[Snippet]], Never> =
+      Publishers.MergeMany(locations.map { loc in
+        Deferred { Future { (try? await loc.listSnippets(forceUpdate: forceUpdate)) ?? [] } }
+      })
+      .assertNoFailure()
+      .collect()
+      .eraseToAnyPublisher()
     
-    refreshCancellable = cachedSnippets.sink(
+    refreshCancellable = listSnippets.sink(
       receiveCompletion: { _ in },
       receiveValue: { snippets in
         self.indexPublisher.send(Array(snippets.joined()))
