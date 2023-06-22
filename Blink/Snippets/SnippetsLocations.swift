@@ -46,10 +46,16 @@ class SnippetsLocations {
   let defaultLocation: SnippetContentLocation
   var refreshCancellable: Cancellable? = nil
   
+  enum RefreshProgress {
+    case none
+    case started
+    case completed([Error]?)
+  }
   // The main interface with the SearchModel. Provides the index whenever it has changed in any way.
   // TODO Problem is it does not communicate errors very well.
   // We could use another publisher for Errors, associated to Progress.
   public let indexPublisher = CurrentValueSubject<[Snippet], Never>([])
+  public let indexProgressPublisher = CurrentValueSubject<RefreshProgress, Never>(.none)
   
   public init() {
     let snippetsLocation = BlinkPaths.snippetsLocationURL()!
@@ -61,7 +67,9 @@ class SnippetsLocations {
       try! FileManager.default.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
     }
     
-    let localSnippetsLocation = LocalSnippets(from: snippetsLocation.appendingPathComponent("local"))
+    // ".blink/snippets" for local
+    // ".blink/snippets/.cached/com.github" for github
+    let localSnippetsLocation = LocalSnippets(from: snippetsLocation)
     let blinkSnippetsLocation = try! GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
     
     self.defaultLocation = localSnippetsLocation
@@ -74,16 +82,28 @@ class SnippetsLocations {
   // on "refresh". Or forced when the change happens.
   // Same with the .ignore file.
   public func refreshIndex(forceUpdate: Bool = false) {
+    indexProgressPublisher.send(.started)
+
+    var errors: [Error] = []
     let listSnippets: AnyPublisher<[[Snippet]], Never> =
       Publishers.MergeMany(locations.map { loc in
-        Deferred { Future { (try? await loc.listSnippets(forceUpdate: forceUpdate)) ?? [] } }
+        Deferred {
+          Future {
+            do {
+              return try await loc.listSnippets(forceUpdate: forceUpdate)
+            } catch {
+              errors.append(error)
+              return []
+            }
+          }
+        }
       })
       .assertNoFailure()
       .collect()
       .eraseToAnyPublisher()
     
     refreshCancellable = listSnippets.sink(
-      receiveCompletion: { _ in },
+      receiveCompletion: { _ in self.indexProgressPublisher.send(.completed(errors.isEmpty ? nil : errors))},
       receiveValue: { snippets in
         self.indexPublisher.send(Array(snippets.joined()))
       }

@@ -72,6 +72,7 @@ class SearchModel: ObservableObject {
   // Stored Index snapshot to search.
   var index: [Snippet] = []
   var indexFetchCancellable: Cancellable? = nil
+  var indexProgressCancellable: Cancellable? = nil
   
   var style: HighlightStyle = .light(.google) {
     didSet {
@@ -118,16 +119,19 @@ class SearchModel: ObservableObject {
 
     self.indexFetchCancellable = self.snippetsLocations
       .indexPublisher
-      // As we are updating a local variable, we will have race conditions.
+      // Refresh should happen on main thread, bc this is publishing changes.
       .receive(on: DispatchQueue.main)
       .sink(
       // Handle errors
       receiveCompletion: { _ in },
       receiveValue: { snippets in
-        // TODO Refresh should happen on main thread, bc this is publishing changes.
         self.index = snippets
         self.input = { self.input }()
       })
+    
+    self.indexProgressCancellable = self.snippetsLocations
+      .indexProgressPublisher
+      .sink(receiveValue: { print("Index Progress \($0)") })
   }
 
   func updateWith(text: String) {
