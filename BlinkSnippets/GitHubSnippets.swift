@@ -38,10 +38,12 @@ public class GitHubSnippets: LocalSnippets {
   private let repo: String
   private let location: URL
   private let rootLocation: URL
-
+  
   public struct InvalidSnippet: Error {
     public let message: String
   }
+  
+  public override var isReadOnly: Bool { true }
   
   public init(owner: String, repo: String, cachedAt location: URL) throws {
     self.owner = owner

@@ -118,19 +118,22 @@ public class Snippet: ObservableObject, Hashable, Identifiable {
 public protocol SnippetContentLocation {
   // It may be better to do it through a parameter, because if you update the snippets,
   // you are expecting to refresh the lists.
-//  func listSnippets() throws -> [Snippet]
+  //  func listSnippets() throws -> [Snippet]
   func listSnippets(forceUpdate: Bool) async throws -> [Snippet]
   func saveSnippet(folder: String, name: String, content: String) throws -> Snippet
   func deleteSnippet(folder: String, name: String) throws
   func readContent(folder: String, name: String) throws -> String
   func readDescription(folder: String, name: String) throws -> String
   func snippetLocationURL(folder: String, name: String) -> URL?
+  var isReadOnly: Bool { get }
 //  func updateSnippets()
 }
 
 public class LocalSnippets: SnippetContentLocation {
   let sourcePathURL: URL
 
+  public var isReadOnly: Bool { false }
+  
   public init(from sourcePathURL: URL) {
     self.sourcePathURL = sourcePathURL
   }

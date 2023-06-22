@@ -90,10 +90,14 @@ class SnippetsLocations {
     )
   }
   
-  public func saveSnippet(folder: String, name: String, content: String) throws -> Snippet {
-    let snippet = try self.defaultLocation.saveSnippet(folder: folder, name: name, content: content)
+  public func saveSnippet(at location: SnippetContentLocation, folder: String, name: String, content: String) throws -> Snippet {
+    let snippet = try location.saveSnippet(folder: folder, name: name, content: content)
     refreshIndex()
     return snippet
+  }
+  
+  public func saveSnippet(folder: String, name: String, content: String) throws -> Snippet {
+    return try saveSnippet(at: self.defaultLocation, folder: folder, name: name, content: content)
   }
   
   public func deleteSnippet(snippet: Snippet) throws {
@@ -102,6 +106,15 @@ class SnippetsLocations {
     var index = indexPublisher.value
     index.removeAll(where: { $0 == snippet })
     indexPublisher.send(index)
+  }
+  
+  public func renameSnippet(snippet: Snippet, folder: String, name: String, content: String) throws -> Snippet {
+    // If we cannot write at the location, we store on default
+    let store = snippet.store.isReadOnly ? defaultLocation : snippet.store
+    if !snippet.store.isReadOnly {
+      try self.deleteSnippet(snippet: snippet)
+    }
+    return try self.saveSnippet(at: store, folder: folder, name: name, content: content)
   }
 }
 
