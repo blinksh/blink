@@ -143,7 +143,7 @@ struct QuickActionButtons: View {
       .offset(y: self.visible ? 0 : 10)
       .opacity(self.visible ? 1.0 : 0.0)
       .onAppear {
-        withAnimation {
+        withAnimation(.linear(duration: 0.150)) {
           self.visible = true
         }
       }

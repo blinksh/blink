@@ -90,9 +90,10 @@ class SnippetsLocations {
     )
   }
   
-  public func saveSnippet(folder: String, name: String, content: String) throws {
-    try self.defaultLocation.saveSnippet(folder: folder, name: name, content: content)
+  public func saveSnippet(folder: String, name: String, content: String) throws -> Snippet {
+    let snippet = try self.defaultLocation.saveSnippet(folder: folder, name: name, content: content)
     refreshIndex()
+    return snippet
   }
   
   public func deleteSnippet(snippet: Snippet) throws {

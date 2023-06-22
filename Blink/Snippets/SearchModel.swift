@@ -172,6 +172,7 @@ class SearchModel: ObservableObject {
       sheetCtrl.prefersGrabberVisible = true
       sheetCtrl.prefersEdgeAttachedInCompactHeight = true
       sheetCtrl.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+      
       sheetCtrl.detents = [
         .custom(resolver: { context in
           120
@@ -239,6 +240,33 @@ class SearchModel: ObservableObject {
     self.fuzzyResults.clear()
     self.input = ""
     self.editingSnippet = nil
+  }
+  
+  func renameSnippet(newCategory: String, newName: String, newContent: String) {
+    guard let snippet = self.editingSnippet else {
+      return
+    }
+    try? self.snippetsLocations.deleteSnippet(snippet: snippet)
+    self.index.removeAll { s in
+      s == snippet
+    }
+    self.displayResults = []
+    self.searchResults.clear()
+    self.fuzzyResults.clear()
+    self.input = ""
+    if let newSnippet = try? self.snippetsLocations.saveSnippet(folder: newCategory, name: newName, content: newContent) {
+      self.editingSnippet = newSnippet
+    }
+  }
+  
+  func cleanString(str: String?) -> String {
+    (str ?? "").lowercased()
+      .replacingOccurrences(of: " ", with: "-")
+      .replacingOccurrences(of: "/", with: "-")
+      .replacingOccurrences(of: ".", with: "-")
+      .replacingOccurrences(of: "~", with: "-")
+      .replacingOccurrences(of: "\\", with: "-")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
 }

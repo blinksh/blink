@@ -120,7 +120,7 @@ public protocol SnippetContentLocation {
   // you are expecting to refresh the lists.
 //  func listSnippets() throws -> [Snippet]
   func listSnippets(forceUpdate: Bool) async throws -> [Snippet]
-  func saveSnippet(folder: String, name: String, content: String) throws
+  func saveSnippet(folder: String, name: String, content: String) throws -> Snippet
   func deleteSnippet(folder: String, name: String) throws
   func readContent(folder: String, name: String) throws -> String
   func readDescription(folder: String, name: String) throws -> String
@@ -172,7 +172,7 @@ public class LocalSnippets: SnippetContentLocation {
     self.snippetLocation(folder: folder, name: name)
   }
 
-  public func saveSnippet(folder: String, name: String, content: String) throws {
+  public func saveSnippet(folder: String, name: String, content: String) throws -> Snippet {
     // Write to local file.
     // Other locations may try to write to the remote before, etc...
     let folderURL = self.sourcePathURL.appendingPathComponent("\(folder)")
@@ -182,6 +182,7 @@ public class LocalSnippets: SnippetContentLocation {
     }
 
     try content.write(to: snippetLocation(folder: folder, name: name), atomically: false, encoding: .utf8)
+    return Snippet(name: name, folder: folder, store: self)
   }
 
   public func deleteSnippet(folder: String, name: String) throws {

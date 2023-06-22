@@ -39,7 +39,11 @@ import TreeSitterBashRunestone
 
 class EditorViewController: UIViewController, TextViewDelegate, UINavigationItemRenameDelegate {
   func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
+    let parts = title.split(separator: "/", maxSplits: 1)
+    let category = model.cleanString(str: String(parts[0]))
+    let name = model.cleanString(str:String(parts[1])) + ".sh"
     
+    model.renameSnippet(newCategory: category, newName: name, newContent: self.textView.text)
   }
   
   func navigationItemShouldBeginRenaming(_: UINavigationItem) -> Bool {
@@ -47,11 +51,21 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   }
   
   func navigationItem(_: UINavigationItem, willBeginRenamingWith suggestedTitle: String, selectedRange: Range<String.Index>) -> (String, Range<String.Index>) {
-    return (suggestedTitle, suggestedTitle.range(of: suggestedTitle)!)
+    // preselect name part
+    let parts = suggestedTitle.split(separator: "/", maxSplits: 1)
+    if parts.count == 2 {
+      return (suggestedTitle, suggestedTitle.range(of: String(parts[1]))!)
+    } else {
+      return (suggestedTitle, suggestedTitle.range(of: suggestedTitle)!)
+    }
   }
   
   func navigationItem(_: UINavigationItem, shouldEndRenamingWith title: String) -> Bool {
-    true
+    let str = title.trimmingCharacters(in: .whitespacesAndNewlines)
+    if str.hasPrefix("/") || !str.contains("/") || str.hasSuffix("/") {
+      return false
+    }
+    return true
   }
   
   
@@ -71,7 +85,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     }
 
     if nextTokenRangeIndex < text.endIndex,
-      let range = text[nextTokenRangeIndex...].range(of: #"\$\{([\w@\.-]+)\}"#, options: .regularExpression) {
+      let range = text[nextTokenRangeIndex...].range(of: #"\$\{[^\}]+\}"#, options: .regularExpression) {
       let token = String(text[range])
       let nextTokenRanges = text.ranges(of: token).map { NSRange($0, in: text) }
       self.templateTokenRanges = nextTokenRanges
@@ -111,6 +125,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       return false
     }
 
+    
     // Replace all appearances in templateTokenRanges.
     // Move the templateTokenRanges to accommodate for the introduced text.
     var newTemplateTokenRanges: [NSRange] = []
@@ -206,6 +221,8 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       textView.text = ""
     }
     
+    
+    
     self.navigationItem.rightBarButtonItem =
       UIBarButtonItem(
         title: "Send", style: .done, target: self, action: #selector(send)
@@ -215,6 +232,23 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     self.navigationItem.leftBarButtonItem?.action = #selector(cancel)
     self.navigationItem.style = .editor
     self.navigationItem.renameDelegate = self
+    self.navigationItem.titleMenuProvider = { suggestions in
+      var finalMenuElements = suggestions
+      finalMenuElements.append(
+        UICommand(
+          title: "Delete",
+          image: UIImage(systemName: "trash"),
+          action: #selector(self.deleteSnippet),
+          attributes: .destructive
+        )
+      )
+      return UIMenu(children: finalMenuElements)
+    }
+  }
+  
+  @objc  func deleteSnippet() {
+    model.deleteSnippet()
+    model.closeEditor()
   }
   
   @objc func cancel() {
@@ -239,6 +273,14 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     self.model.closeEditor()
+  }
+  
+  override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    if action == #selector(deleteSnippet) {
+      // TODO: check location
+      return true
+    }
+    return super.canPerformAction(action, withSender: sender)
   }
   
 }
