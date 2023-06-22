@@ -33,10 +33,34 @@ import ZIPFoundation
 
 let GITHUB_API = "https://api.github.com"
 
+struct GitHubFetchData: Codable {
+  let lastRequestDate: Date
+  let etag: String
+
+  static func read(forRepoAt url: URL) throws -> GitHubFetchData? {
+    let requestFile = url.appending(path: ".request")
+    guard FileManager.default.fileExists(atPath: requestFile.path()) else {
+      return nil
+    }
+    let data = try Data(contentsOf: url.appending(path: ".request"))
+    return try JSONDecoder().decode(GitHubFetchData.self, from: data)
+  }
+
+  static func save(forRepoAt url: URL, etag: String) throws {
+    let fetchData = GitHubFetchData(lastRequestDate: Date(), etag: etag)
+    try fetchData.save(forRepoAt: url)
+  }
+  
+  func save(forRepoAt url: URL) throws {
+    let data = try JSONEncoder().encode(self)
+    try data.write(to: url.appending(path: ".request"))
+  }
+}
+
 public class GitHubSnippets: LocalSnippets {
-  private let owner: String
-  private let repo: String
-  private let location: URL
+  let owner: String
+  let repo: String
+  let location: URL
   private let rootLocation: URL
   
   public struct InvalidSnippet: Error {
@@ -60,26 +84,35 @@ public class GitHubSnippets: LocalSnippets {
 
   public override func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
     if forceUpdate {
-      try await update()
-    } else if try await needsUpdate() {
-      try await update()
+      try! await update(previous: nil)
+    } 
+
+    let (needsUpdate, previousFetchData) = try needsUpdate()
+    if needsUpdate {
+      try! await update(previous: previousFetchData)
     }
-    
+
     return try await super.listSnippets(forceUpdate: forceUpdate)
   }
   
-  func needsUpdate() async throws -> Bool {
+  func needsUpdate() throws -> (Bool, GitHubFetchData?) {
     let fm = FileManager.default
     
-    if fm.fileExists(atPath: self.location.path()) {
-      // TODO Check last fetch date and check the commit reference
-      return false
+    if fm.fileExists(atPath: self.location.path()),
+       let fetchData = try GitHubFetchData.read(forRepoAt: self.location) {
+      let elapsed = fetchData.lastRequestDate.distance(to: Date())
+      
+      if elapsed > 3600 * 24 {
+        return (true, fetchData)
+      } else {
+        return (false, nil)
+      }
     } else {
-      return true
+      return (true, nil)
     }
   }
   
-  func update() async throws {
+  func update(previous previousFetchData: GitHubFetchData?) async throws {
     let fm = FileManager.default
     
     // NOTE If we used this format for other parts (ie themes and fonts), we could separate
@@ -87,7 +120,27 @@ public class GitHubSnippets: LocalSnippets {
 
     // Get the repository to a temporary location
     let downloadUrl = URL(string: "\(GITHUB_API)/repos/\(self.owner)/\(self.repo)/zipball")!
-    let (data, _) = try! await URLSession.shared.data(from: downloadUrl)
+    var request = URLRequest(url: downloadUrl)
+    if let etag = previousFetchData?.etag {
+      request.addValue(etag, forHTTPHeaderField: "If-None-Match")
+      request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+    }
+
+    let (data, response): (Data, URLResponse) = try! await URLSession.shared.data(for: request)
+    let httpResponse = response as! HTTPURLResponse
+    
+    guard let etag = httpResponse.allHeaderFields["Etag"] as? String else {
+      throw InvalidSnippet(message: "Missing ETag on GitHub response")
+    }
+    if httpResponse.statusCode == 304 {
+      // Update the fetch
+      try GitHubFetchData.save(forRepoAt: self.location, etag: etag)
+      return
+    } else if httpResponse.statusCode != 200 {
+      throw InvalidSnippet(message: "Request error")
+    }
+
+
     guard let archive = Archive(data: data, accessMode: .read) else {
       throw Archive.ArchiveError.unreadableArchive
     }
@@ -118,6 +171,9 @@ public class GitHubSnippets: LocalSnippets {
     }
     try fm.moveItem(at: tmpRepositoryURL, to: self.location)
     try fm.removeItem(at: tmpDirectoryURL)
+
+    // Save new fetch data
+    try GitHubFetchData.save(forRepoAt: self.location, etag: etag)
   }
 }
 

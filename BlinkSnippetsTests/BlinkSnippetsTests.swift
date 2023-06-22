@@ -191,15 +191,43 @@ final class BlinkSnippetsTests: XCTestCase {
     let location = try FileManager.default.url(for: .cachesDirectory,
                                                in: .userDomainMask,
                                                appropriateFor: nil,
-                                               create: false).appending(path: "test")
-
-    let gh = GitHubSnippets(owner: "blinksh", repo: "build-hacker-tools", cachedAt: location)
-    //let snippets = try await gh.listSnippets(forceUpdate: true)
-    try await gh.refresh()
+                                               create: true)
+    let githubLocation = location.appending(path: "com.github")
+    if FileManager.default.fileExists(atPath: githubLocation.path()) {
+      try FileManager.default.removeItem(at: githubLocation)
+    }
+    let gh = try GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: location)
+//    try await gh.update(previous: nil)
+//
+//    print(try FileManager.default.contentsOfDirectory(at: location, includingPropertiesForKeys: nil))
+//    XCTAssertTrue(FileManager.default.fileExists(atPath: location.appending(path: "com.github/blinksh-snippets").path()))
     
-    print(try FileManager.default.contentsOfDirectory(at: location, includingPropertiesForKeys: nil))
-    var isDirectory: ObjCBool = true
-    XCTAssertTrue(FileManager.default.fileExists(atPath: location.appending(path: "blinksh-build-hacker-tools").path(), isDirectory: &isDirectory))
+    // First refresh
+    var snippets = try await gh.listSnippets()
+    XCTAssertTrue(snippets.count > 0)
+    var previousFetchData = try GitHubFetchData.read(forRepoAt: gh.location)!
+
+    // Change timestamp and try again (new timestamp but same ETAG)
+    let twoDaysBeforeFetch = GitHubFetchData(lastRequestDate: Date(timeIntervalSinceNow: (-3600 * 24) - 10), etag: previousFetchData.etag)
+    try twoDaysBeforeFetch.save(forRepoAt: gh.location)
+    snippets = try await gh.listSnippets()
+    XCTAssertTrue(snippets.count > 0)
+    previousFetchData = try GitHubFetchData.read(forRepoAt: gh.location)!
+    XCTAssertFalse(previousFetchData.lastRequestDate == twoDaysBeforeFetch.lastRequestDate)
+    XCTAssertTrue(previousFetchData.etag == twoDaysBeforeFetch.etag)
+    
+    // Change timestamp and ETAG. New download.
+    let differentEtagFetch = GitHubFetchData(lastRequestDate: Date(timeIntervalSinceNow: (-3600 * 24) - 10), etag: "XXX")
+    snippets = try await gh.listSnippets()
+    XCTAssert(snippets.count > 0)
+    previousFetchData = try GitHubFetchData.read(forRepoAt: gh.location)!
+    XCTAssertTrue(differentEtagFetch.etag != previousFetchData.etag)
+    let lastRequestDate = previousFetchData.lastRequestDate
+    
+    // Force update
+    snippets = try await gh.listSnippets(forceUpdate: true)
+    previousFetchData = try GitHubFetchData.read(forRepoAt: gh.location)!
+    XCTAssertTrue(lastRequestDate != previousFetchData.lastRequestDate)
   }
     // func testGitHubLocation() throws {
       // // Setup a GitHub snippet location.
