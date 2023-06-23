@@ -33,7 +33,11 @@
 import MBProgressHUD
 import SwiftUI
 
-class SpaceController: UIViewController {
+class SpaceController: UIViewController, UIContextMenuInteractionDelegate {
+  func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+    return UIContextMenuConfiguration()
+  }
+  
   
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
@@ -62,7 +66,7 @@ class SpaceController: UIViewController {
   
   private var _kbTrackerView = UIView()
   private var _snippetsVC: SnippetsViewController? = nil
-  private var _quickActionsVC: QuickActionsViewController? = nil
+  private var _quickActionsButton: UIButton? = nil
   
   public var trackingKBFrame: CGRect? {
     self.view.window?.screen.coordinateSpace.convert(_kbTrackerView.frame, from: self.view.coordinateSpace)
@@ -90,15 +94,12 @@ class SpaceController: UIViewController {
     
     _snippetsVC?.view.frame = _overlay.frame;
     
-    if let vc = _quickActionsVC {
-      vc.view.frame = CGRect(
-        x: _overlay.frame.minX,
-        y: _overlay.frame.maxY - 60,
-        width: _overlay.frame.maxX,
-        height: 60
-      )
-      
-      self.view.bringSubviewToFront(vc.view)
+    if let btn = _quickActionsButton {
+      if KBTracker.shared.isHardwareKB {
+        btn.frame = CGRect(x: _overlay.frame.midX - 5.0, y: _overlay.frame.maxY, width: 10.0, height: 10.0)
+      } else {
+        btn.frame = CGRect(x: _overlay.frame.maxX - 10.0, y: _overlay.frame.maxY, width: 10.0, height: 10.0)
+      }
     }
     
     
@@ -217,6 +218,10 @@ class SpaceController: UIViewController {
     _kbTrackerView.heightAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.heightAnchor).isActive = true;
     _kbTrackerView.bottomAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.bottomAnchor).isActive = true;
     self.view.keyboardLayoutGuide.followsUndockedKeyboard = true;
+    let btn = UIButton(frame: CGRect(x: 0, y: 0, width: 10, height: 10))
+    btn.showsMenuAsPrimaryAction = true
+    view.addSubview(btn)
+    _quickActionsButton = btn
 //    _kbTrackerView.backgroundColor = UIColor.yellow
 //    view.addSubview(_faceCam)
 //    addChild(_faceCam.controller)
@@ -936,21 +941,17 @@ extension SpaceController {
   }
   
   @objc func toggleQuickActionsAction() {
-    if let vc = _quickActionsVC {
-      _quickActionsVC = nil
-      vc.willMove(toParent: nil)
-      vc.view.removeFromSuperview()
-      vc.removeFromParent()
-      vc.didMove(toParent: nil)
-    } else {
-      let vc = QuickActionsViewController()
-      _quickActionsVC = vc
-      vc.willMove(toParent: self)
-      addChild(vc)
-      self.view.addSubview(vc.view)
-      vc.didMove(toParent: self)
-      vc.delegate = self
+    
+    _quickActionsButton?.menu = quickActionsMenu
+
+    DispatchQueue.main.async {
+      let selector = NSSelectorFromString("_presentMenuAtLocation:")
+//          [UIView setAnimationsEnabled:NO];
+      UIView.setAnimationsEnabled(false)
+      self._quickActionsButton?.contextMenuInteraction?.perform(selector, with: CGPoint.zero)
+      UIView.setAnimationsEnabled(true)
     }
+    
   }
   
   @objc func showWhatsNewAction() {
@@ -1073,6 +1074,77 @@ extension SpaceController {
     _moveToShell(idx: by > 0 ? 0 : _viewportsKeys.count - 1, animated: animated)
   }
   
+  var quickActionsMenu: UIMenu {
+    let multipleScenesSuppported =  UIApplication.shared.supportsMultipleScenes
+    let hasCorners = DeviceInfo.shared().hasCorners
+    let layoutLocked = self.currentTerm()?.sessionParams.layoutLocked == true
+    
+    var tabActions = Array<UIMenuElement>()
+    if multipleScenesSuppported {
+      tabActions.append(
+        UIMenu(options: .displayInline, children: [UIAction(title: "New Window", image: UIImage(systemName: "rectangle.badge.plus"), handler: { action in
+          self._newWindowAction()
+        })])
+      )
+    }
+    tabActions.append(UIAction(title: "New Tab", image: UIImage(systemName: "plus.rectangle"), handler: { action in
+      self.newShellAction()
+    }))
+    tabActions.append(UIAction(title: "Close Tab", image: UIImage(systemName: "xmark.rectangle"), attributes: .keepsMenuPresented, handler: { action in
+      self.closeShellAction()
+    }))
+    if multipleScenesSuppported {
+      tabActions.append(
+        UIMenu(title: "Move Tab to Window", image: UIImage(systemName: "arrow.up.forward.app"), children: [
+          UIAction(title: "TODO Win 1", handler: { action in
+          }),
+          UIAction(title: "TODO Win 2", handler: { action in
+          })
+        ])
+      )
+    }
+    
+    var layoutActions = Array<UIMenuElement>()
+    
+    if hasCorners {
+      let mode = BKLayoutMode(rawValue: self.currentTerm()?.sessionParams.layoutMode ?? 0)
+      
+      let fit = UIAction(title:"Fit", state: mode == .safeFit ? .on : .off) { action in
+        self.currentTerm()?.setLayoutMode(layoutMode: BKLayoutMode.safeFit)
+      }
+      let fill = UIAction(title:"Fill", state: mode == .fill ? .on : .off) { action in
+        self.currentTerm()?.setLayoutMode(layoutMode: BKLayoutMode.fill)
+      }
+      let cover = UIAction(title:"Cover", state: mode == .cover ? .on : .off) { action in
+        self.currentTerm()?.setLayoutMode(layoutMode: BKLayoutMode.cover)
+      }
+      
+      layoutActions.append(UIMenu(title: "mode", options: .displayInline, children: [fit, fill, cover]))
+    }
+    
+    if layoutLocked {
+      layoutActions.append(UIAction(title: "Unlock", image: UIImage(systemName: "lock.slash"), handler: {
+        action in
+        self.currentTerm()?.unlockLayout()
+      }))
+    } else {
+      layoutActions.append(UIAction(title: "Lock", image: UIImage(systemName: "lock"), handler: {
+        action in
+        self.currentTerm()?.lockLayout()
+      }))
+    }
+  
+    var elements = Array<UIMenuElement>();
+    elements.append(UIAction(title: "Snippets", image: UIImage(systemName: "chevron.backward.square"), handler: { action in
+      self.presentSnippetsController()
+    }))
+    elements.append(UIMenu(options: .displayInline, children: tabActions))
+    elements.append(UIMenu(title:"Layout", image: UIImage(systemName: "squareshape.squareshape.dashed"), children: layoutActions))
+    
+    let menu = UIMenu(children:elements)
+    return menu
+  }
+  
 }
 
 extension SpaceController: CommandsHUDViewDelegate {
@@ -1112,4 +1184,14 @@ extension SpaceController: SnippetContext {
     self.focusOnShellAction()
     return self.currentDevice
   }
+}
+
+
+extension SpaceController: UIEditMenuInteractionDelegate {
+  
+}
+
+@objc protocol CommandsHUDViewDelegate: NSObjectProtocol {
+  func currentTerm() -> TermController?
+  func spaceController() -> SpaceController?
 }
