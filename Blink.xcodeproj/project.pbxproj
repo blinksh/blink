@@ -211,7 +211,6 @@
 		D218069C25CC27C100B98902 /* AppKitBridge.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = D218068725CC277900B98902 /* AppKitBridge.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
 		D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
-		D218074C25CD4B3D00B98902 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
 		D21A3FD721943BE200269705 /* dark-settings-ipad-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC621943BE200269705 /* dark-settings-ipad-29pt.png */; };
 		D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC721943BE200269705 /* dark-notification-ipad-20pt.png */; };
@@ -235,7 +234,6 @@
 		D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */; };
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
 		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
-		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D22277D62A26115300D4C708 /* BlinkSnippets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */; };
 		D22277DD2A26115300D4C708 /* BlinkSnippetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277DC2A26115300D4C708 /* BlinkSnippetsTests.swift */; };
 		D22277DE2A26115300D4C708 /* BlinkSnippets.h in Headers */ = {isa = PBXBuildFile; fileRef = D22277D02A26115300D4C708 /* BlinkSnippets.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -415,6 +413,8 @@
 		D2C244332390FB830082C69C /* KeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244322390FB830082C69C /* KeyBinding.swift */; };
 		D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244342390FEEF0082C69C /* KeyBindingAction.swift */; };
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
+		D2C3AB792A498CEB003A1BFA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
+		D2C3AB7A2A498CEB003A1BFA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
@@ -860,7 +860,6 @@
 		BD9EA20A271F62ED00874007 /* BlinkLogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkLogging.swift; sourceTree = "<group>"; };
 		BD9EA20C271F664D00874007 /* Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publisher.swift; sourceTree = "<group>"; };
 		BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkLoggingTests.swift; sourceTree = "<group>"; };
-		BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/iOSSupport/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		BDB72CB127A9C08500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BDB8BEA726E008190093BF48 /* OwnAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnAlertController.swift; sourceTree = "<group>"; };
 		BDBFA3052728914F00C77798 /* BlinkCode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkCode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -928,7 +927,6 @@
 		D218068925CC277900B98902 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D218069325CC27AC00B98902 /* AppBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppBridge.h; sourceTree = "<group>"; };
 		D218069425CC27AC00B98902 /* AppBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppBridge.m; sourceTree = "<group>"; };
-		D218074525CD4B0E00B98902 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
 		D21A3FC621943BE200269705 /* dark-settings-ipad-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-settings-ipad-29pt.png"; sourceTree = "<group>"; };
 		D21A3FC721943BE200269705 /* dark-notification-ipad-20pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-notification-ipad-20pt.png"; sourceTree = "<group>"; };
 		D21A3FC821943BE200269705 /* dark-settings-iphone-29pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-settings-iphone-29pt@3x.png"; sourceTree = "<group>"; };
@@ -1169,7 +1167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */,
-				D218074C25CD4B3D00B98902 /* libz.tbd in Frameworks */,
+				D2C3AB792A498CEB003A1BFA /* libz.tbd in Frameworks */,
 				07FABC4825C9B08100E1CC2C /* BlinkFiles.framework in Frameworks */,
 				BD896F8926CFDB17004313E6 /* Atomics in Frameworks */,
 				BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */,
@@ -1182,9 +1180,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */,
-				D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */,
 				07FDDC5625C9B28200A40529 /* LibSSH.xcframework in Frameworks */,
 				07FABB8D25C9AEC100E1CC2C /* SSH.framework in Frameworks */,
+				D2C3AB7A2A498CEB003A1BFA /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1425,8 +1423,6 @@
 			children = (
 				D2771510287F0EA200D31F4E /* libbuild_cli.a */,
 				BDB72CB127A9C08500DCC446 /* StoreKit.framework */,
-				BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */,
-				D218074525CD4B0E00B98902 /* libz.tbd */,
 				D248EC542689EAD7009FD817 /* SSHConfig */,
 				D2334ECF25C1C04700385378 /* awk.xcframework */,
 				D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */,
