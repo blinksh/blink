@@ -113,7 +113,6 @@
 		BD8152542743FF84002BB169 /* skstore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8152532743FF84002BB169 /* skstore.swift */; };
 		BD835DD427A0BD19002C37D7 /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
-		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
 		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
 		BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFF426001B020084705F /* AgentConstraints.swift */; };
@@ -1169,7 +1168,6 @@
 				D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2C3AB792A498CEB003A1BFA /* libz.tbd in Frameworks */,
 				07FABC4825C9B08100E1CC2C /* BlinkFiles.framework in Frameworks */,
-				BD896F8926CFDB17004313E6 /* Atomics in Frameworks */,
 				BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */,
 				D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */,
 			);
@@ -2376,7 +2374,6 @@
 			);
 			name = SSH;
 			packageProductDependencies = (
-				BD896F8826CFDB17004313E6 /* Atomics */,
 			);
 			productName = SSH;
 			productReference = 07FABB8425C9AEC000E1CC2C /* SSH.framework */;
@@ -2783,7 +2780,6 @@
 			);
 			mainGroup = EA0BA1821C0CC57B00719C1A;
 			packageReferences = (
-				BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */,
 				D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				BD7AFC3F28E8E98C004BCDA4 /* XCRemoteSwiftPackageReference "Base32Kit" */,
@@ -5089,14 +5085,6 @@
 				minimumVersion = 0.2.0;
 			};
 		};
-		BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-atomics.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.3;
-			};
-		};
 		D22278032A2620B500D4C708 /* XCRemoteSwiftPackageReference "HighlightSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/yury/HighlightSwift.git";
@@ -5171,11 +5159,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BD7AFC3F28E8E98C004BCDA4 /* XCRemoteSwiftPackageReference "Base32Kit" */;
 			productName = Base32Kit;
-		};
-		BD896F8826CFDB17004313E6 /* Atomics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */;
-			productName = Atomics;
 		};
 		BDCB7193268E175A007D7047 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
