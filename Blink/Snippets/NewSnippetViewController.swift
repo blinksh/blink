@@ -74,6 +74,8 @@ class FormView: UIView {
     separator1View.backgroundColor = .separator
     separator2View.backgroundColor = .separator
     
+    self.addGestureRecognizer(UITapGestureRecognizer())
+    
   }
   
   required init?(coder: NSCoder) {
