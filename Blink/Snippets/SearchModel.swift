@@ -155,6 +155,33 @@ class SearchModel: ObservableObject {
 //    }
 
   }
+  
+  func insertRawSnippet() {
+    guard let snippet = currentSelection
+    else {
+      return
+    }
+    do {
+      let content = try snippet.content
+      sendContentToReceiver(content: content)
+    } catch {
+      // show error
+    }
+  }
+  
+  func copyRawSnippet() {
+    guard let snippet = currentSelection
+    else {
+      return
+    }
+    do {
+      let content = try snippet.content
+      UIPasteboard.general.string = content
+      self.close()
+    } catch {
+      // show error
+    }
+  }
 
   func editSelectionOrCreate() {
     guard let snippet = currentSelection

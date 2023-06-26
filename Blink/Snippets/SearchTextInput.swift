@@ -95,10 +95,18 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
       input: "\n", modifierFlags: [],
       action: #selector(SearchTextInput.enterEditCreateMode)
     )
+    let cmdEnter = UIKeyCommand(
+      input: "\r", modifierFlags: .command,
+      action: #selector(SearchTextInput.insertRawSnippet)
+    )
+    let cmdShiftC = UIKeyCommand(
+      input: "c", modifierFlags: [.command, .shift],
+      action: #selector(SearchTextInput.copyRawSnippet)
+    )
     
     self._keyCommands = [
       escape, ctrlN, ctrlJ, ctrlP, ctrlK, ctrlUp, ctrlDown, up, down, tab, shiftTab,
-      enter, enter2
+      enter, enter2, cmdEnter, cmdShiftC
     ]
     
     super.init(frame: frame)
@@ -166,6 +174,14 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
   
   @objc func enterEditCreateMode() {
     model.editSelectionOrCreate()
+  }
+  
+  @objc func insertRawSnippet() {
+    model.insertRawSnippet()
+  }
+  
+  @objc func copyRawSnippet() {
+    model.copyRawSnippet()
   }
   
   @objc func close() {
