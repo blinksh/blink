@@ -64,7 +64,7 @@ public struct SnippetsListView: View {
               }
             }
             .scaleEffect(CGSize(width: 1.0, height: -1.0), anchor: .center)
-            .padding([.top], 10)
+            .padding([.top], 6)
             ScrollViewReader { value in
               ScrollView {
                 ForEach(displayResults) { snippet in
@@ -99,14 +99,9 @@ public struct SnippetsListView: View {
           }
         }
       }
-      .padding([.leading, .trailing], 8)
-      .onChange(of: self.colorScheme) { newValue in
-        if newValue == .dark {
-          self.model.style = .dark(.google)
-        } else  {
-          self.model.style = .light(.google)
-        }
-      }
+      .padding([.leading, .trailing], 6)
+      .onAppear() { self.model.switchStyle(for: self.colorScheme) }
+      .onChange(of: self.colorScheme) { self.model.switchStyle(for: $0) }
   }
 }
 

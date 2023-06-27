@@ -47,26 +47,27 @@ public struct SnippetView: View {
     } label: {
       VStack(alignment: .leading) {
         HStack {
-          Text(index).font(.body).monospaced().fontWidth(.condensed).bold(fuzzyMode)
+          Text(index).font(Font(BlinkFonts.snippetEditContent)).bold(fuzzyMode)
             .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
           if selected {
             Spacer()
             Text(Image(systemName: "return")).opacity(0.5)
           }
         }
-        Text(content).font(.body).monospaced().fontWidth(.condensed)
+        Text(content).font(Font(BlinkFonts.snippetEditContent))
           .frame(maxWidth: .infinity, alignment: .leading)
       }
       .textSelection(.enabled)
       .padding(.all, 6)
+      .padding(.leading, 12)
       .background(
-        .ultraThinMaterial,
-        in: RoundedRectangle(cornerRadius: 4, style: .continuous)
+        selected ? .ultraThickMaterial : .ultraThinMaterial,
+        in: ContainerRelativeShape()
       )
-      .overlay {
+      .overlay(alignment: .leading) {
         if selected {
-          RoundedRectangle(cornerRadius: 4, style: .continuous)
-            .stroke(lineWidth: 1).foregroundColor(Color(uiColor: UIColor.blinkTint.withAlphaComponent(0.5)))
+          ContainerRelativeShape()
+            .stroke(lineWidth: 2).foregroundColor(Color(uiColor: UIColor.blinkTint))
         }
       }
     }.buttonStyle(SnippetButtonStyle())

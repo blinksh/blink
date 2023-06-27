@@ -45,8 +45,8 @@ struct SwiftUISnippetsView: View {
           SnippetsListView(model: model)
             .frame(maxWidth: 560)
             .background(
-              .ultraThinMaterial,
-              in: RoundedRectangle(cornerRadius: 9, style: .continuous)
+              .regularMaterial,
+              in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .shadow(color: .secondary, radius: 0.5, x: 0, y: 0)
         }.padding()

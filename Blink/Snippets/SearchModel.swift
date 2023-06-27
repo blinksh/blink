@@ -42,8 +42,8 @@ class SearchModel: ObservableObject {
   
   @Published var isOn = false
   
-  var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.google))
-  var searchResults = SearchAccumulator(query: "", style: .light(.google))
+  var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.xcode))
+  var searchResults = SearchAccumulator(query: "", style: .light(.xcode))
   var fuzzyCancelable: AnyCancellable? = nil
   var searchCancelable: AnyCancellable? = nil
 
@@ -75,12 +75,20 @@ class SearchModel: ObservableObject {
   var indexFetchCancellable: Cancellable? = nil
   var indexProgressCancellable: Cancellable? = nil
   
-  var style: HighlightStyle = .light(.google) {
+  var style: HighlightStyle = .light(.xcode) {
     didSet {
       searchResults.style = style
       fuzzyResults.style = style
       // new array to trigger repaint
       self.displayResults = Array(self.displayResults)
+    }
+  }
+
+  func switchStyle(for scheme: ColorScheme) {
+    if scheme == .dark {
+      self.style = .dark(.xcode)
+    } else {
+      self.style = .light(.xcode)
     }
   }
 
