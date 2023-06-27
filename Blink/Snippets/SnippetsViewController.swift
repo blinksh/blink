@@ -42,14 +42,6 @@ struct SwiftUISnippetsView: View {
         Spacer()
         VStack {
           Spacer()
-          if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
-            HStack {
-              Spacer()
-              Button("Create Snippet") {
-                model.openNewSnippet()
-              }
-            }.frame(maxWidth: 550)
-          }
           SnippetsListView(model: model)
             .frame(maxWidth: 560)
             .background(

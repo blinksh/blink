@@ -87,12 +87,17 @@ public struct SnippetsListView: View {
             }
           }
         }
-        SearchView(model: model)
-          .frame(maxHeight:44)
-          .padding([.top, .bottom], 3)
-          .onAppear {
-            model.focusOnInput()
+        HStack {
+          SearchView(model: model)
+            .frame(maxHeight:44)
+            .padding([.top, .bottom], 3)
+            .onAppear {
+              model.focusOnInput()
+            }
+          if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
+            CreateOrRefreshTipView(model: model)
           }
+        }
       }
       .padding([.leading, .trailing], 8)
       .onChange(of: self.colorScheme) { newValue in
@@ -102,5 +107,24 @@ public struct SnippetsListView: View {
           self.model.style = .light(.google)
         }
       }
+  }
+}
+
+struct CreateOrRefreshTipView : View {
+  @ObservedObject var model: SearchModel
+
+  public var body: some View {
+    switch model.indexProgress {
+    case .none:
+      Button("Create") { model.openNewSnippet() }
+      Text(Image(systemName: "return")).opacity(0.5)
+      Text("or").opacity(0.5)
+      Button("Refresh") { model.refreshIndex() }
+    case .started:
+      ProgressView()
+    case .completed(let errors):
+      Button("Create") { model.openNewSnippet() }
+      Text(Image(systemName: "return")).opacity(0.5)
+    }
   }
 }

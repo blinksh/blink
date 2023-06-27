@@ -67,6 +67,7 @@ class SearchModel: ObservableObject {
   @Published var editingSnippet: Snippet? = nil
   @Published var editingMode: TextViewEditingMode = .template
   @Published var newSnippetPresented = false
+  @Published var indexProgress: SnippetsLocations.RefreshProgress = .none
 
   let snippetsLocations = SnippetsLocations()
   // Stored Index snapshot to search.
@@ -116,7 +117,7 @@ class SearchModel: ObservableObject {
   init() {
     self.mode = .general
     self.input = ""
-
+    
     self.indexFetchCancellable = self.snippetsLocations
       .indexPublisher
       // Refresh should happen on main thread, bc this is publishing changes.
@@ -131,7 +132,7 @@ class SearchModel: ObservableObject {
     
     self.indexProgressCancellable = self.snippetsLocations
       .indexProgressPublisher
-      .sink(receiveValue: { print("Index Progress \($0)") })
+      .assign(to: \.indexProgress, on: self)
   }
 
   func updateWith(text: String) {
@@ -297,6 +298,9 @@ class SearchModel: ObservableObject {
       .trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
+  func refreshIndex() {
+    self.snippetsLocations.refreshIndex(forceUpdate: true)
+  }
 }
 
 public protocol SnippetReceiver {
