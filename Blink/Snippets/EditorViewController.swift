@@ -71,6 +71,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   
   func textViewDidBeginEditing(_ textView: TextView) {
     if model.editingMode == .template {
+      self.textView.returnKeyType = .next
       self.setNextTemplateTokenRanges(textView: textView)
     }
   }
@@ -100,6 +101,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   func didCompleteTemplates(_ textView: TextView) {
     textView.highlightedRanges = []
     model.editingMode = .code
+    textView.returnKeyType = .default
   }
 
   func textViewDidChangeSelection(_ textView: TextView) {
