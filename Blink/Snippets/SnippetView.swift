@@ -46,8 +46,14 @@ public struct SnippetView: View {
       self.model.onSnippetTap(snippet)
     } label: {
       VStack(alignment: .leading) {
-        Text(index).font(.body).monospaced().fontWidth(.condensed).bold(fuzzyMode)
-          .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
+        HStack {
+          Text(index).font(.body).monospaced().fontWidth(.condensed).bold(fuzzyMode)
+            .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
+          if selected {
+            Spacer()
+            Text(Image(systemName: "return")).opacity(0.5)
+          }
+        }
         Text(content).font(.body).monospaced().fontWidth(.condensed)
           .frame(maxWidth: .infinity, alignment: .leading)
       }
