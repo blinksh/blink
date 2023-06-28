@@ -127,7 +127,8 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
     self.leftView = label
     self.leftViewMode = .always
     
-//    self.placeholder = "FuzzySearch[space]Content Search"
+//    self.placeholder = "Type SnipName␣Content Search"
+//    self.placeholder = "[FuzzySnipName]␣<Snip Content Search>"
 //    self.textContentType = .password
 //    self.isSecureTextEntry = true
     

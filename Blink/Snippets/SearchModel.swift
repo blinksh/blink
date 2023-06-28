@@ -51,6 +51,10 @@ class SearchModel: ObservableObject {
   
   public var snippetContext: (any SnippetContext)? = nil
   
+  var isFuzzyMode: Bool {
+    self.searchResults.query.isEmpty
+  }
+  
   @Published var displayResults = [Snippet]() {
     didSet {
       if displayResults.isEmpty {

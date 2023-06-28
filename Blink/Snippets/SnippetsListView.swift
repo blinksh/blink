@@ -39,7 +39,7 @@ public struct SnippetsListView: View {
   
   @ViewBuilder
   func snippetView(for snippet: Snippet, selected: Bool) -> some View {
-    let fuzzyMode = model.searchResults.query.isEmpty
+    let fuzzyMode = model.isFuzzyMode
     let index = model.fuzzyResults.matchesMap[snippet]!
     let content = model.searchResults.contentMap[snippet] ?? model.fuzzyResults.contentMap[snippet]!
     SnippetView(
@@ -85,6 +85,9 @@ public struct SnippetsListView: View {
             .rotationEffect(Angle(degrees: 180))
             .scaleEffect(CGSize(width: -1.0, height: 1), anchor: .center)
           }
+        }
+        if model.isFuzzyMode {
+          Text("Type \(Image(systemName: "space")) to search the content").font(.footnote).foregroundStyle(Color.secondary)
         }
       }
       HStack {
