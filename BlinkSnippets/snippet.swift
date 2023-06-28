@@ -126,6 +126,7 @@ public protocol SnippetContentLocation {
   func readDescription(folder: String, name: String) throws -> String
   func snippetLocationURL(folder: String, name: String) -> URL?
   var isReadOnly: Bool { get }
+  var description: String { get }
 //  func updateSnippets()
 }
 
@@ -133,6 +134,7 @@ public class LocalSnippets: SnippetContentLocation {
   let sourcePathURL: URL
 
   public var isReadOnly: Bool { false }
+  public var description: String { "local/" + self.sourcePathURL.lastPathComponent }
   
   public init(from sourcePathURL: URL) {
     self.sourcePathURL = sourcePathURL

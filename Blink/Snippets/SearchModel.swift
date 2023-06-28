@@ -140,6 +140,7 @@ class SearchModel: ObservableObject {
     
     self.indexProgressCancellable = self.snippetsLocations
       .indexProgressPublisher
+      .receive(on: DispatchQueue.main)
       .assign(to: \.indexProgress, on: self)
   }
 

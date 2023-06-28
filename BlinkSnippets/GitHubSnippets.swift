@@ -68,7 +68,8 @@ public class GitHubSnippets: LocalSnippets {
   }
   
   public override var isReadOnly: Bool { true }
-  
+  public override var description: String { "com.github/\(self.owner)/\(self.repo)" }
+
   public init(owner: String, repo: String, cachedAt location: URL) throws {
     self.owner = owner
     self.repo = repo
@@ -84,12 +85,12 @@ public class GitHubSnippets: LocalSnippets {
 
   public override func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
     if forceUpdate {
-      try! await update(previous: nil)
+      try await update(previous: nil)
     } 
 
     let (needsUpdate, previousFetchData) = try needsUpdate()
     if needsUpdate {
-      try! await update(previous: previousFetchData)
+      try await update(previous: previousFetchData)
     }
 
     return try await super.listSnippets(forceUpdate: forceUpdate)
@@ -126,7 +127,7 @@ public class GitHubSnippets: LocalSnippets {
       request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
     }
 
-    let (data, response): (Data, URLResponse) = try! await URLSession.shared.data(for: request)
+    let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request)
     let httpResponse = response as! HTTPURLResponse
     
     guard let etag = httpResponse.allHeaderFields["Etag"] as? String else {

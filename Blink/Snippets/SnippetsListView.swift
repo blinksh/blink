@@ -95,7 +95,7 @@ public struct SnippetsListView: View {
               model.focusOnInput()
             }
           if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
-            CreateOrRefreshTipView(model: model)
+            CreateOrRefreshTipView(model: model).padding([.leading, .trailing])
           }
         }
       }
@@ -107,19 +107,43 @@ public struct SnippetsListView: View {
 
 struct CreateOrRefreshTipView : View {
   @ObservedObject var model: SearchModel
-
+  @State private var showErrorsPopover = false
+  
   public var body: some View {
-    switch model.indexProgress {
-    case .none:
-      Button("Create") { model.openNewSnippet() }
-      Text(Image(systemName: "return")).opacity(0.5)
-      Text("or").opacity(0.5)
-      Button("Refresh") { model.refreshIndex() }
-    case .started:
-      ProgressView()
-    case .completed(let errors):
-      Button("Create") { model.openNewSnippet() }
-      Text(Image(systemName: "return")).opacity(0.5)
+    HStack {
+      if case .started = model.indexProgress {
+        ProgressView()
+      } else {
+        Button("Create") { model.openNewSnippet() }
+        Text(Image(systemName: "return")).opacity(0.5)
+        Text("or").opacity(0.5)
+        Button("Refresh") { model.refreshIndex() }
+        if case .completed(let errors) = model.indexProgress {
+          if let errors = errors {
+            Button(action: {
+              showErrorsPopover = true
+            }) {
+              Image(systemName: "circle.fill")
+            }
+            .tint(.red.opacity(0.9))
+            .popover(isPresented: $showErrorsPopover) {
+              TabView {
+                ForEach(errors) { error in
+                    ScrollView {
+                      VStack {
+                        Text(error.id).monospaced().bold().font(.caption).padding(.bottom)
+                        Text(error.localizedDescription).font(.caption2)
+                      }
+                    }
+                  }
+              }
+              .tabViewStyle(.page(indexDisplayMode: .always))
+              .frame(minWidth: 150, minHeight: 100)
+              .padding(.all)
+            }
+          }
+        }
+      }
     }
   }
 }

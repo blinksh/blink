@@ -49,7 +49,7 @@ class SnippetsLocations {
   enum RefreshProgress {
     case none
     case started
-    case completed([Error]?)
+    case completed([LocationError]?)
   }
   // The main interface with the SearchModel. Provides the index whenever it has changed in any way.
   // TODO Problem is it does not communicate errors very well.
@@ -84,7 +84,7 @@ class SnippetsLocations {
   public func refreshIndex(forceUpdate: Bool = false) {
     indexProgressPublisher.send(.started)
 
-    var errors: [Error] = []
+    var errors: [LocationError] = []
     let listSnippets: AnyPublisher<[[Snippet]], Never> =
       Publishers.MergeMany(locations.map { loc in
         Deferred {
@@ -92,7 +92,7 @@ class SnippetsLocations {
             do {
               return try await loc.listSnippets(forceUpdate: forceUpdate)
             } catch {
-              errors.append(error)
+              errors.append(LocationError(id: loc.description, error: error))
               return []
             }
           }
@@ -151,4 +151,10 @@ extension Future where Failure == Error {
             }
         }
     }
+}
+
+struct LocationError: Error, Identifiable {
+  var id: String
+  let error: Error
+  var localizedDescription: String { error.localizedDescription }
 }
