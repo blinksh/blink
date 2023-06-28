@@ -53,6 +53,12 @@ struct SwiftUISnippetsView: View {
         Spacer()
       }
     }
+    .contentShape(Rectangle())
+    .gesture(TapGesture().onEnded {
+      if model.editingSnippet == nil && model.newSnippetPresented == false {
+        model.close()
+      }
+    })
       .ignoresSafeArea(.all)
   }
 }
@@ -63,15 +69,6 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.backgroundColor = .clear
-    
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(backgroundTap))
-    self.view.addGestureRecognizer(tapRecognizer)
-  }
-  
-  @objc func backgroundTap() {
-    if model.editingSnippet == nil && model.newSnippetPresented == false {
-      model.close()
-    }
   }
   
   public static func create(context: (any SnippetContext)?) -> SnippetsViewController {
@@ -89,6 +86,5 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
     super.viewDidAppear(animated)
     self.model.inputView?.becomeFirstResponder()
   }
-  
-  
 }
+

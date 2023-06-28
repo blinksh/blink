@@ -36,7 +36,7 @@ import BlinkSnippets
 public struct SnippetsListView: View {
   @ObservedObject var model: SearchModel
   @Environment(\.colorScheme) var colorScheme
- 
+  
   @ViewBuilder
   func snippetView(for snippet: Snippet, selected: Bool) -> some View {
     let fuzzyMode = model.searchResults.query.isEmpty
@@ -49,59 +49,59 @@ public struct SnippetsListView: View {
   
   @ViewBuilder
   public var body: some View {
-      VStack {
-        let displayResults = model.displayResults
-        if displayResults.isEmpty {
-          
-        } else {
-          let selectedIndex = self.model.selectedSnippetIdx!
-          ViewThatFits(in: .vertical) {
-            VStack() {
+    VStack {
+      let displayResults = model.displayResults
+      if displayResults.isEmpty {
+        
+      } else {
+        let selectedIndex = self.model.selectedSnippetIdx!
+        ViewThatFits(in: .vertical) {
+          VStack() {
+            ForEach(displayResults) { snippet in
+              let selected = displayResults[selectedIndex] == snippet
+              snippetView(for: snippet, selected: selected)
+                .scaleEffect(CGSize(width: 1.0, height: -1.0), anchor: .center)
+            }
+          }
+          .scaleEffect(CGSize(width: 1.0, height: -1.0), anchor: .center)
+          .padding([.top], 6)
+          ScrollViewReader { value in
+            ScrollView {
               ForEach(displayResults) { snippet in
                 let selected = displayResults[selectedIndex] == snippet
                 snippetView(for: snippet, selected: selected)
-                  .scaleEffect(CGSize(width: 1.0, height: -1.0), anchor: .center)
+                  .rotationEffect(Angle(degrees: 180))
+                  .scaleEffect(CGSize(width: -1.0, height: 1), anchor: .center)
               }
             }
-            .scaleEffect(CGSize(width: 1.0, height: -1.0), anchor: .center)
-            .padding([.top], 6)
-            ScrollViewReader { value in
-              ScrollView {
-                ForEach(displayResults) { snippet in
-                  let selected = displayResults[selectedIndex] == snippet
-                  snippetView(for: snippet, selected: selected)
-                    .rotationEffect(Angle(degrees: 180))
-                    .scaleEffect(CGSize(width: -1.0, height: 1), anchor: .center)
+            .onChange(of: self.model.selectedSnippetIdx) { newValue in
+              if let snippet = self.model.currentSelection {
+                withAnimation {
+                  value.scrollTo(snippet.id, anchor: .bottom)
                 }
               }
-              .onChange(of: self.model.selectedSnippetIdx) { newValue in
-                if let snippet = self.model.currentSelection {
-                  withAnimation {
-                    value.scrollTo(snippet.id, anchor: .bottom)
-                  }
-                }
-              }
-              // Rotate and mirror to put scrollbar in correct place
-              .rotationEffect(Angle(degrees: 180))
-              .scaleEffect(CGSize(width: -1.0, height: 1), anchor: .center)
             }
-          }
-        }
-        HStack {
-          SearchView(model: model)
-            .frame(maxHeight:44)
-            .padding([.top, .bottom], 3)
-            .onAppear {
-              model.focusOnInput()
-            }
-          if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
-            CreateOrRefreshTipView(model: model).padding([.leading, .trailing])
+            // Rotate and mirror to put scrollbar in correct place
+            .rotationEffect(Angle(degrees: 180))
+            .scaleEffect(CGSize(width: -1.0, height: 1), anchor: .center)
           }
         }
       }
-      .padding([.leading, .trailing], 6)
-      .onAppear() { self.model.switchStyle(for: self.colorScheme) }
-      .onChange(of: self.colorScheme) { self.model.switchStyle(for: $0) }
+      HStack {
+        SearchView(model: model)
+          .frame(maxHeight:44)
+          .padding([.top, .bottom], 3)
+          .onAppear {
+            model.focusOnInput()
+          }
+        if model.displayResults.isEmpty && !model.fuzzyResults.query.isEmpty {
+          CreateOrRefreshTipView(model: model).padding([.leading, .trailing])
+        }
+      }
+    }
+    .padding([.leading, .trailing], 6)
+    .onAppear() { self.model.switchStyle(for: self.colorScheme) }
+    .onChange(of: self.colorScheme) { self.model.switchStyle(for: $0) }
   }
 }
 
