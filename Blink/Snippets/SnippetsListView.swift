@@ -127,19 +127,16 @@ struct CreateOrRefreshTipView : View {
             }
             .tint(.red.opacity(0.9))
             .popover(isPresented: $showErrorsPopover) {
-              TabView {
+              List {
                 ForEach(errors) { error in
-                    ScrollView {
-                      VStack {
-                        Text(error.id).monospaced().bold().font(.caption).padding(.bottom)
-                        Text(error.localizedDescription).font(.caption2)
-                      }
-                    }
+                  VStack {
+                    Text(error.id).monospaced().bold().font(.caption).padding(.bottom)
+                    Text(error.localizedDescription).font(.caption2)
                   }
+                }
               }
               .tabViewStyle(.page(indexDisplayMode: .always))
-              .frame(minWidth: 150, minHeight: 100)
-              .padding(.all)
+              .frame(minWidth: 200, minHeight: 150, maxHeight: 250)
             }
           }
         }
