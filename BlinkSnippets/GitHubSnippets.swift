@@ -65,6 +65,7 @@ public class GitHubSnippets: LocalSnippets {
   
   public struct InvalidSnippet: Error {
     public let message: String
+    var localizedDescription: String { message }
   }
   
   public override var isReadOnly: Bool { true }

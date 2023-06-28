@@ -194,10 +194,16 @@ class SearchModel: ObservableObject {
   }
 
   func editSelectionOrCreate() {
-    guard let snippet = currentSelection
-    else {
-      openNewSnippet()
-      return
+    let snippet: Snippet
+    if currentSelection == nil {
+      if self.input.isEmpty {
+        snippet = Snippet.scratch()
+      } else {
+        openNewSnippet()
+        return
+      }
+    } else {
+      snippet = currentSelection!
     }
     
     self.currentSnippetName = snippet.fuzzyIndex
