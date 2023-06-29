@@ -233,6 +233,7 @@
 		D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */; };
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
 		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
+		D21EFDD12A4D6CB900B44D66 /* LocalSnippets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21EFDD02A4D6CB900B44D66 /* LocalSnippets.swift */; };
 		D22277D62A26115300D4C708 /* BlinkSnippets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D22277CE2A26115300D4C708 /* BlinkSnippets.framework */; };
 		D22277DD2A26115300D4C708 /* BlinkSnippetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277DC2A26115300D4C708 /* BlinkSnippetsTests.swift */; };
 		D22277DE2A26115300D4C708 /* BlinkSnippets.h in Headers */ = {isa = PBXBuildFile; fileRef = D22277D02A26115300D4C708 /* BlinkSnippets.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -948,6 +949,7 @@
 		D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSEKeyView.swift; sourceTree = "<group>"; };
 		D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsView.swift; sourceTree = "<group>"; };
 		D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPickerView.swift; sourceTree = "<group>"; };
+		D21EFDD02A4D6CB900B44D66 /* LocalSnippets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalSnippets.swift; sourceTree = "<group>"; };
 		D22277CE2A26115300D4C708 /* BlinkSnippets.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkSnippets.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D22277D02A26115300D4C708 /* BlinkSnippets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkSnippets.h; sourceTree = "<group>"; };
 		D22277D52A26115300D4C708 /* BlinkSnippetsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkSnippetsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1948,6 +1950,7 @@
 		D22277CF2A26115300D4C708 /* BlinkSnippets */ = {
 			isa = PBXGroup;
 			children = (
+				D21EFDD02A4D6CB900B44D66 /* LocalSnippets.swift */,
 				BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */,
 				D22277E92A26120C00D4C708 /* fuzzy.swift */,
 				D22277EA2A26120D00D4C708 /* index.swift */,
@@ -3173,6 +3176,7 @@
 			files = (
 				BD792A452A3B6A78009EE35F /* GitHubSnippets.swift in Sources */,
 				D22277ED2A26120D00D4C708 /* index.swift in Sources */,
+				D21EFDD12A4D6CB900B44D66 /* LocalSnippets.swift in Sources */,
 				D22277EE2A26120D00D4C708 /* snippet.swift in Sources */,
 				D22277EC2A26120D00D4C708 /* fuzzy.swift in Sources */,
 			);
