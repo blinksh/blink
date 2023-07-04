@@ -449,8 +449,6 @@ extension SearchModel {
   }
 }
 
-
-
 // class CopySnippet: SnippetReceiver
 // class TermInputSnippet: SnippetReceiver
 // class CodeInputSnippet: SnippetReceiver

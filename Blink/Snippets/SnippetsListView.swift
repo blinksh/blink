@@ -111,16 +111,23 @@ public struct SnippetsListView: View {
 struct CreateOrRefreshTipView : View {
   @ObservedObject var model: SearchModel
   @State private var showErrorsPopover = false
-  
+  @Environment(\.horizontalSizeClass) var sizeClass
+
   public var body: some View {
     HStack {
       if case .started = model.indexProgress {
         ProgressView()
       } else {
-        Button("Create") { model.openNewSnippet() }
-        Text(Image(systemName: "return")).opacity(0.5)
-        Text("or").opacity(0.5)
-        Button("Refresh") { model.refreshIndex() }
+        if sizeClass == .compact {
+          Button("\(Image(systemName: "square.and.pencil"))") { model.openNewSnippet() }
+            .padding(.trailing)
+          Button("\(Image(systemName: "arrow.triangle.2.circlepath.circle"))") { model.refreshIndex() }
+        } else {
+          Button("Create") { model.openNewSnippet() }
+          Text(Image(systemName: "return")).opacity(0.5)
+          Text("or").opacity(0.5)
+          Button("Refresh") { model.refreshIndex() }
+        }
         if case .completed(let errors) = model.indexProgress {
           if let errors = errors {
             Button(action: {
