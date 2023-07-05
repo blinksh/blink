@@ -67,13 +67,9 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     }
     return true
   }
-  
-  
+
   func textViewDidBeginEditing(_ textView: TextView) {
-    if model.editingMode == .template {
-      self.textView.returnKeyType = .next
-      self.setNextTemplateTokenRanges(textView: textView)
-    }
+    updateUIMode(textView)
   }
 
   func setNextTemplateTokenRanges(textView: TextView) {
@@ -94,14 +90,39 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       let range = nextTokenRanges[0]
       textView.selectedTextRange =  textView.textRange(from: range)
     } else {
-      didCompleteTemplates(textView)
+      completeTemplates()
     }
   }
 
-  func didCompleteTemplates(_ textView: TextView) {
-    textView.highlightedRanges = []
+  @objc func completeTemplates() {
     model.editingMode = .code
-    textView.returnKeyType = .default
+    updateUIMode(self.textView)
+    //didCompleteTemplates(self.textView)
+  }
+
+  func updateUIMode(_ textView: TextView) {
+    if model.editingMode == .template {
+      self.textView.selectionHighlightColor = .systemYellow.withAlphaComponent(0.3)
+      self.textView.selectionBarColor = .systemYellow.withAlphaComponent(0.8)
+      self.textView.insertionPointColor = .systemYellow.withAlphaComponent(0.8)
+      self.textView.returnKeyType = .next
+      self.navigationItem.rightBarButtonItem =
+        UIBarButtonItem(
+          title: "Complete", style: .done, target: self, action: #selector(completeTemplates)
+        )
+      self.setNextTemplateTokenRanges(textView: textView)
+    } else if model.editingMode == .code {
+      self.textView.selectionHighlightColor = .blinkTint.withAlphaComponent(0.3)
+      self.textView.selectionBarColor = .blinkTint.withAlphaComponent(0.8)
+      self.textView.insertionPointColor = .blinkTint.withAlphaComponent(0.8)
+      textView.highlightedRanges = []
+      model.editingMode = .code
+      textView.returnKeyType = .default
+      self.navigationItem.rightBarButtonItem =
+        UIBarButtonItem(
+          title: "Send", style: .done, target: self, action: #selector(send)
+        )
+    }
   }
 
   func textViewDidChangeSelection(_ textView: TextView) {
@@ -222,13 +243,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     } else {
       textView.text = ""
     }
-    
-    
-    
-    self.navigationItem.rightBarButtonItem =
-      UIBarButtonItem(
-        title: "Send", style: .done, target: self, action: #selector(send)
-      )
+
     self.navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .cancel)
     self.navigationItem.leftBarButtonItem?.target = self
     self.navigationItem.leftBarButtonItem?.action = #selector(cancel)

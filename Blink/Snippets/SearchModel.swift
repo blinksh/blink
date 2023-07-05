@@ -202,16 +202,17 @@ class SearchModel: ObservableObject {
     if currentSelection == nil {
       if self.input.isEmpty {
         snippet = Snippet.scratch()
+        self.editingMode = .code
       } else {
         openNewSnippet()
         return
       }
     } else {
       snippet = currentSelection!
+      self.editingMode = .template
     }
     
     self.currentSnippetName = snippet.fuzzyIndex
-    self.editingMode = .template
     self.editingSnippet = snippet
     
     let textView = TextViewBuilder.createForSnippetEditing()
