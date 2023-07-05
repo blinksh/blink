@@ -47,7 +47,7 @@ class SearchModel: ObservableObject {
   var fuzzyCancelable: AnyCancellable? = nil
   var searchCancelable: AnyCancellable? = nil
 
-  var fuzzyAttributedStrings: [Snippet: AttributedString] = [:]
+  //var fuzzyAttributedStrings: [Snippet: AttributedString] = [:]
   
   public var snippetContext: (any SnippetContext)? = nil
   
