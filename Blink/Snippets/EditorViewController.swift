@@ -248,6 +248,12 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     self.navigationItem.leftBarButtonItem?.target = self
     self.navigationItem.leftBarButtonItem?.action = #selector(cancel)
     self.navigationItem.style = .editor
+
+    // For scratch, we disable special options
+    // Ideally, a "Save as" would allow to rename scratch somewhere else, but we cannot change it.
+    if model.editingSnippet?.name == "scratch" {
+      return
+    }
     self.navigationItem.renameDelegate = self
     self.navigationItem.titleMenuProvider = { suggestions in
       var finalMenuElements = suggestions
