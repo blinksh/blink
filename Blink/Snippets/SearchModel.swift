@@ -173,30 +173,26 @@ class SearchModel: ObservableObject {
   }
   
   func insertRawSnippet() {
-    guard let snippet = currentSelection
+    // The snippet should only be selectable if the content is already there,
+    // as it has already been part of a search and cached.
+    guard let snippet = currentSelection,
+          let content = try? snippet.content
     else {
       return
     }
-    do {
-      let content = try snippet.content
-      sendContentToReceiver(content: content)
-    } catch {
-      // TODO show error
-    }
+
+    sendContentToReceiver(content: content)
   }
   
   func copyRawSnippet() {
-    guard let snippet = currentSelection
+    guard let snippet = currentSelection,
+          let content = try? snippet.content
     else {
       return
     }
-    do {
-      let content = try snippet.content
-      UIPasteboard.general.string = content
-      self.close()
-    } catch {
-      // TODO show error
-    }
+    
+    UIPasteboard.general.string = content
+    self.close()
   }
 
   func editSelectionOrCreate() {
