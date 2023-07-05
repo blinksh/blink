@@ -155,8 +155,9 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
-  var model: SearchModel = SearchModel()  {
+
+  // Forced to be defined before the TextInput can be used.
+  var model: SearchModel! = nil  {
     didSet {
       if self.text != model.input {
         self.text = model.input
@@ -203,6 +204,8 @@ struct SearchView: UIViewRepresentable {
   @ObservedObject var model: SearchModel
   
   func makeUIView(context: UIViewRepresentableContext<Self>) -> SearchTextInput {
+    // TODO Why not initializing the SearchTextInput with the provided model?
+    // It would be better than the var model: Model! = nil
     let view = SearchTextInput() //SearchTextView.create(model: model)
     model.inputView = view
     return view

@@ -52,25 +52,23 @@ class SnippetsLocations {
     case completed([LocationError]?)
   }
   // The main interface with the SearchModel. Provides the index whenever it has changed in any way.
-  // TODO Problem is it does not communicate errors very well.
-  // We could use another publisher for Errors, associated to Progress.
   public let indexPublisher = CurrentValueSubject<[Snippet], Never>([])
   public let indexProgressPublisher = CurrentValueSubject<RefreshProgress, Never>(.none)
   
-  public init() {
+  public init() throws {
     let snippetsLocation = BlinkPaths.snippetsLocationURL()!
     let cachedSnippetsLocation = snippetsLocation.appending(path: ".cached")
     
     // Create main snippets location. Each location then is responsible for its structure.
     if !FileManager.default.fileExists(atPath: snippetsLocation.path()) {
-      try! FileManager.default.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
-      try! FileManager.default.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+      try FileManager.default.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
+      try FileManager.default.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
     }
     
     // ".blink/snippets" for local
     // ".blink/snippets/.cached/com.github" for github
     let localSnippetsLocation = LocalSnippets(from: snippetsLocation)
-    let blinkSnippetsLocation = try! GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
+    let blinkSnippetsLocation = try GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
     
     self.defaultLocation = localSnippetsLocation
     self.locations = [localSnippetsLocation, blinkSnippetsLocation]

@@ -239,9 +239,12 @@ class SpaceController: UIViewController, UIContextMenuInteractionDelegate {
       }
     }
   }
-  
-  
-  
+
+  func showAlert(msg: String) {
+    let ctrl = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+    ctrl.addAction(UIAlertAction(title: "Ok", style: .default))
+    self.present(ctrl, animated: true)
+  }
 //  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
 //    // IOS ISSUE: editingInteractionConfiguration doesn't called anymore in iOS/PadOS 16....
 //    // Moved attach to focus.
@@ -1160,14 +1163,17 @@ extension SpaceController: CommandsHUDViewDelegate {
 
 extension SpaceController: SnippetContext {
   func presentSnippetsController() {
-    let ctrl = SnippetsViewController.create(context: self)
-    
-    ctrl.view.frame = self.view.bounds
-    ctrl.willMove(toParent: self)
-    self.view.addSubview(ctrl.view)
-    self.addChild(ctrl)
-    ctrl.didMove(toParent: self)
-    _snippetsVC = ctrl
+    do {
+      let ctrl = try SnippetsViewController.create(context: self)
+      ctrl.view.frame = self.view.bounds
+      ctrl.willMove(toParent: self)
+      self.view.addSubview(ctrl.view)
+      self.addChild(ctrl)
+      ctrl.didMove(toParent: self)
+      _snippetsVC = ctrl
+    } catch {
+      self.showAlert(msg: "Could not display Snips: \(error)")
+    }
   }
   
   func dismissSnippetsController() {
@@ -1184,6 +1190,8 @@ extension SpaceController: SnippetContext {
     self.focusOnShellAction()
     return self.currentDevice
   }
+
+  
 }
 
 

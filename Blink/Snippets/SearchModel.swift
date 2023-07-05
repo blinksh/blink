@@ -73,7 +73,7 @@ class SearchModel: ObservableObject {
   @Published var newSnippetPresented = false
   @Published var indexProgress: SnippetsLocations.RefreshProgress = .none
 
-  let snippetsLocations = SnippetsLocations()
+  let snippetsLocations: SnippetsLocations
   // Stored Index snapshot to search.
   var index: [Snippet] = []
   var indexFetchCancellable: Cancellable? = nil
@@ -126,9 +126,11 @@ class SearchModel: ObservableObject {
 
   
 
-  init() {
+  init() throws {
     self.mode = .general
     self.input = ""
+    
+    self.snippetsLocations = try SnippetsLocations()
     
     self.indexFetchCancellable = self.snippetsLocations
       .indexPublisher
@@ -179,7 +181,7 @@ class SearchModel: ObservableObject {
       let content = try snippet.content
       sendContentToReceiver(content: content)
     } catch {
-      // show error
+      // TODO show error
     }
   }
   
@@ -193,7 +195,7 @@ class SearchModel: ObservableObject {
       UIPasteboard.general.string = content
       self.close()
     } catch {
-      // show error
+      // TODO show error
     }
   }
 
