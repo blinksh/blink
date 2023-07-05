@@ -253,6 +253,13 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       var finalMenuElements = suggestions
       finalMenuElements.append(
         UICommand(
+          title: "Save",
+          image: UIImage(systemName: "folder"),
+          action: #selector(self.saveSnippet)
+        )
+      )
+      finalMenuElements.append(
+        UICommand(
           title: "Delete",
           image: UIImage(systemName: "trash"),
           action: #selector(self.deleteSnippet),
@@ -263,7 +270,11 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     }
   }
   
-  @objc  func deleteSnippet() {
+  @objc func saveSnippet() {
+    model.saveSnippet(newContent: self.textView.text)
+  }
+
+  @objc func deleteSnippet() {
     model.deleteSnippet()
     model.closeEditor()
   }

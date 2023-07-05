@@ -279,7 +279,15 @@ class SearchModel: ObservableObject {
   func focusOnInput() {
     _ = self.inputView?.becomeFirstResponder()
   }
-  
+
+  func saveSnippet(newContent: String) {
+    guard let snippet = self.editingSnippet else {
+      return
+    }
+    
+    try? self.snippetsLocations.saveSnippet(folder: snippet.folder, name: snippet.name, content: newContent)
+  }
+
   func deleteSnippet() {
     guard let snippet = editingSnippet else {
       return
