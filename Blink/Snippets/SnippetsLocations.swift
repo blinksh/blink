@@ -71,6 +71,7 @@ class SnippetsLocations {
     let blinkSnippetsLocation = try GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
     
     self.defaultLocation = localSnippetsLocation
+    // Locations are sorted by priority.
     self.locations = [localSnippetsLocation, blinkSnippetsLocation]
     
     refreshIndex()
@@ -79,19 +80,20 @@ class SnippetsLocations {
   // If the ".locations" file changes, it will be read again
   // on "refresh". Or forced when the change happens.
   // Same with the .ignore file.
+  // Locations ordering is preserved.
   public func refreshIndex(forceUpdate: Bool = false) {
     indexProgressPublisher.send(.started)
 
     var errors: [LocationError] = []
-    let listSnippets: AnyPublisher<[[Snippet]], Never> =
-      Publishers.MergeMany(locations.map { loc in
+    let listSnippets: AnyPublisher<[(Int, [Snippet])], Never> =
+    Publishers.MergeMany(locations.enumerated().map { (index, loc) in
         Deferred {
           Future {
             do {
-              return try await loc.listSnippets(forceUpdate: forceUpdate)
+              return (index, try await loc.listSnippets(forceUpdate: forceUpdate))
             } catch {
               errors.append(LocationError(id: loc.description, error: error))
-              return []
+              return (index, [])
             }
           }
         }
@@ -102,7 +104,8 @@ class SnippetsLocations {
     
     refreshCancellable = listSnippets.sink(
       receiveCompletion: { _ in self.indexProgressPublisher.send(.completed(errors.isEmpty ? nil : errors))},
-      receiveValue: { snippets in
+      receiveValue: { snippetsList in
+        let snippets = snippetsList.sorted(by: { $0.0 > $1.0 }).map { $0.1 }
         self.indexPublisher.send(Array(snippets.joined()))
       }
     )

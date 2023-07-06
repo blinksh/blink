@@ -92,6 +92,10 @@ extension FuzzyAccumulator {
   
   mutating func add(pair: (Snippet, Matrix<Int?>)) {
     let snippet = pair.0
+    // Shadow the snippet if already added (different locations)
+    if snippets.contains(snippet) {
+      return
+    }
     snippets.append(snippet)
     let ranges = pair.1.ranges()
     rangesMap[snippet] = ranges
