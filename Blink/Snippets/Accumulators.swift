@@ -38,6 +38,7 @@ let ResultsLimit = 30;
 
 public struct Accumulator<V> {
   var snippets: [Snippet] = []
+  var indexedSnippets: Set<Snippet> = []
   var rangesMap: [Snippet: V] = [:]
   var matchesMap: [Snippet: AttributedString] = [:]
   var contentMap: [Snippet: AttributedString] = [:]
@@ -92,12 +93,18 @@ extension FuzzyAccumulator {
   
   mutating func add(pair: (Snippet, Matrix<Int?>)) {
     let snippet = pair.0
+    
     // If description is not accessible (rare problem with cached content), then ignore.
     // Shadow the snippet if already added (different locations).
-    guard let snippetDescription = try? snippet.description,
-          !snippets.contains(snippet) else {
+    guard let snippetDescription = try? snippet.description else {
       return
     }
+
+    let (inserted, _) = indexedSnippets.insert(snippet)
+    if inserted == false {
+      return
+    }
+
     snippets.append(snippet)
     let ranges = pair.1.ranges()
     rangesMap[snippet] = ranges
