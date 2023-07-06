@@ -38,17 +38,9 @@ import TreeSitterBashRunestone
 
 
 class EditorViewController: UIViewController, TextViewDelegate, UINavigationItemRenameDelegate {
-  func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
-    let parts = title.split(separator: "/", maxSplits: 1)
-    let category = model.cleanString(str: String(parts[0]))
-    let name = model.cleanString(str:String(parts[1])) + ".sh"
-    
-    model.renameSnippet(newCategory: category, newName: name, newContent: self.textView.text)
-  }
+  func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {}
   
-  func navigationItemShouldBeginRenaming(_: UINavigationItem) -> Bool {
-    true
-  }
+  func navigationItemShouldBeginRenaming(_: UINavigationItem) -> Bool { true }
   
   func navigationItem(_: UINavigationItem, willBeginRenamingWith suggestedTitle: String, selectedRange: Range<String.Index>) -> (String, Range<String.Index>) {
     // preselect name part
@@ -65,7 +57,18 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     if str.hasPrefix("/") || !str.contains("/") || str.hasSuffix("/") {
       return false
     }
-    return true
+
+    let parts = title.split(separator: "/", maxSplits: 1)
+    let category = model.cleanString(str: String(parts[0]))
+    let name = model.cleanString(str:String(parts[1])) + ".sh"
+
+    do {
+      try model.renameSnippet(newCategory: category, newName: name, newContent: self.textView.text)
+      return true
+    } catch {
+      showAlert(msg: "\(error)")
+      return false
+    }
   }
 
   func textViewDidBeginEditing(_ textView: TextView) {
@@ -277,12 +280,20 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   }
   
   @objc func saveSnippet() {
-    model.saveSnippet(newContent: self.textView.text)
+    do {
+      try model.saveSnippet(newContent: self.textView.text)
+    } catch {
+      showAlert(msg: "\(error)")
+    }
   }
 
   @objc func deleteSnippet() {
-    model.deleteSnippet()
-    model.closeEditor()
+    do {
+      try model.deleteSnippet()
+      model.closeEditor()
+    } catch {
+      showAlert(msg: "\(error)")
+    }
   }
   
   @objc func cancel() {
@@ -317,4 +328,9 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     return super.canPerformAction(action, withSender: sender)
   }
   
+  func showAlert(msg: String) {
+    let ctrl = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+    ctrl.addAction(UIAlertAction(title: "Ok", style: .default))
+    self.present(ctrl, animated: true)
+  }
 }

@@ -278,20 +278,20 @@ class SearchModel: ObservableObject {
     _ = self.inputView?.becomeFirstResponder()
   }
 
-  func saveSnippet(newContent: String) {
+  func saveSnippet(newContent: String) throws {
     guard let snippet = self.editingSnippet else {
       return
     }
     
-    try? self.snippetsLocations.saveSnippet(folder: snippet.folder, name: snippet.name, content: newContent)
+    try self.snippetsLocations.saveSnippet(folder: snippet.folder, name: snippet.name, content: newContent)
   }
 
-  func deleteSnippet() {
+  func deleteSnippet() throws {
     guard let snippet = editingSnippet else {
       return
     }
     
-    try? self.snippetsLocations.deleteSnippet(snippet: snippet)
+    try self.snippetsLocations.deleteSnippet(snippet: snippet)
     
     self.displayResults = []
     self.searchResults.clear()
@@ -300,18 +300,17 @@ class SearchModel: ObservableObject {
     self.editingSnippet = nil
   }
   
-  func renameSnippet(newCategory: String, newName: String, newContent: String) {
+  func renameSnippet(newCategory: String, newName: String, newContent: String) throws {
     guard let snippet = self.editingSnippet else {
       return
     }
-    if let newSnippet = try?
-        self.snippetsLocations.renameSnippet(snippet: snippet, folder: newCategory, name: newName, content: newContent) {
-      self.displayResults = []
-      self.searchResults.clear()
-      self.fuzzyResults.clear()
-      self.input = ""
-      self.editingSnippet = newSnippet
-    }
+    let newSnippet = try
+        self.snippetsLocations.renameSnippet(snippet: snippet, folder: newCategory, name: newName, content: newContent)
+    self.displayResults = []
+    self.searchResults.clear()
+    self.fuzzyResults.clear()
+    self.input = ""
+    self.editingSnippet = newSnippet
   }
   
   func cleanString(str: String?) -> String {
