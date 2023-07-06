@@ -83,7 +83,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     } else {
       nextTokenRangeIndex = text.startIndex
     }
-
+    
     if nextTokenRangeIndex < text.endIndex,
       let range = text[nextTokenRangeIndex...].range(of: #"\$\{[^\}]+\}"#, options: .regularExpression) {
       let token = String(text[range])
@@ -100,7 +100,6 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
   @objc func completeTemplates() {
     model.editingMode = .code
     updateUIMode(self.textView)
-    //didCompleteTemplates(self.textView)
   }
 
   func updateUIMode(_ textView: TextView) {
@@ -151,7 +150,6 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       return false
     }
 
-    
     // Replace all appearances in templateTokenRanges.
     // Move the templateTokenRanges to accommodate for the introduced text.
     var newTemplateTokenRanges: [NSRange] = []

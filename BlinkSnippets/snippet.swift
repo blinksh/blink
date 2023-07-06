@@ -79,10 +79,6 @@ public class Snippet: ObservableObject, Hashable, Identifiable {
     self.folder = folder
     self.indexable = "\(self.folder)/\(self.title)".lowercased()
     self.store = store
-//    self.description = self.store.snippetLocation(
-//      folder: folder,
-//      name: name
-//    ).readFirstLineOfContent()
   }
 
   private var _description: String? = nil
@@ -108,10 +104,6 @@ public class Snippet: ObservableObject, Hashable, Identifiable {
   
   public var snippetLocationURL: URL? {
     self.store.snippetLocationURL(folder: self.folder, name: self.name)
-  }
-
-  public func save(content: String) throws {
-    try self.store.saveSnippet(folder: self.folder, name: self.name, content: content)
   }
 }
 
