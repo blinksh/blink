@@ -108,6 +108,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.paywallWindow != nil
   }
   
+  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    super.editingInteractionConfiguration
+  }
+  
   @objc private func _showPaywallIfNeeded() {
 //    if FeatureFlags.checkReceipt {
 //      return

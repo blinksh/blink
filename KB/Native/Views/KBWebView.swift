@@ -79,6 +79,11 @@ class KBWebView: KBWebViewBase {
     }
   }
   
+  
+  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    return .none
+  }
+  
   func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
     

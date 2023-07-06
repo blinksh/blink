@@ -68,5 +68,6 @@ extern void ios_exit(int errorCode) __dead2; // set error code and exits from th
 #import "AppDelegate.h"
 #import "BKLinkActions.h"
 #import "TokioSignals.h"
+#import "BlinkMenu.h"
 
 #endif /* Blink_bridge_h */

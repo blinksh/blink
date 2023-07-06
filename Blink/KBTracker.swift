@@ -33,6 +33,102 @@
 import Foundation
 import UIKit
 
+class KBObserver: NSObject, UIInteraction {
+  weak var view: UIView? = nil
+  var bottomInset: CGFloat? {
+    guard
+      let view = self.view,
+      let screen = view.window?.screen
+    else {
+      return nil
+    }
+    let fromCoordinateSpace = screen.coordinateSpace
+    let toCoordinateSpace: UICoordinateSpace = view
+    
+    let convertedKbEndFrame = fromCoordinateSpace.convert(kbScreenFrame ?? .zero, to: toCoordinateSpace)
+    
+    let viewIntersection = view.bounds.intersection(convertedKbEndFrame)
+    return viewIntersection.isEmpty ? 0.0 : viewIntersection.size.height
+  }
+  
+  var kbScreenFrame: CGRect? = nil
+  
+  func willMove(to view: UIView?) {
+    
+  }
+  
+  func didMove(to view: UIView?) {
+    self.view = view
+    let nc = NotificationCenter.default
+    if view == nil {
+      nc.removeObserver(self)
+    } else {
+      nc.addObserver(
+          self,
+          selector: #selector(_keyboardWillShow(notification:)),
+          name: UIResponder.keyboardWillShowNotification,
+          object: nil)
+      nc.addObserver(
+          self,
+          selector: #selector(_keyboardWillHide(notification:)),
+          name: UIResponder.keyboardWillHideNotification,
+          object: nil)
+      nc.addObserver(
+          self,
+          selector: #selector(_keyboardWillChangeFrame(notification:)),
+          name: UIResponder.keyboardWillChangeFrameNotification,
+          object: nil)
+    }
+  }
+  
+  @objc private func _keyboardWillShow(notification: Notification) {
+    guard
+      let screen = notification.object as? UIScreen,
+      let view = self.view,
+      screen.isEqual(view.window?.screen),
+      let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      kbEndFrame != self.kbScreenFrame
+    else {
+      return
+    }
+     
+    self.kbScreenFrame = kbEndFrame
+    self.view?.setNeedsLayout()
+    
+  }
+
+  @objc private func _keyboardWillHide(notification: Notification) {
+    guard
+      let screen = notification.object as? UIScreen,
+      let view = self.view,
+      screen.isEqual(view.window?.screen),
+      let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      kbEndFrame != self.kbScreenFrame
+    else {
+      return
+    }
+     
+    self.kbScreenFrame = kbEndFrame
+    self.view?.setNeedsLayout()
+  }
+
+  @objc private func _keyboardWillChangeFrame(notification: Notification) {
+    guard
+      let screen = notification.object as? UIScreen,
+      let view = self.view,
+      screen.isEqual(view.window?.screen),
+      let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      kbEndFrame != self.kbScreenFrame
+    else {
+      return
+    }
+     
+    self.kbScreenFrame = kbEndFrame
+    self.view?.setNeedsLayout()
+  }
+
+}
+
 class KBTracker: NSObject {
   private(set) var hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   
@@ -189,7 +285,6 @@ class KBTracker: NSObject {
   
   
   @objc private func _keyboardWillChangeFrame(_ notification: Notification) {
-//    debugPrint("_keyboardWillChangeFrame");
   }
   
   @objc private func _keyboardDidChangeFrame(_ notification: Notification) {
@@ -205,6 +300,8 @@ class KBTracker: NSObject {
       else {
         return
     }
+    
+    
         
     let screenMaxY = UIScreen.main.bounds.size.height
     
@@ -221,7 +318,7 @@ class KBTracker: NSObject {
 //          kbTraits.isFloatingKB = true
 //          kbDevice = .in6_5
 //          kbTraits.isPortrait = true
-          print("floating_frame", fr, kbFrameEnd, kbFrameBegin)
+//          print("floating_frame", fr, kbFrameEnd, kbFrameBegin)
           bottomInset = 0
         }
       }
@@ -274,12 +371,15 @@ class KBTracker: NSObject {
   }
 
   @objc private func _keyboardWillShow(_ notification: Notification) {
+    // iOS 16.1 reports screen
+    
 //    debugPrint("_keyboardWillShow", notification.userInfo)
 //    debugPrint("_keyboardWillShow")
 //    _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardWillHide(_ notification: Notification) {
+    
 //    debugPrint("_keyboardWillHide", notification.userInfo)
 //    debugPrint("_keyboardWillHide")
 //    _setupWithKBNotification(notification: notification)

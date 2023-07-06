@@ -259,6 +259,7 @@
 		D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D22378FC27A7B8DA002D5C6D /* XCConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = D22378FD27A7B8DA002D5C6D /* XCConfig.m */; };
 		D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */; };
+		D231F5072A54478800ED82B0 /* BlinkMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = D231F5062A54478800ED82B0 /* BlinkMenu.m */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
 		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
@@ -971,6 +972,8 @@
 		D22A353626C1474200943C71 /* BKMiniLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKMiniLog.h; sourceTree = "<group>"; };
 		D22A353726C1474200943C71 /* BKMiniLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKMiniLog.m; sourceTree = "<group>"; };
 		D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasskeyView.swift; sourceTree = "<group>"; };
+		D231F5062A54478800ED82B0 /* BlinkMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlinkMenu.m; sourceTree = "<group>"; };
+		D231F5082A54479400ED82B0 /* BlinkMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkMenu.h; sourceTree = "<group>"; };
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
@@ -1390,6 +1393,8 @@
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 				D2ECBF4829645814004E95C4 /* BuildApi.swift */,
 				D2CC13B629C05EE7008C71FA /* Intro.swift */,
+				D231F5082A54479400ED82B0 /* BlinkMenu.h */,
+				D231F5062A54478800ED82B0 /* BlinkMenu.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -3396,6 +3401,7 @@
 				D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
+				D231F5072A54478800ED82B0 /* BlinkMenu.m in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,

@@ -148,6 +148,10 @@ NSString *_encodeString(NSString *str);
   return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
 }
 
+- (UIEditingInteractionConfiguration)editingInteractionConfiguration {
+  return [super editingInteractionConfiguration];
+}
+
 
 - (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
 {
