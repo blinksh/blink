@@ -39,7 +39,7 @@ public struct SnippetView: View {
   var content: AttributedString
   var selected: Bool
   var snippet: Snippet
-  var model: SearchModel
+  @ObservedObject var model: SearchModel
   
   public var body: some View {
     Button {
