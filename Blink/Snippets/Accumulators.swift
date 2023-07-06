@@ -92,8 +92,10 @@ extension FuzzyAccumulator {
   
   mutating func add(pair: (Snippet, Matrix<Int?>)) {
     let snippet = pair.0
-    // Shadow the snippet if already added (different locations)
-    if snippets.contains(snippet) {
+    // If description is not accessible (rare problem with cached content), then ignore.
+    // Shadow the snippet if already added (different locations).
+    guard let snippetDescription = try? snippet.description,
+          !snippets.contains(snippet) else {
       return
     }
     snippets.append(snippet)
@@ -107,11 +109,10 @@ extension FuzzyAccumulator {
     }
     
     matchesMap[snippet] = AttributedString(attrStr)
-    let description = (try? snippet.description) ?? ""
    
-    if let attr = try? Highlight.text(description, language: "sh", style: self.style) {
+    if let attr = try? Highlight.text(snippetDescription, language: "sh", style: self.style) {
       contentMap[snippet] = AttributedString(attr.text)
-    } 
+    }
   }
   
   static func accumulate(_ acc: Self, _ value: (Snippet, Matrix<Int?>)) -> Self {
