@@ -93,7 +93,7 @@ public struct SnippetsListView: View {
       HStack {
         SearchView(model: model)
           .frame(maxHeight:44)
-          .padding([.top, .bottom], 3)
+          .padding([.bottom], 3)
           .onAppear {
             model.focusOnInput()
           }
@@ -121,7 +121,7 @@ struct CreateOrRefreshTipView : View {
         if sizeClass == .compact {
           Button("\(Image(systemName: "square.and.pencil"))") { model.openNewSnippet() }
             .padding(.trailing)
-          Button("\(Image(systemName: "arrow.triangle.2.circlepath.circle"))") { model.refreshIndex() }
+          Button("\(Image(systemName: "arrow.clockwise"))") { model.refreshIndex() }
         } else {
           Button("Create") { model.openNewSnippet() }
           Text(Image(systemName: "return")).opacity(0.5)

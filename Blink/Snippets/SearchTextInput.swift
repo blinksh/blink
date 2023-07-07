@@ -137,6 +137,7 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
     
     self.autocapitalizationType = .none
     self.autocorrectionType = .no
+    self.spellCheckingType = .no
     self.setNeedsLayout()
   }
   

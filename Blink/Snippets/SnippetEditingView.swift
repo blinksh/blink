@@ -74,6 +74,7 @@ class TextViewBuilder {
     tv.isEditable = false
     tv.isScrollEnabled = false
     tv.isSelectable = false
+    tv.indentStrategy = .space(length: 4)
 
     return tv
   }

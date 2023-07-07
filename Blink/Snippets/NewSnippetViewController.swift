@@ -66,10 +66,17 @@ class FormView: UIView {
     
     nameTextField.leftView = nameLeft
     nameTextField.leftViewMode = .always
+    nameTextField.autocapitalizationType = .none
+    nameTextField.autocorrectionType = .no
+    nameTextField.spellCheckingType = .no
     
     
     categoryTextField.leftView = categoryLeft
     categoryTextField.leftViewMode = .always
+    categoryTextField.autocapitalizationType = .none
+    categoryTextField.autocorrectionType = .no
+    categoryTextField.spellCheckingType = .no
+
     
     separator1View.backgroundColor = .separator
     separator2View.backgroundColor = .separator
