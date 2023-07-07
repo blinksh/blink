@@ -151,12 +151,17 @@ extension SearchAccumulator {
       attrStr = NSMutableAttributedString(string: content)
     }
     
+    let strLen = attrStr.length
     var lineLoc = 0
     for (line, ranges) in lines {
       for range in ranges {
         var res = range
         res.location += lineLoc
-        attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow.withAlphaComponent(0.3), range: res)
+        // Temporary workaround. Double check ranges. See https://github.com/blinksh/blink/issues/1755#issuecomment-1625095557
+        // we need to find another highlighter
+        if res.location + res.length < strLen {
+          attrStr.addAttribute(.backgroundColor, value: UIColor.systemYellow.withAlphaComponent(0.3), range: res)
+        }
       }
       lineLoc = line.count + 1
     }
