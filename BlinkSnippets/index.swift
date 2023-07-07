@@ -128,7 +128,10 @@ public func Search(content: String, searchString: String) -> [(line: String, ran
   // Separate in tokens.
   // On first range, extract a line, and from there search the rest recursively.
   let compareOptions: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
-  let searchTokens = searchString.components(separatedBy: " ").sorted { $0.count > $1.count }
+  let searchTokens = searchString.components(separatedBy: " ")
+    .filter { !$0.isEmpty } // filter with multiple spaces inside
+    .sorted { $0.count > $1.count }
+
   var searchTokenRanges: [(String, [NSRange])] = []
   let linesLimit = 5
   content.enumerateLines { line, stop in
