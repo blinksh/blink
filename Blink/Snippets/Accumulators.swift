@@ -60,6 +60,7 @@ public struct Accumulator<V> {
     self.style = style
     snippets.reserveCapacity(ResultsLimit)
     rangesMap.reserveCapacity(ResultsLimit)
+    indexedSnippets.reserveCapacity(ResultsLimit)
   }
   
   mutating func clear() {
@@ -67,6 +68,7 @@ public struct Accumulator<V> {
     rangesMap = [:]
     matchesMap = [:]
     contentMap = [:]
+    indexedSnippets = []
     query = ""
   }
   
@@ -101,7 +103,7 @@ extension FuzzyAccumulator {
     }
 
     let (inserted, _) = indexedSnippets.insert(snippet)
-    if inserted == false {
+    guard inserted else {
       return
     }
 
