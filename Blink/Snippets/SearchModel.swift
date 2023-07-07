@@ -72,6 +72,8 @@ class SearchModel: ObservableObject {
   @Published var editingMode: TextViewEditingMode = .template
   @Published var newSnippetPresented = false
   @Published var indexProgress: SnippetsLocations.RefreshProgress = .none
+  // TODO This should be configurable from the Editor and restored between sessions
+  @Published var shellOutputFormatter = ShellOutputFormatter.lineBySemicolon
 
   let snippetsLocations: SnippetsLocations
   // Stored Index snapshot to search.
@@ -256,6 +258,8 @@ class SearchModel: ObservableObject {
   }
 
   @objc func sendContentToReceiver(content: String) {
+    // NOTE Atm it is all shell content, at one point we should have different types.
+    let content = shellOutputFormatter.format(content)
     self.snippetContext?.providerSnippetReceiver()?.receive(content)
     self.isOn = false
     self.editingSnippet = nil
@@ -454,7 +458,3 @@ extension SearchModel {
     self.selectedSnippetIdx = (idx + 1 ) % displayResults.count
   }
 }
-
-// class CopySnippet: SnippetReceiver
-// class TermInputSnippet: SnippetReceiver
-// class CodeInputSnippet: SnippetReceiver

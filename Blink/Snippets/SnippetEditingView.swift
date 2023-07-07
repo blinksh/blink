@@ -37,29 +37,6 @@ enum TextViewEditingMode {
   case template, code
 }
 
-enum OutputShellFormatter {
-  case block,
-       lineBySemicolon,
-       beginEnd
-
-  func format(_ text: String) -> String {
-    switch self {
-    case .block:
-      return text.replacingOccurrences(of: "\n", with: "; ").wrapIn(prefix: "$(\n", suffix: "\n)")
-    case .lineBySemicolon:
-      return text.replacingOccurrences(of: "\n", with: "; ")
-    case .beginEnd:
-      return text.wrapIn(prefix: "begin\n", suffix: "\nend")
-    }
-  }
-}
-
-extension String {
-  func wrapIn(prefix: String, suffix: String) -> String {
-    return "\(prefix)\(self)\(suffix)"
-  }
-}
-
 extension TextView {
   func textRange(from range: NSRange) -> UITextRange? {
     let start = self.position(from: self.beginningOfDocument, offset: range.location)!
