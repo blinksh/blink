@@ -310,6 +310,7 @@
 		D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBE5230562E9003D64A5 /* KBSizes.swift */; };
 		D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* UIColor+Codable.swift */; };
 		D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */; };
+		D24842372A5C3473002CC8C9 /* ShellOutputFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24842362A5C3473002CC8C9 /* ShellOutputFormatter.swift */; };
 		D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67522DDDF130057FE67 /* UIStateRestorable.swift */; };
 		D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
@@ -1019,6 +1020,7 @@
 		D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewSymbol.swift; sourceTree = "<group>"; };
 		D241CBE5230562E9003D64A5 /* KBSizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSizes.swift; sourceTree = "<group>"; };
 		D242157122E878950037E5A6 /* UIColor+Codable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Codable.swift"; sourceTree = "<group>"; };
+		D24842362A5C3473002CC8C9 /* ShellOutputFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShellOutputFormatter.swift; sourceTree = "<group>"; };
 		D248E67522DDDF130057FE67 /* UIStateRestorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStateRestorable.swift; sourceTree = "<group>"; };
 		D248E67D22DE14100057FE67 /* SessionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParams.swift; sourceTree = "<group>"; };
 		D248EC542689EAD7009FD817 /* SSHConfig */ = {isa = PBXFileReference; lastKnownFileType = text; name = SSHConfig; path = xcfs/.build/checkouts/SSHConfig; sourceTree = SOURCE_ROOT; };
@@ -1955,6 +1957,7 @@
 		D22277CF2A26115300D4C708 /* BlinkSnippets */ = {
 			isa = PBXGroup;
 			children = (
+				D24842362A5C3473002CC8C9 /* ShellOutputFormatter.swift */,
 				D21EFDD02A4D6CB900B44D66 /* LocalSnippets.swift */,
 				BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */,
 				D22277E92A26120C00D4C708 /* fuzzy.swift */,
@@ -3181,6 +3184,7 @@
 			files = (
 				BD792A452A3B6A78009EE35F /* GitHubSnippets.swift in Sources */,
 				D22277ED2A26120D00D4C708 /* index.swift in Sources */,
+				D24842372A5C3473002CC8C9 /* ShellOutputFormatter.swift in Sources */,
 				D21EFDD12A4D6CB900B44D66 /* LocalSnippets.swift in Sources */,
 				D22277EE2A26120D00D4C708 /* snippet.swift in Sources */,
 				D22277EC2A26120D00D4C708 /* fuzzy.swift in Sources */,
@@ -4845,7 +4849,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 775;
+				CURRENT_PROJECT_VERSION = 777;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4895,7 +4899,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 775;
+				CURRENT_PROJECT_VERSION = 777;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;

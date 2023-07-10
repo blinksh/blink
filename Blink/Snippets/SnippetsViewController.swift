@@ -46,7 +46,7 @@ struct SwiftUISnippetsView: View {
         Spacer()
         VStack {
           Spacer().onAppear {
-            withAnimation(.easeIn(duration: 0.33)) {
+            withAnimation(.easeOut(duration: 0.33)) {
               transitionFrame = nil
             }
           }
