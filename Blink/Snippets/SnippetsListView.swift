@@ -36,6 +36,7 @@ import BlinkSnippets
 public struct SnippetsListView: View {
   @ObservedObject var model: SearchModel
   @Environment(\.colorScheme) var colorScheme
+  let nspace : Namespace.ID;
   
   @ViewBuilder
   func snippetView(for snippet: Snippet, selected: Bool) -> some View {
@@ -105,6 +106,7 @@ public struct SnippetsListView: View {
     .padding([.leading, .trailing], 6)
     .onAppear() { self.model.switchStyle(for: self.colorScheme) }
     .onChange(of: self.colorScheme) { self.model.switchStyle(for: $0) }
+    
   }
 }
 

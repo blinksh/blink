@@ -40,7 +40,7 @@ class SearchModel: ObservableObject {
   weak var rootCtrl: UIViewController? = nil
   weak var inputView: UIView? = nil
   
-  @Published var isOn = false
+//  @Published var isOn = false
   
   var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.xcode))
   var searchResults = SearchAccumulator(query: "", style: .light(.xcode))
@@ -261,14 +261,12 @@ class SearchModel: ObservableObject {
     // NOTE Atm it is all shell content, at one point we should have different types.
     let content = shellOutputFormatter.format(content)
     self.snippetContext?.providerSnippetReceiver()?.receive(content)
-    self.isOn = false
     self.editingSnippet = nil
     self.input = ""
     self.snippetContext?.dismissSnippetsController()
   }
   
   func close() {
-    self.isOn = false
     self.snippetContext?.dismissSnippetsController()
   }
   

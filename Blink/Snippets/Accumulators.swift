@@ -145,11 +145,11 @@ extension SearchAccumulator {
     
     let attrStr: NSMutableAttributedString;
     
-    if let attr = try? Highlight.text(content, language: "sh", style: self.style) {
-      attrStr = attr.text
-    } else {
+//    if let attr = try? Highlight.text(content, language: "sh", style: self.style) {
+//      attrStr = attr.text
+//    } else {
       attrStr = NSMutableAttributedString(string: content)
-    }
+//    }
     
     let strLen = attrStr.length
     var lineLoc = 0

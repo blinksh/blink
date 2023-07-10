@@ -36,30 +36,42 @@ import BlinkSnippets
 
 struct SwiftUISnippetsView: View {
   @ObservedObject var model: SearchModel
+  @Namespace var nspace;
+  
+  @State var transitionFrame: CGRect? = nil
+  
   var body: some View {
     HStack(alignment: .top) {
       if model.editingSnippet == nil && model.newSnippetPresented == false {
         Spacer()
         VStack {
-          Spacer()
-          SnippetsListView(model: model)
-            .frame(maxWidth: 560)
+          Spacer().onAppear {
+            withAnimation(.easeIn(duration: 0.33)) {
+              transitionFrame = nil
+            }
+          }
+          
+          SnippetsListView(model: model, nspace: nspace)
+            .frame(maxWidth: transitionFrame == nil ? 560 : nil)
+            .frame(minWidth: transitionFrame?.width, maxWidth: transitionFrame?.width, minHeight: transitionFrame?.height, maxHeight: transitionFrame?.height)
             .background(
               .regularMaterial,
-              in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+              in: RoundedRectangle(cornerRadius: 15, style: .continuous)
             )
-            .shadow(color: .secondary, radius: 0.5, x: 0, y: 0)
-        }.padding()
+        }
+        
         Spacer()
       }
     }
-    .contentShape(Rectangle())
+    .padding([.leading, .trailing, .top])
+    .padding(.bottom, 20)
+//    .contentShape(Rectangle())
     .gesture(TapGesture().onEnded {
       if model.editingSnippet == nil && model.newSnippetPresented == false {
         model.close()
       }
     })
-      .ignoresSafeArea(.all)
+    .ignoresSafeArea(.all)
   }
 }
 
@@ -71,14 +83,13 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
     self.view.backgroundColor = .clear
   }
   
-  public static func create(context: (any SnippetContext)?) throws -> SnippetsViewController {
+  public static func create(context: (any SnippetContext)?, transitionFrame: CGRect?) throws -> SnippetsViewController {
     let model = try SearchModel()
     model.snippetContext = context
-    let rootView = SwiftUISnippetsView(model: model)
+    let rootView = SwiftUISnippetsView(model: model, transitionFrame: transitionFrame)
     let ctrl = SnippetsViewController(rootView: rootView)
     ctrl.model = model
     model.rootCtrl = ctrl
-    model.isOn = true
     return ctrl
   }
   

@@ -246,8 +246,7 @@ const CGFloat MENU_PADDING = 10.0;
             actionWithTitle:noTitle ? @"" : @"Snips"
             image:[UIImage systemImageNamed:@"chevron.left.square"]
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      [[delegate spaceController] toggleQuickActionsAction];
-      [[delegate spaceController] showSnippetsAction];
+      [[delegate spaceController] showSnippetsAction];      
     }];
   }
   

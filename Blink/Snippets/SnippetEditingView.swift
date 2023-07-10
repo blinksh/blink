@@ -66,10 +66,14 @@ class TextViewBuilder {
     tv.theme = PragmataProTheme(originalTheme: DefaultTheme())
     tv.backgroundColor = .clear
     tv.setLanguageMode(TreeSitterLanguageMode(language: .bash))
-    tv.autocorrectionType = .no
+    
     tv.autocapitalizationType = .none
+    tv.autocorrectionType = .no
+    tv.inputAssistantItem.leadingBarButtonGroups = []
+    tv.inputAssistantItem.trailingBarButtonGroups = []
     tv.smartDashesType = .no
     tv.smartQuotesType = .no
+    tv.smartInsertDeleteType = .no
     tv.spellCheckingType = .no
     
     return tv

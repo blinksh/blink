@@ -954,14 +954,20 @@ extension SpaceController {
   }
   
   @objc func showSnippetsAction() {
+    if let vc = _snippetsVC {
+      return
+    }
     self.presentSnippetsController()
+    if let menu = _blinkMenu {
+      self.toggleQuickActionsAction()
+    }
   }
   
   @objc func toggleQuickActionsAction() {
     
     if let menu = _blinkMenu {
       _blinkMenu = nil
-      UIView.animate(withDuration: 0.25) {
+      UIView.animate(withDuration: 0.15) {
         menu.alpha = 0
       } completion: { _ in
         menu.removeFromSuperview()
@@ -1125,7 +1131,7 @@ extension SpaceController: CommandsHUDDelegate {
 extension SpaceController: SnippetContext {
   func presentSnippetsController() {
     do {
-      let ctrl = try SnippetsViewController.create(context: self)
+      let ctrl = try SnippetsViewController.create(context: self, transitionFrame: _blinkMenu?.bounds)
       ctrl.view.frame = self.view.bounds
       ctrl.willMove(toParent: self)
       self.view.addSubview(ctrl.view)
@@ -1151,12 +1157,5 @@ extension SpaceController: SnippetContext {
     self.focusOnShellAction()
     return self.currentDevice
   }
-
   
 }
-
-
-//extension SpaceController: UIEditMenuInteractionDelegate {
-//  
-//}
-//
