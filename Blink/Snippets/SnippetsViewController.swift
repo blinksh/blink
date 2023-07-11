@@ -63,20 +63,15 @@ struct SwiftUISnippetsView: View {
         Spacer()
       }
     }
-    .padding([.leading, .trailing, .top])
+    .padding([.leading, .trailing, .top], 5) // to match quick actions
     .padding(.bottom, 20)
-//    .contentShape(Rectangle())
-    .gesture(TapGesture().onEnded {
-      if model.editingSnippet == nil && model.newSnippetPresented == false {
-        model.close()
-      }
-    })
     .ignoresSafeArea(.all)
   }
 }
 
-class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
+class SnippetsViewController: UIHostingController<SwiftUISnippetsView>, UIGestureRecognizerDelegate{
   var model: SearchModel!
+  var tapGestureRecogninzer: UITapGestureRecognizer!
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -90,6 +85,10 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
     let ctrl = SnippetsViewController(rootView: rootView)
     ctrl.model = model
     model.rootCtrl = ctrl
+    let tapRecognizer = UITapGestureRecognizer(target: ctrl, action: #selector(_onTap(_:)))
+    ctrl.view.addGestureRecognizer(tapRecognizer)
+    ctrl.tapGestureRecogninzer = tapRecognizer
+    tapRecognizer.delegate = ctrl
     return ctrl
   }
   
@@ -97,5 +96,16 @@ class SnippetsViewController: UIHostingController<SwiftUISnippetsView> {
     super.viewDidAppear(animated)
     self.model.inputView?.becomeFirstResponder()
   }
+  
+  @objc func _onTap(_ recognizer: UITapGestureRecognizer) {
+    if model.editingSnippet == nil && model.newSnippetPresented == false {
+      model.close()
+    }
+  }
+  
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    touch.view == self.view
+  }
+
 }
 

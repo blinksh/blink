@@ -32,6 +32,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BlinkMenu.h"
+#import "BLKDefaults.h"
 #import "Blink-Swift.h"
 
 const BlinkActionID BlinkActionSnippets = @"blink-snippets";
@@ -71,15 +72,19 @@ const CGFloat MENU_PADDING = 10.0;
  
   UIMenuElementState _geoState;
   UIMenuElementState _layoutLockState;
-  UIMenuElementState _compactMode;
   
-  UIButtonConfigurationUpdateHandler _cfgUpdateHandler;
+//  UIButtonConfigurationUpdateHandler _cfgUpdateHandler;
 }
 
 - (instancetype)init
 {
   self = [super init];
   if (self) {
+    _tapToCloseView = [[UIView alloc] init];
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_onTap:)];
+    [_tapToCloseView addGestureRecognizer:recognizer];
+    
+    
     _effect = [[UIVisualEffectView alloc] initWithEffect: [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterial]];
     _effect.layer.cornerRadius = 15.0; // 13.0 but 15.0 is more like Music.app bar
     _effect.layer.cornerCurve = kCACornerCurveContinuous;
@@ -87,7 +92,6 @@ const CGFloat MENU_PADDING = 10.0;
 
     _geoState = UIMenuElementStateOff;
     _layoutLockState = UIMenuElementStateOff;
-    _compactMode = UIMenuElementStateOff;
     
     
     _actions = @[];
@@ -107,10 +111,6 @@ const CGFloat MENU_PADDING = 10.0;
       }
     }];
     
-    __block __weak BlinkMenu * this = self;
-    _cfgUpdateHandler = ^(__kindof UIButton * _Nonnull button) {
-      [this _cfgUpdateHandler: button];
-    };
     _dotsBtn = [self buildButtonWithID:BlinkActionMoreMenu
                             appearance:BlinkActionAppearanceIconCircle];
     
@@ -123,17 +123,8 @@ const CGFloat MENU_PADDING = 10.0;
   return self;
 }
 
-- (void)_cfgUpdateHandler:(UIButton *)btn {
-//  if (btn.state == UIControlStateHighlighted) {
-//    btn.configuration.baseBackgroundColor = UIColor.blueColor;
-//  } else {
-//    btn.configuration.baseBackgroundColor = _backgroundColor;
-//  }
-//  NSLog(@"update handler for %@", @(btn.state));
-//  if (_compact && ![btn.currentTitle isEqualToString: @""]) {
-//    btn.configuration.title = @"";
-//    [btn setTitle:nil forState:UIControlStateNormal];
-//  }
+- (void)_onTap:(UITapGestureRecognizer *)recognizer {
+  [[self.delegate spaceController] toggleQuickActionsAction];
 }
 
 - (UIButton *)buildButtonWithID:(BlinkActionID)elementID appearance: (BlinkActionAppearance) ap {
@@ -214,8 +205,7 @@ const CGFloat MENU_PADDING = 10.0;
   
   // hover effect
   btn.pointerInteractionEnabled = true;
-  
-  btn.configurationUpdateHandler = _cfgUpdateHandler;
+
   return btn;
 }
 
@@ -295,14 +285,16 @@ const CGFloat MENU_PADDING = 10.0;
                          actionWithTitle:noTitle ? @"" : @"Compact"
             image:nil
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      self->_compactMode = self->_compactMode == UIMenuElementStateOn ? UIMenuElementStateOff : UIMenuElementStateOn;
+      
+      [BLKDefaults setCompactQuickActions:!BLKDefaults.compactQuickActions];
+      [BLKDefaults saveDefaults];
      
         [self.superview setNeedsLayout];
      
 
     }];
 //    action.attributes = UIMenuElementAttributesKeepsMenuPresented;
-    action.state = _compactMode;
+    action.state = BLKDefaults.compactQuickActions ? UIMenuElementStateOn : UIMenuElementStateOff;
     return action;
   }
   
@@ -340,9 +332,10 @@ const CGFloat MENU_PADDING = 10.0;
 }
 
 - (CGSize)layoutForSize:(CGSize)size {
+  _tapToCloseView.frame = CGRectMake(0, 0, size.width, size.height);
   BOOL needsCompactMode = false;
   CGFloat windowPadding = 20;
-  if (_compactMode == UIMenuElementStateOn || size.width <= 570) {
+  if (BLKDefaults.compactQuickActions || size.width <= 570) {
     needsCompactMode = true;
   }
   
@@ -457,6 +450,11 @@ const CGFloat MENU_PADDING = 10.0;
   size.height += MENU_PADDING * 2;
   
   return size;
+}
+
+- (void)removeFromSuperview {
+  [super removeFromSuperview];
+  [_tapToCloseView removeFromSuperview];
 }
 
 @end

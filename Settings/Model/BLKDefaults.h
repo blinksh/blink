@@ -80,6 +80,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic) BOOL hapticFeedbackOnBellOff;
 @property (nonatomic) BOOL oscNotifications;
 @property (nonatomic) BOOL invertVerticalScroll;
+@property (nonatomic) BOOL compactQuickActions;
 
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
@@ -100,6 +101,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setHapticFeedbackOnBellOff:(BOOL)state;
 + (void)setOscNotifications:(BOOL)state;
 + (void)setInvertedVerticalScroll:(BOOL) state;
++ (void)setCompactQuickActions:(BOOL)value;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
@@ -126,6 +128,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (BOOL)hapticFeedbackOnBellOff;
 + (BOOL)isOscNotificationsOn;
 + (BOOL)doInvertVerticalScroll;
++ (BOOL)compactQuickActions;
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value;
 @end

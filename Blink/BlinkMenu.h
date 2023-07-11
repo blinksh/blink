@@ -70,6 +70,8 @@ extern const BlinkActionAppearance BlinkActionAppearanceIconCircle;
 
 @property __nullable __weak id<CommandsHUDDelegate> delegate;
 
+@property UIView *tapToCloseView;
+
 - (CGSize)layoutForSize:(CGSize)size;
 - (void)buildMenuWithIDs:(NSArray<BlinkActionID> *)ids andAppearance:(NSDictionary<BlinkActionID, BlinkActionAppearance> *) appearance;
 

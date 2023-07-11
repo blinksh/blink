@@ -89,6 +89,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _hapticFeedbackOnBellOff = [coder decodeBoolForKey:@"hapticFeedbackOnBellOff"];
   _oscNotifications = [coder decodeBoolForKey:@"oscNotifications"];
   _invertVerticalScroll = [coder decodeBoolForKey:@"invertVerticalScroll"];
+  _compactQuickActions = [coder decodeBoolForKey:@"compactQuickActions"];
   
   return self;
 }
@@ -117,6 +118,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_hapticFeedbackOnBellOff forKey:@"hapticFeedbackOnBellOff"];
   [encoder encodeBool:_oscNotifications forKey:@"oscNotifications"];
   [encoder encodeBool:_invertVerticalScroll forKey:@"invertVerticalScroll"];
+  [encoder encodeBool:_compactQuickActions forKey:@"compactQuickActions"];
 }
 
 + (BOOL)supportsSecureCoding {
@@ -420,6 +422,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (BOOL)doInvertVerticalScroll {
   return defaults.invertVerticalScroll;
+}
+
++ (BOOL)compactQuickActions {
+  return defaults.compactQuickActions;
+}
+
++ (void)setCompactQuickActions:(BOOL)value {
+  defaults.compactQuickActions = value;
 }
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {

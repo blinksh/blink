@@ -954,11 +954,11 @@ extension SpaceController {
   }
   
   @objc func showSnippetsAction() {
-    if let vc = _snippetsVC {
+    if let _ = _snippetsVC {
       return
     }
     self.presentSnippetsController()
-    if let menu = _blinkMenu {
+    if let _ = _blinkMenu {
       self.toggleQuickActionsAction()
     }
   }
@@ -974,8 +974,10 @@ extension SpaceController {
       }
     } else {
       let menu = BlinkMenu()
+      self.view.addSubview(menu.tapToCloseView)
+      
       let ids: [BlinkActionID] = [
-        .snippets, .tabClose, .tabCreate, .layoutMenu, .toggleLayoutLock, .toggleGeoTrack
+        .snippets, .tabClose, .tabCreate, .layoutMenu, .toggleLayoutLock, /*.toggleGeoTrack */
       ]
       menu.delegate = self;
       menu.build(withIDs: ids, andAppearance: [:])
