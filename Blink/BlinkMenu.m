@@ -303,11 +303,10 @@ const CGFloat MENU_PADDING = 10.0;
                         actionWithTitle:noTitle ? @"" : @"Lock"
             image:[UIImage systemImageNamed:@"lock.rectangle"]
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      self->_layoutLockState = self->_layoutLockState == UIMenuElementStateOn ? UIMenuElementStateOff : UIMenuElementStateOn;
-//      action.state = self->_layoutLockState;
+      [delegate.currentTerm toggleLayoutLock];
       [self.superview setNeedsLayout];
     }];
-    action.state = _layoutLockState;
+    action.state = delegate.currentTerm.sessionParams.layoutLocked ? UIMenuElementStateOn : UIMenuElementStateOff;
     return action;
   }
   

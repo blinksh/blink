@@ -104,7 +104,7 @@ class SpaceController: UIViewController {
     _snippetsVC?.view.frame = _overlay.frame
     
     if let menu = _blinkMenu {
-      let size = self.view.frame.size;
+      let size = _overlay.frame.size;
       let menuSize = menu.layout(for: size)
       
       menu.frame = CGRect(
@@ -560,6 +560,7 @@ class SpaceController: UIViewController {
     hud.hide(animated: true, afterDelay: 1)
     
     view.window?.windowScene?.title = sceneTitle
+    self.view.setNeedsLayout()
   }
   
 }

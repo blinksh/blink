@@ -121,7 +121,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     return;
   }
   
-  if (CGRectEqualToRect(_currentBounds, self.bounds) && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)) {
+  CGRect webViewFrame = [self webViewFrame];
+  if (CGRectEqualToRect(_currentBounds, self.bounds)
+      && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)
+      && CGRectEqualToRect(webViewFrame, _webView.frame)
+      )
+  {
     return;
   }
   
