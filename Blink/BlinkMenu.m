@@ -44,6 +44,9 @@ const BlinkActionID BlinkActionChangeLayout = @"blink-change-layout";
 const BlinkActionID BlinkActionToggleLayoutLock = @"blink-toggle-layout-lock";
 const BlinkActionID BlinkActionToggleGeoTrack = @"blink-toggle-geo-track";
 const BlinkActionID BlinkActionToggleCompactActions = @"blink-toggle-compact-actions";
+const BlinkActionID BlinkActionLayoutFill = @"blink-layout-fill";
+const BlinkActionID BlinkActionLayoutFit = @"blink-layout-fit";
+const BlinkActionID BlinkActionLayoutCover = @"blink-layout-cover";
 
 NSString * BLINK_ACTION_TOGGLE_PREFIX = @"blink-toggle-";
 
@@ -249,13 +252,46 @@ const CGFloat MENU_PADDING = 10.0;
     }];
   }
   
-  if (elementID == BlinkActionChangeLayout) {
-    return [UIAction
-            actionWithTitle:noTitle ? @"" : @"Change Layout"
-            image:[UIImage systemImageNamed:@"xmark.rectangle"]
+  if (elementID == BlinkActionLayoutFit) {
+    UIAction *action = [UIAction
+            actionWithTitle:noTitle ? @"" : @"Fit"
+            image:nil
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
+      [delegate.currentTerm unlockLayout];
+      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeSafeFit;
+      [self.superview setNeedsLayout];
       
-    }];
+    }
+    ];
+    action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
+    return action;
+  }
+  if (elementID == BlinkActionLayoutFill) {
+    UIAction *action = [UIAction
+            actionWithTitle:noTitle ? @"" : @"Fill"
+            image:nil
+            identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
+      [delegate.currentTerm unlockLayout];
+      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeFill;
+      [self.superview setNeedsLayout];
+    }
+    ];
+    action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
+    return action;
+  }
+  
+  if (elementID == BlinkActionLayoutCover) {
+    UIAction * action = [UIAction
+            actionWithTitle:noTitle ? @"" : @"Cover"
+            image:nil
+            identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
+      [delegate.currentTerm unlockLayout];
+      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeCover;
+      [self.superview setNeedsLayout];
+    }
+    ];
+    action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
+    return action;
   }
   
   if (elementID == BlinkActionTabCreate) {
@@ -314,7 +350,9 @@ const CGFloat MENU_PADDING = 10.0;
     return [UIMenu menuWithTitle:noTitle ? @"" : @"Layout"
                            image: [UIImage systemImageNamed:@"squareshape.squareshape.dashed"]
                       identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:@[
-      [self menuElementForID:BlinkActionChangeLayout appearance:nil]
+      [self menuElementForID:BlinkActionLayoutFit appearance:nil],
+      [self menuElementForID:BlinkActionLayoutFill appearance:nil],
+      [self menuElementForID:BlinkActionLayoutCover appearance:nil]
     ]];
   }
   
@@ -323,7 +361,7 @@ const CGFloat MENU_PADDING = 10.0;
     return [UIMenu menuWithTitle:@"More"
                            image: [UIImage systemImageNamed:@"ellipsis"]
                       identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:@[
-      [self menuElementForID:BlinkActionChangeLayout appearance:nil]
+//      [self menuElementForID:BlinkActionChangeLayout appearance:nil]
     ]];
   }
   

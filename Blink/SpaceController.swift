@@ -977,9 +977,13 @@ extension SpaceController {
       let menu = BlinkMenu()
       self.view.addSubview(menu.tapToCloseView)
       
-      let ids: [BlinkActionID] = [
-        .snippets, .tabClose, .tabCreate, .layoutMenu, .toggleLayoutLock, /*.toggleGeoTrack */
+      var ids: [BlinkActionID] = [
+        .snippets, .tabClose, .tabCreate,
       ]
+      if DeviceInfo.shared().hasCorners {
+        ids.append(contentsOf:  [.layoutMenu])
+      }
+      ids.append(contentsOf:  [.toggleLayoutLock, /*.toggleGeoTrack */])
       menu.delegate = self;
       menu.build(withIDs: ids, andAppearance: [:])
       _blinkMenu = menu
