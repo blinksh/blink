@@ -45,6 +45,7 @@
 
 
 static NSDictionary *predictionModeStrings = nil;
+static NSDictionary *experimentalIPStrings = nil;
 
 static const char *usage_format =
 "Usage: mosh [options] [user@]host|IP [--] [command]"
@@ -103,6 +104,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     @(BKMoshPredictionNever): @"never",
     @(BKMoshPredictionExperimental): @"experimental",
     @(BKMoshPredictionUnknown): @"adaptive"
+  };
+  
+  experimentalIPStrings = @{
+    @(BKMoshExperimentalIPNone): @"default",
+    @(BKMoshExperimentalIPLocal): @"local",
+    @(BKMoshExperimentalIPRemote): @"remote"
   };
 }
 
@@ -201,13 +208,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     return [self dieMsg:@(usage_format)];
   }
   
-  if (!self.sessionParams.experimentalRemoteIp) {
-    self.sessionParams.experimentalRemoteIp = @"default";
-  }
-  if (![@[@"default", @"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
-    return [self dieMsg:@(usage_format)];
-  }
-  
   NSString *userhost = [NSString stringWithFormat:@"%s", argv[optind++]];
   
   NSArray *chunks = [userhost componentsSeparatedByString:@"@"];
@@ -258,6 +258,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:self.sessionParams.predictionMode] == NSNotFound) {
     return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
   }
+  
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: @"default";
+  if (![@[@"default", @"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
+    return [self dieMsg:@"Unknown experimental IP mode. Use one of: default, remote, local"];
+  }
+  
   return 0;
 }
 
@@ -338,6 +344,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
   self.sessionParams.predictOverwrite = self.sessionParams.predictOverwrite ?: host.moshPredictOverwrite;
+
+  NSString *experimentalIP = host.moshExperimentalIP ? experimentalIPStrings[host.moshExperimentalIP] : nil;
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: experimentalIP;
+  return;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server

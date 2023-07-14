@@ -66,6 +66,7 @@ static UICKeyChainStore *__get_keychain() {
   _key = [coder decodeObjectOfClasses:strings forKey:@"key"];
   _moshServer = [coder decodeObjectOfClasses:strings forKey:@"moshServer"];
   _moshPredictOverwrite = [coder decodeObjectOfClasses:strings forKey:@"moshPredictOverwrite"];
+  _moshExperimentalIP = [coder decodeObjectOfClasses:numbers forKey:@"moshExperimentalIP"];
   _moshPort = [coder decodeObjectOfClasses:numbers forKey:@"moshPort"];
   _moshPortEnd = [coder decodeObjectOfClasses:numbers forKey:@"moshPortEnd"];
   _moshStartup = [coder decodeObjectOfClasses:strings forKey:@"moshStartup"];
@@ -92,6 +93,7 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_key forKey:@"key"];
   [encoder encodeObject:_moshServer forKey:@"moshServer"];
   [encoder encodeObject:_moshPredictOverwrite forKey:@"moshPredictOverwrite"];
+  [encoder encodeObject:_moshExperimentalIP forKey:@"moshExperimentalIP"];
   [encoder encodeObject:_moshPort forKey:@"moshPort"];
   [encoder encodeObject:_moshPortEnd forKey:@"moshPortEnd"];
   [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
@@ -116,6 +118,7 @@ static UICKeyChainStore *__get_keychain() {
          moshServer:(NSString *)moshServer
       moshPortRange:(NSString *)moshPortRange
 moshPredictOverwrite:(NSString *)moshPredictOverwrite
+ moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
          startUpCmd:(NSString *)startUpCmd
          prediction:(enum BKMoshPrediction)prediction
            proxyCmd:(NSString *)proxyCmd
@@ -149,6 +152,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
       }
     }
     _moshStartup = startUpCmd;
+    _moshExperimentalIP = [NSNumber numberWithInt:moshExperimentalIP];
     _prediction = [NSNumber numberWithInt:prediction];
     _proxyCmd = proxyCmd;
     _proxyJump = proxyJump;
@@ -219,6 +223,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                  hostKey:(NSString *)hostKey
               moshServer:(NSString *)moshServer
     moshPredictOverwrite:(NSString *)moshPredictOverwrite
+      moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
            moshPortRange:(NSString *)moshPortRange
               startUpCmd:(NSString *)startUpCmd
               prediction:(enum BKMoshPrediction)prediction
@@ -247,6 +252,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                                  moshServer:moshServer
                               moshPortRange:moshPortRange
                        moshPredictOverwrite:moshPredictOverwrite
+                         moshExperimentalIP:moshExperimentalIP
                                  startUpCmd:startUpCmd
                                  prediction:prediction
                                    proxyCmd:proxyCmd
@@ -270,6 +276,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
     bkHost.key = hostKey;
     bkHost.moshServer = moshServer;
     bkHost.moshPredictOverwrite = moshPredictOverwrite;
+    bkHost.moshExperimentalIP = [NSNumber numberWithInt:moshExperimentalIP];
     bkHost.moshPort = nil;
     bkHost.moshPortEnd = nil;
     if (![moshPortRange isEqualToString:@""]) {
@@ -416,6 +423,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
   [hostRecord setValue:host.moshPortEnd forKey:@"moshPortEnd"];
   [hostRecord setValue:host.moshServer forKey:@"moshServer"];
   [hostRecord setValue:host.moshPredictOverwrite forKey:@"moshPredictOverwrite"];
+  [hostRecord setValue:host.moshExperimentalIP forKey:@"moshExperimentalIP"];
   [hostRecord setValue:host.moshStartup forKey:@"moshStartup"];
   [hostRecord setValue:host.password forKey:@"password"];
   [hostRecord setValue:host.passwordRef forKey:@"passwordRef"];
@@ -451,6 +459,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                                       moshServer:[hostRecord valueForKey:@"moshServer"]
                                    moshPortRange:moshPortRange
                             moshPredictOverwrite:[hostRecord valueForKey:@"moshPredictOverwrite"]
+                            moshExperimentalIP:[hostRecord valueForKey:@"moshExperimentalIP"]
                                       startUpCmd:[hostRecord valueForKey:@"moshStartup"]
                                       prediction:[[hostRecord valueForKey:@"prediction"] intValue]
                                         proxyCmd:[hostRecord valueForKey:@"proxyCmd"]

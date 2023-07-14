@@ -201,24 +201,26 @@ struct FieldSSHKey: View {
 }
 
 
-fileprivate struct FieldMoshPrediction: View {
-  @Binding var value: BKMoshPrediction
-  @Binding var overwriteValue: Bool
+fileprivate struct FieldMoshCustomOptions: View {
+  @Binding var prediction: BKMoshPrediction
+  @Binding var overwrite: Bool
+  @Binding var experimentalIP: BKMoshExperimentalIP
   var enabled: Bool
   
   var body: some View {
     Row(
       content: {
         HStack {
-          FormLabel(text: "Prediction")
+          FormLabel(text: "Advanced")
           Spacer()
-          Text(value.label).font(.system(.subheadline)).foregroundColor(.secondary)
+          //Text(prediction.label + "...").font(.system(.subheadline)).foregroundColor(.secondary)
         }
       },
       details: {
-        MoshPredictionPickerView(
-          currentValue: enabled ? $value : .constant(value),
-          overwriteValue: enabled ? $overwriteValue : .constant(overwriteValue)
+        MoshCustomOptionsPickerView(
+          predictionValue: enabled ? $prediction : .constant(prediction),
+          overwriteValue: enabled ? $overwrite : .constant(overwrite),
+          experimentalIPValue: enabled ? $experimentalIP : .constant(experimentalIP)
         )
       }
     )
@@ -320,6 +322,7 @@ struct HostView: View {
   @State private var _moshPort: String = ""
   @State private var _moshPrediction: BKMoshPrediction = BKMoshPredictionAdaptive
   @State private var _moshPredictOverwrite: Bool = false
+  @State private var _moshExperimentalIP: BKMoshExperimentalIP = BKMoshExperimentalIPNone
   @State private var _moshCommand: String = ""
   @State private var _domains: [FileProviderDomain] = []
   @State private var _domainsListVersion = 0;
@@ -412,9 +415,10 @@ struct HostView: View {
         Field("Server",  $_moshServer,  next: "moshPort",    placeholder: "path/to/mosh-server")
         Field("Port",    $_moshPort,    next: "moshCommand", placeholder: "UDP PORT[:PORT2]", id: "moshPort", kbType: .numbersAndPunctuation)
         Field("Command", $_moshCommand, next: "Alias",       placeholder: "screen -r or tmux attach", id: "moshCommand")
-        FieldMoshPrediction(
-          value: $_moshPrediction,
-          overwriteValue: $_moshPredictOverwrite,
+        FieldMoshCustomOptions(
+          prediction: $_moshPrediction,
+          overwrite: $_moshPredictOverwrite,
+          experimentalIP: $_moshExperimentalIP,
           enabled: _enabled
         )
       }.disabled(!_enabled)
@@ -504,6 +508,7 @@ struct HostView: View {
 
       _moshPrediction.rawValue = UInt32(host.prediction.intValue)
       _moshPredictOverwrite = host.moshPredictOverwrite == "yes"
+      _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP.intValue)
       _moshServer  = host.moshServer ?? ""
       _moshCommand = host.moshStartup ?? ""
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
@@ -562,6 +567,7 @@ struct HostView: View {
       hostKey: _sshKeyName.isEmpty ? "" : _sshKeyName[0],
       moshServer: _moshServer,
       moshPredictOverwrite: _moshPredictOverwrite ? "yes" : nil,
+      moshExperimentalIP: _moshExperimentalIP,
       moshPortRange: _moshPort,
       startUpCmd: _moshCommand,
       prediction: _moshPrediction,
@@ -615,6 +621,7 @@ struct HostView: View {
       hostKey: iCloudHost.key,
       moshServer: iCloudHost.moshServer,
       moshPredictOverwrite: iCloudHost.moshPredictOverwrite,
+      moshExperimentalIP: BKMoshExperimentalIP(UInt32(iCloudHost.moshExperimentalIP?.intValue ?? 0)),
       moshPortRange: moshPortRange,
       startUpCmd: iCloudHost.moshStartup,
       prediction: BKMoshPrediction(UInt32(iCloudHost.prediction?.intValue ?? 0)),
