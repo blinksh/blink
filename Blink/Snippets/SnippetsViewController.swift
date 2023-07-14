@@ -58,6 +58,7 @@ struct SwiftUISnippetsView: View {
               .regularMaterial,
               in: RoundedRectangle(cornerRadius: 15, style: .continuous)
             )
+            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
         }
         
         Spacer()
