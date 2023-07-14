@@ -40,14 +40,10 @@ class SearchModel: ObservableObject {
   weak var rootCtrl: UIViewController? = nil
   weak var inputView: UIView? = nil
   
-//  @Published var isOn = false
-  
   var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.xcode))
   var searchResults = SearchAccumulator(query: "", style: .light(.xcode))
   var fuzzyCancelable: AnyCancellable? = nil
   var searchCancelable: AnyCancellable? = nil
-
-  //var fuzzyAttributedStrings: [Snippet: AttributedString] = [:]
   
   public var snippetContext: (any SnippetContext)? = nil
   
@@ -351,6 +347,7 @@ extension SearchModel {
   func fuzzySearch(_ query: String, _ searchQuery: String) {
     guard self.fuzzyResults.query != query
     else {
+      self.fuzzyCancelable = nil // <- cancel fuzzy
       return search(query: searchQuery)
     }
 
@@ -383,6 +380,7 @@ extension SearchModel {
 
   func search(query: String) {
     if self.fuzzyResults.isEmpty {
+      self.searchCancelable = nil
       self.displayResults = []
       return
     }
