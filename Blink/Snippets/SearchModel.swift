@@ -91,10 +91,8 @@ class SearchModel: ObservableObject {
   }
 
   func switchStyle(for scheme: ColorScheme) {
-    if scheme == .dark {
-      self.style = .dark(.xcode)
-    } else {
-      self.style = .light(.xcode)
+    if self.style.colorSheme != scheme {
+      self.style = .init(.xcode, colorScheme: scheme)
     }
   }
 
@@ -392,6 +390,7 @@ extension SearchModel {
     if query.isEmpty {
       self.searchResults.clear()
       self.displayResults = self.fuzzyResults.snippets
+      self.searchCancelable = nil
       return
     }
 
