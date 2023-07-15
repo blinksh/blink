@@ -34,7 +34,7 @@ import Foundation
 import BlinkSnippets
 import HighlightSwift
 
-let ResultsLimit = 30;
+let ResultsLimit = 60;
 
 public struct Accumulator<V> {
   var snippets: [Snippet] = []
@@ -80,7 +80,7 @@ public struct Accumulator<V> {
     if query.isEmpty {
       return wideIndex
     }
-    if newQuery.hasPrefix(query) {
+    if newQuery.hasPrefix(query) && self.snippets.count < ResultsLimit  {
       return self.snippets
     }
     return wideIndex
