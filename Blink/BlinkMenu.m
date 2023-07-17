@@ -58,6 +58,27 @@ const BlinkActionAppearance BlinkActionAppearanceIconCircle = @"icon-circle";
 const CGFloat MENU_ITEM_SPACING = 10.0;
 const CGFloat MENU_PADDING = 10.0;
 
+@interface DotsButton : UIButton
+
+@end
+
+@implementation DotsButton
+
+- (instancetype)initWithConfiguration: (UIButtonConfiguration *)configuration {
+  if (self = [super initWithFrame:CGRectZero]) {
+    [self setConfiguration:configuration];
+  }
+  
+  return self;
+}
+
+- (CGPoint)menuAttachmentPointForConfiguration:(UIContextMenuConfiguration *)configuration {
+  CGPoint res = [super menuAttachmentPointForConfiguration:configuration];
+  return CGPointMake(res.x, -24); // always at the top
+}
+
+@end
+
 
 @implementation BlinkMenu {
   
@@ -183,7 +204,11 @@ const CGFloat MENU_PADDING = 10.0;
       [btn setSelected: action.state == UIMenuElementStateOn];
     }
   } else if ([element isMemberOfClass:[UIMenu class]]) {
-    btn = [UIButton buttonWithConfiguration:cfg primaryAction:nil];
+    if (elementID == BlinkActionMoreMenu) {
+      btn = [[DotsButton alloc] initWithConfiguration:cfg];
+    } else {
+      btn = [UIButton buttonWithConfiguration:cfg primaryAction:nil];
+    }
     btn.menu = (UIMenu *)element;
     [btn setShowsMenuAsPrimaryAction:YES];
     
@@ -191,6 +216,9 @@ const CGFloat MENU_PADDING = 10.0;
     [btn setImage:element.image forState:UIControlStateNormal];
     if (ap != BlinkActionAppearanceIcon && ap != BlinkActionAppearanceIconCircle) {
       [btn setTitle:element.title forState:UIControlStateNormal];
+    }
+    if (elementID == BlinkActionMoreMenu) {
+      [btn sizeToFit];
     }
   }
   
