@@ -506,9 +506,9 @@ struct HostView: View {
         }
       }
 
-      _moshPrediction.rawValue = UInt32(host.prediction.intValue)
+      _moshPrediction.rawValue = UInt32(host.prediction?.intValue ?? 0)
       _moshPredictOverwrite = host.moshPredictOverwrite == "yes"
-      _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP.intValue)
+      _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP?.intValue ?? 0)
       _moshServer  = host.moshServer ?? ""
       _moshCommand = host.moshStartup ?? ""
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
