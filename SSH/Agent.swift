@@ -124,10 +124,11 @@ public class SSHAgent {
 
   public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) -> Bool {
     let cKey = SSHAgentKey(key, named: name, constraints: constraints)
-    // TODO: check constraints
-    for k in ring {
+    for (x, k) in ring.enumerated() {
       if cKey.name == k.name {
-        return false
+        // Replace the key
+        ring[x] = cKey
+        break
       }
     }
     ring.append(cKey)
