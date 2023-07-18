@@ -161,6 +161,10 @@ class KBTracker: NSObject {
     return data
   }
   
+  func kbAlreadyConfigured() -> Bool {
+    _loadKBConfigData() != nil
+  }
+  
   func loadConfig() -> KBConfig {
     guard
       let data = _loadKBConfigData(),

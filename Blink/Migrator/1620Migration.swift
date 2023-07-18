@@ -29,44 +29,36 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 import Foundation
+import CoreData
 
 
-@objc class Migrator : NSObject {
-  @objc static func perform() {
-    Self.perform(steps: [MigrationToAppGroup(), MigrationAddSnippetsShortcut()])
-  }
+class MigrationAddSnippetsShortcut: MigrationStep {
+  var version: Int { get { 1620 } }
   
-  static func perform(steps: [MigrationStep]) {
-    let migratorFileURL = URL(fileURLWithPath: BlinkPaths.groupContainerPath()).appendingPathComponent(".migrator")
+  func execute() throws {
+   
+    guard KBTracker.shared.kbAlreadyConfigured() else {
+      // user still uses default configuration
+      return
+    }
     
-    let currentVersionString = try? String(contentsOf: migratorFileURL, encoding: .utf8)
-    var currentVersion = Int(currentVersionString ?? "0") ?? 0
-    
-    steps.forEach { step in
-      guard step.version > currentVersion else {
-        return
-      }
-      
-      do {
-        try step.execute()
-        currentVersion = step.version
-        try String(currentVersion)
-          .data(using: .utf8)!
-          .write(to: migratorFileURL,
-                 options:  [.atomic, .noFileProtection])
-      } catch {
-        print(error)
-        exit(0)
+    let cfg = KBTracker.shared.loadConfig()
+    let contains = cfg.shortcuts.contains { shortcut in
+      switch shortcut.action {
+      case KeyBindingAction.command(Command.snippetsShow): return true;
+      default: return false;
       }
     }
+    
+    if contains {
+      // user already configured snippets show action
+      return
+    }
+    
+    cfg.shortcuts.append(KeyShortcut.snippetsShowShortcut)
+    KBTracker.shared.saveAndApply(config: cfg)
+    
   }
-}
 
-protocol MigrationStep {
-  // Migration steps should be idempotent
-  func execute() throws
-  // After a step is applied, the version is updated
-  var version: Int { get }
 }
