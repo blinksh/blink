@@ -955,6 +955,9 @@ extension SpaceController {
   }
   
   @objc func showSnippetsAction() {
+    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures else {
+      return
+    }
     if let _ = _snippetsVC {
       return
     }
@@ -977,9 +980,13 @@ extension SpaceController {
       let menu = BlinkMenu()
       self.view.addSubview(menu.tapToCloseView)
       
-      var ids: [BlinkActionID] = [
-        .snippets, .tabClose, .tabCreate,
-      ]
+      var ids: [BlinkActionID] = []
+      if EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures {
+        ids.append(contentsOf:  [.snippets])
+      }
+      
+      ids.append(contentsOf:  [.tabClose, .tabCreate])
+      
       if DeviceInfo.shared().hasCorners {
         ids.append(contentsOf:  [.layoutMenu])
       }
