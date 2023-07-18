@@ -222,10 +222,6 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     get {
       _keyCommands
     }
-    
-    set {
-      _keyCommands = newValue
-    }
   }
   
   required init?(coder: NSCoder) {

@@ -68,7 +68,7 @@ public enum ShellOutputFormatter {
       .components(separatedBy: .newlines) {
       let trimmedLine = line.trimmingCharacters(in: .whitespaces)
 
-      if trimmedLine.isEmpty {
+      if trimmedLine.isEmpty || trimmedLine.hasPrefix("#") {
         continue
       }
 
