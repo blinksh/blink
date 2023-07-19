@@ -486,9 +486,8 @@ extension TermController: SuspendableSession {
       device: _termDevice,
       andParams: _sessionParams)
     
-    if WhatsNewInfo.mustDisplayVersionPrompt() {
-      _termDevice.writeOutLn(WhatsNewInfo.prompt(viewWidth: view.bounds.width))
-      WhatsNewInfo.versionPromptDisplayed()
+    if let initialPrompt = WhatsNewInfo.mustDisplayInitialPrompt() {
+      _termDevice.writeOutLn(initialPrompt)
     }
     
     _session?.delegate = self

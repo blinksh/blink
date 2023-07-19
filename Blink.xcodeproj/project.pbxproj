@@ -146,6 +146,7 @@
 		BD9EA216271F83B400874007 /* BlinkLoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */; };
 		BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD9EA218271F846400874007 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
+		BDACC7752A6F100D00D0B261 /* TrialNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDACC7742A6F100D00D0B261 /* TrialNotification.swift */; };
 		BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB72CB127A9C08500DCC446 /* StoreKit.framework */; };
 		BDBFA30D2728914F00C77798 /* BlinkCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; };
 		BDBFA3122728914F00C77798 /* BlinkCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3112728914F00C77798 /* BlinkCodeTests.swift */; };
@@ -808,6 +809,7 @@
 		BD9EA20A271F62ED00874007 /* BlinkLogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkLogging.swift; sourceTree = "<group>"; };
 		BD9EA20C271F664D00874007 /* Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publisher.swift; sourceTree = "<group>"; };
 		BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkLoggingTests.swift; sourceTree = "<group>"; };
+		BDACC7742A6F100D00D0B261 /* TrialNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialNotification.swift; sourceTree = "<group>"; };
 		BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/iOSSupport/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		BDB72CB127A9C08500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BDB8BEA726E008190093BF48 /* OwnAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnAlertController.swift; sourceTree = "<group>"; };
@@ -1974,6 +1976,7 @@
 				D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */,
 				D2AD8E6727A2BAFA00DED28D /* Purchases.swift */,
 				D2AD8E6927A2BAFA00DED28D /* Paywall */,
+				BDACC7742A6F100D00D0B261 /* TrialNotification.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -3145,6 +3148,7 @@
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
+				BDACC7752A6F100D00D0B261 /* TrialNotification.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,

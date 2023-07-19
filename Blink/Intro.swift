@@ -37,53 +37,58 @@ enum BlinkColors {
   static let blink = Color(red: 10.0 / 256.0, green: 224.0 / 256.0, blue: 240.0 / 256.0)
   static let build = Color(red: 116.0 / 256.0, green: 251.0 / 256.0, blue: 152.0 / 256.0)
   static let code = Color(red: 255.0 / 256.0, green: 184.0 / 256.0, blue: 0.0 / 256.0)
-  
+
   static let secondaryBtnBG = Color(red: 16.0 / 256.0, green: 40.0 / 256.0, blue: 41.0 / 256.0)
   static let secondaryBtnText = Color(red: 10.0 / 256.0, green: 224.0 / 256.0, blue: 240.0 / 256.0)
   static let secondaryBtnBorder = Color(red: 42.0 / 256.0, green: 80.0 / 256.0, blue: 83.0 / 256.0)
-  
+
   static let primaryBtnBG = Color(red: 86.0 / 256.0, green: 62.0 / 256.0, blue: 0.0 / 256.0)
   static let primaryBtnText = BlinkColors.code
   static let primaryBtnBorder = Color(red: 168.0 / 256.0, green: 121.0 / 256.0, blue: 0.0 / 256.0)
-  
+
   static let headerText = BlinkColors.code
   static let infoText = Color(red: 195.0 / 256.0, green: 219.0 / 256.0, blue: 219.0 / 256.0)
-  
+
   static let linearGradient1 = Color(red: 20.0 / 256.0, green: 33.0 / 256.0, blue: 33.0 / 256.0)
 //  static let linearGradient2 = Color(red: 9.0 / 256.0, green: 13.0 / 256.0, blue: 14.0 / 256.0)
   static let linearGradient2 = Color(red: (10 + 9.0) / 256.0, green: (10 + 13.0) / 256.0, blue: (10 + 14.0) / 256.0)
-  
+
   static let radialGradient1 = Color(red: 1.0 / 256.0, green: 4.0 / 256.0, blue: 4.0 / 256.0)
   static let radialGradient2 = Color(red: 20.0 / 256.0, green: 33.0 / 256.0, blue: 33.0 / 256.0, opacity: 0)
-  
+
   static let blinkBG = Color(red: 16.0 / 256.0, green: 40.0 / 256.0, blue: 41.0 / 256.0)
   static let buildBG = Color(red: 24.0 / 256.0, green: 56.0 / 256.0, blue: 32.0 / 256.0)
   static let codeBG = Color(red: 86.0 / 256.0, green: 62.0 / 256.0, blue: 0.0 / 256.0)
-  
+
   static let blinkText = Color(red: 195.0 / 256.0, green: 219.0 / 256.0, blue: 219.0 / 256.0)
   static let buildText = Color(red: 207.0 / 256.0, green: 241.0 / 256.0, blue: 216.0 / 256.0)
   static let codeText = Color(red: 240.0 / 256.0, green: 221.0 / 256.0, blue: 171.0 / 256.0)
-  
+
   static let termsText = Color(red: 92.0 / 256.0, green: 117.0 / 256.0, blue: 117.0 / 256.0)
-  
+
   static let purchase = Color(red: 149.0 / 256.0, green: 104.0 / 256.0, blue: 203.0 / 256.0)
-  
+
 //  #5C7575
 }
 
 enum BlinkFonts {
   static let header = Font.custom("PragmataPro Mono Liga", size: 34, relativeTo: .title)
   static let headerCompact = Font.custom("PragmataPro Mono Liga", size: 28, relativeTo: .title)
-  
+
   static let info = Font.system(.title3)
   static let infoCompact = Font.system(.body)
   static let btn = Font.custom("PragmataPro Mono Liga", size: 16, relativeTo: .body)
   static let btnSub = Font.custom("PragmataPro Mono Liga", size: 12, relativeTo: .body)
-  
+
   static let bullet = Font.custom("PragmataPro Mono Liga", size: 24, relativeTo: .body).weight(.bold)
   static let bulletCompact = Font.custom("PragmataPro Mono Liga", size: 18, relativeTo: .body).weight(.bold)
   static let bulletText = Font.custom("PragmataPro Mono Liga", size: 18, relativeTo: .body).weight(.bold)
   static let bulletTextCompact = Font.custom("PragmataPro Mono Liga", size: 14, relativeTo: .body).weight(.bold)
+
+  static let offeringSubheader = Font.body.weight(.bold)
+  static let offeringCompactSubheader = Font.footnote.weight(.bold)
+  static let offeringInfo = Font.system(.body)
+  static let offeringInfoCompact = Font.footnote
 }
 
 extension Shape {
@@ -101,30 +106,30 @@ struct BlinkButtonWithoutHoverStyle: ButtonStyle {
   let disabled: Bool
   let inProgress: Bool
   let minWidth: CGFloat?
-  
+
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
       .multilineTextAlignment(.center)
       .lineSpacing(5.0)
       .font(BlinkFonts.btn)
       .foregroundColor(inProgress ? bgColor : textColor)
-    
+
       .padding(EdgeInsets(top: 16, leading: 28, bottom: 16, trailing: 28))
       .frame(minWidth: minWidth)
       .background(
         RoundedRectangle(cornerRadius: 6, style: .continuous)
           .fill((configuration.isPressed) ?  borderColor : bgColor, strokeBorder: borderColor)
-        
+
       )
       .opacity((disabled && !inProgress) ? 0.5 : 1.0)
-    
+
       .overlay(Group {
         if inProgress {
           ProgressView().tint(textColor)
         }
       })
   }
-  
+
   static func secondary(disabled: Bool, inProgress: Bool, minWidth: CGFloat? = nil) -> Self {
     Self(
       textColor: BlinkColors.secondaryBtnText,
@@ -135,7 +140,7 @@ struct BlinkButtonWithoutHoverStyle: ButtonStyle {
       minWidth: minWidth
     )
   }
-  
+
   static func primary(disabled: Bool, inProgress: Bool, minWidth: CGFloat? = nil) -> Self {
     Self(
       textColor: BlinkColors.primaryBtnText,
@@ -146,7 +151,7 @@ struct BlinkButtonWithoutHoverStyle: ButtonStyle {
       minWidth: minWidth
     )
   }
-  
+
 }
 
 struct BlinkButtonStyle: ButtonStyle {
@@ -156,23 +161,23 @@ struct BlinkButtonStyle: ButtonStyle {
   let disabled: Bool
   let inProgress: Bool
   let minWidth: CGFloat?
-  
+
   func makeBody(configuration: Configuration) -> some View {
       configuration.label
         .multilineTextAlignment(.center)
         .lineSpacing(5.0)
         .font(BlinkFonts.btn)
         .foregroundColor(inProgress ? bgColor : textColor)
-      
+
         .padding(EdgeInsets(top: 16, leading: 28, bottom: 16, trailing: 28))
         .frame(minWidth: minWidth)
         .background(
           RoundedRectangle(cornerRadius: 6, style: .continuous)
             .fill((configuration.isPressed) ?  borderColor : bgColor, strokeBorder: borderColor)
-          
+
         )
         .opacity((disabled && !inProgress) ? 0.5 : 1.0)
-        
+
         .overlay(Group {
           if inProgress {
             ProgressView().tint(textColor)
@@ -180,7 +185,7 @@ struct BlinkButtonStyle: ButtonStyle {
         })
         .hoverEffect(.lift)
   }
-  
+
   static func secondary(disabled: Bool, inProgress: Bool, minWidth: CGFloat? = nil) -> Self {
     Self(
       textColor: BlinkColors.secondaryBtnText,
@@ -191,7 +196,7 @@ struct BlinkButtonStyle: ButtonStyle {
       minWidth: minWidth
     )
   }
-  
+
   static func primary(disabled: Bool, inProgress: Bool, minWidth: CGFloat? = nil) -> Self {
     Self(
       textColor: BlinkColors.primaryBtnText,
@@ -202,13 +207,10 @@ struct BlinkButtonStyle: ButtonStyle {
       minWidth: minWidth
     )
   }
-    
 }
 
-
-
 struct PageCtx {
-  
+
   let classicsMode: Bool
   let proxy: GeometryProxy
   let dynamicTypeSize: DynamicTypeSize
@@ -218,10 +220,10 @@ struct PageCtx {
   let getStartedHandler: () -> ()
   let checkBlinkBuildHandler: () -> ()
   let checkBlinkPlusHandler: () -> ()
-  let nextPageHandler: () -> ()
+  let checkOfferingsHandler: () -> ()
   let urlHandler: (URL) -> ()
-  
-  
+
+
   func pagePadding() -> EdgeInsets {
     let padding = EdgeInsets(top: 50, leading: 50, bottom: 50, trailing: 50)
     if proxy.size.width < 500 || proxy.size.height < 400 {
@@ -229,14 +231,14 @@ struct PageCtx {
     }
     return padding
   }
-  
+
   func outterPadding() -> CGFloat? {
     if proxy.size.width < 500 || proxy.size.height < 400 {
       return 0
     }
     return nil
   }
-  
+
   func pagingPadding() -> EdgeInsets {
     let padding = EdgeInsets(top: 50, leading: 34, bottom: 50, trailing: 34)
     if proxy.size.width < 500 {
@@ -247,15 +249,27 @@ struct PageCtx {
     }
     return padding
   }
-  
+
   func headerFont() -> Font {
     verticalCompact ? BlinkFonts.headerCompact : BlinkFonts.header
   }
-  
+
   func infoFont() -> Font {
     (verticalCompact || horizontalCompact) ? BlinkFonts.infoCompact : BlinkFonts.info
   }
-  
+
+  func offeringHeaderFont() -> Font {
+    verticalCompact ? BlinkFonts.headerCompact : BlinkFonts.header
+  }
+
+  func offeringSubheaderFont() -> Font {
+    verticalCompact ? BlinkFonts.offeringCompactSubheader : BlinkFonts.offeringSubheader
+  }
+
+  func offeringInfoFont() -> Font {
+    (verticalCompact || horizontalCompact) ? BlinkFonts.offeringInfoCompact : BlinkFonts.offeringInfo
+  }
+
   func bulletPadding() -> EdgeInsets {
     if dynamicTypeSize.isAccessibilitySize {
       return EdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
@@ -264,62 +278,54 @@ struct PageCtx {
     ? EdgeInsets(top: 4, leading: 6, bottom: 4, trailing: 6)
     : EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
   }
-  
+
   func bulletFont() -> Font {
     verticalCompact ? BlinkFonts.bulletCompact : BlinkFonts.bullet
   }
-  
+
   func bulletTextFont() -> Font {
     verticalCompact ? BlinkFonts.bulletTextCompact : BlinkFonts.bulletText
   }
-  
+
   func pageMaxHeight() -> CGFloat {
     if dynamicTypeSize <= .medium {
       return 780
     }
-    
+
     if dynamicTypeSize <= .large {
       return 820
     }
-    
+
     if dynamicTypeSize <= .xLarge {
       return 900
     }
-    
+
     if dynamicTypeSize <= .xxLarge {
       return 1000
     }
-    
+
     return 1200
-    
   }
-  
+
   init(
     classicsMode: Bool,
     proxy: GeometryProxy, dynamicTypeSize: DynamicTypeSize, urlHandler:  @escaping (URL) -> (),
        getStartedHandler: @escaping () -> (),
+       checkOfferingsHandler: @escaping () -> (),
        checkBlinkBuildHandler: @escaping () -> (),
-       checkBlinkPlusHandler: @escaping () -> (),
-       nextPageHandler: @escaping () -> ()
+       checkBlinkPlusHandler: @escaping () -> ()
   ) {
     self.classicsMode = classicsMode
     self.proxy = proxy
     self.dynamicTypeSize = dynamicTypeSize
     self.getStartedHandler = getStartedHandler
+    self.checkOfferingsHandler = checkOfferingsHandler
     self.checkBlinkBuildHandler = checkBlinkBuildHandler
     self.checkBlinkPlusHandler = checkBlinkPlusHandler
     self.horizontalCompact =  proxy.size.width < 400
     self.verticalCompact = proxy.size.height < 706
     self.portrait = proxy.size.width < proxy.size.height
     self.urlHandler = urlHandler
-    self.nextPageHandler = nextPageHandler
-  }
-  
-  public func image(horizontal: String, vertical: String?) -> String {
-    if let vertical = vertical {
-      return self.portrait ? vertical : horizontal
-    }
-    return horizontal
   }
 }
 
@@ -327,7 +333,7 @@ struct CallToActionButtons: View {
   let ctx: PageCtx
   let url: URL
   let text: Text
-  
+
   var body: some View {
     HStack {
       Button(
@@ -336,7 +342,7 @@ struct CallToActionButtons: View {
       )
       .buttonStyle(BlinkButtonStyle.secondary(disabled: false, inProgress: false))
       Spacer().frame(width: 20)
-      
+
       Button("GET STARTED") {
         ctx.getStartedHandler()
       }.buttonStyle(BlinkButtonStyle.primary(disabled: false, inProgress: false))
@@ -348,7 +354,7 @@ struct CallToActionButtons: View {
 struct FreeUsersCallToActionButtons: View {
   let ctx: PageCtx
   let text: Text
-  
+
   var body: some View {
     HStack {
       Button(
@@ -359,7 +365,7 @@ struct FreeUsersCallToActionButtons: View {
       )
       .buttonStyle(BlinkButtonStyle.secondary(disabled: false, inProgress: false))
       Spacer().frame(width: 20)
-      
+
       Button("GET STARTED") {
         ctx.getStartedHandler()
       }.buttonStyle(BlinkButtonStyle.primary(disabled: false, inProgress: false))
@@ -368,37 +374,27 @@ struct FreeUsersCallToActionButtons: View {
   }
 }
 
-
-struct TwoLineButton: View {
-  let line1: Text
-  let line2: String
-  let disabled: Bool
-  let inProgress: Bool
-  let action: () -> ()
-  
-  var body: some View {
-    Button("\(line1)\n\(Text(line2).font(BlinkFonts.btnSub))", action: action)
-    .buttonStyle(BlinkButtonStyle.primary(disabled: disabled, inProgress: inProgress, minWidth: 280))
-    .frame(minHeight: 68)
-    .disabled(disabled)
-  }
-}
-
-
 struct TermsButtons: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
   @State var opacity: CGFloat = 0.5
-  
+
   var body: some View {
     HStack {
+      Button("FAQ") {
+        ctx.urlHandler(URL(string: "https://blink.sh#")!)
+      }
+      .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+
+      Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+
       Button("TERMS") {
         ctx.urlHandler(URL(string: "https://blink.sh/build-tos")!)
       }
       .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-      
+
       Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-      
+
       if _purchases.restoreInProgress {
         Text("RESTORING...").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub).opacity(self.opacity).onAppear(perform: {
           withAnimation(.easeOut.repeatForever(autoreverses: true)) {
@@ -416,8 +412,46 @@ struct TermsButtons: View {
   }
 }
 
+struct TabViewControls: View {
+  @Binding var pageIndex: Int
+  let firstPageIndex: Int
+  let lastPageIndex: Int
+
+  var body: some View {
+    HStack {
+      Button {
+        if self.pageIndex > self.firstPageIndex {
+          withAnimation {
+            self.pageIndex -= 1
+          }
+        }
+      } label: {
+        Image(systemName: "chevron.compact.left").font(.title).foregroundColor(BlinkColors.code)
+          .padding()
+      }
+        .opacity(pageIndex == self.firstPageIndex ? 0.3 : 1.0).disabled(pageIndex == self.firstPageIndex)
+        .hoverEffect(.highlight)
+        .keyboardShortcut(.leftArrow)
+      Spacer()
+      Button {
+        if self.pageIndex < lastPageIndex {
+          withAnimation {
+            self.pageIndex += 1
+          }
+        }
+      } label: {
+        Image(systemName: "chevron.compact.right").font(.title).foregroundColor(BlinkColors.code)
+          .padding()
+      }
+        .opacity(pageIndex == lastPageIndex ? 0.3 : 1.0).disabled(pageIndex == lastPageIndex)
+        .hoverEffect(.highlight)
+        .keyboardShortcut(.rightArrow)
+
+    }
+  }
+}
+
 struct PageInfo: Identifiable {
-  let idx: Int
   let title: String
   let info: Text
   let image: String
@@ -425,85 +459,86 @@ struct PageInfo: Identifiable {
   let imageMaxSize: CGSize
   let url: URL
   let linkText: Text
-  
-  var id: Int { idx }
-  
-  init(idx: Int, title: String, linkText: Text, url: URL, info: Text, image: String, imageMaxSize: CGSize = CGSize(width: 700, height: 450)) {
-    self.idx = idx
+  let compactInfo: Text
+
+  var id: String { title }
+
+  init(title: String, linkText: Text, url: URL, info: Text, compactInfo: Text, image: String, imageMaxSize: CGSize = CGSize(width: 700, height: 450)) {
     self.title = title
     self.linkText = linkText
     self.url = url
     self.info = info
+    self.compactInfo = compactInfo
     self.image = image
     self.verticalImage = nil
     self.imageMaxSize = imageMaxSize
   }
-  
-  init(idx: Int, title: String, linkText: Text, url: URL, info: Text, image: String, verticalImage: String, imageMaxSize: CGSize = CGSize(width: 700, height: 450)) {
-    self.idx = idx
+
+  init(title: String, linkText: Text, url: URL, info: Text, compactInfo: Text, image: String, verticalImage: String, imageMaxSize: CGSize = CGSize(width: 700, height: 450)) {
     self.title = title
     self.linkText = linkText
     self.url = url
     self.info = info
+    self.compactInfo = compactInfo
     self.image = image
     self.verticalImage = verticalImage
     self.imageMaxSize = imageMaxSize
   }
-  
-  static func pages() -> [PageInfo] {
-    [
-      PageInfo(
-        idx: 1,
-        title: "MULTIPLE TERMINALS & WINDOWS",
-        linkText: Text("READ DOCS"),
-        url: URL(string: "https://docs.blink.sh/basics/navigation")!,
-        info: Text("Use **pinch** to zoom the terminal. Use **two finger tap** to create a new shell. Use **slide** to move between shells. Use **three finger tap** for menu. Type **help** if you need it."),
-        image: "intro-windows"
-      ),
-      PageInfo(
-        idx: 2,
-        title: "YOUR HOSTS & KEYS, EVERYWHERE",
-        linkText: Text("READ DOCS"),
-        url: URL(string: "https://docs.blink.sh/basics/hosts")!,
-        info: Text("Type **`config`** to enter the configuration. Setup remote connections through Hosts and Keys. Add special keys and keyboard shortcuts. Customize the shell appearance through fonts and themes."),
-        image: "intro-settings"
-      ),
-      PageInfo(
-        idx: 3,
-        title: "SSH, MOSH & BASIC TOOLS",
-        linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
-        url: URL(string: "https://youtube.com/shorts/VYmrSlG9lX0")!,
-        info: Text("Type **`mosh`** for high-performance remote shells. Type **`ssh`** for secure shells and tunnels. Type **`sftp`** or **`scp`** for secure file transfer. Have access to UNIX tools like **`cd`**, **`ls`**, **`ping`**, etc..."),
-        image: "intro-commands"
-      ),
-      PageInfo(
-        idx: 4,
-        title: "BLINK CODE, YOUR NEW SUPERPOWER",
-        linkText: Text("READ DOCS"),
-        url: URL(string: "https://docs.blink.sh/advanced/code")!,
-        info: Text("Use **`code`** for VS Code editor capabilities. Edit local files, remote files, and even connect to GitHub Codespaces, GitPod or others. All within a first class iOS experience adapted to your device."),
-        image: "intro-code",
-        imageMaxSize: CGSize(width: 680, height: 400)
-      ),
-      PageInfo(
-        idx: 5,
-        title: "BUILD YOUR DEV ENVIRONMENTS",
-        linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
-        url: URL(string: "https://youtu.be/78XukJvz5vg")!,
-        
-        info: Text("Use **`build`** to access instant dev environments for any task. Use our default Hacker Tools container for coding on Python, JS, Go, Rust, C and many other languages. Connect containers to run any application."),
-        image: "intro-build-horizontal",
-        verticalImage: "intro-build-vertical"
-      ),
-      
-    ]
-  }
+
+  // TODO Don't like having full fields hanging here. Maybe just "Strings"
+  static let multipleTerminalsInfo = PageInfo(
+    title: "MULTIPLE TERMINALS & WINDOWS",
+    linkText: Text("READ DOCS"),
+    url: URL(string: "https://docs.blink.sh/basics/navigation")!,
+    info: Text("Use **pinch** to zoom the terminal. Use **two finger tap** to create a new shell. Use **slide** to move between shells. Use **three finger tap** for menu. Type **help** if you need it."),
+    compactInfo: Text("Not to use in compact"),
+    image: "intro-windows"
+
+  )
+
+  static let hostsKeysEverywhereInfo = PageInfo(
+    title: "YOUR HOSTS & KEYS, EVERYWHERE",
+    linkText: Text("READ DOCS"),
+    url: URL(string: "https://docs.blink.sh/basics/hosts")!,
+    info: Text("Type **`config`** to enter the configuration. Setup remote connections through Hosts and Keys. Add special keys and keyboard shortcuts. Customize the shell appearance through fonts and themes."),
+    compactInfo: Text("Not to use in compact"),
+    image: "intro-settings"
+  )
+
+  static let sshMoshToolsInfo = PageInfo(
+    title: "SSH, MOSH & BASIC TOOLS",
+    linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
+    url: URL(string: "https://youtube.com/shorts/VYmrSlG9lX0")!,
+    info: Text("Type **`mosh`** for high-performance remote shells. Type **`ssh`** for secure shells and tunnels. Type **`sftp`** or **`scp`** for secure file transfer. Have access to UNIX tools like **`cd`**, **`ls`**, **`ping`**, etc..."),
+    compactInfo: Text("SSH & Mosh • Secure Keys, Certificates & HW • Jump Hosts • Agent • SFTP"),
+    image: "intro-commands"
+  )
+
+  static let blinkCodeInfo = PageInfo(
+    title: "BLINK CODE, YOUR NEW SUPERPOWER",
+    linkText: Text("READ DOCS"),
+    url: URL(string: "https://docs.blink.sh/advanced/code")!,
+    info: Text("Use **`code`** for VS Code editor capabilities. Edit local files, remote files, and even connect to GitHub Codespaces, GitPod or others. All within a first class iOS experience adapted to your device."),
+    compactInfo: Text("Edit local files • Edit remote files • Interface adapted to your mobile device"),
+    image: "intro-code",
+    imageMaxSize: CGSize(width: 680, height: 400)
+  )
+
+  static let blinkBuildInfo = PageInfo(
+    title: "BUILD YOUR DEV ENVIRONMENTS",
+    linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
+    url: URL(string: "https://youtu.be/78XukJvz5vg")!,
+    info: Text("Use **`build`** to access instant dev environments for any task. Use our default Hacker Tools container for coding on Python, JS, Go, Rust, C and many other languages. Connect containers to run any application."),
+    compactInfo: Text("Run Python, Go, Rust, and others •\u{00a0}2\u{00a0}vCPU •\u{00a0}4\u{00a0}GB\u{00a0}RAM •\u{00a0}50\u{00a0}hours/month"),
+    image: "intro-build-horizontal",
+    verticalImage: "intro-build-vertical"
+  )
 }
 
-struct PageView: View {
+struct WalkthroughPageView: View {
   let ctx: PageCtx
   let info: PageInfo
-  
+
   var body: some View {
     VStack {
       Text(info.title)
@@ -511,7 +546,7 @@ struct PageView: View {
         .foregroundColor(BlinkColors.headerText)
         .multilineTextAlignment(.center)
       Spacer()
-      Image(ctx.image(horizontal: info.image, vertical: info.verticalImage))
+      Image(ctx.portrait ? info.verticalImage ?? info.image : info.image)
         .resizable()
         .scaledToFit()
         .frame(maxWidth: info.imageMaxSize.width , maxHeight: info.imageMaxSize.height)
@@ -529,10 +564,31 @@ struct PageView: View {
   }
 }
 
+struct OfferingPageView: View {
+  let ctx: PageCtx
+  let info: PageInfo
+
+  var body: some View {
+    VStack {
+      Spacer()
+      Image(info.image)
+        .resizable()
+        .scaledToFit()
+        .frame(maxWidth: info.imageMaxSize.width , maxHeight: info.imageMaxSize.height)
+      info.compactInfo
+        .font(ctx.offeringInfoFont())
+        .foregroundColor(BlinkColors.infoText)
+        .multilineTextAlignment(.center)
+        .padding([.leading, .trailing])
+      Spacer()
+    }
+  }
+}
+
 struct ShellBulletView: View {
   let ctx: PageCtx
   let showList: Bool
-  
+
   var body: some View {
     VStack {
       HStack(alignment: .firstTextBaseline) {
@@ -552,7 +608,7 @@ struct ShellBulletView: View {
 struct ShellClassicBulletView: View {
   let ctx: PageCtx
   let showList: Bool
-  
+
   var body: some View {
     VStack {
       HStack(alignment: .firstTextBaseline) {
@@ -573,7 +629,7 @@ struct ShellClassicBulletView: View {
 struct BuildBulletView: View {
   let ctx: PageCtx
   let showList: Bool
-  
+
   var body: some View {
     VStack {
       HStack(alignment: .firstTextBaseline) {
@@ -596,7 +652,7 @@ struct BuildBulletView: View {
 struct CodeBulletView: View {
   let ctx: PageCtx
   let showList: Bool
-  
+
   var body: some View {
     VStack {
       HStack(alignment: .firstTextBaseline) {
@@ -617,18 +673,18 @@ struct CodeBulletView: View {
   }
 }
 
-struct PageWelcomeView: View {
+struct OfferingsPresentationView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
-  
+
   var body: some View {
     VStack {
-      
+
       Text("WELCOME TO BLINK")
         .font(ctx.headerFont())
         .foregroundColor(BlinkColors.headerText)
         .multilineTextAlignment(.center)
-      
+
       VStack(alignment: .center, spacing: 20) {
         Spacer()
         ShellBulletView(ctx: ctx, showList: false)
@@ -636,9 +692,9 @@ struct PageWelcomeView: View {
         CodeBulletView(ctx: ctx, showList: false)
         Spacer()
       }
-      
+
       Spacer()
-      Text("Your mobile device is small, but with Blink, it can take on Big Jobs. Start with our walkthrough to see Blink’s full potential. Then choose one of our packages, and let’s get to work!")
+      Text("Your mobile device is small, but with Blink, it can take on Big Jobs. Start  Then choose one of our packages, and let’s get to work!")
         .font(ctx.infoFont())
         .multilineTextAlignment(.center)
         .foregroundColor(BlinkColors.infoText)
@@ -647,7 +703,7 @@ struct PageWelcomeView: View {
       Spacer()
       HStack {
         Button(
-          action: ctx.nextPageHandler,
+          action: ctx.checkOfferingsHandler,
           label: { Text("CONTINUE") }
         )
         .buttonStyle(BlinkButtonStyle.secondary(disabled: false, inProgress: false))
@@ -657,98 +713,51 @@ struct PageWelcomeView: View {
   }
 }
 
-struct PageBlinkPlusBuildView: View {
+struct OfferingBlinkPlusBuildView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
-  
-  var body: some View {
-    VStack {
-      
-      Text(ctx.horizontalCompact ? "BLINK+BUILD, THE TOOLBOX FOR DEV WORK" : "BLINK+BUILD, THE FULL TOOLBOX FOR DEV WORK")
-        .font(ctx.headerFont())
-        .foregroundColor(BlinkColors.headerText).multilineTextAlignment(.center)
-      
-      VStack(alignment: .center, spacing: 20) {
-        Spacer()
-        ShellBulletView(ctx: ctx, showList: true)
-        CodeBulletView(ctx: ctx, showList: true)
-        BuildBulletView(ctx: ctx, showList: true)
-        Spacer()
-      }
-      
-      VStack {
-        TwoLineButton(
-          line1: Text(_purchases.blinkPlusBuildSubscribeButtonText1()),
-          line2: _purchases.blinkPlusBuildSubscribeButtonText2(),
-          disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-          inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil
-        ) {
-          Task {
-            await _purchases.purchaseBlinkPlusBuildWithValidation()
-          }
-        }
-        .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-          Button("OK") {
-            EntitlementsManager.shared.dismissPaywall()
-          }
-        } message: {
-          Text(_purchases.restoredPurchaseMessage)
-        }
-        Button("OR GET BLINK+ ALONE TO\nCONNECT TO YOUR ENVIRONMENTS") {
-          ctx.checkBlinkPlusHandler()
-        }
-        .buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
-        .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
-        .padding()
-      }
-      if !ctx.classicsMode {
-        TermsButtons(ctx: ctx)
-      }
-    }
-    .padding(ctx.pagePadding())
-  }
-}
+  let pages = [PageInfo.blinkBuildInfo, PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
 
-struct PageBlinkPlusView: View {
-  let ctx: PageCtx
-  @StateObject var _purchases = PurchasesUserModel.shared
-  
+  @State var pageIndex = 0
+  @State var trialNotification = true
+
   var body: some View {
     VStack {
-      Text("THE SHELL OF CHOICE FOR DEVELOPERS FOR 7 YEARS")
-        .font(ctx.headerFont())
-        .foregroundColor(BlinkColors.headerText)
-        .multilineTextAlignment(.center)
-      
-      VStack(alignment: .center, spacing: 20) {
-        Spacer()
-        ShellBulletView(ctx: ctx, showList: true)
-        CodeBulletView(ctx: ctx, showList: true)
+      VStack {
         VStack {
-          HStack(alignment: .firstTextBaseline) {
-            Text("BUILD")
-              .font(BlinkFonts.bullet).foregroundColor(BlinkColors.build)
-              .padding(ctx.bulletPadding())
-              .background(RoundedRectangle(cornerRadius: 6.0).fill(BlinkColors.buildBG))
-            Text("as you go for \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
-              .font(BlinkFonts.bulletText).foregroundColor(BlinkColors.build)
+          Text("BLINK+BUILD")
+            .font(ctx.offeringHeaderFont())
+            .foregroundColor(BlinkColors.headerText)
+            .multilineTextAlignment(.leading)
+          Text("The full toolbox. Everything on Blink+ and on-demand dev environments.")
+            .font(ctx.offeringSubheaderFont())
+            .foregroundColor(BlinkColors.headerText)
+            .multilineTextAlignment(.leading)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+          .padding([.top, .leading])
+
+        VStack {
+          Spacer()
+          TabView(selection: $pageIndex) {
+            ForEach(Array(zip(pages.indices, pages)), id: \.0) { index, info in
+              OfferingPageView(ctx: ctx, info: info).tag(index)
+            }
           }
+          .tabViewStyle(.page(indexDisplayMode: .never))
+            .overlay(TabViewControls(pageIndex: $pageIndex,
+                                     firstPageIndex: 0,
+                                     lastPageIndex: pages.count - 1))
+
+          Spacer()
         }
-        Spacer()
-      }
-      
-      VStack() {
-        
-        TwoLineButton(
-          line1: Text("GET BLINK+, \(_purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? "") (~~$29.99/YEAR~~)"),
-          line2: "OFFER ENDS SOON",
-          disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-          inProgress: _purchases.purchaseInProgress || _purchases.formattedPlusPriceWithPeriod() == nil
-        ) {
-          Task {
-            await _purchases.purchaseBlinkShellPlusWithValidation()
-          }
-        }.frame(maxWidth: .infinity)
+
+        VStack {
+          Button(blinkPlusBuildSubscribeButtonText()) {
+            Task {
+              await _purchases.purchaseBlinkPlusBuildWithValidation(setupTrial: trialNotification)
+            }
+          }.buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+                                                 inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
           .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
             Button("OK") {
               EntitlementsManager.shared.dismissPaywall()
@@ -756,80 +765,190 @@ struct PageBlinkPlusView: View {
           } message: {
             Text(_purchases.restoredPurchaseMessage)
           }
-        
-        Button("GET THE FULL TOOLBOX WITH BLINK+BUILD") {
-          ctx.checkBlinkBuildHandler()
-        }.buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
-          .padding().id("switch to blink+build")
-      }
+          HStack {
+            Spacer()
+            Text("Get notified")
+              .foregroundColor(BlinkColors.termsText)
+              .font(BlinkFonts.btnSub)
+              .multilineTextAlignment(.center)
+            Toggle("", isOn: $trialNotification)
+              .toggleStyle(.switch)
+              .labelsHidden()
+            Spacer()
+          }.controlSize(.mini)
+        }.padding(.bottom)
+      }.overlay(
+        RoundedRectangle(cornerRadius: 16)
+          .stroke(BlinkColors.headerText, lineWidth: 2)
+      )
+
+      VStack {
+        VStack {
+          Text("BLINK+")
+            .font(ctx.offeringHeaderFont())
+            .foregroundColor(BlinkColors.blink)
+            .multilineTextAlignment(.leading)
+          Text("The shell of choice for thousands of developers for 7 years. Now with Blink Code.")
+            .font(ctx.offeringSubheaderFont())
+            .foregroundColor(BlinkColors.blink)
+            .multilineTextAlignment(.leading)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+          .padding([.top, .leading])
+
+        Button("LEARN MORE") {
+          ctx.checkBlinkPlusHandler()
+        }
+          .buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
+          .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
+          .padding()
+      }.overlay(
+        RoundedRectangle(cornerRadius: 16)
+          .stroke(BlinkColors.blink, lineWidth: 2)
+      )
+
       if !ctx.classicsMode {
         TermsButtons(ctx: ctx)
       }
-    }.padding(ctx.pagePadding())
+    }
+  }
+  
+  func blinkPlusBuildSubscribeButtonText() -> String {
+    let price = _purchases.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
+    
+    if _purchases.blinkPlusBuildTrialAvailable() {
+      return "TRY 1 WEEK FREE, THEN \(price)"
+    } else {
+      return "BUY \(price)"
+    }
   }
 }
 
-struct PageFreeUsersView: View {
+struct OfferingBlinkPlusView: View {
   let ctx: PageCtx
-  
+  @StateObject var _purchases = PurchasesUserModel.shared
+  let pages = [PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
+
+  @State var pageIndex = 0
+
   var body: some View {
+    
     VStack {
-        Text("BLINK+BUILD FREE TRIAL")
-          .font(ctx.headerFont())
-          .foregroundColor(BlinkColors.headerText)
-          .multilineTextAlignment(.center)
-      ScrollView {
-        Text("""
-Dear Blink User,
+      VStack {
+        VStack {
+          Text("BLINK+BUILD")
+            .font(ctx.offeringHeaderFont())
+            .foregroundColor(BlinkColors.headerText)
+            .multilineTextAlignment(.leading)
+          Text("The full toolbox. Everything on Blink+ and on-demand dev environments.")
+            .font(ctx.offeringSubheaderFont())
+            .foregroundColor(BlinkColors.headerText)
+            .multilineTextAlignment(.leading)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+          .padding([.top, .leading])
 
-It's been a year since we launched our Free version, and we tried our best to make it work by providing unrestricted access with only a metered paywall. Unfortunately, the metered paywall has been perceived as an obstacle, detracting from our intended experience.
-
-As a premium application for all sorts of developers, we don't want to be in the business of blocking features or making the user experience more difficult. So starting today, we are moving to a trial period that includes all features for Blink Shell, Build & Code, and represents our vision for the future of the app.
-
-To make this transition easier, you can continue using this free version for a week without metered paywalls. And to help you keep Blink as your Shell of choice, if you upgrade to Blink+ this week, you will get our **first discount ever, only $14.99 for the first year**.
-
-_Thanks for your support,_
-_The Blink Shell team_
-""").frame(maxWidth: 600)
-          .font(ctx.infoFont())
-          .foregroundColor(BlinkColors.infoText)
+        Button("LEARN MORE") {
+          ctx.checkBlinkBuildHandler()
+        }
+          .buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
+          .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
           .padding()
+      }.overlay(
+        RoundedRectangle(cornerRadius: 16)
+          .stroke(BlinkColors.headerText, lineWidth: 2)
+      )
+
+      VStack {
+        VStack {
+          Text("BLINK+")
+            .font(ctx.offeringHeaderFont())
+            .foregroundColor(BlinkColors.blink)
+            .multilineTextAlignment(.leading)
+          Text("The shell of choice for thousands of developers for 7 years. Now with Blink Code.")
+            .font(ctx.offeringSubheaderFont())
+            .foregroundColor(BlinkColors.blink)
+            .multilineTextAlignment(.leading)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+          .padding([.top, .leading])
+
+        VStack {
+          Spacer()
+          TabView(selection: $pageIndex) {
+            ForEach(Array(zip(pages.indices, pages)), id: \.0) { index, info in
+              OfferingPageView(ctx: ctx, info: info).tag(index)
+            }
+          }
+          .tabViewStyle(.page(indexDisplayMode: .never))
+          .overlay(TabViewControls(pageIndex: $pageIndex,
+                                   firstPageIndex: 0,
+                                   lastPageIndex: pages.count - 1))
+          Spacer()
+        }
+
+        Button(blinkPlusSubscribeButtonText()) {
+          Task {
+            await _purchases.purchaseBlinkShellPlusWithValidation()
+          }
+        }.buttonStyle(BlinkButtonStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+                                                 inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
+          .padding()
+          .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+            Button("OK") {
+              EntitlementsManager.shared.dismissPaywall()
+            }
+          } message: {
+            Text(_purchases.restoredPurchaseMessage)
+          }
+      }.overlay(
+        RoundedRectangle(cornerRadius: 16)
+          .stroke(BlinkColors.blink, lineWidth: 2)
+      )
+
+      if !ctx.classicsMode {
+        TermsButtons(ctx: ctx)
       }
-      .padding(.bottom)
-      FreeUsersCallToActionButtons(ctx: ctx, text: Text("DISMISS"))
-    }.padding(ctx.pagePadding())
+    }
+  }
+  
+  func blinkPlusSubscribeButtonText() -> String {
+    let price = _purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? ""
+    let formattedPricePerMonth = _purchases.blinkShellPlusProduct?.priceFormatter?.string(from: _purchases.blinkPlusProduct?.pricePerMonth ?? 0.0) ?? ""
+    
+    return "1 YEAR \(price) (ONLY \(formattedPricePerMonth) PER MONTH)"
   }
 }
 
 struct OfferView: View {
   let ctx: PageCtx
-  let page: LastPageState
-  
+  let page: OfferingsPageState
+
   var body: some View {
     VStack {
       switch page {
-      case .blinkBuild: PageBlinkPlusBuildView(ctx: ctx).transition(.move(edge: .top))
-      case .blinkPlus: PageBlinkPlusView(ctx: ctx).transition(.move(edge: .bottom))
+      case .presentation: OfferingsPresentationView(ctx: ctx).transition(.move(edge: .leading))
+      case .blinkBuild: OfferingBlinkPlusBuildView(ctx: ctx).transition(.opacity)
+      case .blinkPlus: OfferingBlinkPlusView(ctx: ctx).transition(.opacity)
       }
     }
+      .padding(ctx.pagePadding())
   }
 }
 
 struct OfferForFreeAndClassicsView: View {
-  
+
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
-  @State var offerPage = LastPageState.blinkBuild
+  @State var offerPage = OfferingsPageState.blinkBuild
   @StateObject var _purchases = PurchasesUserModel.shared
-  
+
   var body: some View {
     GeometryReader { proxy in
-      
+
       let ctx = PageCtx(
         classicsMode: true,
         proxy: proxy,
         dynamicTypeSize: dynamicTypeSize,
         urlHandler: {_ in},
         getStartedHandler: { },
+        checkOfferingsHandler: { },
         checkBlinkBuildHandler: {
           withAnimation {
             offerPage = .blinkBuild
@@ -839,8 +958,7 @@ struct OfferForFreeAndClassicsView: View {
           withAnimation {
             offerPage = .blinkPlus
           }
-        },
-        nextPageHandler: {}
+        }
       )
       OfferView(ctx: ctx, page: offerPage)
         .frame(width: proxy.size.width, height: proxy.size.height)
@@ -865,42 +983,27 @@ struct OfferForFreeAndClassicsView: View {
             ).ignoresSafeArea(.all)
         )
     }
-    
+
   }
 }
 
-
-struct IntroView: View {
-  
-  let urlHandler: (URL) -> Void
+struct InitialOfferingView: View {
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
-  @State var pages = PageInfo.pages()
-  
+  @State var offerPage = OfferingsPageState.presentation
   @StateObject var _purchases = PurchasesUserModel.shared
-  @StateObject var _entitlements = EntitlementsManager.shared
-  
-  @State var offerPage = LastPageState.blinkBuild
-  
-  @State var pageIndex = 0
-  let firstPageIndex = 0
-  let startPageIndex = 6
-  let lastPageIndex = 6
-  
-  init(urlHandler: @escaping (URL) -> Void) {
-    self.urlHandler = urlHandler
-  }
-  
+
   var body: some View {
     GeometryReader { proxy in
-      
+
       let ctx = PageCtx(
         classicsMode: false,
         proxy: proxy,
         dynamicTypeSize: dynamicTypeSize,
-        urlHandler: urlHandler,
-        getStartedHandler: {
+        urlHandler: {_ in},
+        getStartedHandler: { },
+        checkOfferingsHandler: {
           withAnimation {
-            self.pageIndex = self.startPageIndex
+            offerPage = .blinkBuild
           }
         },
         checkBlinkBuildHandler: {
@@ -912,60 +1015,92 @@ struct IntroView: View {
           withAnimation {
             offerPage = .blinkPlus
           }
-        },
-        nextPageHandler: {
-          if self.pageIndex < lastPageIndex {
-            withAnimation {
-              self.pageIndex += 1
-            }
-          }
         }
       )
       
+      OfferView(ctx: ctx, page: offerPage)
+        .frame(maxWidth: 986, maxHeight: ctx.pageMaxHeight())
+        .background(
+          RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+            .fill(
+              BlinkColors.bg
+            ).overlay(
+              RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+                .fill(
+                  LinearGradient(colors: [BlinkColors.linearGradient1, BlinkColors.linearGradient2], startPoint: UnitPoint(x: 0.5, y: 0.0), endPoint: UnitPoint(x:0.5, y:1.0))
+                )
+            )
+            .overlay(
+              RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+                .fill(
+                  RadialGradient(colors: [BlinkColors.radialGradient1, BlinkColors.radialGradient2], center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius:max(proxy.size.width, proxy.size.height))
+                ).opacity(0.4)
+            )
+        )
+        .padding(.all, ctx.outterPadding())
+        .frame(width: proxy.size.width, height: proxy.size.height)
+        .alert(errorMessage: $_purchases.alertErrorMessage)
+    }
+
+  }
+}
+
+struct InitialOfferingWindow: View {
+  var body: some View {
+      InitialOfferingView().background(Color.black, ignoresSafeAreaEdges: .all)
+  }
+}
+
+enum OfferingsPageState {
+  case presentation
+  case blinkBuild
+  case blinkPlus
+}
+
+struct WalkthroughView: View {
+
+  let urlHandler: (URL) -> Void
+  @Environment(\.dynamicTypeSize) var dynamicTypeSize
+  let pages: [PageInfo] = [
+    PageInfo.multipleTerminalsInfo,
+    PageInfo.hostsKeysEverywhereInfo,
+    PageInfo.sshMoshToolsInfo,
+    PageInfo.blinkCodeInfo,
+    PageInfo.blinkBuildInfo
+  ]
+
+  @StateObject var _purchases = PurchasesUserModel.shared
+  @StateObject var _entitlements = EntitlementsManager.shared
+
+  @State var offerPage = OfferingsPageState.blinkBuild
+
+  @State var pageIndex = 0
+
+  init(urlHandler: @escaping (URL) -> Void) {
+    self.urlHandler = urlHandler
+  }
+
+  var body: some View {
+    GeometryReader { proxy in
+
+      let ctx = PageCtx(
+        classicsMode: false,
+        proxy: proxy,
+        dynamicTypeSize: dynamicTypeSize,
+        urlHandler: urlHandler,
+        getStartedHandler: { },
+        checkOfferingsHandler: { },
+        checkBlinkBuildHandler: { },
+        checkBlinkPlusHandler: { }
+      )
+
       TabView(selection: $pageIndex) {
-        PageWelcomeView(ctx: ctx).tag(0)
-        ForEach(pages) { info in
-          PageView(ctx: ctx, info: info).tag(info.idx)
+        ForEach(Array(zip(pages.indices, pages)), id: \.0) { index, info in
+          WalkthroughPageView(ctx: ctx, info: info).tag(index)
         }
-        OfferView(ctx: ctx, page: offerPage).tag(6)
-        
       }
       .tabViewStyle(.page(indexDisplayMode: ctx.portrait ? .always : .never))
-      .overlay(
-        HStack {
-          if !ctx.portrait {
-            Button {
-              if self.pageIndex > self.firstPageIndex {
-                withAnimation {
-                  self.pageIndex -= 1
-                }
-              }
-            } label: {
-              Image(systemName: "chevron.compact.left").font(.title).foregroundColor(BlinkColors.code)
-                .padding()
-            }
-            .opacity(pageIndex == self.firstPageIndex ? 0.3 : 1.0).disabled(pageIndex == self.firstPageIndex)
-            .hoverEffect(.highlight)
-            .keyboardShortcut(.leftArrow)
-            Spacer()
-            Button {
-              if self.pageIndex < lastPageIndex {
-                withAnimation {
-                  self.pageIndex += 1
-                }
-              }
-            } label: {
-              Image(systemName: "chevron.compact.right").font(.title).foregroundColor(BlinkColors.code)
-                .padding()
-            }
-            
-            .opacity(pageIndex == lastPageIndex ? 0.3 : 1.0).disabled(pageIndex == lastPageIndex)
-            .hoverEffect(.highlight)
-            .keyboardShortcut(.rightArrow)
-          }
-        }
-          .padding(ctx.pagingPadding())
-      )
+      .overlay(TabViewControls(pageIndex: $pageIndex, firstPageIndex: 0, lastPageIndex: pages.count - 1))
       .frame(maxWidth: 986, maxHeight: ctx.pageMaxHeight())
       .background(
         RoundedRectangle(cornerRadius: 21.67, style: .continuous)
@@ -992,18 +1127,9 @@ struct IntroView: View {
   }
 }
 
-struct IntroWindow: View {
+struct WalkthroughWindow: View {
   let urlHandler: (URL) -> Void
-
   var body: some View {
-      IntroView(
-        urlHandler: self.urlHandler
-      ).background(Color.black, ignoresSafeAreaEdges: .all)
+    WalkthroughView(urlHandler: urlHandler).background(Color.black, ignoresSafeAreaEdges: .all)
   }
-}
-
-
-enum LastPageState {
-  case blinkBuild
-  case blinkPlus
 }

@@ -114,8 +114,8 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  func purchaseBlinkPlusBuildWithValidation() async {
-    await _purchaseWithValidation(product: blinkPlusBuildBasicProduct)
+  func purchaseBlinkPlusBuildWithValidation(setupTrial: Bool) async {
+    await _purchaseWithValidation(product: blinkPlusBuildBasicProduct, setupTrial: setupTrial)
   }
   
   func purchaseBlinkShellPlusWithValidation() async {
@@ -129,7 +129,6 @@ class PurchasesUserModel: ObservableObject {
   func purchaseClassic() {
     _purchase(product: classicProduct)
   }
-  
   
   func buildTrialAvailable() -> Bool {
     self.blinkBuildTrial?.status == IntroEligibilityStatus.eligible
@@ -153,8 +152,32 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  private func _purchaseWithValidation(product: StoreProduct?) async {
+  private func _purchaseWithValidation(product: StoreProduct?, setupTrial: Bool = false) async {
 //    _purchase(product: product)
+    if setupTrial {
+      do {
+        var notificationsAccepted = false
+        switch product?.productIdentifier {
+        case ProductBlinkPlusBuildBasicID:
+          notificationsAccepted = try await TrialProgressNotification.OneWeek.setup()
+        default:
+          break
+        }
+        
+        if !notificationsAccepted {
+          EntitlementsManager.shared.keepShowingPaywall = false
+          self.purchaseInProgress = false
+          self.alertErrorMessage = "To continue, please accept or disable notifications for trial conversion."
+          return
+        }
+      } catch {
+        EntitlementsManager.shared.keepShowingPaywall = false
+        self.purchaseInProgress = false
+        self.alertErrorMessage = "Could not enable notifications - \(error.localizedDescription)"
+        return
+      }
+    }
+    
     do {
       self.purchaseInProgress = true
       EntitlementsManager.shared.keepShowingPaywall = true
@@ -220,40 +243,6 @@ class PurchasesUserModel: ObservableObject {
     blinkPlusProduct?.formattedPriceWithPeriod()
   }
   
-  func formattedBlinkPlusDiscountPrice() -> String? {
-    if let discountPrice =  blinkPlusProduct?.introductoryDiscount?.localizedPriceString {
-      return "\(discountPrice) FIRST YEAR, (\(blinkPlusProduct?.localizedPriceString ?? "") AFTER)"
-    }
-    
-    return blinkPlusProduct?.formattedPriceWithPeriod()
-  }
-  
-  func blinkPlusBuildSubscribeButtonText() -> String {
-    let price = self.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
-    if self.blinkPlusBuildTrialAvailable() {
-      return "START 1 WEEK FREE, THEN \(price)"
-    } else {
-      return "GET BLINK+BUILD, \(price)"
-    }
-  }
-  
-  func blinkPlusBuildSubscribeButtonText1() -> String {
-    if self.blinkPlusBuildTrialAvailable() {
-      return "GET BLINK+BUILD, 1 WEEK FREE"
-    } else {
-      return "GET BLINK+BUILD"
-    }
-  }
-  
-  func blinkPlusBuildSubscribeButtonText2() -> String {
-    let price = self.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
-    if self.blinkPlusBuildTrialAvailable() {
-      return "THEN \(price)"
-    } else {
-      return price
-    }
-  }
-  
   func fetchProducts() {
     Purchases.shared.getProducts([
       ProductBlinkShellClassicID,
@@ -306,7 +295,6 @@ class PurchasesUserModel: ObservableObject {
     case validating, accepted
     case denied(error: Error)
   }
-  
 }
 
 // MARK: Open links

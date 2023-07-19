@@ -164,7 +164,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.paywallWindow = UIWindow(windowScene: windowScene)
     self.paywallWindow?.windowLevel = .statusBar + 0.5
     UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.blinkTint
-    let view = IntroWindow(urlHandler: self.presetSafariViewController(url:))
+    let view = InitialOfferingWindow()
     let ctrl = StatusBarLessViewController(rootView: view)
     ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
     self.paywallWindow?.rootViewController = ctrl
@@ -369,6 +369,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       _ = KBTracker.shared.input?.resignFirstResponder()
       paywallWindow.makeKeyAndVisible()
       return;
+    }
+    
+    if WhatsNewInfo.isFirstInstall() {
+      // TODO Add a handler to dismiss.
+      // ctrl.dismiss(animated: true)
+      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: { _ in }))
+      ctrl.modalPresentationStyle = .formSheet
+      spCtrl.present(ctrl, animated: false)
+      return
     }
     
     // We can present config or stuck view. 
