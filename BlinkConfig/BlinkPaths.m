@@ -220,9 +220,13 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [NSURL fileURLWithPath:[self historyFile]];
 }
 
-+ (NSURL *)snippetsLocationURL
++ (NSURL *)localSnippetsLocationURL
 {
-  return [NSURL fileURLWithPath:[[self blink] stringByAppendingPathComponent:@"snippets"]];
+  return [NSURL fileURLWithPath:[[self blink] stringByAppendingPathComponent:@"snips"]];
+}
+
++ (NSURL *)iCloudSnippetsLocationURL {
+  return [NSURL fileURLWithPath:[[self iCloudDriveDocuments] stringByAppendingPathComponent:@"snips"]];
 }
 
 + (NSString *)knownHostsFile

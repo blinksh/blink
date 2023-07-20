@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2023 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,29 +30,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#import <Foundation/Foundation.h>
+import Foundation
 
-NS_ASSUME_NONNULL_BEGIN
+public class iCloudSnippets: LocalSnippets {
+  
+  
+}
 
-@interface DeviceInfo : NSObject
+// iCloudSnippets can handle the iCloud interface to track changes to files.
 
-+ (DeviceInfo *)shared;
-
-@property (readonly) NSString *sysname;
-@property (readonly) NSString *nodename;
-@property (readonly) NSString *release_;
-@property (readonly) NSString *version;
-@property (readonly) NSString *machine;
-@property (readonly) NSString *marketingName;
-
-@property (readonly) BOOL hasNotch;
-@property (readonly) BOOL hasDynamicIsland;
-@property (readonly) BOOL hasCorners;
-@property (readonly) BOOL hasAppleSilicon;
-
-- (NSString *)deviceIcon;
-- (NSString *)onMyDevice;
-
-@end
-
-NS_ASSUME_NONNULL_END

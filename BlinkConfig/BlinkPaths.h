@@ -65,7 +65,8 @@
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 
-+ (NSURL *) snippetsLocationURL;
++ (NSURL *) localSnippetsLocationURL;
++ (NSURL *) iCloudSnippetsLocationURL;
 
 + (NSURL *)fileProviderErrorLogURL;
 + (NSURL *)blinkCodeErrorLogURL;
@@ -74,7 +75,6 @@
 + (void)linkDocumentsIfNeeded;
 
 + (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
-+ (void)migrateToHomeAtGroupContainer;
 
 
 @end

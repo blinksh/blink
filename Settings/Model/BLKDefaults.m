@@ -55,7 +55,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
   NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
   
-
+  
   _themeName = [coder decodeObjectOfClasses:strings forKey:@"themeName"];
   _fontName = [coder decodeObjectOfClasses:strings forKey:@"fontName"];
   _fontSize = [coder decodeObjectOfClasses:numbers forKey:@"fontSize"];
@@ -91,6 +91,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _invertVerticalScroll = [coder decodeBoolForKey:@"invertVerticalScroll"];
   _compactQuickActions = [coder decodeBoolForKey:@"compactQuickActions"];
   
+  _dontUseBlinkSnippetsIndex = [coder decodeBoolForKey:@"dontUseBlinkSnippetsIndex"];
+  _snippetsDefaultLocation = [coder decodeIntegerForKey:@"snippetsDefaultLocation"];
+  
   return self;
 }
 
@@ -119,6 +122,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_oscNotifications forKey:@"oscNotifications"];
   [encoder encodeBool:_invertVerticalScroll forKey:@"invertVerticalScroll"];
   [encoder encodeBool:_compactQuickActions forKey:@"compactQuickActions"];
+  [encoder encodeBool:_dontUseBlinkSnippetsIndex forKey:@"dontUseBlinkSnippetsIndex"];
+  [encoder encodeInteger:_snippetsDefaultLocation forKey:@"snippetsDefaultLocation"];
+  
 }
 
 + (BOOL)supportsSecureCoding {
@@ -327,6 +333,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.oscNotifications = state;
 }
 
++ (void)setDontUseBlinkSnippetsIndex: (BOOL)state {
+  defaults.dontUseBlinkSnippetsIndex = state;
+}
+
++ (void)setSnippetsDefaultLocation:(BKSnippetDefaultLocation) value {
+  defaults.snippetsDefaultLocation = value;
+}
+
+
 + (NSString *)selectedFontName
 {
   return defaults.fontName;
@@ -431,6 +446,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 + (void)setCompactQuickActions:(BOOL)value {
   defaults.compactQuickActions = value;
 }
+
++ (BOOL)dontUseBlinkSnippetsIndex {
+  return defaults.dontUseBlinkSnippetsIndex;
+}
+
++ (BKSnippetDefaultLocation)snippetsDefaultLocation {
+  return defaults.snippetsDefaultLocation;
+}
+
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {
   if (UIScreen.screens.count <= 1) {

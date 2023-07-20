@@ -56,6 +56,11 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
   BKKeyboardStyleSystem,
 };
 
+typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
+  BKSnippetDefaultLocationICloud = 0,
+  BKSnippetDefaultLocationOnDevice = 1
+};
+
 @interface BLKDefaults : NSObject <NSSecureCoding>
 
 @property (nonatomic, strong) NSString *themeName;
@@ -81,6 +86,8 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic) BOOL oscNotifications;
 @property (nonatomic) BOOL invertVerticalScroll;
 @property (nonatomic) BOOL compactQuickActions;
+@property (nonatomic) BOOL dontUseBlinkSnippetsIndex;
+@property (nonatomic) BKSnippetDefaultLocation snippetsDefaultLocation;
 
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
@@ -102,6 +109,8 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setOscNotifications:(BOOL)state;
 + (void)setInvertedVerticalScroll:(BOOL) state;
 + (void)setCompactQuickActions:(BOOL)value;
++ (void)setDontUseBlinkSnippetsIndex: (BOOL)state;
++ (void)setSnippetsDefaultLocation:(BKSnippetDefaultLocation) value;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
@@ -129,6 +138,9 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (BOOL)isOscNotificationsOn;
 + (BOOL)doInvertVerticalScroll;
 + (BOOL)compactQuickActions;
++ (BOOL) dontUseBlinkSnippetsIndex;
++ (BKSnippetDefaultLocation) snippetsDefaultLocation;
+
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value;
 @end

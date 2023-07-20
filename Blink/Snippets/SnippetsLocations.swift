@@ -56,23 +56,45 @@ class SnippetsLocations {
   public let indexProgressPublisher = CurrentValueSubject<RefreshProgress, Never>(.none)
   
   public init() throws {
-    let snippetsLocation = BlinkPaths.snippetsLocationURL()!
-    let cachedSnippetsLocation = snippetsLocation.appending(path: ".cached")
+    let fm = FileManager.default
     
+    let useiCloud = BLKDefaults.snippetsDefaultLocation() == .iCloud && fm.ubiquityIdentityToken != nil
+    
+    let dontUseBlinkSnippets = BLKDefaults.dontUseBlinkSnippetsIndex()
+    
+    let snippetsLocation = BlinkPaths.localSnippetsLocationURL()!
+    let icloudSnippetsLocation = BlinkPaths.iCloudSnippetsLocationURL()!
+    let cachedSnippetsLocation = snippetsLocation.appending(path: ".cached")
+   
     // Create main snippets location. Each location then is responsible for its structure.
-    if !FileManager.default.fileExists(atPath: snippetsLocation.path()) {
-      try FileManager.default.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
-      try FileManager.default.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+    if !fm.fileExists(atPath: snippetsLocation.path()) {
+      try fm.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
+      if !dontUseBlinkSnippets {
+        try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+      }
+    }
+   
+    if useiCloud {
+      if !fm.fileExists(atPath: icloudSnippetsLocation.path()) {
+        try fm.createDirectory(at: icloudSnippetsLocation, withIntermediateDirectories: true)
+      }
     }
     
     // ".blink/snippets" for local
     // ".blink/snippets/.cached/com.github" for github
-    let localSnippetsLocation = LocalSnippets(from: snippetsLocation)
-    let blinkSnippetsLocation = try GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
-    
-    self.defaultLocation = localSnippetsLocation
+    // ".iCloud/snippets/ for icloud
+    let defaultLocation = useiCloud ? iCloudSnippets(from: icloudSnippetsLocation): LocalSnippets(from: snippetsLocation)
+
     // Locations are sorted by priority.
-    self.locations = [localSnippetsLocation, blinkSnippetsLocation]
+    var locations = [defaultLocation]
+
+    if !dontUseBlinkSnippets {
+      let blinkSnippetsLocation = try GitHubSnippets(owner: "blinksh", repo: "snippets", cachedAt: cachedSnippetsLocation)
+      locations.append(blinkSnippetsLocation)
+    }
+    
+    self.defaultLocation = defaultLocation
+    self.locations = locations
     
     refreshIndex()
   }

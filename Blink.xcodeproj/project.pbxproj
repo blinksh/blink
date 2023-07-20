@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -203,6 +203,8 @@
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
 		D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
 		D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
+		D21076982A67E88500B3D77E /* iCloudSnippets.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21076972A67E88500B3D77E /* iCloudSnippets.swift */; };
+		D210769B2A69234500B3D77E /* SnippetsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D210769A2A69234500B3D77E /* SnippetsConfigView.swift */; };
 		D215AC30233521B600E164C3 /* WKWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D215AC2F233521B600E164C3 /* WKWebView.swift */; };
 		D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2179F2C2136A5DC00B0850A /* GeoManager.m */; };
 		D2179F2F2136DBC600B0850A /* geo.m in Sources */ = {isa = PBXBuildFile; fileRef = D2179F2E2136DBC600B0850A /* geo.m */; };
@@ -921,6 +923,8 @@
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
+		D21076972A67E88500B3D77E /* iCloudSnippets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCloudSnippets.swift; sourceTree = "<group>"; };
+		D210769A2A69234500B3D77E /* SnippetsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsConfigView.swift; sourceTree = "<group>"; };
 		D215AC2F233521B600E164C3 /* WKWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebView.swift; sourceTree = "<group>"; };
 		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
 		D2179F2B2136A5DC00B0850A /* GeoManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoManager.h; sourceTree = "<group>"; };
@@ -1899,6 +1903,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				D21076992A69231D00B3D77E /* Snippets */,
 				D2B788862949E8A400F19E4F /* Build */,
 				D2AD8E8527A2C81900DED28D /* Subscriptions */,
 				D2B0BD172720311B00485854 /* Gestures */,
@@ -1913,6 +1918,14 @@
 				D2D3B04728FD7A790086F633 /* EmptyStateView.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		D21076992A69231D00B3D77E /* Snippets */ = {
+			isa = PBXGroup;
+			children = (
+				D210769A2A69234500B3D77E /* SnippetsConfigView.swift */,
+			);
+			path = Snippets;
 			sourceTree = "<group>";
 		};
 		D215AC282335218E00E164C3 /* WebKit */ = {
@@ -1961,6 +1974,7 @@
 			isa = PBXGroup;
 			children = (
 				D24842362A5C3473002CC8C9 /* ShellOutputFormatter.swift */,
+				D21076972A67E88500B3D77E /* iCloudSnippets.swift */,
 				D21EFDD02A4D6CB900B44D66 /* LocalSnippets.swift */,
 				BD792A442A3B6A78009EE35F /* GitHubSnippets.swift */,
 				D22277E92A26120C00D4C708 /* fuzzy.swift */,
@@ -3187,6 +3201,7 @@
 			files = (
 				BD792A452A3B6A78009EE35F /* GitHubSnippets.swift in Sources */,
 				D22277ED2A26120D00D4C708 /* index.swift in Sources */,
+				D21076982A67E88500B3D77E /* iCloudSnippets.swift in Sources */,
 				D24842372A5C3473002CC8C9 /* ShellOutputFormatter.swift in Sources */,
 				D21EFDD12A4D6CB900B44D66 /* LocalSnippets.swift in Sources */,
 				D22277EE2A26120D00D4C708 /* snippet.swift in Sources */,
@@ -3248,6 +3263,7 @@
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
+				D210769B2A69234500B3D77E /* SnippetsConfigView.swift in Sources */,
 				D22277FD2A26204900D4C708 /* SearchMode.swift in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
@@ -4853,7 +4869,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 791;
+				CURRENT_PROJECT_VERSION = 793;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4903,7 +4919,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 791;
+				CURRENT_PROJECT_VERSION = 793;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;

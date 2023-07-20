@@ -61,6 +61,7 @@
     NSString *marketingName = self.marketingName;
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"] || [marketingName hasPrefix:@"iPhone 14"];
+    _hasDynamicIsland = [marketingName hasPrefix:@"iPhone 14"];
     _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [_machine hasPrefix:@"iPad14"] || [marketingName hasPrefix:@"Mac"];
     _hasAppleSilicon = [marketingName hasPrefix:@"iPad Pro (11-inch) (3rd generation)"] ||
       [marketingName hasPrefix:@"iPad Pro (11-inch) (4th generation)"] ||
@@ -69,6 +70,37 @@
       [marketingName hasPrefix:@"iPad Air (5th generation)"];
   }
   return self;
+}
+
+- (NSString *)onMyDevice {
+  if ([self.marketingName hasPrefix:@"iPad"]) {
+    return @"On My iPad";
+  }
+  if ([self.marketingName hasPrefix:@"iPhone"]) {
+    return @"On My iPhone";
+  }
+  
+  return @"On My Device";
+}
+
+- (NSString *)deviceIcon {
+  if ([self.marketingName hasPrefix:@"iPad"]) {
+    if (_hasCorners) {
+      return @"ipad.gen2";
+    } else {
+      return @"ipad.gen1";
+    }
+  }
+  
+  if (_hasDynamicIsland) {
+    return @"iphone.gen3";
+  }
+  
+  if (_hasNotch) {
+    return @"iphone.gen2";
+  }
+  
+  return @"iphone.gen1";
 }
 
 -(NSString *)marketingName {

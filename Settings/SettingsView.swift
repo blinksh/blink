@@ -120,6 +120,13 @@ struct SettingsView: View {
       }
       
       Section("Configuration") {
+        if EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures {
+          Row {
+            Label("Snips", systemImage: "chevron.left.square")
+          } details: {
+            SnippetsConfigView()
+          }
+        }
         RowWithStoryBoardId(content: {
           HStack {
             Label("iCloud Sync", systemImage: "icloud")
