@@ -34,6 +34,7 @@
 #import "BlinkMenu.h"
 #import "BLKDefaults.h"
 #import "Blink-Swift.h"
+#import "GeoManager.h"
 
 const BlinkActionID BlinkActionSnippets = @"blink-snippets";
 const BlinkActionID BlinkActionTabClose = @"blink-tab-close";
@@ -93,10 +94,6 @@ const CGFloat MENU_PADDING = 10.0;
   UIButton *_dotsBtn;
   BOOL _compact;
   
- 
-  UIMenuElementState _geoState;
-  UIMenuElementState _layoutLockState;
-  
 //  UIButtonConfigurationUpdateHandler _cfgUpdateHandler;
 }
 
@@ -113,9 +110,6 @@ const CGFloat MENU_PADDING = 10.0;
     _effect.layer.cornerRadius = 15.0; // 13.0 but 15.0 is more like Music.app bar
     _effect.layer.cornerCurve = kCACornerCurveContinuous;
     _effect.clipsToBounds = YES;
-
-    _geoState = UIMenuElementStateOff;
-    _layoutLockState = UIMenuElementStateOff;
     
     
     _actions = @[];
@@ -335,11 +329,9 @@ const CGFloat MENU_PADDING = 10.0;
                         actionWithTitle:noTitle ? @"" : @"Geo"
             image:[UIImage systemImageNamed:@"location"]
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      self->_geoState = self->_geoState == UIMenuElementStateOn ? UIMenuElementStateOff : UIMenuElementStateOn;
-//      action.state = self->_geoState;
-      [self.superview setNeedsLayout];
+      [[delegate spaceController] toggleGeoTrack];
     }];
-    action.state = _geoState;
+    action.state = GeoManager.shared.traking ? UIMenuElementStateOn : UIMenuElementStateOff;
     
     return action;
   }
@@ -347,15 +339,13 @@ const CGFloat MENU_PADDING = 10.0;
   if (elementID == BlinkActionToggleCompactActions) {
     UIAction * action = [UIAction
                          actionWithTitle:noTitle ? @"" : @"Compact"
-            image:nil
-            identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
+                         image:nil
+                         identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
       
       [BLKDefaults setCompactQuickActions:!BLKDefaults.compactQuickActions];
       [BLKDefaults saveDefaults];
-     
-        [self.superview setNeedsLayout];
-     
-
+      
+      [self.superview setNeedsLayout];
     }];
 //    action.attributes = UIMenuElementAttributesKeepsMenuPresented;
     action.state = BLKDefaults.compactQuickActions ? UIMenuElementStateOn : UIMenuElementStateOff;

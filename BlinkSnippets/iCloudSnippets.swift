@@ -34,7 +34,10 @@ import Foundation
 
 public class iCloudSnippets: LocalSnippets {
   
-  
+  public override func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
+    try FileManager.default.startDownloadingUbiquitousItem(at: self.sourcePathURL)
+    return try await super.listSnippets(forceUpdate: forceUpdate)
+  }
 }
 
 // iCloudSnippets can handle the iCloud interface to track changes to files.

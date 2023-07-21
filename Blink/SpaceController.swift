@@ -234,6 +234,8 @@ class SpaceController: UIViewController {
     
     self.view.addInteraction(_kbObserver)
     
+    NotificationCenter.default.addObserver(self, selector: #selector(_geoTrackStateChanged), name: NSNotification.Name.BLGeoTrackStateChange, object: nil)
+    
 //    view.addSubview(_faceCam)
 //    addChild(_faceCam.controller)
   }
@@ -735,6 +737,7 @@ extension SpaceController {
     case .configShow: showConfigAction()
     case .snippetsShow: showSnippetsAction()
     case .toggleQuickActions: toggleQuickActionsAction()
+    case .toggleGeoTrack: toggleGeoTrack()
     case .tab1: _moveToShell(idx: 0)
     case .tab2: _moveToShell(idx: 1)
     case .tab3: _moveToShell(idx: 2)
@@ -990,7 +993,7 @@ extension SpaceController {
       if DeviceInfo.shared().hasCorners {
         ids.append(contentsOf:  [.layoutMenu])
       }
-      ids.append(contentsOf:  [.toggleLayoutLock, /*.toggleGeoTrack */])
+      ids.append(contentsOf:  [.toggleLayoutLock, .toggleGeoTrack])
       menu.delegate = self;
       menu.build(withIDs: ids, andAppearance: [:])
       _blinkMenu = menu
@@ -1007,6 +1010,37 @@ extension SpaceController {
       }
     }
     
+  }
+  
+  @objc func toggleGeoTrack() {
+    if GeoManager.shared().traking {
+      GeoManager.shared().stop()
+      return
+    }
+
+    let manager = CLLocationManager()
+    let status = manager.authorizationStatus
+    
+    switch status  {
+    case .authorizedAlways, .authorizedWhenInUse: break
+    case .restricted:
+      showAlert(msg: "Geo services are restricted on this device.")
+      return
+    case .denied:
+      showAlert(msg: "Please allow Blink.app to use geo in Settings.app.")
+      return
+    case .notDetermined:
+      GeoManager.shared().authorize()
+      return
+    @unknown default:
+      return
+    }
+    
+    GeoManager.shared().start()
+  }
+  
+  @objc func _geoTrackStateChanged() {
+    self.view.setNeedsLayout()
   }
   
   @objc func showWhatsNewAction() {

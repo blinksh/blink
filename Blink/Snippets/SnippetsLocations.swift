@@ -140,6 +140,7 @@ class SnippetsLocations {
   }
   
   public func saveSnippet(folder: String, name: String, content: String) throws -> Snippet {
+    
     return try saveSnippet(at: self.defaultLocation, folder: folder, name: name, content: content)
   }
   
