@@ -129,6 +129,21 @@ extension URL {
     var string = ""
     while inputStream.hasBytesAvailable {
       let bytesRead = inputStream.read(&buffer, maxLength: buffer.count)
+      if bytesRead == -1 {
+        // Handle read error
+        //
+        // iCloud Drive snippets could timeout read operation
+        // should we indicate that to user?
+        if let error = inputStream.streamError as? NSError {
+//          if error.code == POSIXErrorCode.ETIMEDOUT.rawValue {
+//          }
+          print("readFirstLineOfContent: \(error)")
+        } else {
+          print("-1 but not NSError")
+        }
+        return nil
+//        break;
+      }
       if bytesRead == 0 {
         break
       }

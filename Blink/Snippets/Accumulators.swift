@@ -101,6 +101,9 @@ extension FuzzyAccumulator {
     guard let snippetDescription = try? snippet.description else {
       return
     }
+    guard !snippetDescription.isEmpty else {
+      return
+    }
 
     let (inserted, _) = indexedSnippets.insert(snippet)
     guard inserted else {
