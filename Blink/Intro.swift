@@ -686,7 +686,6 @@ struct OfferingsPresentationView: View {
 
   var body: some View {
     VStack {
-
       Text("WELCOME TO BLINK")
         .font(ctx.headerFont())
         .foregroundColor(BlinkColors.headerText)
@@ -731,7 +730,7 @@ struct OfferingBlinkPlusBuildView: View {
   var body: some View {
     VStack {
       VStack {
-        VStack {
+        VStack(alignment: .leading) {
           Text("BLINK+BUILD")
             .font(ctx.offeringHeaderFont())
             .foregroundColor(BlinkColors.headerText)
@@ -741,7 +740,7 @@ struct OfferingBlinkPlusBuildView: View {
             .foregroundColor(BlinkColors.headerText)
             .multilineTextAlignment(.leading)
         }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading])
+          .padding([.top, .leading, .trailing])
 
         VStack {
           Spacer()
@@ -777,10 +776,9 @@ struct OfferingBlinkPlusBuildView: View {
             Text("Get notified")
               .foregroundColor(BlinkColors.termsText)
               .font(BlinkFonts.btnSub)
-              .multilineTextAlignment(.center)
             Toggle("", isOn: $trialNotification)
               .toggleStyle(.switch)
-              .labelsHidden()
+              .labelsHidden().scaleEffect(0.7).tint(BlinkColors.primaryBtnBorder)
             Spacer()
           }.controlSize(.mini)
         }.padding(.bottom)
@@ -790,7 +788,7 @@ struct OfferingBlinkPlusBuildView: View {
       )
 
       VStack {
-        VStack {
+        VStack(alignment: .leading) {
           Text("BLINK+")
             .font(ctx.offeringHeaderFont())
             .foregroundColor(BlinkColors.blink)
@@ -800,7 +798,7 @@ struct OfferingBlinkPlusBuildView: View {
             .foregroundColor(BlinkColors.blink)
             .multilineTextAlignment(.leading)
         }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading])
+          .padding([.top, .leading, .trailing])
 
         Button("LEARN MORE") {
           ctx.checkBlinkPlusHandler()
@@ -811,7 +809,7 @@ struct OfferingBlinkPlusBuildView: View {
       }.overlay(
         RoundedRectangle(cornerRadius: 16)
           .stroke(BlinkColors.blink, lineWidth: 2)
-      )
+      ).padding(.bottom)
 
       if !ctx.classicsMode {
         TermsButtons(ctx: ctx)
@@ -841,17 +839,16 @@ struct OfferingBlinkPlusView: View {
     
     VStack {
       VStack {
-        VStack {
+        VStack(alignment: .leading) {
           Text("BLINK+BUILD")
             .font(ctx.offeringHeaderFont())
             .foregroundColor(BlinkColors.headerText)
-            .multilineTextAlignment(.leading)
           Text("The full toolbox. Everything on Blink+ and on-demand dev environments.")
             .font(ctx.offeringSubheaderFont())
             .foregroundColor(BlinkColors.headerText)
             .multilineTextAlignment(.leading)
         }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading])
+          .padding([.top, .leading, .trailing])
 
         Button("LEARN MORE") {
           ctx.checkBlinkBuildHandler()
@@ -865,7 +862,7 @@ struct OfferingBlinkPlusView: View {
       )
 
       VStack {
-        VStack {
+        VStack(alignment: .leading) {
           Text("BLINK+")
             .font(ctx.offeringHeaderFont())
             .foregroundColor(BlinkColors.blink)
@@ -875,7 +872,7 @@ struct OfferingBlinkPlusView: View {
             .foregroundColor(BlinkColors.blink)
             .multilineTextAlignment(.leading)
         }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading])
+          .padding([.top, .leading, .trailing])
 
         VStack {
           Spacer()
@@ -909,6 +906,7 @@ struct OfferingBlinkPlusView: View {
         RoundedRectangle(cornerRadius: 16)
           .stroke(BlinkColors.blink, lineWidth: 2)
       )
+      .padding(.bottom)
 
       if !ctx.classicsMode {
         TermsButtons(ctx: ctx)

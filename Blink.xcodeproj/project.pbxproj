@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -252,7 +252,6 @@
 		D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F62A26204900D4C708 /* SnippetsListView.swift */; };
 		D22278002A26204900D4C708 /* Accumulators.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F72A26204900D4C708 /* Accumulators.swift */; };
 		D22278012A26204900D4C708 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F82A26204900D4C708 /* EditorViewController.swift */; };
-		D22278022A26204900D4C708 /* SearchTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F92A26204900D4C708 /* SearchTextInput.swift */; };
 		D22278082A26216900D4C708 /* TreeSitterBash in Frameworks */ = {isa = PBXBuildFile; productRef = D22278072A26216900D4C708 /* TreeSitterBash */; };
 		D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */ = {isa = PBXBuildFile; productRef = D22278092A26216900D4C708 /* TreeSitterBashQueries */; };
 		D222780C2A26216900D4C708 /* TreeSitterBashRunestone in Frameworks */ = {isa = PBXBuildFile; productRef = D222780B2A26216900D4C708 /* TreeSitterBashRunestone */; };
@@ -287,6 +286,7 @@
 		D23890BD2900175100B5CEA6 /* FeatureColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23890BC2900175100B5CEA6 /* FeatureColorPalette.swift */; };
 		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
+		D23B4C6E2A6FCAC2002E689B /* SearchTextInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22277F92A26204900D4C708 /* SearchTextInput.swift */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
 		D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeyListView.swift */; };
 		D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */; };
@@ -867,7 +867,6 @@
 		BD9EA20C271F664D00874007 /* Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publisher.swift; sourceTree = "<group>"; };
 		BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkLoggingTests.swift; sourceTree = "<group>"; };
 		BDACC7742A6F100D00D0B261 /* TrialNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialNotification.swift; sourceTree = "<group>"; };
-		BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/System/iOSSupport/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		BDB72CB127A9C08500DCC446 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BDB8BEA726E008190093BF48 /* OwnAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnAlertController.swift; sourceTree = "<group>"; };
 		BDBFA3052728914F00C77798 /* BlinkCode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkCode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3315,7 +3314,7 @@
 				D22278012A26204900D4C708 /* EditorViewController.swift in Sources */,
 				D266A9DC272A77A100C85EED /* code.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
-				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
+				D259479C269C671F008B5305 /* MoshCustomOptionsPickerView.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshCustomOptionsPickerView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
@@ -3364,6 +3363,7 @@
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D28C357626A56DDF00202C4D /* FileProviderDomain.swift in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
+				D23B4C6E2A6FCAC2002E689B /* SearchTextInput.swift in Sources */,
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
