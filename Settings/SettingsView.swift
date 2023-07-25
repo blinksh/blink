@@ -153,25 +153,25 @@ struct SettingsView: View {
       
       Section("Get in touch") {
         Row {
-          Label("Feedback", systemImage: "bubble.left")
-        } details: {
-          FeedbackView()
-        }
-        Row {
           Label("Support", systemImage: "book")
         } details: {
           SupportView()
         }
-        HStack {
-          Button {
-            BKLinkActions.sendToAppStore()
-          } label: {
-            Label("Rate Blink", systemImage: "star")
-          }
-          
-          Spacer()
-          Text("App Store").foregroundColor(.secondary)
+        Row {
+          Label("Feedback", systemImage: "bubble.left")
+        } details: {
+          FeedbackView()
         }
+        // HStack {
+        //   Button {
+        //     BKLinkActions.sendToAppStore()
+        //   } label: {
+        //     Label("Rate Blink", systemImage: "star")
+        //   }
+          
+        //   Spacer()
+        //   Text("App Store").foregroundColor(.secondary)
+        // }
       }
       
       Section {

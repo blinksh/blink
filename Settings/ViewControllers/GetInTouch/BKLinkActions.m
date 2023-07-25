@@ -91,5 +91,9 @@
   blink_openurl(url);
 }
 
++ (void)sendToDocumentation {
+  NSURL *url = [NSURL URLWithString:@"https://docs.blink.sh"];
+  blink_openurl(url);
+}
 
 @end
