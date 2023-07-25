@@ -31,12 +31,20 @@
 
 #import <Foundation/Foundation.h>
 @import CloudKit;
+
+
 enum BKMoshPrediction {
   BKMoshPredictionAdaptive,
   BKMoshPredictionAlways,
   BKMoshPredictionNever,
   BKMoshPredictionExperimental,
   BKMoshPredictionUnknown
+};
+
+enum BKMoshExperimentalIP {
+  BKMoshExperimentalIPNone,
+  BKMoshExperimentalIPLocal,
+  BKMoshExperimentalIPRemote,
 };
 
 enum BKAgentForward {
@@ -57,6 +65,7 @@ enum BKAgentForward {
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *moshServer;
 @property (nonatomic, strong) NSString *moshPredictOverwrite;
+@property (nonatomic, strong) NSNumber *moshExperimentalIP;
 @property (nonatomic, strong) NSNumber *moshPort;
 @property (nonatomic, strong) NSNumber *moshPortEnd;
 @property (nonatomic, strong) NSString *moshStartup;
@@ -86,6 +95,7 @@ enum BKAgentForward {
                  hostKey:(NSString *)hostKey
               moshServer:(NSString *)moshServer
     moshPredictOverwrite:(NSString *)moshPredictOverwrite
+      moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
            moshPortRange:(NSString *)moshPortRange
               startUpCmd:(NSString *)startUpCmd
               prediction:(enum BKMoshPrediction)prediction
@@ -115,6 +125,7 @@ enum BKAgentForward {
          moshServer:(NSString *)moshServer
       moshPortRange:(NSString *)moshPortRange
 moshPredictOverwrite:(NSString *)moshPredictOverwrite
+ moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
          startUpCmd:(NSString *)startUpCmd
          prediction:(enum BKMoshPrediction)prediction
            proxyCmd:(NSString *)proxyCmd

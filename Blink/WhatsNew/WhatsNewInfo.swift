@@ -35,24 +35,53 @@ import Foundation
 
 class WhatsNewInfo {
   // https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
-  static func prompt(viewWidth: CGFloat) -> String {
-    if viewWidth < 500 {
-      return "\u{1B}[30;48;5;83m New Blink \(Version). Try Blink Build! \u{1B}[0m\u{1B}[38;5;83m\u{1B}[0m\nCheck \"whatsnew\""
-    } else {
-      return "\u{1B}[30;48;5;83m New Blink \(Version). Try Blink Build! \u{1B}[0m\u{1B}[38;5;83m\u{1B}[0m Check \"whatsnew\""
-    }
-  }
+  static private let defaults = UserDefaults.standard
   static private let MaxDisplayCount = 5
   static private let LastVersionKey = "LastVersionDisplay"
   static private let CountVersionDisplayKey = "CountVersionDisplayKey"
   static private var Version: String { UIApplication.blinkMajorVersion() }
+  static private var prompt: String {
+    "\u{1B}[30;48;5;45m New Blink \(Version)! \u{1B}[0m\u{1B}[38;5;45m\u{1B}[0m Check \"whatsnew\""
+  }
+  static private var firstUsagePrompt: String {
+    """
+\u{1B}[30;48;5;45m Type \u{1B}[0m\u{1B}[38;5;45m\u{1B}[0m
+ssh, mosh - Connect to remote
+code - Code session
+build - Build dev environments
+config - Hosts, keys, keyboard, etc...
+help - Quick help
+"""
+  }
 
   private init() {}
+  
+  static func mustDisplayInitialPrompt() -> String? {
+    if isFirstInstall() {
+      defaults.set("0.0", forKey: LastVersionKey)
+      return firstUsagePrompt
+    }
+    
+    if mustDisplayVersionPrompt() {
+      promptDisplayed()
+      return prompt
+    }
+    
+    return nil
+  }
+  
+  static func setNewVersion() {
+    defaults.set(Version, forKey: LastVersionKey)
+    defaults.set(0, forKey: CountVersionDisplayKey)
+  }
+  
+  static func isFirstInstall() -> Bool {
+    defaults.value(forKey: LastVersionKey) == nil ? true : false
+  }
 
-  static func mustDisplayVersionPrompt() -> Bool {
+  static private func mustDisplayVersionPrompt() -> Bool {
 //    return true
     let version = Version
-    let defaults = UserDefaults.standard
     //defaults.set("", forKey: LastVersionKey)
     //defaults.set(0, forKey: CountVersionDisplayKey)
 
@@ -64,13 +93,11 @@ class WhatsNewInfo {
     }
   }
   
-  static func versionsAreEqualIgnoringPatch(v1: String, v2: String) -> Bool {
+  static private func versionsAreEqualIgnoringPatch(v1: String, v2: String) -> Bool {
     v1.split(separator: ".").prefix(upTo: 2) == v2.split(separator: ".").prefix(upTo: 2)
   }
 
-  static func versionPromptDisplayed() {
-    let defaults = UserDefaults.standard
-
+  static private func promptDisplayed() {
     let count = defaults.integer(forKey: CountVersionDisplayKey) + 1
 
     if count == MaxDisplayCount {
@@ -78,12 +105,5 @@ class WhatsNewInfo {
     } else {
       defaults.set(count, forKey: CountVersionDisplayKey)
     }
-  }
-  
-  static func setNewVersion() {
-    let defaults = UserDefaults.standard
-
-    defaults.set(Version, forKey: LastVersionKey)
-    defaults.set(0, forKey: CountVersionDisplayKey)
   }
 }

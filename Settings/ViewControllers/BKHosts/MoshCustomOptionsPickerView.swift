@@ -63,21 +63,50 @@ extension BKMoshPrediction: Hashable {
   }
 }
 
-struct MoshPredictionPickerView: View {
-  @Binding var currentValue: BKMoshPrediction
+extension BKMoshExperimentalIP: Hashable {
+  var label: String {
+    switch self {
+    case BKMoshExperimentalIPNone: return "None"
+    case BKMoshExperimentalIPLocal: return "Local"
+    case BKMoshExperimentalIPRemote: return "Remote"
+    case _: return ""
+    }
+  }
+  
+  var hint: String {
+    switch self {
+    case BKMoshExperimentalIPNone: return "No experimental IP resolution"
+    case BKMoshExperimentalIPLocal: return "Resolve the IP locally"
+    case BKMoshExperimentalIPRemote: return "Resolve the IP in the remote"
+    case _: return ""
+    }
+  }
+
+  static var all: [BKMoshExperimentalIP] {
+    [
+      BKMoshExperimentalIPNone,
+      BKMoshExperimentalIPLocal,
+      BKMoshExperimentalIPRemote,
+    ]
+  }
+}
+
+struct MoshCustomOptionsPickerView: View {
+  @Binding var predictionValue: BKMoshPrediction
   @Binding var overwriteValue: Bool
+  @Binding var experimentalIPValue: BKMoshExperimentalIP
   
   var body: some View {
     List {
-      Section(footer: Text(currentValue.hint)) {
+      Section(footer: Text(predictionValue.hint)) {
         ForEach(BKMoshPrediction.all, id: \.self) { value in
           HStack {
             Text(value.label).tag(value)
             Spacer()
-            Checkmark(checked: currentValue == value)
+            Checkmark(checked: predictionValue == value)
           }
           .contentShape(Rectangle())
-          .onTapGesture { currentValue = value }
+          .onTapGesture { predictionValue = value }
         }
       }
       Section(footer: Text("Prediction overwrites instead of inserting")) {
@@ -85,8 +114,19 @@ struct MoshPredictionPickerView: View {
           Toggle("Overwrite", isOn: $overwriteValue)
         }
       }
+      Section(footer: Text(experimentalIPValue.hint)) {
+        ForEach(BKMoshExperimentalIP.all, id: \.self) { value in
+          HStack {
+            Text(value.label).tag(value)
+            Spacer()
+            Checkmark(checked: experimentalIPValue == value)
+          }
+          .contentShape(Rectangle())
+          .onTapGesture { experimentalIPValue = value }
+        }
+      }
     }
     .listStyle(InsetGroupedListStyle())
-    .navigationTitle("Mosh Prediction")
+    .navigationTitle("Mosh Options")
   }
 }

@@ -30,9 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <getopt.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <netdb.h>
 #include <pthread.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #include <mosh/moshiosbridge.h>
 
@@ -44,6 +45,7 @@
 
 
 static NSDictionary *predictionModeStrings = nil;
+static NSDictionary *experimentalIPStrings = nil;
 
 static const char *usage_format =
 "Usage: mosh [options] [user@]host|IP [--] [command]"
@@ -70,8 +72,7 @@ static const char *usage_format =
 "                --verbose              verbose mode\r\n"
 "                --help                 this message\r\n"
 "\r\n"
-"--experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
-"                                            (default: local)\r\n"
+"--experimental-remote-ip={default|remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
 "\r\n";
 
 
@@ -103,6 +104,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     @(BKMoshPredictionNever): @"never",
     @(BKMoshPredictionExperimental): @"experimental",
     @(BKMoshPredictionUnknown): @"adaptive"
+  };
+  
+  experimentalIPStrings = @{
+    @(BKMoshExperimentalIPNone): @"default",
+    @(BKMoshExperimentalIPLocal): @"local",
+    @(BKMoshExperimentalIPRemote): @"remote"
   };
 }
 
@@ -201,14 +208,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     return [self dieMsg:@(usage_format)];
   }
   
-  // Our default is local
-  if (!self.sessionParams.experimentalRemoteIp) {
-    self.sessionParams.experimentalRemoteIp = @"local";
-  }
-  if (![@[@"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
-    return [self dieMsg:@(usage_format)];
-  }
-  
   NSString *userhost = [NSString stringWithFormat:@"%s", argv[optind++]];
   
   NSArray *chunks = [userhost componentsSeparatedByString:@"@"];
@@ -259,6 +258,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:self.sessionParams.predictionMode] == NSNotFound) {
     return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
   }
+  
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: @"default";
+  if (![@[@"default", @"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
+    return [self dieMsg:@"Unknown experimental IP mode. Use one of: default, remote, local"];
+  }
+  
   return 0;
 }
 
@@ -339,6 +344,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
   self.sessionParams.predictOverwrite = self.sessionParams.predictOverwrite ?: host.moshPredictOverwrite;
+
+  NSString *experimentalIP = host.moshExperimentalIP ? experimentalIPStrings[host.moshExperimentalIP] : nil;
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: experimentalIP;
+  return;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server
@@ -412,16 +421,18 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString * line;
   
   NSString* ipPattern;
-  int ipMatchIdx;
+  int ipMatchIdx = -1;
   
+  NSRegularExpression *ipFormat = NULL;
   if (useIPFromSSHConnectionEnv) {
     ipPattern = @"MOSH SSH_CONNECTION (\\S*) (\\d*) (\\S*) (\\d*)$";
     ipMatchIdx = 3;
-  } else {
+    ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
+  } else if ([@"default" isEqual:self.sessionParams.experimentalRemoteIp]) {
     ipPattern = @"Connected to (\\S*)$";
     ipMatchIdx = 1;
+    ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
   }
-  NSRegularExpression *ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
     
   NSString * connPattern = @"MOSH CONNECT (\\d+) (\\S*)$";
   NSRegularExpression * connFormat = [NSRegularExpression regularExpressionWithPattern:connPattern options:0 error:nil];
@@ -432,10 +443,30 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     NSRange lineRange = NSMakeRange(0, line.length);
     
-    match = [ipFormat firstMatchInString:line options:0 range:lineRange];
-    if (match) {
-      self.sessionParams.ip = [line substringWithRange:[match rangeAtIndex:ipMatchIdx]];
-      continue;
+    if (ipFormat != NULL) {
+      match = [ipFormat firstMatchInString:line options:0 range:lineRange];
+      if (match) {
+        self.sessionParams.ip = [line substringWithRange:[match rangeAtIndex:ipMatchIdx]];
+        continue;
+      }
+    } else {
+      // No ipFormat for "local", so resolve locally.
+      NSString *host;
+      NSArray *userHostList = [userHost componentsSeparatedByString:@"@"];
+      if ([userHostList count] > 1) {
+        host = userHostList[1];
+      } else {
+        host = userHostList[0];
+      }
+      
+      // TODO Or to INET6 from CLI flag
+      NSString *resolvedAddress = [self resolve_addr:[host UTF8String]
+                          port:22 family:AF_INET];
+      if (resolvedAddress == NULL) {
+        *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Could not resolve address locally for host." }];
+        return;
+      }
+      self.sessionParams.ip = resolvedAddress;
     }
     
     match = [connFormat firstMatchInString:line options:0 range:lineRange];
@@ -586,4 +617,46 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSLog(@"deallocating mosh");
 }
 
+// Hosts and no hosts tested
+- (NSString*)resolve_addr:(const char *)name port:(int)port family:(int)family
+{
+  char strport[NI_MAXSERV];
+  struct addrinfo hints, *info;
+  int err;
+  
+  if (port <= 0) {
+    port = 22;
+  }
+  
+  snprintf(strport, sizeof strport, "%d", port);
+  memset(&hints, 0, sizeof(hints));
+  // IPv4 / IPv6
+  hints.ai_family = family == -1 ? AF_UNSPEC : family;
+  hints.ai_socktype = SOCK_STREAM;
+  
+  if ((err = getaddrinfo(name, strport, &hints, &info)) != 0) {
+    [self debugMsg: [NSString stringWithFormat: @"getaddrinfo failed with code: %d", err]];
+    return NULL;
+  }
+  
+  struct addrinfo *ai;
+  char ntop[NI_MAXHOST];
+
+  for (ai = info; ai; ai = ai->ai_next) {
+    if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6) {
+      continue;
+    }
+    
+    if (getnameinfo(ai->ai_addr, ai->ai_addrlen,
+                    ntop, sizeof(ntop), strport,
+                    sizeof(strport), NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+      [self debugMsg:@"Could not resolve address: getnameinfo failed"];
+      continue;
+    }
+
+    return [NSString stringWithUTF8String:ntop];
+  }
+
+  return NULL;
+}
 @end
