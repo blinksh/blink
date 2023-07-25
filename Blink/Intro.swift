@@ -1106,7 +1106,13 @@ struct WalkthroughView: View {
         }
       }
       .tabViewStyle(.page(indexDisplayMode: ctx.portrait ? .always : .never))
-      .overlay(TabViewControls(pageIndex: $pageIndex, firstPageIndex: 0, lastPageIndex: pages.count - 1))
+      .overlay(
+        HStack {
+          if !ctx.portrait {
+            TabViewControls(pageIndex: $pageIndex, firstPageIndex: 0, lastPageIndex: pages.count - 1)
+          }
+        }
+      )
       .frame(maxWidth: 986, maxHeight: ctx.pageMaxHeight())
       .background(
         RoundedRectangle(cornerRadius: 21.67, style: .continuous)
