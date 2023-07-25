@@ -252,6 +252,12 @@
     @"iPad14,5-B" : @"iPad Pro (12.9-inch) (6th generation)",
     @"iPad14,6-A" : @"iPad Pro (12.9-inch) (6th generation)",
     @"iPad14,6-B" : @"iPad Pro (12.9-inch) (6th generation)",
+    
+    // Variants without A,B letters
+    @"iPad14,3" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,4" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,5" : @"iPad Pro (12.9-inch) (6th generation)",
+    @"iPad14,6" : @"iPad Pro (12.9-inch) (6th generation)",
   };
   
   NSString *value = codes[_machine];
