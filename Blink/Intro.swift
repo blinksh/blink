@@ -233,14 +233,14 @@ struct PageCtx {
 
   func pagePadding() -> EdgeInsets {
     let padding = EdgeInsets(top: 50, leading: 50, bottom: 50, trailing: 50)
-    if proxy.size.width < 500 || proxy.size.height < 400 {
+    if proxy.size.width < 500 || proxy.size.height < 600 {
       return EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10)
     }
     return padding
   }
 
   func outterPadding() -> CGFloat? {
-    if proxy.size.width < 500 || proxy.size.height < 400 {
+    if proxy.size.width < 500 || proxy.size.height < 600 {
       return 0
     }
     return nil
@@ -778,7 +778,10 @@ struct OfferingBlinkPlusBuildView: View {
               .font(BlinkFonts.btnSub)
             Toggle("", isOn: $trialNotification)
               .toggleStyle(.switch)
-              .labelsHidden().scaleEffect(0.7).tint(BlinkColors.primaryBtnBorder)
+              .labelsHidden()
+              .scaleEffect(0.7)
+              .tint(BlinkColors.primaryBtnBorder)
+              .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
             Spacer()
           }.controlSize(.mini)
         }.padding(.bottom)
@@ -1025,26 +1028,11 @@ struct InitialOfferingView: View {
       
       OfferView(ctx: ctx, page: offerPage)
         .frame(maxWidth: 986, maxHeight: ctx.pageMaxHeight())
-        .background(
-          RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-            .fill(
-              BlinkColors.bg
-            ).overlay(
-              RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-                .fill(
-                  LinearGradient(colors: [BlinkColors.linearGradient1, BlinkColors.linearGradient2], startPoint: UnitPoint(x: 0.5, y: 0.0), endPoint: UnitPoint(x:0.5, y:1.0))
-                )
-            )
-            .overlay(
-              RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-                .fill(
-                  RadialGradient(colors: [BlinkColors.radialGradient1, BlinkColors.radialGradient2], center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius:max(proxy.size.width, proxy.size.height))
-                ).opacity(0.4)
-            )
-        )
+        
         .padding(.all, ctx.outterPadding())
         .frame(width: proxy.size.width, height: proxy.size.height)
         .alert(errorMessage: $_purchases.alertErrorMessage)
+//        .overlay(Text("\(proxy.size.width)x\(proxy.size.height)").foregroundColor(.blue))
     }
 
   }
@@ -1052,7 +1040,25 @@ struct InitialOfferingView: View {
 
 struct InitialOfferingWindow: View {
   var body: some View {
-      InitialOfferingView().background(Color.black, ignoresSafeAreaEdges: .all)
+      InitialOfferingView()
+      .background(
+        RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+          .fill(
+            BlinkColors.bg
+          ).overlay(
+            RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+              .fill(
+                LinearGradient(colors: [BlinkColors.linearGradient1, BlinkColors.linearGradient2], startPoint: UnitPoint(x: 0.5, y: 0.0), endPoint: UnitPoint(x:0.5, y:1.0))
+              )
+          )
+          .overlay(
+            RoundedRectangle(cornerRadius: 21.67, style: .continuous)
+              .fill(
+                RadialGradient(colors: [BlinkColors.radialGradient1, BlinkColors.radialGradient2], center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius:1)
+              ).opacity(0.4)
+          )
+      ).ignoresSafeArea(.all)
+//      .background(Color.black, ignoresSafeAreaEdges: .all)
   }
 }
 
@@ -1127,7 +1133,6 @@ struct WalkthroughView: View {
       .padding(.all, ctx.outterPadding())
       .frame(width: proxy.size.width, height: proxy.size.height)
       .alert(errorMessage: $_purchases.alertErrorMessage)
-//      .overlay(Text("\(proxy.size.width)x\(proxy.size.height)").foregroundColor(.red))
     }
   }
 }
