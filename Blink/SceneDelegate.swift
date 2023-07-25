@@ -168,7 +168,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.paywallWindow = UIWindow(windowScene: windowScene)
     self.paywallWindow?.windowLevel = .statusBar + 0.5
     UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.blinkTint
-    let view = InitialOfferingWindow()
+    let view = InitialOfferingWindow(urlHandler: blink_openurl)
     let ctrl = StatusBarLessViewController(rootView: view)
     ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
     self.paywallWindow?.rootViewController = ctrl
@@ -179,10 +179,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       self.paywallWindow?.layer.opacity = 1;
     }
     
-  }
-  
-  func presetSafariViewController(url: URL) {
-    self.paywallWindow?.rootViewController?.present(SFSafariViewController(url: url), animated: true)
   }
   
   func sceneDidDisconnect(_ scene: UIScene) {
@@ -376,9 +372,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     if WhatsNewInfo.isFirstInstall() {
-      // TODO Add a handler to dismiss.
-      // ctrl.dismiss(animated: true)
-      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: { _ in }))
+      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: blink_openurl,
+                                                               dismissHandler: { spCtrl.dismiss(animated: true) })
+      )
       ctrl.modalPresentationStyle = .formSheet
       spCtrl.present(ctrl, animated: false)
       return

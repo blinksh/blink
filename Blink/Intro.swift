@@ -396,7 +396,7 @@ struct TermsButtons: View {
       Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
       Button("TERMS") {
-        ctx.urlHandler(URL(string: "https://blink.sh/build-tos")!)
+        _purchases.openTermsOfUse()
       }
       .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
@@ -995,6 +995,8 @@ struct OfferForFreeAndClassicsView: View {
 }
 
 struct InitialOfferingView: View {
+  let urlHandler: (URL) -> Void
+
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
   @State var offerPage = OfferingsPageState.presentation
   @StateObject var _purchases = PurchasesUserModel.shared
@@ -1006,7 +1008,7 @@ struct InitialOfferingView: View {
         classicsMode: false,
         proxy: proxy,
         dynamicTypeSize: dynamicTypeSize,
-        urlHandler: {_ in},
+        urlHandler: urlHandler,
         getStartedHandler: { },
         checkOfferingsHandler: {
           withAnimation {
@@ -1039,8 +1041,10 @@ struct InitialOfferingView: View {
 }
 
 struct InitialOfferingWindow: View {
+  let urlHandler: (URL) -> Void
+
   var body: some View {
-      InitialOfferingView()
+    InitialOfferingView(urlHandler: urlHandler)
       .background(
         BlinkColors.bg.overlay(
           LinearGradient(colors:
@@ -1066,6 +1070,8 @@ enum OfferingsPageState {
 struct WalkthroughView: View {
 
   let urlHandler: (URL) -> Void
+  let dismissHandler: () -> Void
+  
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
   let pages: [PageInfo] = [
     PageInfo.multipleTerminalsInfo,
@@ -1082,8 +1088,9 @@ struct WalkthroughView: View {
 
   @State var pageIndex = 0
 
-  init(urlHandler: @escaping (URL) -> Void) {
+  init(urlHandler: @escaping (URL) -> Void, dismissHandler: @escaping () -> Void) {
     self.urlHandler = urlHandler
+    self.dismissHandler = dismissHandler
   }
 
   var body: some View {
@@ -1094,7 +1101,7 @@ struct WalkthroughView: View {
         proxy: proxy,
         dynamicTypeSize: dynamicTypeSize,
         urlHandler: urlHandler,
-        getStartedHandler: { },
+        getStartedHandler: dismissHandler,
         checkOfferingsHandler: { },
         checkBlinkBuildHandler: { },
         checkBlinkPlusHandler: { }
@@ -1140,7 +1147,9 @@ struct WalkthroughView: View {
 
 struct WalkthroughWindow: View {
   let urlHandler: (URL) -> Void
+  let dismissHandler: () -> Void
   var body: some View {
-    WalkthroughView(urlHandler: urlHandler).background(Color.black, ignoresSafeAreaEdges: .all)
+    WalkthroughView(urlHandler: urlHandler, dismissHandler: dismissHandler)
+      .background(Color.black, ignoresSafeAreaEdges: .all)
   }
 }
