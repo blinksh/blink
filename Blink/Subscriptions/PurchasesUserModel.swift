@@ -137,6 +137,8 @@ class PurchasesUserModel: ObservableObject {
   func blinkPlusBuildTrialAvailable() -> Bool {
     blinkPlusBuildTrial?.status == IntroEligibilityStatus.eligible
   }
+
+  func getUserID() -> String { Purchases.shared.appUserID }
   
   private func _purchase(product: StoreProduct?) {
     guard let product = product else {

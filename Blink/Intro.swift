@@ -401,19 +401,11 @@ struct TermsButtons: View {
       .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
       Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-
-      if _purchases.restoreInProgress {
-        Text("RESTORING...").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub).opacity(self.opacity).onAppear(perform: {
-          withAnimation(.easeOut.repeatForever(autoreverses: true)) {
-            self.opacity = self.opacity == 1.0 ? 0.5 : 1.0
-          }
-        })
-      } else {
-        Button("RESTORE PURCHASES") {
-          _purchases.restorePurchases()
-        }
-        .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+      Button("COPY ID") {
+        UIPasteboard.general.string = _purchases.getUserID()
       }
+        .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+
     }
     .padding(.bottom, ctx.portrait ? 26 : 0)
   }
@@ -712,7 +704,14 @@ struct OfferingsPresentationView: View {
           action: ctx.checkOfferingsHandler,
           label: { Text("CONTINUE") }
         )
-        .buttonStyle(BlinkButtonStyle.secondary(disabled: false, inProgress: false))
+        .buttonStyle(BlinkButtonStyle.primary(disabled: false, inProgress: false))
+
+        Button(
+          action: _purchases.restorePurchases,
+          label: { Text("RESTORE PURCHASES") }
+        )
+          .buttonStyle(BlinkButtonStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+                                                inProgress: _purchases.restoreInProgress))
       }
       .padding(.bottom, ctx.portrait ? 26 : 0)
     }.padding(ctx.pagePadding())
