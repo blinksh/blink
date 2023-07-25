@@ -1032,6 +1032,7 @@ struct InitialOfferingView: View {
         .padding(.all, ctx.outterPadding())
         .frame(width: proxy.size.width, height: proxy.size.height)
         .alert(errorMessage: $_purchases.alertErrorMessage)
+        
 //        .overlay(Text("\(proxy.size.width)x\(proxy.size.height)").foregroundColor(.blue))
     }
 
@@ -1042,23 +1043,18 @@ struct InitialOfferingWindow: View {
   var body: some View {
       InitialOfferingView()
       .background(
-        RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-          .fill(
-            BlinkColors.bg
-          ).overlay(
-            RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-              .fill(
-                LinearGradient(colors: [BlinkColors.linearGradient1, BlinkColors.linearGradient2], startPoint: UnitPoint(x: 0.5, y: 0.0), endPoint: UnitPoint(x:0.5, y:1.0))
-              )
+        BlinkColors.bg.overlay(
+          LinearGradient(colors:
+                          [BlinkColors.linearGradient1, BlinkColors.linearGradient2],
+                         startPoint: UnitPoint(x: 0.5, y: 0.0), endPoint: UnitPoint(x:0.5, y:1.0))
+        )
+        .overlay(
+           RadialGradient(colors: [BlinkColors.radialGradient1, BlinkColors.radialGradient2],
+                          center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius:1)
+              .opacity(0.4)
           )
-          .overlay(
-            RoundedRectangle(cornerRadius: 21.67, style: .continuous)
-              .fill(
-                RadialGradient(colors: [BlinkColors.radialGradient1, BlinkColors.radialGradient2], center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius:1)
-              ).opacity(0.4)
-          )
-      ).ignoresSafeArea(.all)
-//      .background(Color.black, ignoresSafeAreaEdges: .all)
+      )
+      .ignoresSafeArea(.all)
   }
 }
 
