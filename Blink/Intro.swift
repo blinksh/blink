@@ -897,7 +897,6 @@ struct OfferView: View {
       switch page {
       case .presentation: OfferingsPresentationView(ctx: ctx).transition(.move(edge: .leading))
       case .offerings: OfferingsView(ctx: ctx, presentBlinkPlus: startWithBlinkPlus).transition(.move(edge: .trailing))//.transition(.opacity)
-//      case .blinkPlus: OfferingBlinkPlusView(ctx: ctx).transition(.opacity)
       }
     }
       .padding(ctx.pagePadding())
@@ -1021,7 +1020,7 @@ struct InitialOfferingWindow: View {
               .opacity(0.4)
           )
       )
-      .ignoresSafeArea(.all)
+      .ignoresSafeArea(.all, edges: [.bottom, .horizontal])
   }
 }
 
