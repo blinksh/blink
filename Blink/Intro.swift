@@ -718,6 +718,8 @@ struct OfferingsPresentationView: View {
   }
 }
 
+let minButtonWidth: CGFloat = 252
+
 struct OfferingsView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
@@ -750,7 +752,7 @@ struct OfferingsView: View {
               self.presentBlinkPlus = false
             }
           }
-            .buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
+          .buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false, minWidth: minButtonWidth))
             .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
             .padding()
         } else {
@@ -775,7 +777,7 @@ struct OfferingsView: View {
                 await _purchases.purchaseBlinkPlusBuildWithValidation(setupTrial: trialNotification)
               }
             }.buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
+                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil, minWidth: minButtonWidth))
             .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
               Button("OK") {
                 EntitlementsManager.shared.dismissPaywall()
@@ -830,28 +832,28 @@ struct OfferingsView: View {
                                      lastPageIndex: blinkPlusPages.count - 1))
             Spacer()
           }
-
+          
           Button(blinkPlusSubscribeButtonText()) {
             Task {
               await _purchases.purchaseBlinkShellPlusWithValidation()
             }
           }.buttonStyle(BlinkButtonStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
-            .padding()
-            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-              Button("OK") {
-                EntitlementsManager.shared.dismissPaywall()
-              }
-            } message: {
-              Text(_purchases.restoredPurchaseMessage)
+                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil, minWidth: minButtonWidth))
+          .padding()
+          .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+            Button("OK") {
+              EntitlementsManager.shared.dismissPaywall()
             }
+          } message: {
+            Text(_purchases.restoredPurchaseMessage)
+          }
         } else {
           Button("LEARN MORE") {
             withAnimation {
               self.presentBlinkPlus = true
             }
           }
-          .buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
+          .buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false, minWidth: minButtonWidth))
           .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
           .padding()
         }
