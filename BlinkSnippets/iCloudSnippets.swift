@@ -33,12 +33,32 @@
 import Foundation
 
 public class iCloudSnippets: LocalSnippets {
+  private let _fileManager: FileManager
+  private let _downloadQueue: DispatchQueue
+  
+  public override init(from sourcePathURL: URL) {
+    self._fileManager = FileManager.default
+    self._downloadQueue = DispatchQueue.global()
+    super.init(from: sourcePathURL)
+  }
   
   public override func listSnippets(forceUpdate: Bool = false) async throws -> [Snippet] {
-    try FileManager.default.startDownloadingUbiquitousItem(at: self.sourcePathURL)
+    try _fileManager.startDownloadingUbiquitousItem(at: self.sourcePathURL)
     return try await super.listSnippets(forceUpdate: forceUpdate)
   }
+ 
+  public override func readDescription(folder: String, name: String) throws -> String {
+    let url = snippetLocation(folder: folder, name: name)
+    let iCloudUrl = url.appendingPathExtension("icloud")
+    if _fileManager.fileExists(atPath: iCloudUrl.path) {
+      _downloadQueue.async {
+        // NOTE: if we try to read first line, .icloud will be still there
+        _ = try? String(contentsOf: url)
+      }
+      return ""
+    }
+    return url.readFirstLineOfContent() ?? ""
+  }
+  
 }
-
-// iCloudSnippets can handle the iCloud interface to track changes to files.
 
