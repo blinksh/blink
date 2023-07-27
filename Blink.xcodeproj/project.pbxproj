@@ -381,7 +381,6 @@
 		D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */; };
 		D2AD8E7D27A2BAFA00DED28D /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */; };
 		D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8327A2C80C00DED28D /* SettingsView.swift */; };
-		D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8627A2C81900DED28D /* PlansView.swift */; };
 		D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8727A2C81900DED28D /* ExplanationView.swift */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
 		D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */; };
@@ -1097,7 +1096,6 @@
 		D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
 		D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
 		D2AD8E8327A2C80C00DED28D /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		D2AD8E8627A2C81900DED28D /* PlansView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
 		D2AD8E8727A2C81900DED28D /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
 		D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnKey.swift; sourceTree = "<group>"; };
@@ -2147,7 +2145,6 @@
 			isa = PBXGroup;
 			children = (
 				D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */,
-				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
 				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
 				D2B788842949C53100F19E4F /* BuildView.swift */,
 			);
@@ -3343,7 +3340,6 @@
 				D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */,
 				BD3E1E53278D190500333C44 /* Archive.swift in Sources */,
 				D2C24419238E44AB0082C69C /* KeyConfigPairView.swift in Sources */,
-				D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */,
 				D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */,
 				07FAB8F525C8E6C500E1CC2C /* SSHConfigProvider.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,

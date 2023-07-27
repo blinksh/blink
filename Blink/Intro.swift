@@ -718,12 +718,15 @@ struct OfferingsPresentationView: View {
   }
 }
 
-struct OfferingBlinkPlusBuildView: View {
+struct OfferingsView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
-  let pages = [PageInfo.blinkBuildInfo, PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
+  let blinkPlusBuildPages = [PageInfo.blinkBuildInfo, PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
+  let blinkPlusPages = [PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
 
-  @State var pageIndex = 0
+  @State var presentBlinkPlus = false
+  @State var blinkPlusBuildPageIndex = 0
+  @State var blinkPlusPageIndex = 0
   @State var trialNotification = true
 
   var body: some View {
@@ -741,49 +744,60 @@ struct OfferingBlinkPlusBuildView: View {
         }.frame(maxWidth: .infinity, alignment: .leading)
           .padding([.top, .leading, .trailing])
 
-        VStack {
-          Spacer()
-          TabView(selection: $pageIndex) {
-            ForEach(Array(zip(pages.indices, pages)), id: \.0) { index, info in
-              OfferingPageView(ctx: ctx, info: info).tag(index)
+        if presentBlinkPlus {
+          Button("LEARN MORE") {
+            withAnimation {
+              self.presentBlinkPlus = false
             }
           }
-          .tabViewStyle(.page(indexDisplayMode: .never))
-            .overlay(TabViewControls(pageIndex: $pageIndex,
+            .buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
+            .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
+            .padding()
+        } else {
+          VStack {
+            Spacer()
+            TabView(selection: $blinkPlusBuildPageIndex) {
+              ForEach(Array(zip(blinkPlusBuildPages.indices, blinkPlusBuildPages)), id: \.0) { index, info in
+                OfferingPageView(ctx: ctx, info: info).tag(index)
+              }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .overlay(TabViewControls(pageIndex: $blinkPlusBuildPageIndex,
                                      firstPageIndex: 0,
-                                     lastPageIndex: pages.count - 1))
-
-          Spacer()
-        }
-
-        VStack {
-          Button(blinkPlusBuildSubscribeButtonText()) {
-            Task {
-              await _purchases.purchaseBlinkPlusBuildWithValidation(setupTrial: trialNotification)
-            }
-          }.buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-                                                 inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
-          .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-            Button("OK") {
-              EntitlementsManager.shared.dismissPaywall()
-            }
-          } message: {
-            Text(_purchases.restoredPurchaseMessage)
+                                     lastPageIndex: blinkPlusBuildPages.count - 1))
+            
+            Spacer()
           }
-          HStack {
-            Spacer()
-            Text("Get notified")
-              .foregroundColor(BlinkColors.termsText)
-              .font(BlinkFonts.btnSub)
-            Toggle("", isOn: $trialNotification)
-              .toggleStyle(.switch)
-              .labelsHidden()
-              .scaleEffect(0.7)
-              .tint(BlinkColors.primaryBtnBorder)
-              .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
-            Spacer()
-          }.controlSize(.mini)
-        }.padding(.bottom)
+          
+          VStack {
+            Button(blinkPlusBuildSubscribeButtonText()) {
+              Task {
+                await _purchases.purchaseBlinkPlusBuildWithValidation(setupTrial: trialNotification)
+              }
+            }.buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
+            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+              Button("OK") {
+                EntitlementsManager.shared.dismissPaywall()
+              }
+            } message: {
+              Text(_purchases.restoredPurchaseMessage)
+            }
+            HStack {
+              Spacer()
+              Text("Get notified")
+                .foregroundColor(BlinkColors.termsText)
+                .font(BlinkFonts.btnSub)
+              Toggle("", isOn: $trialNotification)
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .scaleEffect(0.7)
+                .tint(BlinkColors.primaryBtnBorder)
+                .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
+              Spacer()
+            }.controlSize(.mini)
+          }.padding(.bottom)
+        }
       }.overlay(
         RoundedRectangle(cornerRadius: 16)
           .stroke(BlinkColors.headerText, lineWidth: 2)
@@ -802,12 +816,45 @@ struct OfferingBlinkPlusBuildView: View {
         }.frame(maxWidth: .infinity, alignment: .leading)
           .padding([.top, .leading, .trailing])
 
-        Button("LEARN MORE") {
-          ctx.checkBlinkPlusHandler()
-        }
+        if presentBlinkPlus {
+          VStack {
+            Spacer()
+            TabView(selection: $blinkPlusPageIndex) {
+              ForEach(Array(zip(blinkPlusPages.indices, blinkPlusPages)), id: \.0) { index, info in
+                OfferingPageView(ctx: ctx, info: info).tag(index)
+              }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .overlay(TabViewControls(pageIndex: $blinkPlusPageIndex,
+                                     firstPageIndex: 0,
+                                     lastPageIndex: blinkPlusPages.count - 1))
+            Spacer()
+          }
+
+          Button(blinkPlusSubscribeButtonText()) {
+            Task {
+              await _purchases.purchaseBlinkShellPlusWithValidation()
+            }
+          }.buttonStyle(BlinkButtonStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+                                                   inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
+            .padding()
+            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+              Button("OK") {
+                EntitlementsManager.shared.dismissPaywall()
+              }
+            } message: {
+              Text(_purchases.restoredPurchaseMessage)
+            }
+        } else {
+          Button("LEARN MORE") {
+            withAnimation {
+              self.presentBlinkPlus = true
+            }
+          }
           .buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
           .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
           .padding()
+        }
       }.overlay(
         RoundedRectangle(cornerRadius: 16)
           .stroke(BlinkColors.blink, lineWidth: 2)
@@ -828,93 +875,6 @@ struct OfferingBlinkPlusBuildView: View {
       return "BUY \(price)"
     }
   }
-}
-
-struct OfferingBlinkPlusView: View {
-  let ctx: PageCtx
-  @StateObject var _purchases = PurchasesUserModel.shared
-  let pages = [PageInfo.sshMoshToolsInfo, PageInfo.blinkCodeInfo]
-
-  @State var pageIndex = 0
-
-  var body: some View {
-    
-    VStack {
-      VStack {
-        VStack(alignment: .leading) {
-          Text("BLINK+BUILD")
-            .font(ctx.offeringHeaderFont())
-            .foregroundColor(BlinkColors.headerText)
-          Text("The full toolbox. Everything on Blink+ and on-demand dev environments.")
-            .font(ctx.offeringSubheaderFont())
-            .foregroundColor(BlinkColors.headerText)
-            .multilineTextAlignment(.leading)
-        }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading, .trailing])
-
-        Button("LEARN MORE") {
-          ctx.checkBlinkBuildHandler()
-        }
-          .buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
-          .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
-          .padding()
-      }.overlay(
-        RoundedRectangle(cornerRadius: 16)
-          .stroke(BlinkColors.headerText, lineWidth: 2)
-      )
-
-      VStack {
-        VStack(alignment: .leading) {
-          Text("BLINK+")
-            .font(ctx.offeringHeaderFont())
-            .foregroundColor(BlinkColors.blink)
-            .multilineTextAlignment(.leading)
-          Text("The shell of choice for thousands of developers for 7 years. Now with Blink Code.")
-            .font(ctx.offeringSubheaderFont())
-            .foregroundColor(BlinkColors.blink)
-            .multilineTextAlignment(.leading)
-        }.frame(maxWidth: .infinity, alignment: .leading)
-          .padding([.top, .leading, .trailing])
-
-        VStack {
-          Spacer()
-          TabView(selection: $pageIndex) {
-            ForEach(Array(zip(pages.indices, pages)), id: \.0) { index, info in
-              OfferingPageView(ctx: ctx, info: info).tag(index)
-            }
-          }
-          .tabViewStyle(.page(indexDisplayMode: .never))
-          .overlay(TabViewControls(pageIndex: $pageIndex,
-                                   firstPageIndex: 0,
-                                   lastPageIndex: pages.count - 1))
-          Spacer()
-        }
-
-        Button(blinkPlusSubscribeButtonText()) {
-          Task {
-            await _purchases.purchaseBlinkShellPlusWithValidation()
-          }
-        }.buttonStyle(BlinkButtonStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-                                                 inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusBuildPriceWithPeriod() == nil))
-          .padding()
-          .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-            Button("OK") {
-              EntitlementsManager.shared.dismissPaywall()
-            }
-          } message: {
-            Text(_purchases.restoredPurchaseMessage)
-          }
-      }.overlay(
-        RoundedRectangle(cornerRadius: 16)
-          .stroke(BlinkColors.blink, lineWidth: 2)
-      )
-      .padding(.bottom)
-
-      if !ctx.classicsMode {
-        TermsButtons(ctx: ctx)
-      }
-    }
-  }
   
   func blinkPlusSubscribeButtonText() -> String {
     let price = _purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? ""
@@ -924,16 +884,18 @@ struct OfferingBlinkPlusView: View {
   }
 }
 
+
 struct OfferView: View {
   let ctx: PageCtx
   let page: OfferingsPageState
+  let startWithBlinkPlus: Bool
 
   var body: some View {
     VStack {
       switch page {
       case .presentation: OfferingsPresentationView(ctx: ctx).transition(.move(edge: .leading))
-      case .blinkBuild: OfferingBlinkPlusBuildView(ctx: ctx).transition(.opacity)
-      case .blinkPlus: OfferingBlinkPlusView(ctx: ctx).transition(.opacity)
+      case .offerings: OfferingsView(ctx: ctx, presentBlinkPlus: startWithBlinkPlus).transition(.move(edge: .trailing))//.transition(.opacity)
+//      case .blinkPlus: OfferingBlinkPlusView(ctx: ctx).transition(.opacity)
       }
     }
       .padding(ctx.pagePadding())
@@ -943,7 +905,7 @@ struct OfferView: View {
 struct OfferForFreeAndClassicsView: View {
 
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
-  @State var offerPage = OfferingsPageState.blinkBuild
+  @State var offerPage = OfferingsPageState.offerings
   @StateObject var _purchases = PurchasesUserModel.shared
 
   var body: some View {
@@ -958,16 +920,16 @@ struct OfferForFreeAndClassicsView: View {
         checkOfferingsHandler: { },
         checkBlinkBuildHandler: {
           withAnimation {
-            offerPage = .blinkBuild
+            offerPage = .offerings
           }
         },
         checkBlinkPlusHandler: {
           withAnimation {
-            offerPage = .blinkPlus
+            offerPage = .offerings
           }
         }
       )
-      OfferView(ctx: ctx, page: offerPage)
+      OfferView(ctx: ctx, page: offerPage, startWithBlinkPlus: true)
         .frame(width: proxy.size.width, height: proxy.size.height)
         .alert(errorMessage: $_purchases.alertErrorMessage)
         .padding(.top, 50)
@@ -1012,22 +974,22 @@ struct InitialOfferingView: View {
         getStartedHandler: { },
         checkOfferingsHandler: {
           withAnimation {
-            offerPage = .blinkBuild
+            offerPage = .offerings
           }
         },
         checkBlinkBuildHandler: {
           withAnimation {
-            offerPage = .blinkBuild
+            offerPage = .offerings
           }
         },
         checkBlinkPlusHandler: {
           withAnimation {
-            offerPage = .blinkPlus
+            offerPage = .offerings
           }
         }
       )
       
-      OfferView(ctx: ctx, page: offerPage)
+      OfferView(ctx: ctx, page: offerPage, startWithBlinkPlus: false)
         .frame(maxWidth: 986, maxHeight: ctx.pageMaxHeight())
         
         .padding(.all, ctx.outterPadding())
@@ -1063,8 +1025,7 @@ struct InitialOfferingWindow: View {
 
 enum OfferingsPageState {
   case presentation
-  case blinkBuild
-  case blinkPlus
+  case offerings
 }
 
 struct WalkthroughView: View {
@@ -1084,7 +1045,7 @@ struct WalkthroughView: View {
   @StateObject var _purchases = PurchasesUserModel.shared
   @StateObject var _entitlements = EntitlementsManager.shared
 
-  @State var offerPage = OfferingsPageState.blinkBuild
+  @State var offerPage = OfferingsPageState.offerings
 
   @State var pageIndex = 0
 
