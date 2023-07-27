@@ -201,7 +201,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    guard EntitlementsManager.shared.earlyAccessFeatures.active// TODO: FIX Flow || FeatureFlags.earlyAccessFeatures
+    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
     else {
       EntitlementsManager.shared.navigationSteps = [.letter]
       return
