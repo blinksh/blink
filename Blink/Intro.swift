@@ -389,7 +389,7 @@ struct TermsButtons: View {
   var body: some View {
     HStack {
       Button("FAQ") {
-        ctx.urlHandler(URL(string: "https://blink.sh#")!)
+        ctx.urlHandler(URL(string: "https://blink.sh#pricing-faq")!)
       }
       .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
@@ -692,7 +692,8 @@ struct OfferingsPresentationView: View {
       }
 
       Spacer()
-      Text("Your mobile device is small, but with Blink, it can take on Big Jobs. Start  Then choose one of our packages, and let’s get to work!")
+      Text("Thanks for downloading. Your device is small, but with Blink, it can take on Big Jobs.\n" + 
+             "Try free for 1 week, and let's get to work!")
         .font(ctx.infoFont())
         .multilineTextAlignment(.center)
         .foregroundColor(BlinkColors.infoText)
@@ -747,7 +748,8 @@ struct OfferingsView: View {
           .padding([.top, .leading, .trailing])
 
         if presentBlinkPlus {
-          Button("LEARN MORE") {
+          let pricePerMonth = _purchases.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? ""
+          Button("COMPARE (\(pricePerMonth))") {
             withAnimation {
               self.presentBlinkPlus = false
             }
@@ -785,19 +787,21 @@ struct OfferingsView: View {
             } message: {
               Text(_purchases.restoredPurchaseMessage)
             }
-            HStack {
-              Spacer()
-              Text("Get notified")
-                .foregroundColor(BlinkColors.termsText)
-                .font(BlinkFonts.btnSub)
-              Toggle("", isOn: $trialNotification)
-                .toggleStyle(.switch)
-                .labelsHidden()
-                .scaleEffect(0.7)
-                .tint(BlinkColors.primaryBtnBorder)
-                .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
-              Spacer()
-            }.controlSize(.mini)
+            if _purchases.blinkPlusBuildTrialAvailable() {
+              HStack {
+                Spacer()
+                Text("Get Trial Reminder")
+                  .foregroundColor(BlinkColors.infoText)
+                  .font(BlinkFonts.btnSub)
+                Toggle("", isOn: $trialNotification)
+                  .toggleStyle(.switch)
+                  .labelsHidden()
+                  .scaleEffect(0.7)
+                  .tint(BlinkColors.primaryBtnBorder)
+                  .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
+                Spacer()
+              }.controlSize(.mini)
+            }
           }.padding(.bottom)
         }
       }.overlay(
@@ -811,7 +815,7 @@ struct OfferingsView: View {
             .font(ctx.offeringHeaderFont())
             .foregroundColor(BlinkColors.blink)
             .multilineTextAlignment(.leading)
-          Text("The shell of choice for thousands of developers for 7 years. Now with Blink Code.")
+          Text("The shell of choice for thousands of developers. SSH, Mosh, Code, fast and customizable, etc.")
             .font(ctx.offeringSubheaderFont())
             .foregroundColor(BlinkColors.blink)
             .multilineTextAlignment(.leading)
@@ -848,7 +852,8 @@ struct OfferingsView: View {
             Text(_purchases.restoredPurchaseMessage)
           }
         } else {
-          Button("LEARN MORE") {
+          let pricePerMonth = _purchases.blinkShellPlusProduct?.priceFormatter?.string(from: _purchases.blinkPlusProduct?.pricePerMonth ?? 0.0) ?? ""
+          Button("COMPARE (\(pricePerMonth)/MONTH)") {
             withAnimation {
               self.presentBlinkPlus = true
             }
@@ -872,7 +877,7 @@ struct OfferingsView: View {
     let price = _purchases.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
     
     if _purchases.blinkPlusBuildTrialAvailable() {
-      return "TRY 1 WEEK FREE, THEN \(price)"
+      return "DO 1 WEEK FREE, THEN \(price)"
     } else {
       return "BUY \(price)"
     }
@@ -882,7 +887,7 @@ struct OfferingsView: View {
     let price = _purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? ""
     let formattedPricePerMonth = _purchases.blinkShellPlusProduct?.priceFormatter?.string(from: _purchases.blinkPlusProduct?.pricePerMonth ?? 0.0) ?? ""
     
-    return "1 YEAR \(price) (ONLY \(formattedPricePerMonth) PER MONTH)"
+    return "BUY \(price) (JUST \(formattedPricePerMonth)/MONTH!)"
   }
 }
 
