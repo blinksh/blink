@@ -957,6 +957,16 @@ extension SpaceController {
     }
   }
   
+  @objc func showWalkthroughAction() {
+    DispatchQueue.main.async {
+      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: blink_openurl,
+                                                               dismissHandler: { self.dismiss(animated: true) })
+      )
+      ctrl.modalPresentationStyle = .formSheet
+      self.present(ctrl, animated: false)
+    }
+  }
+  
   @objc func showSnippetsAction() {
     guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures else {
       return

@@ -149,6 +149,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           window.layer.opacity = 0;
         } completion: { _ in
           self.paywallWindow = nil
+          UIApplication.shared.sendAction(Selector("showWalkthroughAction"), to: self._spCtrl, from: nil, for: nil)
         }
       }
       
@@ -369,15 +370,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       _ = KBTracker.shared.input?.resignFirstResponder()
       paywallWindow.makeKeyAndVisible()
       return;
-    }
-    
-    if WhatsNewInfo.isFirstInstall() {
-      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: blink_openurl,
-                                                               dismissHandler: { spCtrl.dismiss(animated: true) })
-      )
-      ctrl.modalPresentationStyle = .formSheet
-      spCtrl.present(ctrl, animated: false)
-      return
     }
     
     // We can present config or stuck view. 
