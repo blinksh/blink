@@ -58,7 +58,7 @@ help - Quick help
   
   static func mustDisplayInitialPrompt() -> String? {
     if isFirstInstall() {
-      defaults.set("0.0", forKey: LastVersionKey)
+      promptDisplayed()
       return firstUsagePrompt
     }
     
