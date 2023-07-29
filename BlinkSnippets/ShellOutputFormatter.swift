@@ -34,7 +34,8 @@ import Foundation
 
 
 public enum ShellOutputFormatter {
-  case block,
+  case raw,
+       block,
        lineBySemicolon,
        beginEnd
 
@@ -49,6 +50,8 @@ public enum ShellOutputFormatter {
     }
     
     switch self {
+    case .raw:
+      return script
     case .lineBySemicolon:
       return commands.joined(separator: "; ")
     case .block:

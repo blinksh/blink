@@ -120,10 +120,31 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       textView.highlightedRanges = []
       model.editingMode = .code
       textView.returnKeyType = .default
-      self.navigationItem.rightBarButtonItem =
-        UIBarButtonItem(
+      let sendWithNewlineOptions = [
+        UIAction(title: "Raw", handler: {_ /in
+          self.model.sendContentToReceiver(content: textView.text, shellOutputFormatter: .raw)
+        }),
+        UIAction(title: "Block", handler: {_ in
+          self.model.sendContentToReceiver(content: textView.text, shellOutputFormatter: .block)
+        }),
+        UIAction(title: "B/E", handler: {_ in
+          self.model.sendContentToReceiver(content: textView.text, shellOutputFormatter: .beginEnd)
+        }),
+        UIAction(title: "Semicolon", handler: {_ in
+          self.model.sendContentToReceiver(content: textView.text, shellOutputFormatter: .lineBySemicolon)
+        })
+      ]
+
+      self.navigationItem.rightBarButtonItems =
+        [
+         UIBarButtonItem(
           title: "Send", style: .done, target: self, action: #selector(send)
-        )
+        ),
+         UIBarButtonItem(
+          image: UIImage(systemName: "paperplane.fill"),
+          primaryAction: nil,
+          menu: UIMenu(title: "Send as", children: sendWithNewlineOptions)
+        ),]
     }
   }
 
@@ -254,6 +275,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
     self.navigationItem.renameDelegate = self
     self.navigationItem.titleMenuProvider = { suggestions in
       var finalMenuElements = suggestions
+
       finalMenuElements.append(
         UICommand(
           title: "Save",

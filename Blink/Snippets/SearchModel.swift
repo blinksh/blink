@@ -39,18 +39,18 @@ import HighlightSwift
 class SearchModel: ObservableObject {
   weak var rootCtrl: UIViewController? = nil
   weak var inputView: UIView? = nil
-  
+
   var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.xcode))
   var searchResults = SearchAccumulator(query: "", style: .light(.xcode))
   var fuzzyCancelable: AnyCancellable? = nil
   var searchCancelable: AnyCancellable? = nil
-  
+
   public var snippetContext: (any SnippetContext)? = nil
-  
+
   var isFuzzyMode: Bool {
     self.searchResults.query.isEmpty
   }
-  
+
   @Published var displayResults = [Snippet]() {
     didSet {
       if displayResults.isEmpty {
@@ -60,23 +60,22 @@ class SearchModel: ObservableObject {
       }
     }
   }
-  
+
   @Published var selectedSnippetIdx: Int?
-  
+
   @Published var currentSnippetName = ""
   @Published var editingSnippet: Snippet? = nil
   @Published var editingMode: TextViewEditingMode = .template
   @Published var newSnippetPresented = false
   @Published var indexProgress: SnippetsLocations.RefreshProgress = .none
-  // TODO This should be configurable from the Editor and restored between sessions
-  @Published var shellOutputFormatter = ShellOutputFormatter.lineBySemicolon
+  let defaultShellOutputFormatter = ShellOutputFormatter.lineBySemicolon
 
   let snippetsLocations: SnippetsLocations
   // Stored Index snapshot to search.
   var index: [Snippet] = []
   var indexFetchCancellable: Cancellable? = nil
   var indexProgressCancellable: Cancellable? = nil
-  
+
   var style: HighlightStyle = .light(.xcode) {
     didSet {
       searchResults.style = style
@@ -120,14 +119,14 @@ class SearchModel: ObservableObject {
     }
   }
 
-  
+
 
   init() throws {
     self.mode = .general
     self.input = ""
-    
+
     self.snippetsLocations = try SnippetsLocations()
-    
+
     self.indexFetchCancellable = self.snippetsLocations
       .indexPublisher
       // Refresh should happen on main thread, bc this is publishing changes.
@@ -139,7 +138,7 @@ class SearchModel: ObservableObject {
         self.index = snippets
         self.input = { self.input }()
       })
-    
+
     self.indexProgressCancellable = self.snippetsLocations
       .indexProgressPublisher
       .receive(on: DispatchQueue.main)
@@ -149,7 +148,7 @@ class SearchModel: ObservableObject {
   func updateWith(text: String) {
     self.mode = .insert
     self.input = text
-    
+
 //    if text.hasPrefix("<") {
 //      self.mode = .insert
 //    } else if text.hasPrefix("@") {
@@ -167,7 +166,7 @@ class SearchModel: ObservableObject {
 //    }
 
   }
-  
+
   func insertRawSnippet() {
     // The snippet should only be selectable if the content is already there,
     // as it has already been part of a search and cached.
@@ -179,14 +178,14 @@ class SearchModel: ObservableObject {
 
     sendContentToReceiver(content: content)
   }
-  
+
   func copyRawSnippet() {
     guard let snippet = currentSelection,
           let content = try? snippet.content
     else {
       return
     }
-    
+
     UIPasteboard.general.string = content
     self.close()
   }
@@ -205,20 +204,20 @@ class SearchModel: ObservableObject {
       snippet = currentSelection!
       self.editingMode = .template
     }
-    
+
     self.currentSnippetName = snippet.fuzzyIndex
     self.editingSnippet = snippet
-    
+
     let textView = TextViewBuilder.createForSnippetEditing()
     let editorCtrl = EditorViewController(textView: textView, model: self)
     let navCtrl = UINavigationController(rootViewController: editorCtrl)
     navCtrl.modalPresentationStyle = .formSheet
-    
+
     if let sheetCtrl = navCtrl.sheetPresentationController {
       sheetCtrl.prefersGrabberVisible = true
       sheetCtrl.prefersEdgeAttachedInCompactHeight = true
       sheetCtrl.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-      
+
       sheetCtrl.detents = [
         .custom(resolver: { context in
           120
@@ -228,16 +227,16 @@ class SearchModel: ObservableObject {
       sheetCtrl.largestUndimmedDetentIdentifier = .large
     }
     rootCtrl?.present(navCtrl, animated: false)
-    
+
   }
-  
+
   func openNewSnippet() {
     self.newSnippetPresented = true
     let textView = TextViewBuilder.createForSnippetEditing()
     let editorCtrl = NewSnippetViewController(textView: textView, model: self)
     let navCtrl = UINavigationController(rootViewController: editorCtrl)
     navCtrl.modalPresentationStyle = .formSheet
-    
+
     if let sheetCtrl = navCtrl.sheetPresentationController {
       sheetCtrl.prefersGrabberVisible = true
       sheetCtrl.prefersEdgeAttachedInCompactHeight = true
@@ -248,28 +247,32 @@ class SearchModel: ObservableObject {
       sheetCtrl.largestUndimmedDetentIdentifier = .large
     }
     rootCtrl?.present(navCtrl, animated: true)
-    
+
   }
 
   @objc func sendContentToReceiver(content: String) {
     // NOTE Atm it is all shell content, at one point we should have different types.
+    sendContentToReceiver(content: content, shellOutputFormatter: defaultShellOutputFormatter)
+  }
+
+  func sendContentToReceiver(content: String, shellOutputFormatter: ShellOutputFormatter) {
     let content = shellOutputFormatter.format(content)
     self.snippetContext?.providerSnippetReceiver()?.receive(content)
     self.editingSnippet = nil
     self.input = ""
     self.snippetContext?.dismissSnippetsController()
   }
-  
+
   func close() {
     self.snippetContext?.dismissSnippetsController()
   }
-  
+
   @objc func closeEditor() {
     self.editingSnippet = nil
     self.newSnippetPresented = false
     self.rootCtrl?.presentedViewController?.dismiss(animated: true)
   }
-  
+
   func focusOnInput() {
     _ = self.inputView?.becomeFirstResponder()
   }
@@ -278,7 +281,7 @@ class SearchModel: ObservableObject {
     guard let snippet = self.editingSnippet else {
       return
     }
-    
+
     try self.snippetsLocations.saveSnippet(folder: snippet.folder, name: snippet.name, content: newContent)
   }
 
@@ -286,16 +289,16 @@ class SearchModel: ObservableObject {
     guard let snippet = editingSnippet else {
       return
     }
-    
+
     try self.snippetsLocations.deleteSnippet(snippet: snippet)
-    
+
     self.displayResults = []
     self.searchResults.clear()
     self.fuzzyResults.clear()
     self.input = ""
     self.editingSnippet = nil
   }
-  
+
   func renameSnippet(newCategory: String, newName: String, newContent: String) throws {
     guard let snippet = self.editingSnippet else {
       return
@@ -308,7 +311,7 @@ class SearchModel: ObservableObject {
     self.input = ""
     self.editingSnippet = newSnippet
   }
-  
+
   func cleanString(str: String?) -> String {
     (str ?? "").lowercased()
       .replacingOccurrences(of: " ", with: "-")
@@ -418,9 +421,9 @@ extension SearchModel {
     } else {
       return nil
     }
-    
+
   }
-  
+
   func onSnippetTap(_ snippet: Snippet) {
     if let index = self.displayResults.firstIndex(of: snippet) {
       self.selectedSnippetIdx = index
