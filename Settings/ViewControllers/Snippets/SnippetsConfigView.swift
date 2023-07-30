@@ -34,6 +34,21 @@ import Foundation
 
 import SwiftUI
 
+fileprivate func openLocationInFilesApp(location: BKSnippetDefaultLocation) {
+  let path = if location == .iCloud {
+    BlinkPaths.iCloudSnippetsLocationURL()!.relativePath
+  } else {
+    BlinkPaths.localSnippetsLocationURL()!.relativePath
+  }
+  
+  let fm = FileManager.default
+  if !fm.fileExists(atPath: path) {
+    try? fm.createDirectory(atPath: path, withIntermediateDirectories: true)
+  }
+  let actualURL = URL(string: "shareddocuments:/\(path)")!
+  UIApplication.shared.open(actualURL)
+}
+
 struct SnippetsConfigView: View {
   @State var useBlinkIndex = !BLKDefaults.dontUseBlinkSnippetsIndex()
   @State var defaultStorage = BLKDefaults.snippetsDefaultLocation()
@@ -42,7 +57,14 @@ struct SnippetsConfigView: View {
   var body: some View {
     List {
       
-      Section(header: Text("Locations"), footer: Text(iCloudEnabled ? "" : "iCloud is disabled on this device.")) {
+      Section(
+        header: Text("Locations"),
+        footer: Text(iCloudEnabled ? "Open in [Files.app](https://files.app)" : "iCloud is disabled on this device.")
+          .environment(\.openURL, OpenURLAction { url in
+            openLocationInFilesApp(location: self.defaultStorage)
+            return .discarded
+          })
+      ) {
         if iCloudEnabled {
           Picker(selection: $defaultStorage, label: Text("Default Location")) {
             Label("iCloud Drive", systemImage: "icloud")
