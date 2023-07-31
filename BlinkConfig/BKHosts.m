@@ -459,7 +459,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                                       moshServer:[hostRecord valueForKey:@"moshServer"]
                                    moshPortRange:moshPortRange
                             moshPredictOverwrite:[hostRecord valueForKey:@"moshPredictOverwrite"]
-                            moshExperimentalIP:[hostRecord valueForKey:@"moshExperimentalIP"]
+                            moshExperimentalIP:[[hostRecord valueForKey:@"moshExperimentalIP"] intValue]
                                       startUpCmd:[hostRecord valueForKey:@"moshStartup"]
                                       prediction:[[hostRecord valueForKey:@"prediction"] intValue]
                                         proxyCmd:[hostRecord valueForKey:@"proxyCmd"]
