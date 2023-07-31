@@ -222,7 +222,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 
 + (NSURL *)localSnippetsLocationURL
 {
-  return [NSURL fileURLWithPath:[[self blink] stringByAppendingPathComponent:@"snips"]];
+  return [NSURL fileURLWithPath:[[self documentsPath] stringByAppendingPathComponent:@"snips"]];
 }
 
 + (NSURL *)iCloudSnippetsLocationURL {
