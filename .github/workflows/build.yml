@@ -5,13 +5,17 @@ on: [push]
 jobs:
   build:
 
-    runs-on: macOS-latest
+    # runs-on: macOS-latest
+    runs-on: macos-13
 
     steps:
     # - uses: swift-actions/setup-swift@v1
     - uses: actions/checkout@v2
       with:
         submodules: true
+
+    - name: switch xcode
+      run: sudo xcode-select -s '/Applications/Xcode_15_beta.app/Contents/Developer'
 
     - name: use cache
       id: cache
