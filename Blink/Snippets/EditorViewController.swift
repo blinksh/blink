@@ -121,7 +121,7 @@ class EditorViewController: UIViewController, TextViewDelegate, UINavigationItem
       model.editingMode = .code
       textView.returnKeyType = .default
       let sendWithNewlineOptions = [
-        UIAction(title: "Raw", handler: {_ /in
+        UIAction(title: "Raw", handler: {_ in
           self.model.sendContentToReceiver(content: textView.text, shellOutputFormatter: .raw)
         }),
         UIAction(title: "Block", handler: {_ in
