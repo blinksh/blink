@@ -15,7 +15,7 @@ jobs:
         submodules: true
 
     - name: switch xcode
-      run: sudo xcode-select -s '/Applications/Xcode_15_beta.app/Contents/Developer'
+      run: sudo xcode-select -s '/Applications/Xcode_15.0.app/Contents/Developer'
 
     - name: use cache
       id: cache
