@@ -345,9 +345,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
   self.sessionParams.predictOverwrite = self.sessionParams.predictOverwrite ?: host.moshPredictOverwrite;
 
-  NSString *experimentalIP = host.moshExperimentalIP ? experimentalIPStrings[host.moshExperimentalIP] : nil;
+  NSString *experimentalIP = host.moshExperimentalIP ? experimentalIPStrings[host.moshExperimentalIP] : @"default";
   self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: experimentalIP;
-  return;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server
