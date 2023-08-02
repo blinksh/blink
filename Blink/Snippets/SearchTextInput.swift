@@ -87,14 +87,14 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
       input: "\t", modifierFlags: .shift,
       action: #selector(SearchTextInput.prevSnippet)
     )
-    let enter = UIKeyCommand(
-      input: "\r", modifierFlags: [],
-      action: #selector(SearchTextInput.enterEditCreateMode)
-    )
-    let enter2 = UIKeyCommand(
-      input: "\n", modifierFlags: [],
-      action: #selector(SearchTextInput.enterEditCreateMode)
-    )
+//    let enter = UIKeyCommand(
+//      input: "\r", modifierFlags: [],
+//      action: #selector(SearchTextInput.enterEditCreateMode)
+//    )
+//    let enter2 = UIKeyCommand(
+//      input: "\n", modifierFlags: [],
+//      action: #selector(SearchTextInput.enterEditCreateMode)
+//    )
     let cmdEnter = UIKeyCommand(
       input: "\r", modifierFlags: .command,
       action: #selector(SearchTextInput.insertRawSnippet)
@@ -106,7 +106,9 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
     
     self._keyCommands = [
       escape, ctrlN, ctrlJ, ctrlP, ctrlK, ctrlUp, ctrlDown, up, down, tab, shiftTab,
-      enter, enter2, cmdEnter, cmdShiftC
+// NOTE: textFieldShouldReturn is used for software kb compatibility
+//      enter, enter2,
+      cmdEnter, cmdShiftC
     ]
     
     super.init(frame: frame)
@@ -151,7 +153,8 @@ class SearchTextInput: UITextField, UITextFieldDelegate {
   }
   
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    true
+    self.enterEditCreateMode()
+    return false
   }
   
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
