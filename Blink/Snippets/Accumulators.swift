@@ -32,7 +32,6 @@
 import UIKit
 import Foundation
 import BlinkSnippets
-import HighlightSwift
 
 let ResultsLimit = 60;
 
