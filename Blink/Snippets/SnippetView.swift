@@ -48,7 +48,7 @@ public struct SnippetView: View {
       VStack(alignment: .leading) {
         HStack {
           Text(index).font(Font(BlinkFonts.snippetEditContent)).bold(fuzzyMode)
-            .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.5)
+            .frame(maxWidth: .infinity, alignment: .leading).opacity(fuzzyMode ? 1.0 : 0.4)
           if selected {
             Spacer()
             Text(Image(systemName: "return")).opacity(0.5)
@@ -56,6 +56,7 @@ public struct SnippetView: View {
         }
         Text(content).font(Font(BlinkFonts.snippetEditContent))
           .frame(maxWidth: .infinity, alignment: .leading)
+          .opacity(fuzzyMode ? 0.4 : 1.0)
       }
       .textSelection(.enabled)
       .padding(.all, 6)

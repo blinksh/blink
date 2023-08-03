@@ -310,7 +310,6 @@
 		D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCD23040734003D64A5 /* KBKeyAccessibilityElement.swift */; };
 		D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */; };
 		D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBE5230562E9003D64A5 /* KBSizes.swift */; };
-		D241D7E22A61540200493CC0 /* HighlightSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D241D7E12A61540200493CC0 /* HighlightSwift */; };
 		D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* UIColor+Codable.swift */; };
 		D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */; };
 		D24842372A5C3473002CC8C9 /* ShellOutputFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24842362A5C3473002CC8C9 /* ShellOutputFormatter.swift */; };
@@ -1335,7 +1334,6 @@
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
 				BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */,
-				D241D7E22A61540200493CC0 /* HighlightSwift in Frameworks */,
 				D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */,
 				D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
@@ -2695,7 +2693,6 @@
 				D222780B2A26216900D4C708 /* TreeSitterBashRunestone */,
 				D222780E2A26217A00D4C708 /* Runestone */,
 				BD792A4E2A3BDAAA009EE35F /* ZIPFoundation */,
-				D241D7E12A61540200493CC0 /* HighlightSwift */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2815,7 +2812,6 @@
 				D22278062A26216900D4C708 /* XCRemoteSwiftPackageReference "treesitterlanguages" */,
 				D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */,
 				BD792A4D2A3BDAAA009EE35F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
-				D241D7E02A61540200493CC0 /* XCRemoteSwiftPackageReference "HighlightSwift" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -4872,7 +4868,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 801;
+				CURRENT_PROJECT_VERSION = 805;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4922,7 +4918,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 801;
+				CURRENT_PROJECT_VERSION = 805;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -5138,14 +5134,6 @@
 				minimumVersion = 0.3.0;
 			};
 		};
-		D241D7E02A61540200493CC0 /* XCRemoteSwiftPackageReference "HighlightSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/yury/HighlightSwift.git";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-cached-async-image";
@@ -5220,11 +5208,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D222780D2A26217A00D4C708 /* XCRemoteSwiftPackageReference "Runestone" */;
 			productName = Runestone;
-		};
-		D241D7E12A61540200493CC0 /* HighlightSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D241D7E02A61540200493CC0 /* XCRemoteSwiftPackageReference "HighlightSwift" */;
-			productName = HighlightSwift;
 		};
 		D297F00E29012FDB002A24F9 /* CachedAsyncImage */ = {
 			isa = XCSwiftPackageProductDependency;

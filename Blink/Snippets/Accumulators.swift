@@ -43,21 +43,9 @@ public struct Accumulator<V> {
   var matchesMap: [Snippet: AttributedString] = [:]
   var contentMap: [Snippet: AttributedString] = [:]
   var query: String
-  var style: HighlightStyle {
-    didSet {
-      for (k, v) in contentMap {
-        // TODO: find more perfomant conversion
-        let content = String(v.characters);
-        if let attr = try? Highlight.text(content, language: "sh", style: self.style) {
-          contentMap[k] = AttributedString(attr.text)
-        }
-      }
-    }
-  }
   
-  init(query: String, style: HighlightStyle) {
+  init(query: String) {
     self.query = query
-    self.style = style
     snippets.reserveCapacity(ResultsLimit)
     rangesMap.reserveCapacity(ResultsLimit)
     indexedSnippets.reserveCapacity(ResultsLimit)
@@ -121,10 +109,7 @@ extension FuzzyAccumulator {
     }
     
     matchesMap[snippet] = AttributedString(attrStr)
-   
-    if let attr = try? Highlight.text(snippetDescription, language: "sh", style: self.style) {
-      contentMap[snippet] = AttributedString(attr.text)
-    }
+    contentMap[snippet] = AttributedString(snippetDescription)
   }
   
   static func accumulate(_ acc: Self, _ value: (Snippet, Matrix<Int?>)) -> Self {
@@ -146,14 +131,7 @@ extension SearchAccumulator {
     let lines = pair.1;
     let content = lines.map({$0.line}).joined(separator: "\n")
     
-    let attrStr: NSMutableAttributedString;
-    
-//    if let attr = try? Highlight.text(content, language: "sh", style: self.style) {
-//      attrStr = attr.text
-//    } else {
-      attrStr = NSMutableAttributedString(string: content)
-//    }
-    
+    let attrStr = NSMutableAttributedString(string: content)
     let strLen = attrStr.length
     var lineLoc = 0
     for (line, ranges) in lines {

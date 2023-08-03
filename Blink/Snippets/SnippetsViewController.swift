@@ -36,7 +36,6 @@ import BlinkSnippets
 
 struct SwiftUISnippetsView: View {
   @ObservedObject var model: SearchModel
-  @Namespace var nspace;
   
   @State var transitionFrame: CGRect? = nil
   
@@ -51,7 +50,7 @@ struct SwiftUISnippetsView: View {
             }
           }
           
-          SnippetsListView(model: model, nspace: nspace)
+          SnippetsListView(model: model)
             .frame(maxWidth: transitionFrame == nil ? 560 : nil)
             .frame(minWidth: transitionFrame?.width, maxWidth: transitionFrame?.width, minHeight: transitionFrame?.height, maxHeight: transitionFrame?.height)
             .background(

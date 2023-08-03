@@ -34,14 +34,13 @@ import Foundation
 import BlinkSnippets
 import UIKit
 import SwiftUI
-import HighlightSwift
 
 class SearchModel: ObservableObject {
   weak var rootCtrl: UIViewController? = nil
   weak var inputView: UIView? = nil
 
-  var fuzzyResults = FuzzyAccumulator(query: "", style: .light(.xcode))
-  var searchResults = SearchAccumulator(query: "", style: .light(.xcode))
+  var fuzzyResults = FuzzyAccumulator(query: "")
+  var searchResults = SearchAccumulator(query: "")
   var fuzzyCancelable: AnyCancellable? = nil
   var searchCancelable: AnyCancellable? = nil
 
@@ -75,21 +74,6 @@ class SearchModel: ObservableObject {
   var index: [Snippet] = []
   var indexFetchCancellable: Cancellable? = nil
   var indexProgressCancellable: Cancellable? = nil
-
-  var style: HighlightStyle = .light(.xcode) {
-    didSet {
-      searchResults.style = style
-      fuzzyResults.style = style
-      // new array to trigger repaint
-      self.displayResults = Array(self.displayResults)
-    }
-  }
-
-  func switchStyle(for scheme: ColorScheme) {
-    if self.style.colorSheme != scheme {
-      self.style = .init(.xcode, colorScheme: scheme)
-    }
-  }
 
   @Published private(set) var mode: SearchMode
   @Published private(set) var input: String {
@@ -370,7 +354,7 @@ extension SearchModel {
       .chooseSource(query: query, wideIndex: self.index)
       .fuzzySearch(searchString: query, maxResults: ResultsLimit)
       .subscribe(on: DispatchQueue.global())
-      .reduce(FuzzyAccumulator(query: query, style: self.style), FuzzyAccumulator.accumulate(_:_:))
+      .reduce(FuzzyAccumulator(query: query), FuzzyAccumulator.accumulate(_:_:))
       .receive(on: DispatchQueue.main)
       .sink(
         receiveCompletion: { completion in
@@ -400,7 +384,7 @@ extension SearchModel {
       .publisher
       .subscribe(on: DispatchQueue.global())
       .map { s in (s, Search(content: s.searchableContent, searchString: query)) }
-      .reduce(SearchAccumulator(query: query, style: self.style), SearchAccumulator.accumulate(_:_:))
+      .reduce(SearchAccumulator(query: query), SearchAccumulator.accumulate(_:_:))
       .receive(on: DispatchQueue.main)
       .sink(
         receiveCompletion: { _ in },
