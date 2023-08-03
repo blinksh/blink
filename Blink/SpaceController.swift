@@ -241,17 +241,17 @@ class SpaceController: UIViewController {
   }
   
 
-  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransition(to: size, with: coordinator)
-    if view.window?.isKeyWindow == true {
-      DispatchQueue.main.async {
+//  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//    super.viewWillTransition(to: size, with: coordinator)
+//    if view.window?.isKeyWindow == true {
+//      DispatchQueue.main.async {
 //        KBTracker.shared.attach(input: KBTracker.shared.input)
 //        input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
 //        self.currentTerm()?.termDevice.view?.webView?.kbView.reset()
 //        SmarterTermInput.shared.contentView()?.reloadInputViews()
-      }
-    }
-  }
+//      }
+//    }
+//  }
 
   func showAlert(msg: String) {
     let ctrl = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
