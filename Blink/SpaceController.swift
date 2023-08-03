@@ -69,6 +69,7 @@ class SpaceController: UIViewController {
   private var _kbObserver = KBObserver()
   private var _snippetsVC: SnippetsViewController? = nil
   private var _blinkMenu: BlinkMenu? = nil
+  private var _bottomTapAreaView = UIView()
   
   
   public var trackingKBFrame: CGRect? {
@@ -127,6 +128,11 @@ class SpaceController: UIViewController {
       }
     }
     self.view.sendSubviewToBack(_kbTrackerView);
+    let windowBounds = window.bounds
+    _bottomTapAreaView.frame = CGRect(x: windowBounds.width * 0.5 - 250, y: windowBounds.height - 18, width: 250 * 2, height: 18)
+//    _bottomTapAreaView.backgroundColor = UIColor.red
+    self.view.bringSubviewToFront(_bottomTapAreaView);
+    
   }
   
   private func forEachActive(block:(TermController) -> ()) {
@@ -233,6 +239,13 @@ class SpaceController: UIViewController {
 //    _kbTrackerView.backgroundColor = UIColor.yellow
     
     self.view.addInteraction(_kbObserver)
+    
+    self.view.addSubview(_bottomTapAreaView)
+    
+    let doubleTap = UITapGestureRecognizer(target: self, action: #selector(toggleQuickActionsAction))
+    doubleTap.numberOfTapsRequired = 2
+    doubleTap.numberOfTouchesRequired = 1
+    _bottomTapAreaView.addGestureRecognizer(doubleTap)
     
     NotificationCenter.default.addObserver(self, selector: #selector(_geoTrackStateChanged), name: NSNotification.Name.BLGeoTrackStateChange, object: nil)
     
