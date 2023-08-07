@@ -389,7 +389,7 @@ struct TermsButtons: View {
   var body: some View {
     HStack {
       Button("FAQ") {
-        ctx.urlHandler(URL(string: "https://blink.sh#pricing-faq")!)
+        ctx.urlHandler(URL(string: "https://docs.blink.sh/faq#pricing")!)
       }
       .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
