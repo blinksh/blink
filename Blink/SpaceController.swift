@@ -972,6 +972,7 @@ extension SpaceController {
   
   @objc func showWalkthroughAction() {
     DispatchQueue.main.async {
+      _ = KBTracker.shared.input?.resignFirstResponder()
       let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: blink_openurl,
                                                                dismissHandler: { self.dismiss(animated: true) })
       )
