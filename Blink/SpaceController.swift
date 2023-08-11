@@ -65,16 +65,10 @@ class SpaceController: UIViewController {
   private weak var _termViewToFocus: TermView? = nil
   var stuckKeyCode: KeyCode? = nil
   
-  private var _kbTrackerView = UIView()
   private var _kbObserver = KBObserver()
   private var _snippetsVC: SnippetsViewController? = nil
   private var _blinkMenu: BlinkMenu? = nil
   private var _bottomTapAreaView = UIView()
-  
-  
-  public var trackingKBFrame: CGRect? {
-    self.view.window?.screen.coordinateSpace.convert(_kbTrackerView.frame, from: self.view.coordinateSpace)
-  }
   
   var safeFrame: CGRect {
     _overlay.frame
@@ -88,20 +82,10 @@ class SpaceController: UIViewController {
       return
     }
     
-    if let bottomInset = _kbObserver.bottomInset {
-      var insets = UIEdgeInsets.zero
-      insets.bottom = bottomInset
-      _overlay.frame = view.bounds.inset(by: insets)
-    } else {
-      if window.screen === UIScreen.main {
-        var insets = UIEdgeInsets.zero
-        insets.bottom = LayoutManager.mainWindowKBBottomInset()
-        _overlay.frame = view.bounds.inset(by: insets)
-      } else {
-        _overlay.frame = view.bounds
-      }
-    }
-    
+    let bottomInset = _kbObserver.bottomInset ?? 0
+    var insets = UIEdgeInsets.zero
+    insets.bottom = bottomInset
+    _overlay.frame = view.bounds.inset(by: insets)
     _snippetsVC?.view.frame = _overlay.frame
     
     if let menu = _blinkMenu {
@@ -127,7 +111,6 @@ class SpaceController: UIViewController {
         }
       }
     }
-    self.view.sendSubviewToBack(_kbTrackerView);
     let windowBounds = window.bounds
     _bottomTapAreaView.frame = CGRect(x: windowBounds.width * 0.5 - 250, y: windowBounds.height - 18, width: 250 * 2, height: 18)
 //    _bottomTapAreaView.backgroundColor = UIColor.red
@@ -179,6 +162,10 @@ class SpaceController: UIViewController {
     view.setNeedsLayout()
   }
   
+  @objc public func bottomInset() -> CGFloat {
+    _kbObserver.bottomInset ?? 0
+  }
+  
   @objc private func _setupAppearance() {
     self.view.tintColor = .cyan
     switch BLKDefaults.keyboardStyle() {
@@ -228,16 +215,6 @@ class SpaceController: UIViewController {
       _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
     
-    _kbTrackerView.translatesAutoresizingMaskIntoConstraints = false;
-   
-    self.view.addSubview(_kbTrackerView)
-    
-    _kbTrackerView.leadingAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.leadingAnchor).isActive = true;
-    _kbTrackerView.widthAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.widthAnchor).isActive = true;
-    _kbTrackerView.heightAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.heightAnchor).isActive = true;
-    _kbTrackerView.bottomAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.bottomAnchor).isActive = true;
-//    _kbTrackerView.backgroundColor = UIColor.yellow
-    
     self.view.addInteraction(_kbObserver)
     
     self.view.addSubview(_bottomTapAreaView)
@@ -254,33 +231,11 @@ class SpaceController: UIViewController {
   }
   
 
-//  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//    super.viewWillTransition(to: size, with: coordinator)
-//    if view.window?.isKeyWindow == true {
-//      DispatchQueue.main.async {
-//        KBTracker.shared.attach(input: KBTracker.shared.input)
-//        input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
-//        self.currentTerm()?.termDevice.view?.webView?.kbView.reset()
-//        SmarterTermInput.shared.contentView()?.reloadInputViews()
-//      }
-//    }
-//  }
-
   func showAlert(msg: String) {
     let ctrl = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
     ctrl.addAction(UIAlertAction(title: "Ok", style: .default))
     self.present(ctrl, animated: true)
   }
-
-//  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-//    // IOS ISSUE: editingInteractionConfiguration doesn't called anymore in iOS/PadOS 16....
-//    // Moved attach to focus.
-//    DispatchQueue.main.async {
-//      self._attachHUD()
-//    }
-//    return .default
-//    return .none
-//  }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
@@ -1082,28 +1037,11 @@ extension SpaceController {
     DispatchQueue.main.async {
       _ = KBTracker.shared.input?.resignFirstResponder();
       
-//      if UIApplication.shared.supportsMultipleScenes {
-//
-//        var opened: UISceneSession? = nil
-//        for session in UIApplication.shared.openSessions {
-//          if session.configuration.name == "whatsnew" {
-//            opened = session
-//            break
-//          }
-//        }
-//        let options = UIWindowScene.ActivationRequestOptions()
-//        options.preferredPresentationStyle = .prominent
-//        options.requestingScene = self.view.window?.windowScene;
-//
-//        let activity = NSUserActivity(activityType: "com.blink.whatsnew")
-//
-//        UIApplication.shared.requestSceneSessionActivation(opened, userActivity: activity, options: options)
-//      } else {
-        // Reset version when opening.
-        WhatsNewInfo.setNewVersion()
-        let root = UIHostingController(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL())))
-        self.present(root, animated: true, completion: nil)
-//      }
+      // Reset version when opening.
+      WhatsNewInfo.setNewVersion()
+      let root = UIHostingController(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL())))
+      self.present(root, animated: true, completion: nil)
+      
     }
   }
   

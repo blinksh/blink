@@ -35,31 +35,9 @@
 #import <Blink-Swift.h>
 
 
-CGFloat __mainWindowKBBottomInset = 0;
-
 NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpdate";
-NSTimer *__debounceTimer = nil;
 
-@implementation LayoutManager {
-
-}
-
-+ (CGFloat) mainWindowKBBottomInset {
-  return __mainWindowKBBottomInset;
-}
-
-+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset {
-  if (__mainWindowKBBottomInset == bottomInset) {
-    return;
-  }
-
-  __mainWindowKBBottomInset = bottomInset;
-  [__debounceTimer invalidate];
-  
-  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
-    [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
-  }];
-}
+@implementation LayoutManager
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
   DeviceInfo *device = [DeviceInfo shared];
@@ -92,10 +70,19 @@ NSTimer *__debounceTimer = nil;
     return window.safeAreaInsets;
   }
   
+  SpaceController *spaceCtrl = nil;
+  UIViewController *parent = ctrl.parentViewController;
+  while (parent) {
+    if ([parent isKindOfClass:[SpaceController class]]) {
+      spaceCtrl = (SpaceController *)parent;
+      break;
+    }
+    parent = parent.parentViewController;
+  }
+  
   UIEdgeInsets deviceMargins = window.safeAreaInsets;// UIEdgeInsetsZero;// ctrl.viewDeviceSafeMargins;
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
-  CGRect windowRect = [window.coordinateSpace convertRect:window.bounds toCoordinateSpace:mainScreen.coordinateSpace];
   
   UIEdgeInsets result = UIEdgeInsetsZero;
   
@@ -156,9 +143,7 @@ NSTimer *__debounceTimer = nil;
     }
   }
   
-  CGFloat relative = __mainWindowKBBottomInset - (CGRectGetMaxY(mainScreen.bounds) - CGRectGetMaxY(windowRect));
-  
-  result.bottom = MAX(result.bottom, relative);
+  result.bottom = MAX(result.bottom, [spaceCtrl bottomInset]);
     
   return result;
 }
