@@ -43,8 +43,8 @@ extern NSString *LayoutManagerBottomInsetDidUpdate;
 + (BKLayoutMode) deviceDefaultLayoutMode;
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode;
 + (NSString *) layoutModeToString:(BKLayoutMode)mode;
-+ (CGFloat) mainWindowKBBottomInset;
-+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset;
+//+ (CGFloat) mainWindowKBBottomInset;
+//+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset;
 
 @end
 
