@@ -89,7 +89,6 @@ class KBObserver: NSObject, UIInteraction {
       let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       kbEndFrame != self.kbScreenFrame
     else {
-//      print("!!! will show", notification.userInfo)
       return
     }
      
@@ -106,7 +105,6 @@ class KBObserver: NSObject, UIInteraction {
       let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       kbEndFrame != self.kbScreenFrame
     else {
-//      print("!!! will hide", notification.userInfo)
       return
     }
      
@@ -116,7 +114,6 @@ class KBObserver: NSObject, UIInteraction {
   }
 
   @objc private func _keyboardWillChangeFrame(notification: Notification) {
-    return
     guard
       let screen = notification.object as? UIScreen,
       let view = self.view,
@@ -124,7 +121,6 @@ class KBObserver: NSObject, UIInteraction {
       let kbEndFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       kbEndFrame != self.kbScreenFrame
     else {
-//      print("!!! change frame", notification.userInfo)
       return
     }
      

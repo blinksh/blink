@@ -32,6 +32,7 @@
 import UIKit
 import Combine
 
+
 class CaretHider {
   var _cancelable: AnyCancellable? = nil
   weak var _view: UIView?
@@ -39,12 +40,19 @@ class CaretHider {
   init(view: UIView) {
     _view = view;
     _cancelable = view.layer.publisher(for: \.sublayers).sink { (layers) in
-      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
-        caretView.isHidden = true
-      }
-
-      if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
-        floatingView.isHidden = true
+      if #available(iOS 17.0, *) {
+        let cursorView = view.subviews.first(where: { v in
+          v.classForCoder.description().hasSuffix("CursorView")
+        })
+        cursorView?.layer.sublayers?.first?.isHidden = true
+      } else {
+        if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+          caretView.isHidden = true
+        }
+        
+        if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
+          floatingView.isHidden = true
+        }
       }
     }
   }
@@ -55,12 +63,19 @@ class CaretHider {
       return
     }
     
-    if let caretView = view.value(forKeyPath: "caretView") as? UIView {
-      caretView.isHidden = false
-    }
-
-    if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
-      floatingView.isHidden = false
+    if #available(iOS 17.0, *) {
+      let cursorView = view.subviews.first(where: { v in
+        v.classForCoder.description().hasSuffix("CursorView")
+      })
+      cursorView?.layer.sublayers?.first?.isHidden = false
+    } else {
+      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+        caretView.isHidden = false
+      }
+      
+      if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
+        floatingView.isHidden = false
+      }
     }
   }
 }
@@ -124,7 +139,9 @@ class CaretHider {
     false
   }
   
+  
   private var _caretHider: CaretHider? = nil
+  
   
   override func ready() {
     super.ready()
@@ -133,10 +150,7 @@ class CaretHider {
 //    device?.focus()
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
-    
-    if let v = selectionView() {
-      _caretHider = CaretHider(view: v)
-    }
+    hideCaret()
   }
   
   func reset() {
@@ -366,7 +380,6 @@ class CaretHider {
     commandPressTimestamp = 0
   }
   
-//  var commandPresses: Int = 0
   var commandPressTimestamp: TimeInterval = 0
 }
 
