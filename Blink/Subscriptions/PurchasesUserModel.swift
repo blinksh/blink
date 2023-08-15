@@ -201,13 +201,21 @@ class PurchasesUserModel: ObservableObject {
         self.purchaseInProgress = false
         return
       }
-      EntitlementsManager.shared.keepShowingPaywall = false
-      _purchase(product: product)
     } catch {
-      EntitlementsManager.shared.keepShowingPaywall = false
-      self.purchaseInProgress = false
-      self.alertErrorMessage = error.localizedDescription
+      if let error = error as? RevenueCat.ErrorCode,
+         error == .missingReceiptFileError {
+        // Ignore the error and continue with purchase
+        print("Missing Receipt File Error - continue with purchase")
+      } else {
+        EntitlementsManager.shared.keepShowingPaywall = false
+        self.purchaseInProgress = false
+        self.alertErrorMessage = error.localizedDescription
+        return
+      } 
     }
+
+    EntitlementsManager.shared.keepShowingPaywall = false
+    _purchase(product: product)
   }
   
   func restorePurchases() {
