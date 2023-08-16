@@ -145,7 +145,11 @@ NSString *_encodeString(NSString *str);
 }
 
 - ( UIView * _Nullable )selectionView {
-  return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
+  if (@available(iOS 17, *)) {
+    return self.scrollView.subviews.firstObject;
+  } else {
+    return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
+  }
 }
 
 - (UIEditingInteractionConfiguration)editingInteractionConfiguration {
