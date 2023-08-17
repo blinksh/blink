@@ -25,6 +25,10 @@
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+	<key>com.apple.developer.user-fonts</key>
+	<array>
+		<string>app-usage</string>
+	</array>
 	<key>com.apple.developer.web-browser</key>
 	<true/>
 	<key>com.apple.security.app-sandbox</key>
