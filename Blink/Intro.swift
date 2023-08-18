@@ -489,7 +489,7 @@ struct PageInfo: Identifiable {
     title: "MULTIPLE TERMINALS & WINDOWS",
     linkText: Text("READ DOCS"),
     url: URL(string: "https://docs.blink.sh/basics/navigation")!,
-    info: Text("Use **pinch** to zoom the terminal. Use **two finger tap** to create a new shell. Use **slide** to move between shells. Use **three finger tap** for menu. Type **help** if you need it."),
+    info: Text("Use **pinch** to zoom the terminal. Use **two finger tap** to create a new shell. Use **slide** to move between shells. Use **double tap Cmd or Home bar** for menu.\nType **help** if you need it."),
     compactInfo: Text("Not to use in compact"),
     image: "intro-windows"
 
