@@ -548,12 +548,7 @@ struct HostView: View {
       throw FormValidationError.general(
         message: "HostName is required."
       )
-    }
-    
-    let cleanUser = _user.trimmingCharacters(in: .whitespacesAndNewlines)
-    if let _ = cleanUser.rangeOfCharacter(from: .whitespacesAndNewlines) {
-      throw FormValidationError.general(message: "Spaces are not permitted in the user name.")
-    }
+    }    
   }
   
   private func _saveHost() {
