@@ -54,12 +54,13 @@ public struct Entitlement: Identifiable, Equatable, Hashable {
   public let id: String
   public var active: Bool
   public var unlockProductID: String?
+  public var period: EntitlementPeriodType
   
-  public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil)
+  public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil, period: .None)
   
-  public static var earlyAccessFeatures = Self(id: EarlyAccessFeaturesEntitlementID, active: false, unlockProductID: nil)
+  public static var earlyAccessFeatures = Self(id: EarlyAccessFeaturesEntitlementID, active: false, unlockProductID: nil, period: .None)
   
-  public static var build = Self(id: BuildEntitlementID, active: false, unlockProductID: nil)
+  public static var build = Self(id: BuildEntitlementID, active: false, unlockProductID: nil, period: .None)
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
@@ -216,4 +217,11 @@ public enum CustomerTier {
   case Plus
   case Classic
   case TestFlight
+}
+
+public enum EntitlementPeriodType {
+  case Trial
+  case Intro
+  case Normal
+  case None
 }

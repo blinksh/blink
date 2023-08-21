@@ -41,11 +41,12 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
   
   public func purchases(_ purchases: Purchases, receivedUpdated purchaserInfo: CustomerInfo) {
     var dict = Dictionary<String, Entitlement>()
-    for (key, value) in purchaserInfo.entitlements.all {      
+    for (key, value) in purchaserInfo.entitlements.all {
       dict[key] = Entitlement(
         id: value.identifier,
         active: value.isActive,
-        unlockProductID: value.productIdentifier
+        unlockProductID: value.productIdentifier,
+        period: EntitlementPeriodType(from: value.periodType)
       )
     }
     delegate?.didUpdateEntitlements(
@@ -61,6 +62,18 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
   }
 }
 
+fileprivate extension EntitlementPeriodType {
+  init(from period: RevenueCat.PeriodType) {
+    switch period {
+    case .normal:
+      self = Self.Normal
+    case .intro:
+      self = Self.Intro
+    case .trial:
+      self = Self.Trial
+    }
+  }
+}
 
 func configureRevCat() {
   Purchases.logLevel = .debug

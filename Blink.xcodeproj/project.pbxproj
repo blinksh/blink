@@ -89,6 +89,7 @@
 		B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */; };
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
+		BD028AF32A8EC509002F5F54 /* TrialSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */; };
 		BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
 		BD2E27B529BAA8DA003AF1DA /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */; };
@@ -819,6 +820,7 @@
 		B7D4503B1DD4706000CE0DBE /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
+		BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialSupportView.swift; sourceTree = "<group>"; };
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
@@ -1478,6 +1480,7 @@
 				07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */,
 				D2E5454427C4C83C002635A2 /* FeedbackView.swift */,
 				D2E5454927C4D422002635A2 /* SupportView.swift */,
+				BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */,
 			);
 			path = GetInTouch;
 			sourceTree = "<group>";
@@ -2124,8 +2127,8 @@
 				D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */,
 				D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */,
 				D2AD8E6727A2BAFA00DED28D /* Purchases.swift */,
-				D2AD8E6927A2BAFA00DED28D /* Paywall */,
 				BDACC7742A6F100D00D0B261 /* TrialNotification.swift */,
+				D2AD8E6927A2BAFA00DED28D /* Paywall */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -3422,6 +3425,7 @@
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D231F5072A54478800ED82B0 /* BlinkMenu.m in Sources */,
+				BD028AF32A8EC509002F5F54 /* TrialSupportView.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
 				BDACC7752A6F100D00D0B261 /* TrialNotification.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,

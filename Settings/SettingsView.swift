@@ -48,6 +48,23 @@ struct SettingsView: View {
   
   var body: some View {
     List {
+      if _entitlements.earlyAccessFeatures.active && _entitlements.earlyAccessFeatures.period == .Trial {
+        Section {
+          Row {
+            Label(title: {
+                    VStack(alignment: .leading, spacing: 1) {
+                      Text("Need extra help?")
+                      Text("Don't be shy. We want Blink to work for you. Ask us questions during your trial.").foregroundColor(.secondary).font(.subheadline)
+                    }
+                  }, icon: { Image(systemName: "questionmark.bubble") })
+          } details: {
+            TrialSupportView()
+          }
+        } header: {
+          Text("Trial support")
+        }
+      }
+
       Section("Subscription") {
         HStack {
           Label(_entitlements.currentPlanName(), systemImage: "bag")
@@ -203,6 +220,7 @@ struct SettingsView: View {
       _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
       _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
       _defaultUser = BLKDefaults.defaultUserName() ?? ""
+      
     }
     .listStyle(.grouped)
     .navigationTitle("Settings")

@@ -34,6 +34,7 @@ import Foundation
 
 fileprivate let unc = UNUserNotificationCenter.current()
 fileprivate let trialWillConvertID = "trial-will-convert"
+fileprivate let trialSupportRequestID = "trial-support-request"
 
 enum TrialProgressNotification {
   case OneWeek
@@ -45,15 +46,16 @@ extension TrialProgressNotification {
     if !(try await unc.requestAuthorization(options: .alert)) {
       return false
     }
-    
+
     try await scheduleTrialWillConvertNotification()
+    try await scheduleTrialSupportRequestNotification()
     return true
   }
-  
+
   private func scheduleTrialWillConvertNotification() async throws {
     let content = UNMutableNotificationContent()
     content.title = "Hope you are enjoying Blink."
-    
+
     var dateComponents = DateComponents()
     switch self {
     case .OneWeek:
@@ -65,11 +67,36 @@ extension TrialProgressNotification {
     }
     let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
                                                 repeats: false)
-    
+
     let request = UNNotificationRequest(identifier: trialWillConvertID,
                                         content: content,
                                         trigger: trigger)
-    
+
     try await unc.add(request)
+  }
+
+  private func scheduleTrialSupportRequestNotification() async throws {
+    let content = UNMutableNotificationContent()
+
+    var dateComponents = DateComponents()
+    switch self {
+    case .OneWeek:
+      dateComponents.day = 3
+      content.title = "You are in day 3 of your trial..."
+      content.body = "And we are here to help setting things up. Type `config` on the shell and ask us!"
+    case .OneMonth:
+      dateComponents.day = 7
+      content.title = "You are in day 7 of your trial..."
+      content.body = "And we are here to help setting things up. Type `config` on the shell and ask us!"
+    }
+    let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents,
+                                                repeats: false)
+
+    let request = UNNotificationRequest(identifier: trialSupportRequestID,
+                                        content: content,
+                                        trigger: trigger)
+
+    try await unc.add(request)
+
   }
 }
