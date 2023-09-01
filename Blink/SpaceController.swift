@@ -304,7 +304,7 @@ class SpaceController: UIViewController {
     
     #endif
     
-    if scene.session.role == .windowExternalDisplay,
+    if scene.session.role == .windowExternalDisplayNonInteractive,
       let sharedWindow = ShadowWindow.shared,
        sharedWindow === view.window,
        let ctrl = sharedWindow.spaceController.currentTerm() {
@@ -787,7 +787,7 @@ extension SpaceController {
       return
     }
           
-    sessions = sessions.filter { $0.role != .windowExternalDisplay }
+    sessions = sessions.filter { $0.role != .windowExternalDisplayNonInteractive }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -838,7 +838,7 @@ extension SpaceController {
       return
     }
           
-    sessions = sessions.filter { $0.role != .windowExternalDisplay }
+    sessions = sessions.filter { $0.role != .windowExternalDisplayNonInteractive }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -944,13 +944,12 @@ extension SpaceController {
       return
     }
     self.presentSnippetsController()
-    if let _ = _blinkMenu {
+    if let _ = self._interactiveSpaceController()._blinkMenu {
       self.toggleQuickActionsAction()
     }
   }
   
-  @objc func toggleQuickActionsAction() {
-    
+  private func _toggleQuickActionActionWith(receiver: SpaceController) {
     if let menu = _blinkMenu {
       _blinkMenu = nil
       UIView.animate(withDuration: 0.15) {
@@ -973,7 +972,7 @@ extension SpaceController {
         ids.append(contentsOf:  [.layoutMenu])
       }
       ids.append(contentsOf:  [.toggleLayoutLock, .toggleGeoTrack])
-      menu.delegate = self;
+      menu.delegate = receiver;
       menu.build(withIDs: ids, andAppearance: [:])
       _blinkMenu = menu
       self.view.addSubview(menu)
@@ -988,7 +987,23 @@ extension SpaceController {
         menu.frame = finalMenuFrame
       }
     }
-    
+  }
+  
+  func _interactiveSpaceController() -> SpaceController {
+    if let shadowWin = ShadowWindow.shared,
+       self.view.window == shadowWin,
+       let mainScreenSession = _activeSessions()
+          .first(where: {$0.role == .windowApplication }),
+       let delegate = mainScreenSession.scene?.delegate as? SceneDelegate
+    {
+      return delegate.spaceController
+    }
+    return self
+  }
+  
+  @objc func toggleQuickActionsAction() {
+    _interactiveSpaceController()
+      ._toggleQuickActionActionWith(receiver: self)
   }
   
   @objc func toggleGeoTrack() {
@@ -1139,27 +1154,39 @@ extension SpaceController: CommandsHUDDelegate {
 }
 
 extension SpaceController: SnippetContext {
-  func presentSnippetsController() {
+  
+  func _presentSnippetsController(receiver: SpaceController) {
     do {
-      let ctrl = try SnippetsViewController.create(context: self, transitionFrame: _blinkMenu?.bounds)
-      ctrl.view.frame = self.view.bounds
-      ctrl.willMove(toParent: self)
-      self.view.addSubview(ctrl.view)
-      self.addChild(ctrl)
-      ctrl.didMove(toParent: self)
-      _snippetsVC = ctrl
+      self.view.window?.makeKeyAndVisible()
+      let ctrl = try SnippetsViewController.create(context: receiver, transitionFrame: _blinkMenu?.bounds)
+      DispatchQueue.main.async {
+        ctrl.view.frame = self.view.bounds
+        ctrl.willMove(toParent: self)
+        self.view.addSubview(ctrl.view)
+        self.addChild(ctrl)
+        ctrl.didMove(toParent: self)
+        self._snippetsVC = ctrl
+      }
     } catch {
       self.showAlert(msg: "Could not display Snips: \(error)")
     }
   }
   
+  func presentSnippetsController() {
+    _interactiveSpaceController()._presentSnippetsController(receiver: self)
+  }
+  
+  func _dismissSnippetsController(ctrl: SpaceController) {
+    ctrl.presentedViewController?.dismiss(animated: true)
+    ctrl._snippetsVC?.willMove(toParent: nil)
+    ctrl._snippetsVC?.view.removeFromSuperview()
+    ctrl._snippetsVC?.removeFromParent()
+    ctrl._snippetsVC?.didMove(toParent: nil)
+    ctrl._snippetsVC = nil
+  }
+  
   func dismissSnippetsController() {
-    self.presentedViewController?.dismiss(animated: true)
-    self._snippetsVC?.willMove(toParent: nil)
-    self._snippetsVC?.view.removeFromSuperview()
-    self._snippetsVC?.removeFromParent()
-    self._snippetsVC?.didMove(toParent: nil)
-    self._snippetsVC = nil
+    _dismissSnippetsController(ctrl: _interactiveSpaceController())
     self.focusOnShellAction()
   }
   
@@ -1169,3 +1196,5 @@ extension SpaceController: SnippetContext {
   }
   
 }
+
+

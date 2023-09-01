@@ -239,7 +239,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _spCtrl.sceneRole = session.role
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     
-    if session.role == .windowExternalDisplay,
+    if session.role == .windowExternalDisplayNonInteractive,
       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
       
       if BLKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
@@ -287,36 +287,46 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
-  func sceneDidBecomeActive(_ scene: UIScene) {
-    
-    guard let window = window else {
+  private func _lockNonInteractiveScreenIfNeeded() {
+    guard
+      let window = ShadowWindow.shared?.refWindow,
+      let sceneDelegate = window.windowScene?.delegate as? SceneDelegate
+    else {
       return
     }
     
-    if (scene.session.role == .windowExternalDisplay) {
-      if LocalAuth.shared.lockRequired {
-        if let lockCtrl = _lockCtrl {
-          if window.rootViewController != lockCtrl {
-            window.rootViewController = lockCtrl
-          }
-          
-          return
+    if LocalAuth.shared.lockRequired {
+      if let lockCtrl = sceneDelegate._lockCtrl {
+        if window.rootViewController != lockCtrl {
+          window.rootViewController = lockCtrl
         }
-
         
-        _lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
-        window.rootViewController = _lockCtrl
         return
       }
-      if window.rootViewController == _lockCtrl {
-        window.rootViewController = UIViewController()
-      }
-      _lockCtrl = nil
       
-      if let shadowWin = ShadowWindow.shared {
-        window.layer.addSublayer(shadowWin.layer)
-      }
       
+      sceneDelegate._lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
+      window.rootViewController = _lockCtrl
+      return
+    }
+    
+    
+    if window.rootViewController == _lockCtrl {
+      window.rootViewController = UIViewController()
+    }
+    _lockCtrl = nil
+    
+    if let shadowWin = ShadowWindow.shared {
+      window.layer.addSublayer(shadowWin.layer)
+    }
+  }
+  
+  func sceneDidBecomeActive(_ scene: UIScene) {
+    
+    // 0. Local Auth AutoLock Check on old screens
+    _lockNonInteractiveScreenIfNeeded()
+    
+    guard let window = window else {
       return
     }
     

@@ -164,7 +164,7 @@ class TermController: UIViewController {
   
   convenience init(sceneRole: UISceneSession.Role? = nil) {
     self.init(meta: nil)
-    if sceneRole == .windowExternalDisplay {
+    if sceneRole == .windowExternalDisplayNonInteractive {
       _sessionParams.fontSize = BLKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }

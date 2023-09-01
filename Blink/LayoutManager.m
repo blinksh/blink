@@ -56,7 +56,7 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
   UIWindow *window = ctrl.view.window;
   
-  if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplay) {
+  if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive) {
     // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
     // it is like BKLayoutModeSafeFit mode
     return ShadowWindow.shared.refWindow.safeAreaInsets;
