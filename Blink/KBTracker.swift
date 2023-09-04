@@ -127,9 +127,13 @@ class KBObserver: NSObject, UIInteraction {
 //      print("!!! change frame", notification.userInfo)
       return
     }
+    
+    KBTracker.shared.detectHardwareKBWithSoftwareKBHeight(height: kbEndFrame.height)
+    
      
     self.kbScreenFrame = kbEndFrame
     self.view?.setNeedsLayout()
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
   }
 
 }
@@ -143,6 +147,14 @@ class KBTracker: NSObject {
   private(set) var kbDevice = KBDevice.detect()
   
   private(set) var input: SmarterTermInput? = nil
+  
+  @objc var detectHardwareKBWithHeight = true
+  
+  func detectHardwareKBWithSoftwareKBHeight(height: CGFloat) {
+    if detectHardwareKBWithHeight {
+      KBTracker.shared.isHardwareKB = height < 150
+    }
+  }
   
   @objc var isHardwareKB: Bool = true {
     didSet {
