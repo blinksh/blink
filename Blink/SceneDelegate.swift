@@ -322,11 +322,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    
+    guard let window = window else {
+      return
+    }
+   
     // 0. Local Auth AutoLock Check on old screens
     _lockNonInteractiveScreenIfNeeded()
     
-    guard let window = window else {
+    
+    if window == ShadowWindow.shared?.refWindow {
       return
     }
     
