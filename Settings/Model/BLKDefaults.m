@@ -46,6 +46,23 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 #pragma mark - NSCoding
 
+- (id)init
+{
+  self = [super init];
+  if (!self) {
+    return self;
+  }
+  
+  // For Stage Manager compatibility, set default overscan mode with Apple Silicon.
+  if ([[DeviceInfo shared] hasAppleSilicon]) {
+    _overscanCompensation = BKBKOverscanCompensationMirror;
+  } else {
+    _overscanCompensation = 0;
+  }
+
+  return self;
+}
+
 - (id)initWithCoder:(NSCoder *)coder
 {
   self = [super init];
@@ -69,18 +86,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _keycasts = [coder decodeBoolForKey:@"keycasts"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
-  
-  // For Stage Manager compatibility, set default overscan mode with Apple Silicon.
   if ([coder containsValueForKey:@"overscanCompensation"]) {
     _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
-  } else {
-    if ([[DeviceInfo shared] hasAppleSilicon]) {
-      _overscanCompensation = BKBKOverscanCompensationMirror;
-    } else {
-      _overscanCompensation = 0;
-    }
   }
-  
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
   _xCallBackURLKey = [coder decodeObjectOfClasses:strings forKey:@"xCallBackURLKey"];
   _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];
