@@ -196,11 +196,11 @@ class SSHClientConfigProvider {
     
     if let signers = bkConfig.signer(forHost: host) {
       signers.forEach { (signer, name) in
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+        agent.loadKey(signer, aka: name, constraints: consts)
       }
     } else {
       for (signer, name) in bkConfig.defaultSigners() {
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+        agent.loadKey(signer, aka: name, constraints: consts)
       }
     }
 

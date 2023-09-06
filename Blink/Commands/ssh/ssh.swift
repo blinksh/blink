@@ -460,7 +460,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       let _allIdentities = BKPubKey.all()
       for keyName in bkHost.agentForwardKeys {
         if let signer = _allIdentities.signerWithID(keyName) {
-          _ = agent.loadKey(signer, aka: keyName, constraints: constraints)
+          agent.loadKey(signer, aka: keyName, constraints: constraints)
         }
       }
     }

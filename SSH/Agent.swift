@@ -122,17 +122,16 @@ public class SSHAgent {
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) -> Bool {
+  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) {
     let cKey = SSHAgentKey(key, named: name, constraints: constraints)
     for (x, k) in ring.enumerated() {
       if cKey.name == k.name {
         // Replace the key
         ring[x] = cKey
-        break
+        return
       }
     }
     ring.append(cKey)
-    return true
   }
   
   public func removeKey(_ name: String) -> Signer? {
@@ -155,9 +154,11 @@ public class SSHAgent {
           
           return ring.reduce(preamble) { $0 + $1 }
         case .requestSignature:
-          let signature = try encodedSignature(message, for: client)
+          guard let signature = try encodedSignature(message, for: client) else {
+            throw SSHKeyError.general(title: "Could not find proposed key")
+          }
           var respType = SSHAgentResponseType.responseSignature.rawValue
-          
+
           return Data(bytes: &respType, count: MemoryLayout<CChar>.size)
             + signature
 //        default:
@@ -166,38 +167,35 @@ public class SSHAgent {
   }
 
   func encodedRing() throws -> [Data] {
-    (try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.name) }) +
-      (try superAgent?.encodedRing() ?? [])
+    (try superAgent?.encodedRing() ?? []) +
+      (try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.name) })
   }
 
-  func encodedSignature(_ message: Data, for client: SSHClient) throws -> Data {
+  func encodedSignature(_ message: Data, for client: SSHClient) throws -> Data? {
 
     var msg = message
     let keyBlob = SSHDecode.bytes(&msg)
     let data = SSHDecode.bytes(&msg)
     let flags = SSHDecode.uint32(&msg)
 
-    do {
-      guard let key = lookupKey(blob: keyBlob) else {
-        throw SSHKeyError.general(title: "Could not find proposed key")
-      }
-      
-      let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
+    if let signature = try superAgent?.encodedSignature(message, for: client) {
+      return signature
+    }
+
+    guard let key = lookupKey(blob: keyBlob) else {
+      return nil
+    }
+
+    let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
 
       // Enforce constraints
-      try key.constraints?.forEach {
-        if !$0.enforce(useOf: key, by: client) { throw SSHKeyError.general(title: "Denied operation by constraint: \($0.name).") }
-      }
-
-      let signature = try key.signer.sign(data, algorithm: algorithm)
-      
-      return SSHEncode.data(from: signature)
-    } catch {
-      guard let superAgent = self.superAgent else {
-        throw error
-      }
-      return try superAgent.encodedSignature(message, for: client)
+    try key.constraints?.forEach {
+      if !$0.enforce(useOf: key, by: client) { throw SSHKeyError.general(title: "Denied operation by constraint: \($0.name).") }
     }
+
+    let signature = try key.signer.sign(data, algorithm: algorithm)
+
+    return SSHEncode.data(from: signature)
   }
 
   fileprivate func lookupKey(blob: Data) -> SSHAgentKey? {

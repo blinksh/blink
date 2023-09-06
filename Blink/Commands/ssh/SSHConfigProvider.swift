@@ -139,7 +139,7 @@ extension SSHClientConfigProvider {
       if let signer = signer as? BlinkConfig.InputPrompter {
         signer.setPromptOnView(device.view)
       }
-      _ = agent.loadKey(signer, aka: name, constraints: consts)
+      agent.loadKey(signer, aka: name, constraints: consts)
     }
 
     // Link to Default Agent
