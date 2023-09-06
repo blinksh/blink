@@ -221,35 +221,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _browserView.UIDelegate = self;
   _browserView.navigationDelegate = self;
   
-  if (injectUIO) {
-  
-    _browserView.scrollView.delaysContentTouches = NO;
-    _browserView.scrollView.canCancelContentTouches = NO;
-    [_browserView.scrollView setScrollEnabled:NO];
-    [_browserView.scrollView.panGestureRecognizer setEnabled:NO];
-  //   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
-  //  [_webView addInteraction:_gestureInteraction];
-    
-    UIPanGestureRecognizer *rec = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_pan:)];
-    rec.maximumNumberOfTouches = 1;
-    rec.cancelsTouchesInView = YES;
-    rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-    rec.delegate = self;
-    
-    
-    UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
-  //  rec2.maximumNumberOfTouches = 1;
-    rec2.cancelsTouchesInView = YES;
-    //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-    rec2.delegate = self;
-    
-    [_browserView addGestureRecognizer:rec];
-    [_browserView addGestureRecognizer:rec2];
-      
-  }
-
   [self addSubview:_browserView];
   [_browserView setOpaque:NO];
   _browserView.backgroundColor = [UIColor clearColor];
