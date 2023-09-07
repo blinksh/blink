@@ -93,6 +93,8 @@
 		BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
 		BD2E27B529BAA8DA003AF1DA /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */; };
+		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
+		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
@@ -824,6 +826,8 @@
 		BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialSupportView.swift; sourceTree = "<group>"; };
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
+		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
+		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
@@ -1685,6 +1689,14 @@
 			path = BlinkCode/Publisher;
 			sourceTree = SOURCE_ROOT;
 		};
+		BD33F77F2AAA426D00CD16EE /* mosh */ = {
+			isa = PBXGroup;
+			children = (
+				BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */,
+			);
+			path = mosh;
+			sourceTree = "<group>";
+		};
 		BD835DCF27A0BD19002C37D7 /* Publisher */ = {
 			isa = PBXGroup;
 			children = (
@@ -2086,13 +2098,14 @@
 		D265FBBB2317DD3C0017EAC4 /* BlinkTests */ = {
 			isa = PBXGroup;
 			children = (
-				D265FBBE2317DD3C0017EAC4 /* Info.plist */,
-				D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */,
-				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
-				BD8BBF0825F819970084705F /* SEKeyTests.swift */,
 				BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */,
-				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
+				D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */,
 				BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */,
+				D265FBBE2317DD3C0017EAC4 /* Info.plist */,
+				BD8BBF0825F819970084705F /* SEKeyTests.swift */,
+				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
+				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
+				BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -2253,6 +2266,7 @@
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				BD33F77F2AAA426D00CD16EE /* mosh */,
 				07FAB8E925C8E6C500E1CC2C /* ssh */,
 				D2334D1221495DAE00D26AC3 /* udptunnel */,
 				D240806020BC8DF800F30099 /* tool_main.c */,
@@ -3231,6 +3245,7 @@
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
 				BD9EA218271F846400874007 /* Publisher.swift in Sources */,
 				BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */,
+				BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */,
 				BD9EA216271F83B400874007 /* BlinkLoggingTests.swift in Sources */,
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
@@ -3325,6 +3340,7 @@
 				BD9EA1FE271A148700874007 /* Migrator.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
+				BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
