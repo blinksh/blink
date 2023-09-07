@@ -297,7 +297,7 @@ public class SFTPTranslator: BlinkFiles.Translator {
   
   // Mode uses same default as mkdir
   // This is working well for filesystems, but everything else...
-  public func mkdir(name: String, mode: mode_t = S_IRWXU | S_IRWXG | S_IRWXO) -> AnyPublisher<Translator, Error> {
+  public func mkdir(name: String, mode: mode_t) -> AnyPublisher<Translator, Error> {
     return connection().tryMap { sftp -> Translator in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }

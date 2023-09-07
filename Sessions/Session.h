@@ -52,6 +52,7 @@
 @property (strong, atomic) SessionParams *sessionParams;
 @property (strong) TermStream *stream;
 @property (strong) TermDevice *device;
+@property (readonly) pthread_t tid;
 
 @property (weak) id<SessionDelegate> delegate;
 

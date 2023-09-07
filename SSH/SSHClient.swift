@@ -55,7 +55,7 @@ func ssh_init_channel_callbacks(_ cb: inout ssh_channel_callbacks_struct) {
 public class SSHClient {
   let session: ssh_session
   public let host: String
-  let options: SSHClientConfig
+  public let options: SSHClientConfig
   let log: SSHLogger
   
   public typealias ExecProxyCommandCallback = (String, Int32, Int32) -> Void

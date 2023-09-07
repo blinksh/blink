@@ -200,6 +200,11 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   return self;
 }
 
+- (struct winsize *)window
+{
+  return &win;
+}
+
 - (void)write:(NSString *)input
 {
   if (!_rawMode) {

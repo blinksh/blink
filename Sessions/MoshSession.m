@@ -102,8 +102,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     @(BKMoshPredictionAdaptive): @"adaptive",
     @(BKMoshPredictionAlways): @"always",
     @(BKMoshPredictionNever): @"never",
-    @(BKMoshPredictionExperimental): @"experimental",
-    @(BKMoshPredictionUnknown): @"adaptive"
+    @(BKMoshPredictionExperimental): @"experimental"
   };
   
   experimentalIPStrings = @{

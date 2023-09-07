@@ -75,8 +75,8 @@ public enum VerifyHost {
 }
 
 public struct SSHClientConfig: CustomStringConvertible, Equatable {
-  let user: String
-  let port: String
+  public let user: String
+  public let port: String
   
   public typealias RequestVerifyHostCallback = (VerifyHost) -> AnyPublisher<InteractiveResponse, Error>
   

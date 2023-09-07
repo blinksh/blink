@@ -37,8 +37,7 @@ enum BKMoshPrediction {
   BKMoshPredictionAdaptive,
   BKMoshPredictionAlways,
   BKMoshPredictionNever,
-  BKMoshPredictionExperimental,
-  BKMoshPredictionUnknown
+  BKMoshPredictionExperimental
 };
 
 enum BKMoshExperimentalIP {
