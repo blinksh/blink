@@ -326,6 +326,7 @@
 		D25DE9C02939EB36008246EB /* NonStdIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BD2939EB36008246EB /* NonStdIO.swift */; };
 		D25DE9C12939EB36008246EB /* NonStdIO+ArgumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BE2939EB36008246EB /* NonStdIO+ArgumentParser.swift */; };
 		D25DE9C22939EB36008246EB /* NonStdIO+Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BF2939EB36008246EB /* NonStdIO+Spinner.swift */; };
+		D263A7682AA9AFE7001C6CFC /* device_info.m in Sources */ = {isa = PBXBuildFile; fileRef = D263A7672AA9AFE7001C6CFC /* device_info.m */; };
 		D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */; };
 		D264D2B228F84592002B1B14 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AF28F84592002B1B14 /* GridView.swift */; };
 		D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B028F84592002B1B14 /* UnavailErrorView.swift */; };
@@ -1039,6 +1040,7 @@
 		D25DE9BD2939EB36008246EB /* NonStdIO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonStdIO.swift; sourceTree = "<group>"; };
 		D25DE9BE2939EB36008246EB /* NonStdIO+ArgumentParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NonStdIO+ArgumentParser.swift"; sourceTree = "<group>"; };
 		D25DE9BF2939EB36008246EB /* NonStdIO+Spinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NonStdIO+Spinner.swift"; sourceTree = "<group>"; };
+		D263A7672AA9AFE7001C6CFC /* device_info.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = device_info.m; sourceTree = "<group>"; };
 		D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyFeaturesAccessLetterView.swift; sourceTree = "<group>"; };
 		D264D2AF28F84592002B1B14 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		D264D2B028F84592002B1B14 /* UnavailErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnavailErrorView.swift; sourceTree = "<group>"; };
@@ -2258,6 +2260,7 @@
 				D2F330CB20A6D98C0074ADD7 /* config.m */,
 				D264D2B528F84724002B1B14 /* whatsnew.m */,
 				D2F330C920A6CB840074ADD7 /* help.m */,
+				D263A7672AA9AFE7001C6CFC /* device_info.m */,
 				D2F330D920A7127B0074ADD7 /* open.m */,
 				D2EFE1EE20B7FAFC0087888B /* link_files.m */,
 				D2F330D520A6F4F50074ADD7 /* history.m */,
@@ -3383,6 +3386,7 @@
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */,
+				D263A7682AA9AFE7001C6CFC /* device_info.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
