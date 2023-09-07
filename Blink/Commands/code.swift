@@ -207,8 +207,10 @@ extension FileLocationPath {
 
   internal var codeFileSystemURI: URI? {
     if proto == .local {
+      // /var/__PATH__/home/. -> /var/__PATH__/home
+      let resolvedPath = (filePath as NSString).standardizingPath
       return try? URI(string: uriProtocolIdentifier +
-                      filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
+                      resolvedPath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
     } else {
       // "user@host#port" -> "user@host:port"
       guard let hostPath = hostPath else {
