@@ -58,28 +58,6 @@ NSString *__screens(void) {
   return [result componentsJoinedByString:@"\n---------\n"];
 }
 
-//NSString *__locales(void) {
-//  
-//  NSMutableArray<NSString *> * result = [[NSMutableArray alloc] initWithCapacity:UIScreen.screens.count];
-//  
-//  UIScreen *main =  UIScreen.mainScreen;
-//  for (UIScreen *screen in UIScreen.screens) {
-//    NSMutableString * str = [[NSMutableString alloc] init];
-//    [str appendFormat:@"Main:          %@\n", main == screen ? @"YES": @"NO"];
-//    [str appendFormat:@"Captured:      %@\n", screen.captured ? @"YES": @"NO"];
-//    [str appendFormat:@"Bounds:        %@\n", NSStringFromCGRect(screen.bounds)];
-//    [str appendFormat:@"Native Scale:  %@\n", @(screen.nativeScale)];
-//    [str appendFormat:@"Native Bounds: %@\n", NSStringFromCGRect(screen.nativeBounds)];
-//    [str appendFormat:@"Max FPS:       %@\n", @(screen.maximumFramesPerSecond)];
-//    [str appendFormat:@"Current Mode:  %@, %@", NSStringFromCGSize(screen.currentMode.size), @(screen.currentMode.pixelAspectRatio)];
-//    
-//    [result addObject:str];
-//  }
-//  
-//  return [result componentsJoinedByString:@"\n---------\n"];
-//}
-
-
 __attribute__ ((visibility("default")))
 int device_info_main(int argc, char *argv[]) {
   DeviceInfo * di = DeviceInfo.shared;
