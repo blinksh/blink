@@ -144,7 +144,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
       switch request.op {
       case .getRoot:
         let msg: GetRootRequest = try decode(encodedData)
-        return try getRoot(token: msg.token, version: msg.version)
+        return getRoot(token: msg.token, version: msg.version)
       case .stat:
         let msg: StatFileSystemRequest = try decode(encodedData)
         return try fileSystem(for: msg.uri).stat()
