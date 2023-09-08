@@ -45,7 +45,7 @@ final class MoshBootstrapTests: XCTestCase {
     //let client = try await SSHClient.dial("localhost", with: .testConfig).values.first()!
     let expectConn = self.expectation(description: "Connection established")
     
-    var connection: SSHClient?
+    var connection: SSHClient!
     SSHClient.dial("localhost", with: .testConfig)
       .sink(
         receiveCompletion: { _ in },
@@ -57,10 +57,21 @@ final class MoshBootstrapTests: XCTestCase {
     wait(for: [expectConn], timeout: 5)
 
     print("connected")
-    //let boot = MoshBootstrap(client: client)
-    //await boot.start()
-  }
+    
+    let expectBootstrap = self.expectation(description: "Mosh bootstrapped")
 
+    MoshBootstrap(client: connection)
+      .start()
+      .sink(
+        receiveCompletion: { _ in },
+        receiveValue: { moshServerPath in
+          print("Mosh server path at: \(moshServerPath)")
+        }
+      ).store(in: &cancellableBag)
+    
+    wait(for: [expectBootstrap], timeout: 30)
+    
+  }
 }
 
 extension SSHClientConfig {
