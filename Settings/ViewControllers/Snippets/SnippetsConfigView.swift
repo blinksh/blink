@@ -35,8 +35,8 @@ import Foundation
 import SwiftUI
 
 fileprivate func openLocationInFilesApp(location: BKSnippetDefaultLocation) {
-  let path: String = { if location == .iCloud {
-    return BlinkPaths.iCloudSnippetsLocationURL()!.relativePath
+  let path: String = { if location == .iCloud, let path = BlinkPaths.iCloudSnippetsLocationURL()?.relativePath {
+    return path
   } else {
     return BlinkPaths.localSnippetsLocationURL()!.relativePath
   } }()

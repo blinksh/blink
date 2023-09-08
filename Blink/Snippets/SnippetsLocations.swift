@@ -63,7 +63,7 @@ class SnippetsLocations {
     let dontUseBlinkSnippets = BLKDefaults.dontUseBlinkSnippetsIndex()
     
     let snippetsLocation = BlinkPaths.localSnippetsLocationURL()!
-    let icloudSnippetsLocation = BlinkPaths.iCloudSnippetsLocationURL()!
+    let icloudSnippetsLocation = BlinkPaths.iCloudSnippetsLocationURL()
     let cachedSnippetsLocation = snippetsLocation.appending(path: ".cached")
    
     // Create main snippets location. Each location then is responsible for its structure.
@@ -74,16 +74,20 @@ class SnippetsLocations {
       }
     }
    
-    if useiCloud {
-      if !fm.fileExists(atPath: icloudSnippetsLocation.path()) {
-        try fm.createDirectory(at: icloudSnippetsLocation, withIntermediateDirectories: true)
+    if useiCloud, let location = icloudSnippetsLocation {
+      if !fm.fileExists(atPath: location.path) {
+        try fm.createDirectory(at: location, withIntermediateDirectories: true)
       }
     }
     
     // ".blink/snippets" for local
     // ".blink/snippets/.cached/com.github" for github
     // ".iCloud/snippets/ for icloud
-    let defaultLocation = useiCloud ? iCloudSnippets(from: icloudSnippetsLocation): LocalSnippets(from: snippetsLocation)
+    let defaultLocation = if useiCloud, let location = icloudSnippetsLocation {
+      iCloudSnippets(from: location)
+    } else {
+      LocalSnippets(from: snippetsLocation)
+    }
 
     // Locations are sorted by priority.
     var locations = [defaultLocation]
