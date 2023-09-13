@@ -46,8 +46,8 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
 }
 
 // struct MoshCommand: ParsableCommand {
-
 // }
+
 
 @objc public class BlinkMosh: NSObject {
   var sshCancellable: AnyCancellable?
@@ -55,15 +55,17 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
   let currentRunLoop = RunLoop.current
   var stdout = OutputStream(file: thread_stdout)
   var stderr = OutputStream(file: thread_stderr)
+  var bootstrapSequence: [MoshBootstrap] = []
 
+  // TODO A different main will process if there is any initial state first, otherwise
+  // call here.
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
-    // ssh config from command + ssh setup
     let host: BKSSHHost
     let config: SSHClientConfig
     let hostName: String
 
     do {
-      // TODO
+      // TODO ssh config from command + ssh setup
       host = try BKConfig().bkSSHHost("loc")//moshCommand.hostAlias) // extending: moshCommand.bkSSHHost())
       hostName = host.hostName! // ?? moshCommand.hostName
       config = try SSHClientConfigProvider.config(host: host, using: device)
@@ -72,40 +74,40 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
       return -1
     }
 
-    // TODO pass MoshCommand
     let moshServerArgs = getMoshServerArgs(port: nil, colors: nil, exec: nil)
 
-    // TODO The bootstrap returns a mosh-serve route, but we usually just run it.
-    // We could enforce a "which", but that is not standard mosh bootstrap.
-    // We should keep everything under one connection anyway.
-    // - Try to run "mosh-server" as-is or from server route.
-    //   - If the output does not match...
-    // - Try to bootstrap "mosh-server". Ask user before uploading binary (but the check can be done)
-    // ["mosh-server || provided-location", "bootstrap", ".fail"]
-    // ["bootstrap"] only with the flag.
-    // Do force-bootstrap only through flag.
+    // TODO Enforce path only or push-only depending on flags?.
+    bootstrapSequence = [UseMoshOnPath()] // UseStaticMosh
+
     sshCancellable = SSHClient.dial(hostName, with: config)
       .flatMap { self.startMoshServer(on: $0, args: moshServerArgs) }
       .sink(
         receiveCompletion: { _ in
           awake(runLoop: self.currentRunLoop)
         },
-        receiveValue: { conn in
+        receiveValue: { moshParams in
           // From Combine, output from running mosh-server.
-          print(conn)
+          print(moshParams)
         })
 
     awaitRunLoop(currentRunLoop)
 
-    // parse output
-    // Connect to server separately.
+    // TODO Connect to server.
+//    let _selfRef = CFBridgingRetain(self);
+//    mosh_main(
+//              _stream.in, _stream.out, &_device->win,
+//              &__state_callback, (void *)_selfRef,
+//              [self.sessionParams.ip UTF8String],
+//              [self.sessionParams.port UTF8String],
+//              [self.sessionParams.key UTF8String],
+//              [self.sessionParams.predictionMode UTF8String],
+//              encodedState.bytes,
+//              encodedState.length,
+//              [self.sessionParams.predictOverwrite UTF8String]
+//              );
     return 0
-
-  // connection, bootstrap and start mosh-server
-  // connect to server
   }
 
-  // TODO Pass command too for CLI configuration
   private func getMoshServerArgs(port: String?,
                                  colors: String?,
                                  exec: String?) -> String {
@@ -122,8 +124,37 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
     return moshServerArgs.joined(separator: " ")
   }
 
-  private func startMoshServer(on: SSHClient, args: String) -> AnyPublisher<(), Never> {
-    
-    Just(()).eraseToAnyPublisher()
+  private func startMoshServer(on client: SSHClient, args: String) -> AnyPublisher<(), Error> {
+    if bootstrapSequence.isEmpty {
+      return Fail(error: MoshBootstrapError.NoBinaryAvailable).eraseToAnyPublisher()
+    }
+
+    return Just(bootstrapSequence.removeFirst())
+      .flatMap { $0.start(on: client) }
+    // .catch - NoBinary. Should it continue or should it stop?
+    // It should stop, because that would be the user expectation.
+    // And if it shouldn't then it is the start responsibility to indicate how.
+      .map { moshServerPath in
+        "\(moshServerPath) \(args)"
+      }
+      // TODO Special SSH exec features like starting in a pty, etc...
+      .flatMap {
+        client.requestExec(command: $0)
+      }
+      .flatMap { s -> AnyPublisher<DispatchData, Error> in
+        s.read(max: 1024)
+      }
+      .map {
+        // TODO If Data is empty, it means there was no mosh-server binary.
+        // In this case, we try with the next method.
+        // TODO If mosh-server run but NoMoshServerArgs, then we crash.
+        String(decoding: $0 as AnyObject as! Data, as: UTF8.self)
+      }
+      .tryMap { try MoshServerParams(parsing: $0) }
+      .map { moshParams in
+        print(moshParams)
+        return ()
+      }
+      .eraseToAnyPublisher()
   }
 }

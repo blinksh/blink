@@ -1,3 +1,34 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// B L I N K
+//
+// Copyright (C) 2016-2021 Blink Mobile Shell Project
+//
+// This file is part of Blink.
+//
+// Blink is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Blink is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Blink. If not, see <http://www.gnu.org/licenses/>.
+//
+// In addition, Blink is also subject to certain additional terms under
+// GNU GPL version 3 section 7.
+//
+// You should have received a copy of these additional terms immediately
+// following the terms and conditions of the GNU General Public License
+// which accompanied the Blink Source Code. If not, see
+// <http://www.github.com/blinksh/blink>.
+//
+////////////////////////////////////////////////////////////////////////////////
+
 import Combine
 
 import BlinkFiles
@@ -6,6 +37,7 @@ import SSH
 // We can test MoshBootstrap
 // We could use different Strategies for bootstrap
 // TODO Just for testing, this needs a version.
+// We have decided to hard-code the version of Blink so both can be related.
 let MoshServerBinaryName = "mosh-server"
 let MoshServerDownloadURL = URL(string: "https://github.com/dtinth/mosh-static/releases/latest/download/\(MoshServerBinaryName)")!
 
@@ -45,35 +77,41 @@ extension Architecture {
   }
 }
 
+// TODO Move this errors out of here as they will be for all mosh
 enum MoshBootstrapError: Error {
   case NoBinaryAvailable
+  case NoMoshServerArgs
 }
 
-struct MoshBootstrap {
-  let client: SSHClient
+protocol MoshBootstrap {
+  func start(on client: SSHClient) -> AnyPublisher<String, Error>
+}
+
+// TODO We could enforce a "which", but that is not standard mosh bootstrap.
+class UseMoshOnPath: MoshBootstrap {
+  let path: String
+
+  init(path: String? = nil) {
+    self.path = path ?? MoshServerBinaryName
+  }
+
+  func start(on client: SSHClient) -> AnyPublisher<String, Error> {
+    Just(self.path).setFailureType(to: Error.self).eraseToAnyPublisher()
+  }
+}
+
+class UseStaticMosh: MoshBootstrap {
   let blinkRemoteLocation: String
 
-  
-  init(client: SSHClient) {
-    self.client = client
+  init() {
     // TODO We could also read this from env variable.
     self.blinkRemoteLocation = "~/.blink/"
   }
 
   // Return an AnyPublisher<MoshConnectionInfo, Error>
-  func start() -> AnyPublisher<String, Never> {
-    // Create SSH connection.
-    // - We should be able to use the same client as SSH.
-    // Check the version for mosh-server installed at .blink/mosh-server
-    // - If we do it by checking version on file, we will have to delete and re-upload
-    // Run mosh-server and capture
-
-    // 1 - Figure out platform and architecture
-    // This could be part of the SSH library, and we could use this from our side later.
-    // Get the special publisher from Snips.
-    
-    return Just(())
-      .flatMap { platformAndArchitecture() }
+  func start(on client: SSHClient) -> AnyPublisher<String, Error> {
+    Just(())
+      .flatMap { self.platformAndArchitecture(on: client) }
       .tryMap { pa in
         guard let platform = pa?.0,
               let architecture = pa?.1 else {
@@ -82,24 +120,14 @@ struct MoshBootstrap {
         
         return (platform, architecture)
       }
-      .flatMap { getMoshServer(platform: $0, architecture: $1) }
-      .flatMap { installMoshServer(localMoshServerBinary: $0) }
-    // Select binary. We separate as then we can return proper errors from just this function.
-    // Check binary on remote (resolve link over sftp)
-    // - Download and upload
-    // Return binary location
+      .flatMap { self.getMoshServerBinary(platform: $0, architecture: $1) }
+      .flatMap { self.installMoshServerBinary(on: client, localMoshServerBinary: $0) }
       .print()
-      .assertNoFailure()
       .eraseToAnyPublisher()
-    // -> Below can be done by a separate flow. This way we reuse
-    // We can also include a "which" mosh-server call in an alternative method.
-    // Run binary on remote
-    // Capture Mosh parameters
-
   }
 
-  func platformAndArchitecture() -> AnyPublisher<(Platform, Architecture)?, Error> {
-    self.client.requestExec(command: "uname && uname -m")
+  private func platformAndArchitecture(on client: SSHClient) -> AnyPublisher<(Platform, Architecture)?, Error> {
+    client.requestExec(command: "uname && uname -m")
       .flatMap { s -> AnyPublisher<DispatchData, Error> in
         s.read(max: 1024)
       }
@@ -118,7 +146,7 @@ struct MoshBootstrap {
       }.eraseToAnyPublisher()
   }
   
-  func getMoshServer(platform: Platform, architecture: Architecture) -> AnyPublisher<Translator, Error> {
+  private func getMoshServerBinary(platform: Platform, architecture: Architecture) -> AnyPublisher<Translator, Error> {
     let localMoshServerURL = BlinkPaths.blinkURL().appending(path: MoshServerBinaryName)
     return URLSession.shared.dataTaskPublisher(for: MoshServerDownloadURL)
       .map(\.data)
@@ -132,16 +160,16 @@ struct MoshBootstrap {
       .eraseToAnyPublisher()
   }
   
-  // try to use .local
-  func installMoshServer(localMoshServerBinary: Translator) -> AnyPublisher<String, Error> {
+  private func installMoshServerBinary(on client: SSHClient, localMoshServerBinary: Translator) -> AnyPublisher<String, Error> {
+    // TODO Try to use .local
     let RemoteBlinkLocation = ".blink"
 
-    return self.client.requestSFTP()
+    return client.requestSFTP()
       .tryMap { try SFTPTranslator(on: $0) }
       .flatMap { sftp in
-        // We may not need this check if we are hard-coding the version to Blink.
-        // Unless we also want to clean things up.
-        // A device if not updated can still install its version.
+        // TODO We may still need the mosh-server link if we use a prompt.
+        // Ie. On update, names won't match, but we may not want to prompt the user again if we
+        // previously installed.
         sftp.cloneWalkTo("~/\(RemoteBlinkLocation)/\(MoshServerBinaryName)")
           .catch { _ in
             sftp.cloneWalkTo(RemoteBlinkLocation)
@@ -158,6 +186,5 @@ struct MoshBootstrap {
           .map { $0.current }
       }
       .eraseToAnyPublisher()
-      
   }
 }
