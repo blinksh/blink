@@ -116,6 +116,8 @@
 		BD8152542743FF84002BB169 /* skstore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8152532743FF84002BB169 /* skstore.swift */; };
 		BD818A052AAFC18400956488 /* mosh.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD818A042AAFC18400956488 /* mosh.swift */; };
 		BD818A0C2AB120B800956488 /* MoshServerParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD818A0B2AB120B800956488 /* MoshServerParams.swift */; };
+		BD818A132AB3865F00956488 /* MoshCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD818A122AB3865F00956488 /* MoshCommand.swift */; };
+		BD818A152AB3A40100956488 /* MoshClientParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD818A142AB3A40100956488 /* MoshClientParams.swift */; };
 		BD835DD427A0BD19002C37D7 /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
@@ -842,6 +844,8 @@
 		BD8152532743FF84002BB169 /* skstore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = skstore.swift; sourceTree = "<group>"; };
 		BD818A042AAFC18400956488 /* mosh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mosh.swift; sourceTree = "<group>"; };
 		BD818A0B2AB120B800956488 /* MoshServerParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshServerParams.swift; sourceTree = "<group>"; };
+		BD818A122AB3865F00956488 /* MoshCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshCommand.swift; sourceTree = "<group>"; };
+		BD818A142AB3A40100956488 /* MoshClientParams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshClientParams.swift; sourceTree = "<group>"; };
 		BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
@@ -1698,6 +1702,8 @@
 			children = (
 				BD818A042AAFC18400956488 /* mosh.swift */,
 				BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */,
+				BD818A142AB3A40100956488 /* MoshClientParams.swift */,
+				BD818A122AB3865F00956488 /* MoshCommand.swift */,
 				BD818A0B2AB120B800956488 /* MoshServerParams.swift */,
 			);
 			path = mosh;
@@ -3332,6 +3338,7 @@
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */,
 				D22278012A26204900D4C708 /* EditorViewController.swift in Sources */,
+				BD818A152AB3A40100956488 /* MoshClientParams.swift in Sources */,
 				D266A9DC272A77A100C85EED /* code.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshCustomOptionsPickerView.swift in Sources */,
@@ -3415,6 +3422,7 @@
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
+				BD818A132AB3865F00956488 /* MoshCommand.swift in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
@@ -4899,7 +4907,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 831;
+				CURRENT_PROJECT_VERSION = 833;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4950,7 +4958,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 831;
+				CURRENT_PROJECT_VERSION = 833;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = A2H2CL32AG;

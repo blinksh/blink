@@ -45,21 +45,15 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
   return cmd.start(argc, argv: argv.args(count: argc))
 }
 
-// TODO Move this errors out of here as they will be for all mosh
 enum MoshError: Error {
   case NoBinaryAvailable
   case NoMoshServerArgs
 }
 
-
-// TODO
-// struct MoshCommand: ParsableCommand {
-// }
-
-
 @objc public class BlinkMosh: NSObject {
   var exitCode: Int32 = 0
   var sshCancellable: AnyCancellable? = nil
+  var command: MoshCommand!
   let device = tty()
   let currentRunLoop = RunLoop.current
   var stdin = InputStream(file: thread_stdin)
@@ -71,52 +65,75 @@ enum MoshError: Error {
   // call here.
 
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
-    let host: BKSSHHost
-    let config: SSHClientConfig
-    let hostName: String
-
     let originalRawMode = device.rawMode
     defer {
       device.rawMode = originalRawMode
     }
 
     do {
-      // TODO ssh config from command + ssh setup
-      host = try BKConfig().bkSSHHost("loc")//moshCommand.hostAlias) // extending: moshCommand.bkSSHHost())
-      hostName = host.hostName! // ?? moshCommand.hostName
-      config = try SSHClientConfigProvider.config(host: host, using: device)
+      self.command = try MoshCommand.parse(Array(argv[1...]))
     } catch {
-      print("Configuration error - \(error)", to: &stderr)
+      let message = MoshCommand.message(for: error)
+      print("\(message)", to: &stderr)
       return -1
     }
 
-    let moshServerArgs = getMoshServerArgs(port: nil, colors: nil, exec: nil)
+    let host: BKSSHHost
+    let config: SSHClientConfig
+    let hostName: String
+    do {
+      host = try BKConfig().bkSSHHost(self.command.hostAlias, extending: self.command.bkSSHHost())
+      hostName = host.hostName ?? self.command.hostAlias
+      config = try SSHClientConfigProvider.config(host: host, using: device)
+    } catch {
+      return die(message: "Configuration error - \(error)")
+    }
 
-    // TODO Enforce path only or push-only depending on flags?.
-    bootstrapSequence = [UseMoshOnPath(path: "/usr/local/bin/mosh-server")] // UseStaticMosh
+    // prediction modes, etc...
+    // IP resolution,
+    // This will come from host + command
+    let moshClientParams = MoshClientParams(extending: self.command)
 
     var moshServerParams: MoshServerParams? = nil
-    sshCancellable = SSHClient.dial(hostName, with: config)
-      .flatMap { self.startMoshServer(on: $0, args: moshServerArgs) }
-      .sink(
-        receiveCompletion: { completion in
-          switch completion {
-          case .failure(let error):
-            print("Mosh error. \(error)", to: &self.stderr)
-            self.exitCode = -1
-            self.kill()
-          default:
-            break
-          }
-        },
-        receiveValue: { params in
-          // From Combine, output from running mosh-server.
-          print(params)
-          moshServerParams = params
-          awake(runLoop: self.currentRunLoop)
-        })
+    // TODO Figure out how to continue splitting this function?
+    // If we have a key, we do not need moshServerArgs to query the connection.
+    if let customKey = self.command.customKey {
+      // TODO Set exitCode -1 if there is no port - IP
+      guard let customUDPPort = moshClientParams.customUDPPort else {
+        return die(message: "If MOSH_KEY is set port is required. (-p)")
+      }
 
-    awaitRunLoop(currentRunLoop)
+      moshServerParams = MoshServerParams(key: customKey, udpPort: customUDPPort, remoteIP: nil)
+    } else {
+      let moshServerStartupArgs = getMoshServerStartupArgs(udpPort: moshClientParams.customUDPPort,
+                                                           colors: nil,
+                                                           exec: self.command.remoteCommand)
+
+      // TODO Enforce path only or push-only depending on flags?.
+      bootstrapSequence = [UseMoshOnPath(path: moshClientParams.server)] // UseStaticMosh
+
+      sshCancellable = SSHClient.dial(hostName, with: config)
+        .flatMap { self.startMoshServer(on: $0, args: moshServerStartupArgs) }
+        .sink(
+          receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+              print("Mosh error. \(error)", to: &self.stderr)
+              self.exitCode = -1
+              self.kill()
+            default:
+              break
+            }
+          },
+          receiveValue: { params in
+            // From Combine, output from running mosh-server.
+            print(params)
+            moshServerParams = params
+            awake(runLoop: self.currentRunLoop)
+          })
+
+      awaitRunLoop(currentRunLoop)
+    }
 
     // Early exit if we could not connect
     guard let moshServerParams = moshServerParams else {
@@ -156,20 +173,20 @@ enum MoshError: Error {
     return 0
   }
 
-  private func getMoshServerArgs(port: String?,
+  private func getMoshServerStartupArgs(udpPort: String?,
                                  colors: String?,
-                                 exec: String?) -> String {
+                                 exec: [String]?) -> String {
     // TODO Locale as args
-    var moshServerArgs = ["new", "-s", "-c", colors ?? "256", "-l LC_ALL=en_US.UTF-8"]
+    var args = ["new", "-s", "-c", colors ?? "256", "-l LC_ALL=en_US.UTF-8"]
 
-    if let port = port {
-      moshServerArgs.append(contentsOf: ["-p", port])
+    if let udpPort = udpPort {
+      args.append(contentsOf: ["-p", udpPort])
     }
     if let exec = exec {
-      moshServerArgs.append(contentsOf: ["--", exec])
+      args.append(contentsOf: ["--", exec.joined(separator: " ")])
     }
 
-    return moshServerArgs.joined(separator: " ")
+    return args.joined(separator: " ")
   }
 
   private func startMoshServer(on client: SSHClient, args: String) -> AnyPublisher<MoshServerParams, Error> {
@@ -198,7 +215,7 @@ enum MoshError: Error {
         // TODO If mosh-server run but NoMoshServerArgs, then we crash.
         String(decoding: $0 as AnyObject as! Data, as: UTF8.self)
       }
-      .tryMap { output in 
+      .tryMap { output in
         // TODO Take into account the way to resolve the IP instead.
         var params = try MoshServerParams(parsing: output)
         if params.remoteIP == nil {
@@ -220,5 +237,10 @@ enum MoshError: Error {
     sshCancellable = nil
 
     awake(runLoop: currentRunLoop)
+  }
+
+  func die(message: String) -> Int32 {
+    print(message, to: &stderr)
+    return -1
   }
 }

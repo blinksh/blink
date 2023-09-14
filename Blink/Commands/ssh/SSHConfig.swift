@@ -56,7 +56,7 @@ struct SSHCommand: ParsableCommand {
   var localForward: [String] = []
 
   // Remote Port forwarding
-  @Option(name:  [.customShort("R")],          
+  @Option(name:  [.customShort("R")],
           help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side."
   )
   var remoteForward: [String] = []
@@ -345,4 +345,27 @@ enum SSHControlCommands: String, CaseIterable, ExpressibleByArgument {
   case exit = "exit"
   case cancel = "cancel"
   case stop = "stop"
+}
+
+class UserAtHostAndPort {
+  let user: String?
+  let hostAlias: String
+  let port: UInt16?
+
+  init(_ input: String) {
+    var userAtHost = input.components(separatedBy: "@")
+    let hostAndPort: String
+    if userAtHost.count > 1 {
+      hostAndPort = userAtHost.removeLast()
+      // A user may have multiple @ symbols
+      self.user = userAtHost.joined(separator: "@")
+    } else {
+      self.user = nil
+      hostAndPort = userAtHost[0]
+    }
+
+    var hostAndPortComponents = hostAndPort.components(separatedBy: "#")
+    self.hostAlias = hostAndPortComponents.removeFirst()
+    self.port = if hostAndPortComponents.count == 0 { nil } else { UInt16(hostAndPortComponents[0]) }
+  }
 }
