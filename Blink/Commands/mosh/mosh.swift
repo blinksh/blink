@@ -45,24 +45,40 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
   return cmd.start(argc, argv: argv.args(count: argc))
 }
 
+// TODO Move this errors out of here as they will be for all mosh
+enum MoshError: Error {
+  case NoBinaryAvailable
+  case NoMoshServerArgs
+}
+
+
+// TODO
 // struct MoshCommand: ParsableCommand {
 // }
 
 
 @objc public class BlinkMosh: NSObject {
-  var sshCancellable: AnyCancellable?
+  var exitCode: Int32 = 0
+  var sshCancellable: AnyCancellable? = nil
   let device = tty()
   let currentRunLoop = RunLoop.current
+  var stdin = InputStream(file: thread_stdin)
   var stdout = OutputStream(file: thread_stdout)
   var stderr = OutputStream(file: thread_stderr)
   var bootstrapSequence: [MoshBootstrap] = []
 
   // TODO A different main will process if there is any initial state first, otherwise
   // call here.
+
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     let host: BKSSHHost
     let config: SSHClientConfig
     let hostName: String
+
+    let originalRawMode = device.rawMode
+    defer {
+      device.rawMode = originalRawMode
+    }
 
     do {
       // TODO ssh config from command + ssh setup
@@ -77,34 +93,66 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
     let moshServerArgs = getMoshServerArgs(port: nil, colors: nil, exec: nil)
 
     // TODO Enforce path only or push-only depending on flags?.
-    bootstrapSequence = [UseMoshOnPath()] // UseStaticMosh
+    bootstrapSequence = [UseMoshOnPath(path: "/usr/local/bin/mosh-server")] // UseStaticMosh
 
+    var moshServerParams: MoshServerParams? = nil
     sshCancellable = SSHClient.dial(hostName, with: config)
       .flatMap { self.startMoshServer(on: $0, args: moshServerArgs) }
       .sink(
-        receiveCompletion: { _ in
-          awake(runLoop: self.currentRunLoop)
+        receiveCompletion: { completion in
+          switch completion {
+          case .failure(let error):
+            print("Mosh error. \(error)", to: &self.stderr)
+            self.exitCode = -1
+            self.kill()
+          default:
+            break
+          }
         },
-        receiveValue: { moshParams in
+        receiveValue: { params in
           // From Combine, output from running mosh-server.
-          print(moshParams)
+          print(params)
+          moshServerParams = params
+          awake(runLoop: self.currentRunLoop)
         })
 
     awaitRunLoop(currentRunLoop)
 
-    // TODO Connect to server.
-//    let _selfRef = CFBridgingRetain(self);
-//    mosh_main(
-//              _stream.in, _stream.out, &_device->win,
-//              &__state_callback, (void *)_selfRef,
-//              [self.sessionParams.ip UTF8String],
-//              [self.sessionParams.port UTF8String],
-//              [self.sessionParams.key UTF8String],
-//              [self.sessionParams.predictionMode UTF8String],
-//              encodedState.bytes,
-//              encodedState.length,
-//              [self.sessionParams.predictOverwrite UTF8String]
-//              );
+    // Early exit if we could not connect
+    guard let moshServerParams = moshServerParams else {
+      // TODO Not sure I need this one here as we have no other thread. It should close as-is.
+      // It does not look like we do. But will keep an eye on Stream Deinit.
+      //RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+      return exitCode
+    }
+
+    self.device.rawMode = true
+
+    // TODO Using SSH Host, but the Host may not be resolved,
+    // we need to expose one level deeper, at the socket level.
+    var _selfRef = CFBridgingRetain(self);
+    mosh_main(
+      self.stdin.file,
+      self.stdout.file,
+      &self.device.win,
+      nil,//&__state_callback,
+      &_selfRef,
+      moshServerParams.remoteIP,
+      moshServerParams.udpPort,
+      moshServerParams.key,
+      "adaptive", // predictionMode,
+      [], // encoded state *CChar U8
+      0, // encoded state bytes
+      "no" // predictoverwrite
+    // [self.sessionParams.ip UTF8String],
+    // [self.sessionParams.port UTF8String],
+    // [self.sessionParams.key UTF8String],
+    // [self.sessionParams.predictionMode UTF8String],
+    // encodedState.bytes,
+    // encodedState.length,
+    // [self.sessionParams.predictOverwrite UTF8String]
+    )
+
     return 0
   }
 
@@ -124,9 +172,9 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
     return moshServerArgs.joined(separator: " ")
   }
 
-  private func startMoshServer(on client: SSHClient, args: String) -> AnyPublisher<(), Error> {
+  private func startMoshServer(on client: SSHClient, args: String) -> AnyPublisher<MoshServerParams, Error> {
     if bootstrapSequence.isEmpty {
-      return Fail(error: MoshBootstrapError.NoBinaryAvailable).eraseToAnyPublisher()
+      return Fail(error: MoshError.NoBinaryAvailable).eraseToAnyPublisher()
     }
 
     return Just(bootstrapSequence.removeFirst())
@@ -150,11 +198,27 @@ public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
         // TODO If mosh-server run but NoMoshServerArgs, then we crash.
         String(decoding: $0 as AnyObject as! Data, as: UTF8.self)
       }
-      .tryMap { try MoshServerParams(parsing: $0) }
-      .map { moshParams in
-        print(moshParams)
-        return ()
+      .tryMap { output in 
+        // TODO Take into account the way to resolve the IP instead.
+        var params = try MoshServerParams(parsing: output)
+        if params.remoteIP == nil {
+          params = MoshServerParams(key: params.key, udpPort: params.udpPort, remoteIP: client.clientAddressIP())
+        }
+        return params
+      }
+      .map { params in
+        print(params)
+        return params
       }
       .eraseToAnyPublisher()
+  }
+
+  @objc public func kill() {
+    // Cancelling here makes sure the flows are cancelled.
+    // Trying to do it at the runloop has the issue that flows may continue running.
+    print("Kill received")
+    sshCancellable = nil
+
+    awake(runLoop: currentRunLoop)
   }
 }

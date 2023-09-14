@@ -36,7 +36,6 @@ import Foundation
 struct MoshServerParams {
   let key: String
   let udpPort: String
-  // Only used when we expect the IP to be resolved at the remote.
   let remoteIP: String?
 }
 
@@ -54,7 +53,7 @@ extension MoshServerParams {
       self.udpPort = String(output[Range(connectMatch.range(at: 1), in: output)!])
       self.key = String(output[Range(connectMatch.range(at: 2), in: output)!])
     } else {
-      throw MoshBootstrapError.NoMoshServerArgs
+      throw MoshError.NoMoshServerArgs
     }
 
     let remoteIPPattern = try! NSRegularExpression(

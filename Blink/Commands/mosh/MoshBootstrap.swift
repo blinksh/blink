@@ -34,12 +34,10 @@ import Combine
 import BlinkFiles
 import SSH
 
-// We can test MoshBootstrap
-// We could use different Strategies for bootstrap
-// TODO Just for testing, this needs a version.
-// We have decided to hard-code the version of Blink so both can be related.
-let MoshServerBinaryName = "mosh-server"
-let MoshServerDownloadURL = URL(string: "https://github.com/dtinth/mosh-static/releases/latest/download/\(MoshServerBinaryName)")!
+// We have decided to hard-code the version of Blink so client-server match.
+let MoshServerBinaryName  = "mosh-server"
+let MoshServerVersion     = "1.32.0"
+let MoshServerDownloadURL = URL(string: "https://github.com/dtinth/mosh-static/releases/latest/download/\(MoshServerBinaryName)-\(MoshServerVersion)")!
 
 enum Platform {
   case Darwin
@@ -77,17 +75,11 @@ extension Architecture {
   }
 }
 
-// TODO Move this errors out of here as they will be for all mosh
-enum MoshBootstrapError: Error {
-  case NoBinaryAvailable
-  case NoMoshServerArgs
-}
-
 protocol MoshBootstrap {
   func start(on client: SSHClient) -> AnyPublisher<String, Error>
 }
 
-// TODO We could enforce a "which", but that is not standard mosh bootstrap.
+// NOTE We could enforce "which" on interactive shell, but that is not standard mosh bootstrap.
 class UseMoshOnPath: MoshBootstrap {
   let path: String
 
@@ -108,16 +100,15 @@ class UseStaticMosh: MoshBootstrap {
     self.blinkRemoteLocation = "~/.blink/"
   }
 
-  // Return an AnyPublisher<MoshConnectionInfo, Error>
   func start(on client: SSHClient) -> AnyPublisher<String, Error> {
     Just(())
       .flatMap { self.platformAndArchitecture(on: client) }
       .tryMap { pa in
         guard let platform = pa?.0,
               let architecture = pa?.1 else {
-          throw MoshBootstrapError.NoBinaryAvailable
+          throw MoshError.NoBinaryAvailable
         }
-        
+
         return (platform, architecture)
       }
       .flatMap { self.getMoshServerBinary(platform: $0, architecture: $1) }
@@ -136,7 +127,7 @@ class UseStaticMosh: MoshBootstrap {
         if lines.count != 3 {
           return nil
         }
-        
+
         guard let platform = Platform(from: lines[0]),
               let architecture = Architecture(from: lines[1]) else {
           return nil
@@ -145,7 +136,7 @@ class UseStaticMosh: MoshBootstrap {
         return (platform, architecture)
       }.eraseToAnyPublisher()
   }
-  
+
   private func getMoshServerBinary(platform: Platform, architecture: Architecture) -> AnyPublisher<Translator, Error> {
     let localMoshServerURL = BlinkPaths.blinkURL().appending(path: MoshServerBinaryName)
     return URLSession.shared.dataTaskPublisher(for: MoshServerDownloadURL)
@@ -159,7 +150,7 @@ class UseStaticMosh: MoshBootstrap {
       }
       .eraseToAnyPublisher()
   }
-  
+
   private func installMoshServerBinary(on client: SSHClient, localMoshServerBinary: Translator) -> AnyPublisher<String, Error> {
     // TODO Try to use .local
     let RemoteBlinkLocation = ".blink"
