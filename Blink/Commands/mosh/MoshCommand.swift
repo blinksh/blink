@@ -57,6 +57,12 @@ struct MoshCommand: ParsableCommand {
   @Option(name: .shortAndLong)
   var server: String?
 
+  @Option(help: "Prediction mode",
+          transform: { BKMoshPrediction(parsing: $0) })
+  var predict: BKMoshPrediction?
+
+  @Flag var predictOverwrite: Bool = false
+
   // Mosh Key
   @Option(
     name: [.customShort("k")],
@@ -147,3 +153,36 @@ extension MoshCommand {
     return try BKSSHHost(content: params)
   }
 }
+
+extension BKMoshPrediction: CustomStringConvertible {
+  init(parsing: String) {
+    switch parsing.lowercased() {
+    case "adaptive":
+      self = BKMoshPredictionAdaptive
+    case "always":
+      self = BKMoshPredictionAlways
+    case "never":
+      self = BKMoshPredictionNever
+    case "experimental":
+      self = BKMoshPredictionExperimental
+    default:
+      self = BKMoshPredictionUnknown
+    }
+  }
+
+  public var description: String {
+    switch self {
+    case BKMoshPredictionAdaptive:
+      "adaptive"
+    case BKMoshPredictionAlways:
+      "always"
+    case BKMoshPredictionNever:
+      "never"
+    case BKMoshPredictionExperimental:
+      "experimental"
+    default:
+      "unknown"
+    }
+  }
+}
+

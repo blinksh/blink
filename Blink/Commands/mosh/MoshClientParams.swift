@@ -32,9 +32,9 @@
 
 import Foundation
 
-
 struct MoshClientParams {
-  // let predictionMode: MoshPredictionMode
+  let predictionMode: BKMoshPrediction
+  let predictOverwrite: String?
   let customUDPPort: String?
   let server: String?
 
@@ -44,5 +44,7 @@ struct MoshClientParams {
     let customUDPPort: String? = if let moshPort = bkHost?.moshPort { String(describing: moshPort) } else { nil }
     self.customUDPPort = cmd.customUDPPort ?? customUDPPort
     self.server  = cmd.server  ?? bkHost?.moshStartup
+    self.predictionMode = cmd.predict ?? BKMoshPrediction(UInt32(truncating: bkHost?.prediction ?? 0))
+    self.predictOverwrite = cmd.predictOverwrite ? "yes" : bkHost?.moshPredictOverwrite
   }
 }

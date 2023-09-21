@@ -98,7 +98,6 @@ enum MoshError: Error {
     // TODO Figure out how to continue splitting this function?
     // If we have a key, we do not need moshServerArgs to query the connection.
     if let customKey = self.command.customKey {
-      // TODO Set exitCode -1 if there is no port - IP
       guard let customUDPPort = moshClientParams.customUDPPort else {
         return die(message: "If MOSH_KEY is set port is required. (-p)")
       }
@@ -157,10 +156,10 @@ enum MoshError: Error {
       moshServerParams.remoteIP,
       moshServerParams.udpPort,
       moshServerParams.key,
-      "adaptive", // predictionMode,
+      String(describing: moshClientParams.predictionMode),
       [], // encoded state *CChar U8
       0, // encoded state bytes
-      "no" // predictoverwrite
+      moshClientParams.predictOverwrite // predictoverwrite
     // [self.sessionParams.ip UTF8String],
     // [self.sessionParams.port UTF8String],
     // [self.sessionParams.key UTF8String],
