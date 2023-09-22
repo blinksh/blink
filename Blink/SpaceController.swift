@@ -112,7 +112,8 @@ class SpaceController: UIViewController {
       }
     }
     let windowBounds = window.bounds
-    _bottomTapAreaView.frame = CGRect(x: windowBounds.width * 0.5 - 250, y: windowBounds.height - 18, width: 250 * 2, height: 18)
+    let height: CGFloat = 22
+    _bottomTapAreaView.frame = CGRect(x: windowBounds.width * 0.5 - 250, y: windowBounds.height - height, width: 250 * 2, height: height)
 //    _bottomTapAreaView.backgroundColor = UIColor.red
     self.view.bringSubviewToFront(_bottomTapAreaView);
     
