@@ -72,10 +72,24 @@
 		<string></string>
 		<string>no</string>
 	</array>
+	<key>device-info</key>
+	<array>
+		<string>MAIN</string>
+		<string>device_info_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>config</key>
 	<array>
 		<string>MAIN</string>
 		<string>config_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
+	<key>whatsnew</key>
+	<array>
+		<string>MAIN</string>
+		<string>whatsnew_main</string>
 		<string></string>
 		<string>no</string>
 	</array>

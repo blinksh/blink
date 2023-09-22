@@ -35,7 +35,6 @@ import SSH
 import Combine
 import Dispatch
 import ios_system
-import NonStdIO
 
 @_cdecl("blink_ssh_main")
 public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
@@ -148,10 +147,13 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         return -1
       }
     } else {
+      // Disable CM on -W, this way we attach it to the main connection only
+      let useControlMaster = (cmd.stdioHostAndPort != nil) ? .no : (host.controlMaster ?? .no)
+      
       connect = SSHPool.dial(
         hostName,
         with: config,
-        withControlMaster: host.controlMaster ?? .no,
+        withControlMaster: useControlMaster,
         withProxy: { [weak self] in
           guard let self = self
           else {
@@ -161,12 +163,15 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
         })
     }
-
-    let environment: [String:String] = host.sendEnv?.reduce([String:String]()) { (result, env) in
-      var result = result
-      result[env] = String(cString: getenv(env))
-      return result
-    } ?? [:]
+    
+    var environment: [String: String] = .init(minimumCapacity: host.sendEnv?.count ?? 0)
+    
+    host.sendEnv?.forEach({ env in
+      // SKIP nil values
+      if let value = getenv(env) {
+        environment[env] = String(cString: value)
+      }
+    })
 
     connect.flatMap { conn -> SSHConnection in
       self.connection = conn
@@ -176,11 +181,21 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           print("Connected to \(addr)", to: &self.stdout)
         }
 
+        // AgentForwardingPrompt
+        var sendAgent = host.forwardAgent ?? false
+
+        if let bkHost = BKHosts.withHost(cmd.hostAlias),
+           let agent = conn.agent {
+          if self.loadAgentForwardKeys(bkHost: bkHost, agent: agent) {
+            sendAgent = true
+          }
+        }
+
         return self.startInteractiveSessions(conn,
                                              command: host.remoteCommand,
                                              requestTTY: host.requestTty ?? .auto,
                                              withEnvVars: environment,
-                                             sendAgent: host.forwardAgent ?? false)
+                                             sendAgent: sendAgent)
       }
       return .just(conn)
     }
@@ -273,7 +288,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       session = conn.requestExec(command: command, withPTY: pty,
                                  withEnvVars: envVars,
                                  withAgentForwarding: sendAgent)      
-    } else {      
+    } else {
       session = conn.requestInteractiveShell(withPTY: pty,
                                              withEnvVars: envVars,
                                              withAgentForwarding: sendAgent)
@@ -319,16 +334,18 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         s.connect(stdout: outStream, stdin: inStream)
 
         s.handleCompletion = {
+          print("Stdio Tunnel completed")
           SSHPool.deregister(allTunnelsForConnection: conn)
+          self.kill()
           //SSHPool.deregister(runningCommand: command, on: conn)
         }
         s.handleFailure = { error in
+          print("Stdio Tunnel completed")
           SSHPool.deregister(allTunnelsForConnection: conn)
+          self.kill()
           //SSHPool.deregister(runningCommand: command, on: conn)
         }
         
-        // TODO Check this out again. The tunnel is already stored, so we can close the process.
-        self.kill()
         return conn
       }.eraseToAnyPublisher()
   }
@@ -426,7 +443,31 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       .map { conn }
       .eraseToAnyPublisher()    
   }
-  
+
+  private func loadAgentForwardKeys(bkHost: BKHosts, agent: SSHAgent) -> Bool {
+    var constraints: [SSHAgentConstraint]? = nil
+    let agentForwardPrompt = BKAgentForward(UInt32(bkHost.agentForwardPrompt?.intValue ?? 0))
+
+    if agentForwardPrompt == BKAgentForwardConfirm {
+      constraints = [SSHAgentUserPrompt()]
+    } else if agentForwardPrompt == BKAgentForwardYes {
+      constraints = []
+    } else {
+      return false
+    }
+
+    if constraints != nil {
+      let _allIdentities = BKPubKey.all()
+      for keyName in bkHost.agentForwardKeys {
+        if let signer = _allIdentities.signerWithID(keyName) {
+          agent.loadKey(signer, aka: keyName, constraints: constraints)
+        }
+      }
+    }
+
+    return true
+  }
+
   @objc public func sigwinch() {
     var c: AnyCancellable?
     c = stream?

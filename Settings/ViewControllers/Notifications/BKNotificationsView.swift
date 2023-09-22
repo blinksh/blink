@@ -97,7 +97,7 @@ struct NotifyNotificationsView: View {
         .padding(2)
       }
     }.onDisappear(perform: {
-      BKDefaults.save()
+      BLKDefaults.save()
     })
   }
 }
@@ -105,7 +105,7 @@ struct NotifyNotificationsView: View {
 class NotificationConfig: ObservableObject {
   @Published var playSoundOnActiveShell: Bool {
     didSet {
-      BKDefaults.setPlaySoundOnBell(playSoundOnActiveShell)
+      BLKDefaults.setPlaySoundOnBell(playSoundOnActiveShell)
     }
   }
   
@@ -115,14 +115,14 @@ class NotificationConfig: ObservableObject {
         if !granted {
           self.notificationOnBackgroundShell = false
         }
-        BKDefaults.setNotificationOnBellUnfocused(self.notificationOnBackgroundShell)
+        BLKDefaults.setNotificationOnBellUnfocused(self.notificationOnBackgroundShell)
       })
     }
   }
   
   @Published var useHapticFeedback: Bool {
     didSet {
-      BKDefaults.setHapticFeedbackOnBellOff(!useHapticFeedback)
+      BLKDefaults.setHapticFeedbackOnBellOff(!useHapticFeedback)
     }
   }
   
@@ -133,7 +133,7 @@ class NotificationConfig: ObservableObject {
         if !granted {
           self.notifyNotifications = false
         }
-        BKDefaults.setOscNotifications(self.notifyNotifications)
+        BLKDefaults.setOscNotifications(self.notifyNotifications)
       })
     }
   }
@@ -150,9 +150,9 @@ class NotificationConfig: ObservableObject {
   }
   
   init() {
-    playSoundOnActiveShell = BKDefaults.isPlaySoundOnBellOn()
-    notificationOnBackgroundShell = BKDefaults.isNotificationOnBellUnfocusedOn()
-    useHapticFeedback = !BKDefaults.hapticFeedbackOnBellOff()
-    notifyNotifications = BKDefaults.isOscNotificationsOn()
+    playSoundOnActiveShell = BLKDefaults.isPlaySoundOnBellOn()
+    notificationOnBackgroundShell = BLKDefaults.isNotificationOnBellUnfocusedOn()
+    useHapticFeedback = !BLKDefaults.hapticFeedbackOnBellOff()
+    notifyNotifications = BLKDefaults.isOscNotificationsOn()
   }
 }

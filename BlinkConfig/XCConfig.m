@@ -43,6 +43,14 @@
   return [self _valueForKey:@"BLINK_REVCAT_PUBKEY"];
 }
 
++ (NSString *) infoPlistWhatsNewURL {
+  return [self _valueForKey:@"BLINK_WHATS_NEW_URL"];
+}
+
++ (NSString *) infoPlistConversionOpportunityURL {
+  return [self _valueForKey:@"BLINK_CONVERSION_OPPORTUNITY_URL"];
+}
+
 + (NSString *) infoPlistKeyChainID1 {
   return [self _valueForKey:@"BLINK_KEYCHAIN_ID1"];
 }

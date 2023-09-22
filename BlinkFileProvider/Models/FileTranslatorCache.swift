@@ -62,21 +62,18 @@ var logCancellables = Set<AnyCancellable>()
 
 
 final class FileTranslatorCache {
-  static let shared = FileTranslatorCache()
+  //static let shared = FileTranslatorCache()
   private var translators: [String: TranslatorControl] = [:]
   private var references: [String: BlinkItemReference] = [:]
   private var fileList = [String: [BlinkItemReference]]()
-  private var backgroundThread: Thread? = nil
-  private var backgroundRunLoop: RunLoop = RunLoop.current
 
+  init() {}
 
-  private init() {}
-
-  static func translator(for identifier: BlinkItemIdentifier) -> AnyPublisher<Translator, Error> {
+  func rootTranslator(for identifier: BlinkItemIdentifier) -> AnyPublisher<Translator, Error> {
     let encodedRootPath = identifier.encodedRootPath
 
     // Check if we have it cached, if it is still working
-    if let translatorRef = shared.translators[encodedRootPath],
+    if let translatorRef = self.translators[encodedRootPath],
        translatorRef.translator.isConnected {
       return .just(translatorRef.translator)
     }
@@ -106,6 +103,8 @@ final class FileTranslatorCache {
     case .local:
       return Local().walkTo(pathAtFiles)
     case .sftp:
+      print("Could not find translator for \(host) at \(rootPath)")
+
       guard let host = host else {
         return .fail(error: "Missing host in Translator route")
       }
@@ -119,38 +118,42 @@ final class FileTranslatorCache {
             .tryMap { try SFTPTranslator(on: $0) }
             .flatMap { $0.walkTo(pathAtFiles) }
             .map { t -> Translator in
-              shared.translators[encodedRootPath] = TranslatorControl(t, connectionControl: connControl)
+              self.translators[encodedRootPath] = TranslatorControl(t, connectionControl: connControl)
               return t
             }
-        }.eraseToAnyPublisher()
+        }
+      // On start, multiple subscribers may connect here, and they may end up overwriting their translators,
+      // closing their connections, etc... This ensures only one goes through.
+        .shareReplay(maxValues: 1)
+        .eraseToAnyPublisher()
     default:
       return .fail(error: "Not implemented")
     }
   }
 
-  static func store(reference: BlinkItemReference) {
+  func store(reference: BlinkItemReference) {
     print("storing File BlinkItemReference : \(reference.itemIdentifier.rawValue)")
-    shared.references[reference.itemIdentifier.rawValue] = reference
+    self.references[reference.itemIdentifier.rawValue] = reference
     if reference.itemIdentifier != .rootContainer {
-      if var list = shared.fileList[reference.parentItemIdentifier.rawValue] {
+      if var list = self.fileList[reference.parentItemIdentifier.rawValue] {
         list.append(reference)
-        shared.fileList[reference.parentItemIdentifier.rawValue] = list
+        self.fileList[reference.parentItemIdentifier.rawValue] = list
       } else {
-        shared.fileList[reference.parentItemIdentifier.rawValue] = [reference]
+        self.fileList[reference.parentItemIdentifier.rawValue] = [reference]
       }
     }
   }
   
-  static func remove(reference: BlinkItemReference) {
-    shared.references.removeValue(forKey: reference.itemIdentifier.rawValue)
+  func remove(reference: BlinkItemReference) {
+    self.references.removeValue(forKey: reference.itemIdentifier.rawValue)
   }
 
-  static func reference(identifier: BlinkItemIdentifier) -> BlinkItemReference? {
+  func reference(identifier: BlinkItemIdentifier) -> BlinkItemReference? {
     print("requesting File BlinkItemReference : \(identifier.itemIdentifier.rawValue)")
-    return shared.references[identifier.itemIdentifier.rawValue]
+    return self.references[identifier.itemIdentifier.rawValue]
   }
 
-  static func reference(url: URL) -> BlinkItemReference? {
+  func reference(url: URL) -> BlinkItemReference? {
     // containerPath may not be the same when accessing for different app. It may have a /private prefix.
     // To obtain the reference, we delete up to File Provider Storage.
     // file://<containerPath>/File Provider Storage/<encodedRootPath>/<encodedPath>/filename
@@ -165,11 +168,11 @@ final class FileTranslatorCache {
       cleanPath.removeFirst()
     }
 
-    return shared.references[String(cleanPath)]
+    return self.references[String(cleanPath)]
   }
   
-  static func updatedItems(container: BlinkItemIdentifier, since anchor: UInt) -> [BlinkItemReference]? {
-    shared.fileList[container.itemIdentifier.rawValue]?.filter {
+  func updatedItems(container: BlinkItemIdentifier, since anchor: UInt) -> [BlinkItemReference]? {
+    self.fileList[container.itemIdentifier.rawValue]?.filter {
       anchor < $0.syncAnchor
     }
   }
@@ -193,11 +196,11 @@ class SSHClientConfigProvider {
     
     if let signers = bkConfig.signer(forHost: host) {
       signers.forEach { (signer, name) in
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+        agent.loadKey(signer, aka: name, constraints: consts)
       }
     } else {
       for (signer, name) in bkConfig.defaultSigners() {
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+        agent.loadKey(signer, aka: name, constraints: consts)
       }
     }
 

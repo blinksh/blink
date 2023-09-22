@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BLINK_APP_FONT</key>
+	<string>$(BLINK_APP_FONT)</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>app-font-regular.ttf</string>
+		<string>app-font-bold.ttf</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -137,6 +144,7 @@
 	<array>
 		<string>com.blink.cmdline</string>
 		<string>com.blink.session</string>
+		<string>com.blink.whatsnew</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -152,8 +160,14 @@
 					<key>UISceneDelegateClassName</key>
 					<string>Blink.SceneDelegate</string>
 				</dict>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>whatsnew</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.WhatsNewSceneDelegate</string>
+				</dict>
 			</array>
-			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
 			<array>
 				<dict>
 					<key>UISceneConfigurationName</key>

@@ -35,6 +35,7 @@ import CloudKit
 struct FileDomainView: View {
   @EnvironmentObject private var _nav: Nav
   var domain: FileProviderDomain
+  var alias: String
   let refreshList: () -> ()
   @State private var _displayName: String = ""
   @State private var _remotePath: String = ""
@@ -47,6 +48,15 @@ struct FileDomainView: View {
         Field("Name", $_displayName, next: "Path", placeholder: "Required")
         Field("Path", $_remotePath,  next: "",     placeholder: "root folder on the remote")
       }
+      // Disabled for now. Although the cached can be erased, the cache in memory will still remain and that
+      // will mess with state. Deleting the domain itself is the way to go.
+//      Section {
+//        Button(
+//          action: _eraseCache,
+//          label: { Label("Erase location cache", systemImage: "trash").foregroundColor(.red)}
+//        )
+//          .accentColor(.red)
+//      }
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Files.app Location")
@@ -84,10 +94,17 @@ struct FileDomainView: View {
       throw FormValidationError.general(message: "Name is required", field: "Name")
     }
   }
+  
+  private func _eraseCache() {
+    if let nsDomain = domain.nsFileProviderDomain(alias: alias) {
+      _NSFileProviderManager.clearFileProviderCache(nsDomain)
+    }
+  }
 }
 
 fileprivate struct FileDomainRow: View {
   let domain: FileProviderDomain
+  let alias: String
   let refreshList: () -> ()
   
   var body: some View {
@@ -100,7 +117,7 @@ fileprivate struct FileDomainRow: View {
         }
       },
       details: {
-        FileDomainView(domain: domain, refreshList: refreshList)
+        FileDomainView(domain: domain, alias: alias, refreshList: refreshList)
       }
     )
   }
@@ -155,44 +172,101 @@ struct Field: View {
 }
 
 struct FieldSSHKey: View {
-  @Binding var value: String
+  @Binding var value: [String]
   var enabled: Bool = true
-  
+  var hasSSHKey: Bool
+
   var body: some View {
     Row(
       content: {
         HStack {
-          FormLabel(text: "Key")
-          Spacer()
-          Text(value.isEmpty ? "None" : value)
-            .font(.system(.subheadline)).foregroundColor(.secondary)
+          if (hasSSHKey || value.isEmpty) {
+            FormLabel(text: "Key")
+            Spacer()
+            Text(value.isEmpty ? "None" : value[0])
+              .font(.system(.subheadline)).foregroundColor(.secondary)
+          } else {
+            Label("Key", systemImage: "exclamationmark.icloud.fill")
+            Spacer()
+            Text(value[0])
+              .font(.system(.subheadline)).foregroundColor(.red)
+          }
         }
       },
       details: {
-        KeyPickerView(currentKey: enabled ? $value : .constant(value))
+        KeyPickerView(currentKey: enabled ? $value : .constant(value), multipleSelection: false)
       }
     )
   }
 }
 
 
-fileprivate struct FieldMoshPrediction: View {
-  @Binding var value: BKMoshPrediction
+fileprivate struct FieldMoshCustomOptions: View {
+  @Binding var prediction: BKMoshPrediction
+  @Binding var overwrite: Bool
+  @Binding var experimentalIP: BKMoshExperimentalIP
   var enabled: Bool
   
   var body: some View {
     Row(
       content: {
         HStack {
-          FormLabel(text: "Prediction")
+          FormLabel(text: "Advanced")
+          Spacer()
+          //Text(prediction.label + "...").font(.system(.subheadline)).foregroundColor(.secondary)
+        }
+      },
+      details: {
+        MoshCustomOptionsPickerView(
+          predictionValue: enabled ? $prediction : .constant(prediction),
+          overwriteValue: enabled ? $overwrite : .constant(overwrite),
+          experimentalIPValue: enabled ? $experimentalIP : .constant(experimentalIP)
+        )
+      }
+    )
+  }
+}
+
+fileprivate struct FieldAgentForwardPrompt: View {
+  @Binding var value: BKAgentForward
+  var enabled: Bool
+
+  var body: some View {
+    Row(
+      content: {
+        HStack {
+          FormLabel(text: "Agent Forwarding")
           Spacer()
           Text(value.label).font(.system(.subheadline)).foregroundColor(.secondary)
         }
       },
       details: {
-        MoshPredictionPickerView(currentValue: enabled ? $value : .constant(value))
+        AgentForwardPromptPickerView(
+          currentValue: enabled ? $value : .constant(value)
+        )
       }
     )
+  }
+}
+
+fileprivate struct FieldAgentForwardKeys: View {
+  @Binding var value: [String]
+  var enabled: Bool
+
+  var body: some View {
+    Row(
+      content: {
+        HStack {
+          FormLabel(text: "Forward Keys")
+          Spacer()
+          Text(value.isEmpty ? "None" : value.joined(separator: ", "))
+            .font(.system(.subheadline)).foregroundColor(.secondary)
+        }
+      },
+      details: {
+        KeyPickerView(currentKey: enabled ? $value : .constant(value), multipleSelection: true)
+      }
+    ).disabled(!enabled)
   }
 }
 
@@ -239,7 +313,7 @@ struct HostView: View {
   @State private var _port: String = ""
   @State private var _user: String = ""
   @State private var _password: String = ""
-  @State private var _sshKeyName: String = ""
+  @State private var _sshKeyName: [String] = []
   @State private var _proxyCmd: String = ""
   @State private var _proxyJump: String = ""
   @State private var _sshConfigAttachment: String = HostView.__sshConfigAttachmentExample
@@ -247,16 +321,24 @@ struct HostView: View {
   @State private var _moshServer: String = ""
   @State private var _moshPort: String = ""
   @State private var _moshPrediction: BKMoshPrediction = BKMoshPredictionAdaptive
+  @State private var _moshPredictOverwrite: Bool = false
+  @State private var _moshExperimentalIP: BKMoshExperimentalIP = BKMoshExperimentalIPNone
   @State private var _moshCommand: String = ""
   @State private var _domains: [FileProviderDomain] = []
   @State private var _domainsListVersion = 0;
   @State private var _loaded = false
   @State private var _enabled: Bool = true
+
+  @State private var _agentForwardPrompt: BKAgentForward = BKAgentForwardNo
+  @State private var _agentForwardKeys: [String] = []
   
   @State private var _errorMessage: String = ""
   
   private var _iCloudVersion: Bool
   private var _reloadList: () -> ()
+  private var _cleanAlias: String {
+    _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
   
   
   init(host: BKHosts?, iCloudVersion: Bool = false, reloadList: @escaping () -> ()) {
@@ -267,7 +349,7 @@ struct HostView: View {
   }
   
   private func _usageHint() -> String {
-    var alias = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+    var alias = _cleanAlias
     if alias.count < 2 {
       alias = "[alias]"
     }
@@ -314,30 +396,50 @@ struct HostView: View {
       Section(header: Text("SSH")) {
         Field("HostName",  $_hostName,  next: "Port",      placeholder: "Host or IP address. Required", enabled: _enabled, kbType: .URL)
         Field("Port",      $_port,      next: "User",      placeholder: "22", enabled: _enabled, kbType: .numberPad)
-        Field("User",      $_user,      next: "Password",  placeholder: BKDefaults.defaultUserName(), enabled: _enabled)
+        Field("User",      $_user,      next: "Password",  placeholder: BLKDefaults.defaultUserName(), enabled: _enabled)
         Field("Password",  $_password,  next: "ProxyCmd",  placeholder: "Ask Every Time", secureTextEntry: true, enabled: _enabled)
-        FieldSSHKey(value: $_sshKeyName, enabled: _enabled)
+        FieldSSHKey(value: $_sshKeyName, enabled: _enabled, hasSSHKey: BKPubKey.all().contains(where: {
+          if let keyName = _sshKeyName.first {
+            return $0.id == keyName
+          }
+          return false
+        }))
         Field("ProxyCmd",  $_proxyCmd,  next: "ProxyJump", placeholder: "ssh -W %h:%p bastion", enabled: _enabled)
         Field("ProxyJump", $_proxyJump, next: "Server",    placeholder: "bastion1,bastion2", enabled: _enabled)
-        
         FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
       }
       
-      Section(header: Text("MOSH")) {
+      Section(
+        header: Text("MOSH")
+      ) {
         Field("Server",  $_moshServer,  next: "moshPort",    placeholder: "path/to/mosh-server")
         Field("Port",    $_moshPort,    next: "moshCommand", placeholder: "UDP PORT[:PORT2]", id: "moshPort", kbType: .numbersAndPunctuation)
         Field("Command", $_moshCommand, next: "Alias",       placeholder: "screen -r or tmux attach", id: "moshCommand")
-        FieldMoshPrediction(value: $_moshPrediction, enabled: _enabled)
+        FieldMoshCustomOptions(
+          prediction: $_moshPrediction,
+          overwrite: $_moshPredictOverwrite,
+          experimentalIP: $_moshExperimentalIP,
+          enabled: _enabled
+        )
       }.disabled(!_enabled)
-      
+
+      Section(
+        header: Text("SSH AGENT")
+      ) {
+        FieldAgentForwardPrompt(value: $_agentForwardPrompt, enabled: _enabled)
+        if _agentForwardPrompt != BKAgentForwardNo {
+          FieldAgentForwardKeys(value: $_agentForwardKeys, enabled: _enabled)
+        }
+      }.disabled(!_enabled)
+
       Section(header: Label("Files.app", systemImage: "folder")) {
-        ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
+        ForEach(_domains, content: { FileDomainRow(domain: $0, alias: _cleanAlias, refreshList: _refreshDomainsList) })
           .onDelete { indexSet in
             _domains.remove(atOffsets: indexSet)
           }
         Button(
           action: {
-            let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+            let displayName = _cleanAlias
             _domains.append(FileProviderDomain(
               id:UUID(),
               displayName: displayName.isEmpty ? "Location Name" : displayName,
@@ -389,7 +491,7 @@ struct HostView: View {
       _port = host.port == nil ? "" : host.port.stringValue
       _user = host.user ?? ""
       _password = host.password ?? ""
-      _sshKeyName = host.key ?? ""
+      _sshKeyName = (host.key == nil || host.key.isEmpty) ? [] : [host.key]
       _proxyCmd = host.proxyCmd ?? ""
       _proxyJump = host.proxyJump ?? ""
       _sshConfigAttachment = host.sshConfigAttachment ?? ""
@@ -404,16 +506,20 @@ struct HostView: View {
         }
       }
 
-      _moshPrediction.rawValue = UInt32(host.prediction.intValue)
+      _moshPrediction.rawValue = UInt32(host.prediction?.intValue ?? 0)
+      _moshPredictOverwrite = host.moshPredictOverwrite == "yes"
+      _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP?.intValue ?? 0)
       _moshServer  = host.moshServer ?? ""
       _moshCommand = host.moshStartup ?? ""
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
-      _enabled = !( _conflictedICloudHost != nil || _iCloudVersion)
+      _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt?.intValue ?? 0)
+      _agentForwardKeys = host.agentForwardKeys ?? []
+      _enabled = !( _conflictedICloudHost != nil || _iCloudVersion) 
     }
   }
   
   private func _validate() throws {
-    let cleanAlias = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+    let cleanAlias = _cleanAlias
     
     if cleanAlias.isEmpty {
       throw FormValidationError.general(
@@ -442,31 +548,30 @@ struct HostView: View {
       throw FormValidationError.general(
         message: "HostName is required."
       )
-    }
-    
-    let cleanUser = _user.trimmingCharacters(in: .whitespacesAndNewlines)
-    if let _ = cleanUser.rangeOfCharacter(from: .whitespacesAndNewlines) {
-      throw FormValidationError.general(message: "Spaces are not permitted in the user name.")
-    }
+    }    
   }
   
   private func _saveHost() {
     let savedHost = BKHosts.saveHost(
       _host?.host.trimmingCharacters(in: .whitespacesAndNewlines),
-      withNewHost: _alias.trimmingCharacters(in: .whitespacesAndNewlines),
+      withNewHost: _cleanAlias,
       hostName: _hostName.trimmingCharacters(in: .whitespacesAndNewlines),
       sshPort: _port.trimmingCharacters(in: .whitespacesAndNewlines),
       user: _user.trimmingCharacters(in: .whitespacesAndNewlines),
       password: _password,
-      hostKey: _sshKeyName,
+      hostKey: _sshKeyName.isEmpty ? "" : _sshKeyName[0],
       moshServer: _moshServer,
+      moshPredictOverwrite: _moshPredictOverwrite ? "yes" : nil,
+      moshExperimentalIP: _moshExperimentalIP,
       moshPortRange: _moshPort,
       startUpCmd: _moshCommand,
       prediction: _moshPrediction,
       proxyCmd: _proxyCmd,
       proxyJump: _proxyJump,
       sshConfigAttachment: _sshConfigAttachment == HostView.__sshConfigAttachmentExample ? "" : _sshConfigAttachment,
-      fpDomainsJSON: FileProviderDomain.toJson(list: _domains)
+      fpDomainsJSON: FileProviderDomain.toJson(list: _domains),
+      agentForwardPrompt: _agentForwardPrompt,
+      agentForwardKeys: _agentForwardPrompt == BKAgentForwardNo ? [] : _agentForwardKeys
     )
     
     guard let host = savedHost else {
@@ -510,13 +615,17 @@ struct HostView: View {
       password: iCloudHost.password,
       hostKey: iCloudHost.key,
       moshServer: iCloudHost.moshServer,
+      moshPredictOverwrite: iCloudHost.moshPredictOverwrite,
+      moshExperimentalIP: BKMoshExperimentalIP(UInt32(iCloudHost.moshExperimentalIP?.intValue ?? 0)),
       moshPortRange: moshPortRange,
       startUpCmd: iCloudHost.moshStartup,
       prediction: BKMoshPrediction(UInt32(iCloudHost.prediction?.intValue ?? 0)),
       proxyCmd: iCloudHost.proxyCmd,
       proxyJump: iCloudHost.proxyJump,
       sshConfigAttachment: iCloudHost.sshConfigAttachment,
-      fpDomainsJSON: iCloudHost.fpDomainsJSON
+      fpDomainsJSON: iCloudHost.fpDomainsJSON,
+      agentForwardPrompt: BKAgentForward(UInt32(iCloudHost.agentForwardPrompt?.intValue ?? 0)),
+      agentForwardKeys: iCloudHost.agentForwardKeys
     )
     
     BKHosts.updateHost(

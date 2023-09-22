@@ -61,14 +61,54 @@
     NSString *marketingName = self.marketingName;
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"] || [marketingName hasPrefix:@"iPhone 14"];
+    _hasDynamicIsland = [marketingName hasPrefix:@"iPhone 14"];
     _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [_machine hasPrefix:@"iPad14"] || [marketingName hasPrefix:@"Mac"];
-    
+    _hasAppleSilicon = [marketingName hasPrefix:@"iPad Pro (11-inch) (3rd generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (11-inch) (4th generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (12.9-inch) (5th generation)"] ||
+      [marketingName hasPrefix:@"iPad Pro (12.9-inch) (6th generation)"] ||
+      [marketingName hasPrefix:@"iPad Air (5th generation)"];
   }
   return self;
 }
 
+- (NSString *)onMyDevice {
+  if ([self.marketingName hasPrefix:@"iPad"]) {
+    return @"On My iPad";
+  }
+  if ([self.marketingName hasPrefix:@"iPhone"]) {
+    return @"On My iPhone";
+  }
+  
+  return @"On My Device";
+}
+
+- (NSString *)deviceIcon {
+  if ([self.marketingName hasPrefix:@"iPad"]) {
+    if (_hasCorners) {
+      return @"ipad.gen2";
+    } else {
+      return @"ipad.gen1";
+    }
+  }
+  
+  if (_hasDynamicIsland) {
+    return @"iphone.gen3";
+  }
+  
+  if (_hasNotch) {
+    return @"iphone.gen2";
+  }
+  
+  return @"iphone.gen1";
+}
+
 -(NSString *)marketingName {
   // https://en.wikipedia.org/wiki/List_of_iOS_devices
+  
+  // actual device list can be fetched via sql query:
+  // sqlite3 /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/usr/standalone/device_traits.db \
+     "select ProductType, ProductDescription from Devices where ProductType like \"iPad%\"";
   
   NSDictionary * codes =
   @{
@@ -171,17 +211,53 @@
     @"iPad8,11" : @"iPad Pro (12.9\") 4G",
     @"iPad8,12" : @"iPad Pro (12.9\") 4G",
     
-    @"iPad11,1" : @"iPad Mini 5", // wifi
-    @"iPad11,2" : @"iPad Mini 5", // cellular
+    @"iPad11,1" : @"iPad mini (5th generation)", // wifi
+    @"iPad11,2" : @"iPad mini (5th generation)", // cellular
     
-    @"iPad11,3" : @"iPad Air 3",  // wifi
-    @"iPad11,4" : @"iPad Air 3",  // cellular
+    @"iPad11,3" : @"iPad Air (3rd generation)",  // wifi
+    @"iPad11,4" : @"iPad Air (3rd generation)",  // cellular
     
-    @"iPad13,1" : @"iPad Air 4",  // wifi
-    @"iPad13,2" : @"iPad Air 4",  // cellular
+    @"iPad11,6" : @"iPad (8th generation)",
+    @"iPad11,7" : @"iPad (8th generation)",
     
-    @"iPad14,2": @"iPad Mini 6", // cellular
-    @"iPad14,1": @"iPad Mini 6", // wifi
+    @"iPad12,1" : @"iPad (9th generation)",
+    @"iPad12,2" : @"iPad (9th generation)",
+    
+    @"iPad13,1" : @"iPad Air (4th generation)",  // wifi
+    @"iPad13,2" : @"iPad Air (4th generation)",  // cellular
+    @"iPad13,4" : @"iPad Pro (11-inch) (3rd generation)",
+    @"iPad13,5" : @"iPad Pro (11-inch) (3rd generation)",
+    @"iPad13,6" : @"iPad Pro (11-inch) (3rd generation)",
+    @"iPad13,7" : @"iPad Pro (11-inch) (3rd generation)",
+    
+    @"iPad13,8" : @"iPad Pro (12.9-inch) (5th generation)",
+    @"iPad13,9" : @"iPad Pro (12.9-inch) (5th generation)",
+    @"iPad13,10" : @"iPad Pro (12.9-inch) (5th generation)",
+    @"iPad13,11" : @"iPad Pro (12.9-inch) (5th generation)",
+    
+    @"iPad13,16" : @"iPad Air (5th generation)",
+    @"iPad13,17" : @"iPad Air (5th generation)",
+    
+    @"iPad13,18" : @"iPad (10th generation)",
+    @"iPad13,19" : @"iPad (10th generation)",
+    
+    @"iPad14,1": @"iPad mini (6th generation)", // wifi
+    @"iPad14,2": @"iPad mini (6th generation)", // cellular
+    
+    @"iPad14,3-A" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,3-B" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,4-A" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,4-B" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,5-A" : @"iPad Pro (12.9-inch) (6th generation)",
+    @"iPad14,5-B" : @"iPad Pro (12.9-inch) (6th generation)",
+    @"iPad14,6-A" : @"iPad Pro (12.9-inch) (6th generation)",
+    @"iPad14,6-B" : @"iPad Pro (12.9-inch) (6th generation)",
+    
+    // Variants without A,B letters
+    @"iPad14,3" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,4" : @"iPad Pro (11-inch) (4th generation)",
+    @"iPad14,5" : @"iPad Pro (12.9-inch) (6th generation)",
+    @"iPad14,6" : @"iPad Pro (12.9-inch) (6th generation)",
   };
   
   NSString *value = codes[_machine];

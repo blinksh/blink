@@ -32,7 +32,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,8 +43,8 @@ extern NSString *LayoutManagerBottomInsetDidUpdate;
 + (BKLayoutMode) deviceDefaultLayoutMode;
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode;
 + (NSString *) layoutModeToString:(BKLayoutMode)mode;
-+ (CGFloat) mainWindowKBBottomInset;
-+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset;
+//+ (CGFloat) mainWindowKBBottomInset;
+//+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset;
 
 @end
 

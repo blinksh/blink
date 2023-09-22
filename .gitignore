@@ -27,10 +27,13 @@ Frameworks/libmoshios.framework
 Frameworks/libssh2.framework
 Frameworks/openssl.framework
 
+Resources/AppFont/
+
 ## Other
 *.moved-aside
 *.xcuserstate
 developer_setup.xcconfig
+main.m
 
 ## Obj-C/Swift specific
 *.hmap

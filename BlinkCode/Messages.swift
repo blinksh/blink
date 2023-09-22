@@ -32,6 +32,7 @@
 
 import Foundation
 
+import Base32Kit
 
 enum CodeFileSystemAction: String, Codable {
   case getRoot
@@ -52,7 +53,7 @@ struct GetRootRequest: Codable {
   let op: CodeFileSystemAction
   let token: Int
   let version: Int
-  
+
   init(token: Int, version: Int) {
     self.op = .getRoot
     self.token = token
@@ -63,7 +64,7 @@ struct GetRootRequest: Codable {
 struct StatFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .stat
     self.uri = uri
@@ -73,7 +74,7 @@ struct StatFileSystemRequest: Codable {
 struct ReadDirectoryFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .readDirectory
     self.uri = uri
@@ -84,7 +85,7 @@ struct ReadDirectoryFileSystemRequest: Codable {
 struct ReadFileFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .readFile
     self.uri = uri
@@ -109,7 +110,7 @@ struct RenameFileSystemRequest: Codable {
   let oldUri: URI
   let newUri: URI
   let options: FileSystemOperationOptions
-  
+
   init(oldUri: URI, newUri: URI, options: FileSystemOperationOptions) {
     self.op = .rename
     self.oldUri = oldUri
@@ -122,7 +123,7 @@ struct DeleteFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
   let options: FileSystemOperationOptions
-  
+
   init(uri: URI, options: FileSystemOperationOptions) {
     self.op = .delete
     self.uri = uri
@@ -133,34 +134,127 @@ struct DeleteFileSystemRequest: Codable {
 struct CreateDirectoryFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .createDirectory
     self.uri = uri
   }
 }
 
-struct URI {
+
+struct RootPath: Equatable {
+  private let url: URL // should be private
+
+  //var fullPath: String { url.absoluteString }
+  //var protocolIdentifier: String { url.scheme! }
+  //var host: String? { url.host }
+  var filesAtPath: String { url.path }
+  var lastPathComponent: String { url.lastPathComponent }
+
+  init(_ rootPath: String) {
+    self.url = URL(string: rootPath)!
+  }
+
+  init(_ url: URL) {
+    self.url = url
+  }
+
+  var parent: RootPath {
+    return RootPath(url.deletingLastPathComponent())
+  }
+
+  public static func ==(lhs: RootPath, rhs: RootPath) -> Bool {
+      return lhs.url == rhs.url
+  }
+}
+
+public struct URI: Equatable {
+  let host: String?
+  let protocolId: String
   let rootPath: RootPath
+
+  var parent: URI {
+    URI(host: host, protocolId: protocolId, rootPath: self.rootPath.parent)
+  }
+
+  private init(host: String?, protocolId: String, rootPath: RootPath) {
+    self.host = host
+    self.protocolId = protocolId
+    self.rootPath = rootPath
+  }
+
+  public init(string: String) throws {
+    guard let url = URL(string: string)
+    else {
+      throw WebSocketError(message: "Not a valid URI")
+    }
+    let protocolId = url.scheme!
+    // The host's URL is not case-sensitive, but our URI is, so we extract it here.
+    let urlComponents = string.components(separatedBy: "://")
+    let isFileURL = urlComponents.count == 1
+
+    let host: String?
+    if isFileURL {
+      host = nil
+    } else {
+      host = urlComponents[1].components(separatedBy: "/")[0]
+    }
+
+    self.init(host: host, protocolId: protocolId, rootPath: RootPath(url))
+  }
+
+  public static func ==(lhs: URI, rhs: URI) -> Bool {
+    return lhs.host == rhs.host && lhs.protocolId == rhs.protocolId && lhs.rootPath == rhs.rootPath
+  }
 }
 
 // <protocol>://<host>/<path>
 // <protocol>:/<path>
+// TODO We should have tests on what the URIs and RootPaths are expecting of each other.
 extension URI: Codable {
-  init(from decoder: Decoder) throws {
-    let str = try String(from: decoder)
-    
-    guard let url = URL(string: str)
-    else {
-      throw WebSocketError(message: "Not a valid URI")
+  private init(stringWithEncodedHost string: String) throws {
+    let urlComponents = string.components(separatedBy: "://")
+    guard urlComponents.count > 1 else {
+      try self.init(string: string)
+      return
     }
 
-    self.init(rootPath: RootPath(url))
+//    let host = urlComponents[1].components(separatedBy: "/")[0]
+
+    let encodedHost = urlComponents[1].components(separatedBy: "/")[0]
+    var paddedEncodedHost = encodedHost.uppercased()
+    if paddedEncodedHost.count % 8 != 0 {
+      paddedEncodedHost.append(String(repeating: "=", count: 8 - encodedHost.count % 8))
+    }
+    guard let host = try? Base32.decode(string: paddedEncodedHost) else {
+      throw WebSocketError(message: "Invalid Host encoding in URI")
+    }
+
+    let string = string.replacingOccurrences(of: encodedHost, with: host)
+    print("DECODED string \(string)")
+    try self.init(string: string)
   }
-  
-  func encode(to encoder: Encoder) throws {
+
+  public init(from decoder: Decoder) throws {
+    try self.init(stringWithEncodedHost: try String(from: decoder))
+    //try self.init(string: try String(from: decoder))
+  }
+
+  public func encode(to encoder: Encoder) throws {
     //var container = encoder.unkeyedContainer()
-    let output = rootPath.url.absoluteString
+    let output: String
+    if let host = host {
+      // Encode as b32 as URLs are case-insensitive
+      let encodedHost = Base32.encode(string: host)
+        .replacingOccurrences(of: "=", with: "")
+      print("ENCODED host \(Base32.encode(string:host))")
+
+      output = "\(protocolId)://\(encodedHost)\(rootPath.filesAtPath)"
+    } else {
+      output = "\(protocolId):\(rootPath.filesAtPath)"
+    }
+
+    print("ENCODED \(output)")
     try output.encode(to: encoder)
   }
 }
@@ -169,7 +263,7 @@ struct FileSystemOperationOptions: Codable {
   let overwrite: Bool?
   let create: Bool?
   let recursive: Bool?
-  
+
   init(overwrite: Bool? = nil, create: Bool? = nil, recursive: Bool? = nil) {
     self.overwrite = overwrite
     self.create = create
@@ -190,7 +284,7 @@ struct DirectoryTuple: Codable {
     try container.encode(name)
     try container.encode(type)
   }
-  
+
   init(from decoder: Decoder) throws {
     var container = try decoder.unkeyedContainer()
     self.name = try container.decode(String.self)

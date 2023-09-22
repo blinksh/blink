@@ -54,7 +54,7 @@ func ssh_init_channel_callbacks(_ cb: inout ssh_channel_callbacks_struct) {
 
 public class SSHClient {
   let session: ssh_session
-  let host: String
+  public let host: String
   let options: SSHClientConfig
   let log: SSHLogger
   
@@ -69,6 +69,10 @@ public class SSHClient {
   
   public var isConnected: Bool {
     ssh_is_connected(session) == 1
+  }
+
+  public var agent: SSHAgent? {
+    self.options.agent
   }
 
   // When a connection is local, we consider it trusted and we use this flag to indicate that

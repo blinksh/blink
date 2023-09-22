@@ -41,10 +41,15 @@
 
 // ~/.blink
 + (NSString *) blink;
+// ~/.blink-build
++ (NSString *)blinkBuild;
 // ~/.ssh
 + (NSString *) ssh;
 
 + (NSURL *) blinkURL;
++ (NSURL *) blinkBuildURL;
++ (NSURL *) blinkBuildTokenURL;
++ (NSURL *)blinkBuildStagingMarkURL;
 + (NSURL *) sshURL;
 + (NSURL *) blinkSSHConfigFileURL;
 + (NSURL *) blinkGlobalSSHConfigFileURL;
@@ -60,6 +65,9 @@
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 
++ (NSURL *) localSnippetsLocationURL;
++ (NSURL *) iCloudSnippetsLocationURL;
+
 + (NSURL *)fileProviderErrorLogURL;
 + (NSURL *)blinkCodeErrorLogURL;
 
@@ -67,7 +75,6 @@
 + (void)linkDocumentsIfNeeded;
 
 + (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
-+ (void)migrateToHomeAtGroupContainer;
 
 
 @end

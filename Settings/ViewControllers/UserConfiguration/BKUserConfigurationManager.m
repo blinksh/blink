@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKUserConfigurationManager.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 
 NSString *const BKUserConfigiCloud = @"iCloudSync";
 NSString *const BKUserConfigiCloudKeys = @"iCloudKeysSync";

@@ -130,13 +130,13 @@ class TermController: UIViewController {
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
     
-    params.fontSize = BKDefaults.selectedFontSize()?.intValue ?? 16
-    params.fontName = BKDefaults.selectedFontName()
-    params.themeName = BKDefaults.selectedThemeName()
-    params.enableBold = BKDefaults.enableBold()
-    params.boldAsBright = BKDefaults.isBoldAsBright()
+    params.fontSize = BLKDefaults.selectedFontSize()?.intValue ?? 16
+    params.fontName = BLKDefaults.selectedFontName()
+    params.themeName = BLKDefaults.selectedThemeName()
+    params.enableBold = BLKDefaults.enableBold()
+    params.boldAsBright = BLKDefaults.isBoldAsBright()
     params.viewSize = .zero
-    params.layoutMode = BKDefaults.layoutMode().rawValue
+    params.layoutMode = BLKDefaults.layoutMode().rawValue
     
     return params
   }()
@@ -154,6 +154,7 @@ class TermController: UIViewController {
     set { _bgColor = newValue }
   }
   
+  
   private var _session: MCPSession? = nil
   
   required init(meta: SessionMeta? = nil) {
@@ -163,13 +164,21 @@ class TermController: UIViewController {
   
   convenience init(sceneRole: UISceneSession.Role? = nil) {
     self.init(meta: nil)
-    if sceneRole == .windowExternalDisplay {
-      _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
+    if sceneRole == .windowExternalDisplayNonInteractive {
+      _sessionParams.fontSize = BLKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  @objc public func toggleLayoutLock() {
+    if sessionParams.layoutLocked {
+      self.unlockLayout()
+    } else {
+      self.lockLayout()
+    }
   }
   
   func placeToContainer() {
@@ -338,14 +347,14 @@ extension TermController: TermDeviceDelegate {
    */
   func viewDidReceiveBellRing() {
     
-    if BKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
+    if BLKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
       AudioServicesPlaySystemSound(1103);
     }
   
     viewNotify(["title": "🔔 \(_termView.title ?? "")", "type": BKNotificationType.bell.rawValue])
     
     // Haptic feedback is only visible from iPhones
-    if UIDevice.current.userInterfaceIdiom == .phone && !BKDefaults.hapticFeedbackOnBellOff() {
+    if UIDevice.current.userInterfaceIdiom == .phone && !BLKDefaults.hapticFeedbackOnBellOff() {
       UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
   }
@@ -362,8 +371,8 @@ extension TermController: TermDeviceDelegate {
       return
     }
         
-    if notificationType  == .bell && (_termView.isFocused() || !BKDefaults.isNotificationOnBellUnfocusedOn())
-        || notificationType == .osc && !BKDefaults.isOscNotificationsOn() {
+    if notificationType  == .bell && (_termView.isFocused() || !BLKDefaults.isNotificationOnBellUnfocusedOn())
+        || notificationType == .osc && !BLKDefaults.isOscNotificationsOn() {
        return
     }
     
@@ -448,6 +457,14 @@ extension TermController: TermDeviceDelegate {
   public func lineSubmitted(_ line: String!) {
     _session?.enqueueCommand(line)
   }
+  
+  @objc public func setLayoutMode(layoutMode: BKLayoutMode) {
+    self.sessionParams.layoutMode = layoutMode.rawValue
+    if (self.sessionParams.layoutLocked) {
+      self.unlockLayout()
+    }
+    self.view?.setNeedsLayout()
+  }
 }
 
 extension TermController: SuspendableSession {
@@ -468,6 +485,10 @@ extension TermController: SuspendableSession {
     _session = MCPSession(
       device: _termDevice,
       andParams: _sessionParams)
+    
+    if let initialPrompt = WhatsNewInfo.mustDisplayInitialPrompt() {
+      _termDevice.writeOutLn(initialPrompt)
+    }
     
     _session?.delegate = self
     _session?.execute(withArgs: "")
@@ -496,6 +517,8 @@ extension TermController: SuspendableSession {
     if view.bounds.size != _sessionParams.viewSize {
       _session?.sigwinch()
     }
+    
+    _termView.setClipboardWrite(true)
   }
   
   func suspendedSession(with archiver: NSKeyedArchiver) {
@@ -505,6 +528,7 @@ extension TermController: SuspendableSession {
       return
     }
     
+    _termView.setClipboardWrite(false)
     _sessionParams.cleanEncodedState()
     session.suspend()
     

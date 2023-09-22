@@ -64,7 +64,7 @@ class KBProxy: UIView {
     }
     setNeedsLayout()
   }
-  
+    
   public override func layoutSubviews() {
     super.layoutSubviews()
     

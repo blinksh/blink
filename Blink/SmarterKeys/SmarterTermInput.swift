@@ -32,25 +32,59 @@
 import UIKit
 import Combine
 
+
 class CaretHider {
   var _cancelable: AnyCancellable? = nil
+  weak var _view: UIView?
+  
   init(view: UIView) {
+    _view = view;
     _cancelable = view.layer.publisher(for: \.sublayers).sink { (layers) in
-      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
-        caretView.isHidden = true
+      if #available(iOS 17.0, *) {
+        let cursorView = view.subviews.first(where: { v in
+          v.classForCoder.description().hasSuffix("CursorView")
+        })
+        cursorView?.layer.sublayers?.first?.isHidden = true
+      } else {
+        if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+          caretView.isHidden = true
+        }
+        
+        if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
+          floatingView.isHidden = true
+        }
       }
-
+    }
+  }
+  
+  func show() {
+    guard let view = _view
+    else {
+      return
+    }
+    
+    if #available(iOS 17.0, *) {
+      let cursorView = view.subviews.first(where: { v in
+        v.classForCoder.description().hasSuffix("CursorView")
+      })
+      cursorView?.layer.sublayers?.first?.isHidden = false
+    } else {
+      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+        caretView.isHidden = false
+      }
+      
       if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
-        floatingView.isHidden = true
+        floatingView.isHidden = false
       }
     }
   }
 }
 
-
 @objc class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
+  var _proxyBarButtonItem: UIBarButtonItem!
+  var _barButtonItemGroup: UIBarButtonItemGroup!
   
   lazy var _kbProxy: KBProxy = {
     KBProxy(kbView: self.kbView)
@@ -68,8 +102,12 @@ class CaretHider {
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     
+    
     super.init(frame: frame, configuration: configuration)
 
+
+    _proxyBarButtonItem = UIBarButtonItem(customView: _kbProxy)
+    _barButtonItemGroup = UIBarButtonItemGroup(barButtonItems: [_proxyBarButtonItem], representativeItem: nil)
     
     kbView.keyInput = self
     kbView.lang = textInputMode?.primaryLanguage ?? ""
@@ -77,10 +115,9 @@ class CaretHider {
     // Assume hardware kb by default, since sometimes we don't have kbframe change events
     // if shortcuts toggle in Settings.app is off.
     kbView.traits.isHKBAttached = true
-
     
     if traitCollection.userInterfaceIdiom == .pad {
-      _setupAssistantItem()
+//      _setupAssistantItem()
     } else {
       _setupAccessoryView()
     }
@@ -91,8 +128,10 @@ class CaretHider {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    
-    
+   
+    if let value = self.window?.windowScene?.interfaceOrientation.isPortrait  {
+      kbView.traits.isPortrait = value
+    }
     kbView.setNeedsLayout()
   }
   
@@ -100,7 +139,9 @@ class CaretHider {
     false
   }
   
+  
   private var _caretHider: CaretHider? = nil
+  
   
   override func ready() {
     super.ready()
@@ -109,15 +150,26 @@ class CaretHider {
 //    device?.focus()
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
-//    _refreshInputViews()
-    
-    if let v = selectionView() {
-      _caretHider = CaretHider(view: v)
-    }
+    hideCaret()
   }
   
   func reset() {
     
+  }
+   
+  override func showCaret() {
+    _caretHider?.show()
+    _caretHider = nil
+  }
+  
+  override func hideCaret() {
+    if let _ = _caretHider {
+      return
+    }
+    
+    if let v = selectionView() {
+      _caretHider = CaretHider(view: v)
+    }
   }
   
   func reportLang() {
@@ -128,13 +180,29 @@ class CaretHider {
   
   override var inputAssistantItem: UITextInputAssistantItem {
     let item = super.inputAssistantItem
-    if item.trailingBarButtonGroups.count > 1 {
-      item.trailingBarButtonGroups = [item.trailingBarButtonGroups[0]]
-    }
-    if item.trailingBarButtonGroups.count > 0 {
+    if KBTracker.shared.isHardwareKB {
+      item.trailingBarButtonGroups = []
+      item.leadingBarButtonGroups = []
+    } else if _barButtonItemGroup != nil {
+      item.leadingBarButtonGroups = []
+      if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
+        item.trailingBarButtonGroups = [_barButtonItemGroup]
+        
+        // Reload input views later. Fixes crash for detaching/attaching KB
+        if let contentView = self.contentView() {
+          DispatchQueue.main.async {
+            contentView.reloadInputViews()
+          }
+        }
+        
+      }
+      kbView.isHidden = false
+      
+    } else {
+      item.trailingBarButtonGroups = []
       item.leadingBarButtonGroups = []
     }
-    kbView.setNeedsLayout()
+    
     return item
   }
   
@@ -143,6 +211,7 @@ class CaretHider {
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
     
     let res = super.becomeFirstResponder()
+    
     if !webViewReady {
       return res
     }
@@ -150,11 +219,21 @@ class CaretHider {
     device?.focus()
     kbView.isHidden = false
     setNeedsLayout()
-    _refreshInputViews()
     
     _inputAccessoryView?.isHidden = false
 
     return res
+  }
+  
+  override func canBeFocused() -> Bool {
+    let res = super.canBeFocused()
+    if let delegate = self.window?.windowScene?.delegate as? SceneDelegate {
+      if delegate.showingPaywall() {
+        return false
+      }
+    }
+    return res
+    
   }
   
   var isRealFirstResponder: Bool {
@@ -170,34 +249,6 @@ class CaretHider {
     reportStateReset(device?.view?.hasSelection ?? false)
   }
   
-  func _refreshInputViews() {
-    guard
-      traitCollection.userInterfaceIdiom == .pad,
-      let assistantItem = contentView()?.inputAssistantItem
-      else {
-        if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-          _removeSmartKeys()
-        }
-        contentView()?.reloadInputViews()
-        kbView.reset()
-        //      _inputAccessoryView?.invalidateIntrinsicContentSize()
-        reportStateReset()
-        return;
-    }
-    
-    
-    assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
-    contentView()?.reloadInputViews()
-    if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-      _removeSmartKeys()
-    }
-    contentView()?.reloadInputViews()
-    kbView.reset()
-    reportStateReset()
-    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
-    contentView()?.reloadInputViews()
-    kbView.isHidden = false
-  }
   
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
@@ -205,12 +256,14 @@ class CaretHider {
       device?.blur()
       kbView.isHidden = true
       _inputAccessoryView?.isHidden = true
-      reloadInputViews()
     }
     return res
   }
   
   func _setupAccessoryView() {
+    if isHardwareKB {
+      return
+    }
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
     if let _ = _inputAccessoryView as? KBAccessoryView {
@@ -226,7 +279,6 @@ class CaretHider {
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {
     kbView.kbDevice = device
     
-    var needToReload = false
     defer {
       
       kbView.traits = traits
@@ -241,16 +293,13 @@ class CaretHider {
         }
       }
       
-      if needToReload {
-        DispatchQueue.main.async {
-          self._refreshInputViews()
-        }
-      }
     }
     
-    if hideSmartKeysWithHKB && traits.isHKBAttached {
-      _removeSmartKeys()
-      return
+    if traitCollection.userInterfaceIdiom == .phone {
+      if hideSmartKeysWithHKB && traits.isHKBAttached {
+        _removeSmartKeys()
+        return
+      }
     }
     
     if traits.isFloatingKB {
@@ -258,27 +307,32 @@ class CaretHider {
       return
     }
     
-    if traitCollection.userInterfaceIdiom == .pad {
-      needToReload = inputAssistantItem.trailingBarButtonGroups.count != 1
-      _setupAssistantItem()
-    } else {
-      needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
+    if traitCollection.userInterfaceIdiom != .pad {
+//      needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
       _setupAccessoryView()
     }
     
   }
   
-  func _setupAssistantItem() {
-    let item = inputAssistantItem
-    
-    let proxyItem = UIBarButtonItem(customView: _kbProxy)
-    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
-    item.leadingBarButtonGroups = []
-    item.trailingBarButtonGroups = [group]
-  }
+//  func _setupAssistantItem() {
+//    let item = inputAssistantItem
+//
+////    let proxyItem = UIBarButtonItem(customView: _kbProxy)
+////    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], presentativeItem: nil)
+//
+////    item.leadingBarButtonGroups = []
+////    item.trailingBarButtonGroups = [group]
+//
+//    item.leadingBarButtonGroups = []
+//    item.trailingBarButtonGroups = []
+//  }
   
   func _removeSmartKeys() {
-    _inputAccessoryView = UIView(frame: .zero)
+    if let _ = _inputAccessoryView as? KBAccessoryView {
+      _inputAccessoryView = UIView(frame: .zero)
+      self.contentView()?.reloadInputViews()      
+    }
+    
     guard let item = contentView()?.inputAssistantItem
       else {
         return
@@ -305,6 +359,28 @@ class CaretHider {
   
   override func _keyboardDidShow(_ notification: Notification) {
   }
+  
+  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    super.pressesBegan(presses, with: event)
+    
+    guard presses.count == 1, let press = presses.first, let key = press.key,
+    // left or right cmd
+    key.keyCode.rawValue == 227 || key.keyCode.rawValue == 231
+    else {
+      commandPressTimestamp = 0
+      return
+    }
+    
+    if press.timestamp - commandPressTimestamp > 0.5 {
+      commandPressTimestamp = press.timestamp
+      return
+    }
+    
+    UIApplication.shared.sendAction(#selector(SpaceController.toggleQuickActionsAction), to: nil, from: nil, for: nil)
+    commandPressTimestamp = 0
+  }
+  
+  var commandPressTimestamp: TimeInterval = 0
 }
 
 // - MARK: Web communication
@@ -417,7 +493,8 @@ extension SmarterTermInput {
 extension SmarterTermInput {
   
   @objc private func _updateSettings() {
-//    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+    
 //    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
 //    
 //    if hideSmartKeysWithHKB != hideSmartKeysWithHKB {

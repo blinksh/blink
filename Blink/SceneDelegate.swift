@@ -31,12 +31,11 @@
 
 
 import Foundation
+import SafariServices
 import SwiftUI
 
-import Purchases
+import RevenueCat
 
-
-let Blink14BundleID = "Com.CarlosCabanero.BlinkShell"
 let Blink15BundleID = "sh.blink.blinkshell"
 
 class ExternalWindow: UIWindow {
@@ -99,53 +98,48 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(_showPaywallIfNeeded), name: .subscriptionNag, object: nil)
-    nc.addObserver(self, selector: #selector(_openMigration), name: .openMigration, object: nil)
-    nc.addObserver(self, selector: #selector(_closeMigration), name: .closeMigration, object: nil)
   }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
   
-  @objc private func _openMigration() {
-    guard
-      let win = self.paywallWindow ?? self.window,
-      let ctrl = win.rootViewController
-    else {
-      return
-    }
-    
-    ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
-
-    let view = SinglePageContainer<MigrationPageView>()
-    let c = StatusBarLessViewController(rootView: view)
-    c.modalPresentationStyle = .overFullScreen
-    ctrl.present(c, animated: true)
+  public func showingPaywall() -> Bool {
+    self.paywallWindow != nil
   }
   
-  @objc private func _closeMigration() {
-    guard
-      let win = self.paywallWindow ?? self.window,
-      let ctrl = win.rootViewController
-    else {
-      return
-    }
-   
-    ctrl.presentedViewController?.dismiss(animated: true, completion: nil)
-
-    if !SubscriptionNag.shared.doShowPaywall() {
-      if let _ = paywallWindow {
-          self.paywallWindow = nil
-      }
-    }
+  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    super.editingInteractionConfiguration
   }
   
   @objc private func _showPaywallIfNeeded() {
-    if FeatureFlags.checkReceipt {
+//    if FeatureFlags.checkReceipt {
+//      return
+//    }
+    
+    let entitlements = EntitlementsManager.shared
+    let doShowPaywall = entitlements.doShowPaywall()
+    
+    // we are showing plans for keys
+    if entitlements.navigationSteps.contains(.plans) {
+      if !doShowPaywall {
+        entitlements.navigationSteps = []
+      }
       return
     }
     
-    guard SubscriptionNag.shared.doShowPaywall() else {
+    // we are showing offer in settings
+    if let navCtrl = entitlements.navigationCtrl {
+      if !doShowPaywall {
+        navCtrl.popToRootViewController(animated: true)
+      }
+      entitlements.navigationCtrl = nil
+      
+      return
+    }
+    
+    guard doShowPaywall
+    else {
       if let window = self.paywallWindow {
         if window.rootViewController?.presentedViewController != nil {
           // We are showing migration view. It will close itself
@@ -155,6 +149,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           window.layer.opacity = 0;
         } completion: { _ in
           self.paywallWindow = nil
+          UIApplication.shared.sendAction(Selector("showWalkthroughAction"), to: self._spCtrl, from: nil, for: nil)
         }
       }
       
@@ -173,7 +168,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
     self.paywallWindow = UIWindow(windowScene: windowScene)
     self.paywallWindow?.windowLevel = .statusBar + 0.5
-    self.paywallWindow?.rootViewController = StatusBarLessViewController(rootView: PaywallView())
+    UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.blinkTint
+    let view = InitialOfferingWindow(urlHandler: blink_openurl)
+    let ctrl = StatusBarLessViewController(rootView: view)
+    ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
+    self.paywallWindow?.rootViewController = ctrl
     self.paywallWindow?.makeKeyAndVisible()
     self.paywallWindow?.layer.opacity = 0;
 
@@ -198,18 +197,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    if FeatureFlags.checkReceipt,
-       let blinkUrlContext = URLContexts.first(where: { $0.url.scheme == "blinkv14"})
-    // TODO Disabled bundleID for testing
-       //let bundleID = blinkUrlContext.options.sourceApplication
-    {
-      _handleBlink14UrlScheme(with: blinkUrlContext.url, fromApp: Blink15BundleID)
-    } else if !FeatureFlags.checkReceipt,
-              let blinkUrlContext = URLContexts.first(where: { $0.url.scheme == "blinkv15"})
-    //    let bundleID = blinkUrlContext.options.sourceApplication
-    {
-      _handleBlink15UrlScheme(with: blinkUrlContext.url, fromApp: Blink14BundleID)
-    } else if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
+
+    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
       _handleXcallbackUrl(with: xCallbackUrl)
@@ -250,10 +239,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _spCtrl.sceneRole = session.role
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     
-    if session.role == .windowExternalDisplay,
+    if session.role == .windowExternalDisplayNonInteractive,
       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
       
-      if BKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
+      if BLKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
         return
       }
       
@@ -298,36 +287,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
-  func sceneDidBecomeActive(_ scene: UIScene) {
-    
-    guard let window = window else {
+  private func _lockNonInteractiveScreenIfNeeded() {
+    guard
+      let window = ShadowWindow.shared?.refWindow,
+      let sceneDelegate = window.windowScene?.delegate as? SceneDelegate
+    else {
       return
     }
     
-    if (scene.session.role == .windowExternalDisplay) {
-      if LocalAuth.shared.lockRequired {
-        if let lockCtrl = _lockCtrl {
-          if window.rootViewController != lockCtrl {
-            window.rootViewController = lockCtrl
-          }
-          
-          return
+    if LocalAuth.shared.lockRequired {
+      if let lockCtrl = sceneDelegate._lockCtrl {
+        if window.rootViewController != lockCtrl {
+          window.rootViewController = lockCtrl
         }
-
         
-        _lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
-        window.rootViewController = _lockCtrl
         return
       }
-      if window.rootViewController == _lockCtrl {
-        window.rootViewController = UIViewController()
-      }
-      _lockCtrl = nil
       
-      if let shadowWin = ShadowWindow.shared {
-        window.layer.addSublayer(shadowWin.layer)
-      }
       
+      sceneDelegate._lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
+      window.rootViewController = _lockCtrl
+      return
+    }
+    
+    
+    if window.rootViewController == _lockCtrl {
+      window.rootViewController = UIViewController()
+    }
+    _lockCtrl = nil
+    
+    if let shadowWin = ShadowWindow.shared {
+      window.layer.addSublayer(shadowWin.layer)
+    }
+  }
+  
+  func sceneDidBecomeActive(_ scene: UIScene) {
+    guard let window = window else {
+      return
+    }
+   
+    // 0. Local Auth AutoLock Check on old screens
+    _lockNonInteractiveScreenIfNeeded()
+    
+    
+    if window == ShadowWindow.shared?.refWindow {
       return
     }
     
@@ -378,6 +381,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     term.view?.setNeedsLayout()
     
     if let paywallWindow = paywallWindow {
+      _ = KBTracker.shared.input?.resignFirstResponder()
       paywallWindow.makeKeyAndVisible()
       return;
     }
@@ -413,6 +417,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     if input == nil {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if KBTracker.shared.input == nil {
           window.makeKey()
           spCtrl.focusOnShellAction()
@@ -426,6 +433,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       input?.isRealFirstResponder == false,
       input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if scene.activationState == .foregroundActive,
           input?.isRealFirstResponder == false {
           spCtrl.focusOnShellAction()
@@ -437,6 +447,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     if input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if scene.activationState == .foregroundActive,
           term.termDevice.view?.isFocused() == false {
           spCtrl.focusOnShellAction()
@@ -477,100 +490,8 @@ fileprivate extension URL {
 
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
-  // blinkv15:validatereceipt?migrationToken 
-  // blinkv15:importarchive?data=
-  private func _handleBlink15UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
-    guard
-      sourceID == Blink14BundleID,
-      let route = blinkUrl.host
-    else {
-      print("unhandled blink15UrlScheme", blinkUrl)
-      return
-    }
-
-    switch route {
-    case "importarchive":
-      guard
-        let archiveB64 = blinkUrl.getQueryStringParameter(param: "archive"),
-        let archiveData = Data(base64Encoded: archiveB64)
-      else {
-          return
-      }
-      
-      guard
-        let win = self.paywallWindow ?? self.window,
-        let ctrl = win.rootViewController
-      else {
-        return
-      }
-
-      ArchiveAlertUI.performRecoveryWithFeedback(
-        on: ctrl.presentedViewController ?? ctrl,
-        archiveData: archiveData,
-        archivePassword: Purchases.shared.appUserID
-      )
-    case "validatereceipt":
-      guard
-        let migrationTokenString = blinkUrl.getQueryStringParameter(param: "migrationToken"),
-        let migrationTokenData = Data(base64Encoded: migrationTokenString)
-      else {
-        return
-      }
-      _openMigration()
-      PurchasesUserModel.shared.continueMigrationWith(migrationToken: migrationTokenData)
-    default:
-      print("unhandled blink15UrlScheme", blinkUrl)
-    }
-
-  }
-
-  // blinkv14:validatereceipt?originalUserId
-  private func _handleBlink14UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
-    // Ignore if request did not come from Blink15
-    guard
-      sourceID == Blink15BundleID,
-      let route = blinkUrl.host
-    else {
-      return
-    }
-    
-    switch route {
-    case "exportdata":
-      guard
-        let password = blinkUrl.getQueryStringParameter(param: "password"),
-        let callbackURL = URL(string: "blinkv15://importarchive")
-      else {
-        return
-      }
-      _spCtrl.presentedViewController?.dismiss(animated: false, completion: nil)
-      ArchiveAlertUI.presentImport(
-        on: _spCtrl,
-        cb: callbackURL,
-        archivePassword: password
-      )
-    case "validatereceipt":
-      guard let originalUserId = blinkUrl .getQueryStringParameter(param: "originalUserId")
-      else {
-        return
-      }
-
-      // Start receipt exchange function.
-      // Dismiss any view controller we are currently presenting
-      _spCtrl.presentedViewController?.dismiss(animated: false, completion: nil)
-
-      // Start receipt exchange function.
-      let model = ReceiptMigrationProgress(originalUserId: originalUserId)
-      let view = ReceiptMigrationView(process: model)
-      let ctrl = StatusBarLessViewController(rootView: view)
-      ctrl.modalPresentationStyle = .fullScreen
-      _spCtrl.present(ctrl, animated: false)
-      model.load()
-    default:
-      print("unhandled blink14UrlScheme", blinkUrl)
-    }
-  }
-
-  /**
+  
+  /*
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    - Parameters:
      - xCallbackUrl: The x-callback-url specified by the user
@@ -653,7 +574,7 @@ extension SceneDelegate {
       return
     }
     
-    guard BKDefaults.isXCallBackURLEnabled() else {
+    guard BLKDefaults.isXCallBackURLEnabled() else {
       if let xCancelURL = xCancelURL {
         blink_openurl(xCancelURL)
       }
@@ -674,7 +595,7 @@ extension SceneDelegate {
     // Cancel the execution of the command as x-callback-url are not
     // enabled for the user's or the x-callback-url does not have
     // the correct key set
-    guard keyItem == BKDefaults.xCallBackURLKey() else {
+    guard keyItem == BLKDefaults.xCallBackURLKey() else {
       
       if let xErrorURL = xErrorURL {
         blink_openurl(xErrorURL)

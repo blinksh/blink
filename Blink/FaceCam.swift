@@ -32,6 +32,7 @@
 
 import Foundation
 import UIKit
+import AVKit
 
 fileprivate extension UIView {
   func setRecursiveBg(color: UIColor) {
@@ -62,8 +63,6 @@ fileprivate class PhotoOverlayController: UIImagePickerController {
   }
 }
 
-
-
 fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   private let _ctrl = PhotoOverlayController()
   fileprivate var controller: UIViewController { _ctrl }
@@ -75,6 +74,7 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   private let _longPressRecognizer = UILongPressGestureRecognizer()
   private let _placeholder = UIImageView(image: UIImage(systemName: "eyes"))
   private var _flipped = false
+
   var safeFrame: CGRect = .zero {
     didSet {
       _positionBackInSafeFrameIfNeeded()
@@ -98,8 +98,7 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   
   override init(frame: CGRect) {
     super.init(frame: frame)
-    
-    
+        
     addSubview(_placeholder)
     _placeholder.bounds.size = CGSize(width: 36, height: 36)
     _placeholder.tintColor = .white
@@ -364,7 +363,7 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
 }
 
 
-fileprivate extension CGPoint {
+extension CGPoint {
   var magnitude: CGFloat {
     sqrt(pow(x, 2) + pow(y, 2))
   }
@@ -381,6 +380,7 @@ fileprivate extension CGPoint {
     return result
   }
 }
+
 
 class FaceCamManager {
   private var _view: FaceCamView?

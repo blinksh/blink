@@ -31,7 +31,6 @@
 
 #import "BKiCloudSyncHandler.h"
 #import "BKHosts.h"
-#import "BKPubKey.h"
 #import "BKUserConfigurationManager.h"
 #import "Reachability.h"
 #import "BlinkPaths.h"
@@ -42,7 +41,6 @@
 
 
 NSString const *BKiCloudSyncDeletedHosts = @"deletedHosts";
-NSString const *BKiCloudSyncDeletedKeys = @"deletedKeys";
 NSString *BKiCloudContainerIdentifier;// MOVED to init @"iCloud.com.carloscabanero.blinkshell";
 NSString *BKiCloudZoneName = @"DefaultZone";
 
@@ -152,12 +150,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     [self deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
   }
   [syncItems removeObjectForKey:BKiCloudSyncDeletedHosts];
-
-  NSMutableArray *deletedKeys = [NSMutableArray arrayWithArray:[syncItems objectForKey:BKiCloudSyncDeletedKeys]];
-  for (CKRecordID *recordId in deletedKeys) {
-    [self deleteRecord:recordId ofType:BKiCloudRecordTypeKeys];
-  }
-  [syncItems removeObjectForKey:BKiCloudSyncDeletedKeys];
 }
 
 - (void)syncFromiCloud
@@ -174,18 +166,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
          }
          [self mergeHosts:results];
        }];
-
-  if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloudKeys]) {
-    CKQuery *pubKeyQuery = [[CKQuery alloc] initWithRecordType:@"BKPubKey" predicate:[NSPredicate predicateWithValue:YES]];
-    [database performQuery:pubKeyQuery
-              inZoneWithID:nil
-         completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
-           if (error) {
-             NSLog(@"Error fetching pubkeys from icloud: %@", error);
-             return;
-           }
-	 }];
-  }
 }
 
 - (void)deleteRecord:(CKRecordID *)recordId ofType:(BKiCloudRecordType)recordType
@@ -193,9 +173,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   NSString const *key = nil;
   if (recordType == BKiCloudRecordTypeHosts) {
     key = BKiCloudSyncDeletedHosts;
-  } else {
-    key = BKiCloudSyncDeletedKeys;
   }
+
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
   [database deleteRecordWithID:recordId
 	     completionHandler:^(CKRecordID *_Nullable recordID, NSError *_Nullable error) {
@@ -309,12 +288,17 @@ static BKiCloudSyncHandler *sharedHandler = nil;
            password:updatedHost.password
             hostKey:updatedHost.key
          moshServer:updatedHost.moshServer
+   moshPredictOverwrite:updatedHost.moshPredictOverwrite
+ moshExperimentalIP:updatedHost.moshExperimentalIP.intValue
       moshPortRange:moshPortRange
-         startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue
+         startUpCmd:updatedHost.moshStartup
+         prediction:updatedHost.prediction.intValue
            proxyCmd:updatedHost.proxyCmd
           proxyJump:updatedHost.proxyJump
 sshConfigAttachment:updatedHost.sshConfigAttachment
       fpDomainsJSON:updatedHost.fpDomainsJSON
+ agentForwardPrompt:updatedHost.agentForwardPrompt.intValue
+   agentForwardKeys:updatedHost.agentForwardKeys
    ];
   [BKHosts updateHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
 }

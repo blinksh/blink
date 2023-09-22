@@ -43,6 +43,7 @@ extension String: Error {}
 class FileProviderExtension: NSFileProviderExtension {
 
   var fileManager = FileManager()
+  var cache = FileTranslatorCache()
   var cancellableBag: Set<AnyCancellable> = []
   let copyArguments = CopyArguments(inplace: true,
                                     preserve: [.permissions, .timestamp],
@@ -70,7 +71,7 @@ class FileProviderExtension: NSFileProviderExtension {
     // Configure logging so all goes to file (filtered by error level) and output.
     BlinkLogging.handle(
       {
-        try $0.filter(logLevel: .info)
+        try $0.filter(logLevel: .debug)
         // Format
           .format { [ dateFormatter.string(from: Date()),
                       $0[.component] as? String ?? "global",
@@ -100,12 +101,10 @@ class FileProviderExtension: NSFileProviderExtension {
       queryableIdentifier = BlinkItemIdentifier(identifier)
     }
 
-    guard let reference = FileTranslatorCache.reference(identifier: queryableIdentifier) else {
+    guard let reference = self.cache.reference(identifier: queryableIdentifier) else {
       if identifier == .rootContainer {
         let attributes = try? fileManager.attributesOfItem(atPath: queryableIdentifier.url.path)
-        // Move operation requests root without enumarating. Return domain root with local attribtues
-        // TODO: Store in FileTranslatorCache?
-        return BlinkItemReference(queryableIdentifier, local: attributes)
+        return BlinkItemReference(queryableIdentifier, local: attributes, cache: self.cache)
       }
       log.error("No reference found for ITEM \(queryableIdentifier.path)")
       throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
@@ -124,7 +123,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
   override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
     BlinkLogger("persistentIdentifierForItem").debug("\(url.path)")
-    guard let ref = FileTranslatorCache.reference(url: url) else {
+    guard let ref = self.cache.reference(url: url) else {
       return nil
     }
     return ref.itemIdentifier
@@ -180,10 +179,10 @@ class FileProviderExtension: NSFileProviderExtension {
   override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
     // 1 - From URL we get the identifier.
     let log = BlinkLogger("startProvidingItem")
-    log.info("\(url).path")
+    log.info("\(url)")
 
     //let blinkIdentifier = BlinkItemIdentifier(url: url)
-    guard let blinkItemReference = FileTranslatorCache.reference(url: url) else {
+    guard let blinkItemReference = self.cache.reference(url: url) else {
     //guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
       // TODO Proper error types (NSError)
       log.error("No reference found")
@@ -196,19 +195,21 @@ class FileProviderExtension: NSFileProviderExtension {
       completionHandler(nil)
       return
     }
-    
 
     // 2 local translator
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
 
     // 3 remote - From the identifier, we get the translator and walk to the remote.
-    let srcTranslator = FileTranslatorCache.translator(for: BlinkItemIdentifier(blinkItemReference.itemIdentifier))
-    let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkItemReference.path) }
+    let srcTranslator = self.cache.rootTranslator(for: BlinkItemIdentifier(blinkItemReference.itemIdentifier))
+    let downloadTask = srcTranslator.flatMap {
+      $0.cloneWalkTo(blinkItemReference.path)
+    }
       .flatMap { fileTranslator in
         // 4 - Start the copy
         return destTranslator.flatMap { $0.copy(from: [fileTranslator],
                                                 args: self.copyArguments) }
-      }.sink(receiveCompletion: { completion in
+      }
+      .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
           log.info("\(blinkItemReference.path) - completed")
@@ -296,15 +297,15 @@ class FileProviderExtension: NSFileProviderExtension {
       completionHandler(nil, error)
     }
 
-    let blinkItemReference = BlinkItemReference(fileBlinkIdentifier, local: attributes)
-    FileTranslatorCache.store(reference: blinkItemReference)
+    let blinkItemReference = BlinkItemReference(fileBlinkIdentifier, local: attributes, cache: self.cache)
+    self.cache.store(reference: blinkItemReference)
 
     // 1. Translator for local target path
     let localFileURLPath = fileBlinkIdentifier.url.path
     let srcTranslator = Local().cloneWalkTo(localFileURLPath)
 
     // 2. translator for remote target path
-    let destTranslator = FileTranslatorCache.translator(for: parentBlinkIdentifier)
+    let destTranslator = self.cache.rootTranslator(for: parentBlinkIdentifier)
       .flatMap { $0.cloneWalkTo(parentBlinkIdentifier.path) }
 
     let c = destTranslator.flatMap { remotePathTranslator in
@@ -325,8 +326,6 @@ class FileProviderExtension: NSFileProviderExtension {
         }
 
         blinkItemReference.uploadCompleted(nil)
-        // NOTE: In theory, we should enumerate changes again. But when trying that,
-        // the state of the file would not change.
         log.info("Upload completed \(localFileURLPath)")
         completionHandler(blinkItemReference, nil)
         self.signalEnumerator(for: blinkItemReference.parentItemIdentifier)
@@ -341,11 +340,14 @@ class FileProviderExtension: NSFileProviderExtension {
     let log = BlinkLogger("itemChanged")
     log.info("\(url.path)")
     
-    guard let blinkItemReference = FileTranslatorCache.reference(url: url) else {
+    guard var blinkItemReference = self.cache.reference(url: url) else {
       log.error("Could not find reference to item")
       return
     }
-
+    // - if there are existing NSURLSessionTasks uploading this file, cancel them
+    // Cancel an upload if there is a reference to it.
+    blinkItemReference.uploadingTask?.cancel()
+    
     // - mark file at <url> as needing an update in the model
     // Update the model
     var attributes: FileAttributes!
@@ -356,11 +358,12 @@ class FileProviderExtension: NSFileProviderExtension {
       log.error("Could not fetch attributes of item - \(error)")
       return
     }
-    blinkItemReference.updateAttributes(remote: blinkItemReference.remote!, local: attributes)
-    
-    // - if there are existing NSURLSessionTasks uploading this file, cancel them
-    // Cancel an upload if there is a reference to it.
-    blinkItemReference.uploadingTask?.cancel()
+    // Replace the reference to the local
+    blinkItemReference = BlinkItemReference(BlinkItemIdentifier(blinkItemReference.itemIdentifier),
+                                            local: attributes,
+                                            cache: self.cache)
+    self.cache.store(reference: blinkItemReference)
+
 
     // - create a fresh background NSURLSessionTask and schedule it to upload the current modifications
     // 1. Translator for local target path
@@ -369,7 +372,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
     // 2. Translator for remote file path
     let itemIdentifier = blinkItemReference.itemIdentifier
-    let destTranslator = FileTranslatorCache.translator(for: BlinkItemIdentifier(itemIdentifier))
+    let destTranslator = self.cache.rootTranslator(for: BlinkItemIdentifier(itemIdentifier))
       .flatMap { $0.cloneWalkTo(BlinkItemIdentifier(blinkItemReference.parentItemIdentifier).path) }
     
     // 3. Upload
@@ -413,7 +416,7 @@ class FileProviderExtension: NSFileProviderExtension {
       parentBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier)
     }
 
-    let translator = FileTranslatorCache.translator(for: parentBlinkIdentifier)
+    let translator = self.cache.rootTranslator(for: parentBlinkIdentifier)
 
     var directoryBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentBlinkIdentifier, filename: directoryName)
 
@@ -423,7 +426,7 @@ class FileProviderExtension: NSFileProviderExtension {
       }
       .flatMap { t -> AnyPublisher<Translator, Error> in
         var tries = 1
-        while (FileTranslatorCache.reference(identifier: directoryBlinkIdentifier) != nil) {
+        while (self.cache.reference(identifier: directoryBlinkIdentifier) != nil) {
           tries += 1
 
           directoryBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentBlinkIdentifier,
@@ -445,8 +448,8 @@ class FileProviderExtension: NSFileProviderExtension {
           }
         },
         receiveValue: { attrs in
-          let ref = BlinkItemReference(directoryBlinkIdentifier, remote: attrs)
-          FileTranslatorCache.store(reference: ref)
+          let ref = BlinkItemReference(directoryBlinkIdentifier, remote: attrs, cache: self.cache)
+          self.cache.store(reference: ref)
           completionHandler(ref, nil)
         }
       ).store(in: &cancellableBag)
@@ -457,7 +460,7 @@ class FileProviderExtension: NSFileProviderExtension {
     log.info("\(itemIdentifier) as \(itemName)")
 
     let blinkItemIdentifier = BlinkItemIdentifier(itemIdentifier)
-    guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkItemIdentifier) else {
+    guard let blinkItemReference = self.cache.reference(identifier: blinkItemIdentifier) else {
       completionHandler(nil, NSFileProviderError(.noSuchItem))
       return
     }
@@ -466,12 +469,12 @@ class FileProviderExtension: NSFileProviderExtension {
     let newItemIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentItemIdentifier,
                                                 filename: itemName)
 
-    if let _ = FileTranslatorCache.reference(identifier: newItemIdentifier) {
+    if let _ = self.cache.reference(identifier: newItemIdentifier) {
       completionHandler(nil, NSFileProviderError(.filenameCollision))
       return
     }
 
-    FileTranslatorCache.translator(for: blinkItemIdentifier)
+    self.cache.rootTranslator(for: blinkItemIdentifier)
       .flatMap { t in
         t.cloneWalkTo(blinkItemIdentifier.path)
          .flatMap { $0.wstat([.name: itemName]) }
@@ -487,9 +490,9 @@ class FileProviderExtension: NSFileProviderExtension {
           }
         },
         receiveValue: { attrs in
-          FileTranslatorCache.remove(reference: blinkItemReference)
-          let newBlinkItemReference = BlinkItemReference(newItemIdentifier, remote: attrs)
-          FileTranslatorCache.store(reference: newBlinkItemReference)
+          self.cache.remove(reference: blinkItemReference)
+          let newBlinkItemReference = BlinkItemReference(newItemIdentifier, remote: attrs, cache: self.cache)
+          self.cache.store(reference: newBlinkItemReference)
           completionHandler(newBlinkItemReference, nil)
         }
       ).store(in: &cancellableBag)
@@ -500,7 +503,7 @@ class FileProviderExtension: NSFileProviderExtension {
     log.info("\(itemIdentifier)")
 
     let blinkItemIdentifier = BlinkItemIdentifier(itemIdentifier)
-    guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkItemIdentifier) else {
+    guard let blinkItemReference = self.cache.reference(identifier: blinkItemIdentifier) else {
       completionHandler(NSFileProviderError(.noSuchItem))
       return
     }
@@ -547,7 +550,7 @@ class FileProviderExtension: NSFileProviderExtension {
       .eraseToAnyPublisher()
     }
 
-    FileTranslatorCache.translator(for: blinkItemIdentifier)
+    self.cache.rootTranslator(for: blinkItemIdentifier)
       .flatMap {
         $0.cloneWalkTo(blinkItemIdentifier.path)
           .flatMap { delete([$0]) }
@@ -558,8 +561,10 @@ class FileProviderExtension: NSFileProviderExtension {
             log.error("\(error)")
             completionHandler(NSFileProviderError.operationError(dueTo: error))
           } else {
-            // NOTE We may want to delete the other references as well.
-            FileTranslatorCache.remove(reference: blinkItemReference)
+            // NOTE We may want to delete the other references as well. But as this is an in-memory cache,
+            // just deleting the parent reference should be enough.
+            self.cache.remove(reference: blinkItemReference)
+            _ = try? FileManager.default.removeItem(at: blinkItemReference.url)
             completionHandler(nil)
           }
         },
@@ -579,7 +584,7 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, domain: domain)
+      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, domain: domain, cache: self.cache)
     } else {
       // We may want to do an empty FileProviderEnumerator, because otherwise it will try to request it again and again.
       throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])

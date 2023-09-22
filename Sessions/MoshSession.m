@@ -30,9 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <getopt.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <netdb.h>
 #include <pthread.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 #include <mosh/moshiosbridge.h>
 
@@ -44,31 +45,34 @@
 
 
 static NSDictionary *predictionModeStrings = nil;
+static NSDictionary *experimentalIPStrings = nil;
 
 static const char *usage_format =
 "Usage: mosh [options] [user@]host|IP [--] [command]"
 "\r\n"
-"                --server=PATH        mosh server on remote machine\r\n"
-"                                     (default: mosh-server)\r\n"
-"                --predict=adaptive   local echo for slower links [default]\r\n"
-"-a              --predict=always     use local echo even on fast links\r\n"
-"-n              --predict=never      never use local echo\r\n"
+"                --server=PATH          mosh server on remote machine\r\n"
+"                                       (default: mosh-server)\r\n"
+"                --predict=adaptive     local echo for slower links [default]\r\n"
+"-a              --predict=always       use local echo even on fast links\r\n"
+"-n              --predict=never        never use local echo\r\n"
+"                --predict=experimental aggressively echo even when incorrect\r\n"
 "\r\n"
-"-k              --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
-"-p PORT[:PORT2] --port=PORT[:PORT2]  server-side UDP port (range)\r\n"
-"-P NUM                               ssh connection port\r\n"
-"-T                                   do not allocate a pseudo tty on ssh connection\r\n"
-"-2                                   use ssh2 command\r\n"
-"-I id                                ssh authentication identity name\r\n"
+"-o              --predict-overwrite    prediction overwrites instead of inserting\r\n"
+"\r\n"
+"-k              --key=<MOSH_KEY>       MOSH_KEY to connect without ssh\r\n"
+"-p PORT[:PORT2] --port=PORT[:PORT2]    server-side UDP port (range)\r\n"
+"-P NUM                                 ssh connection port\r\n"
+"-T              --no-ssh-pty           do not allocate a pseudo tty on ssh connection\r\n"
+"-2                                     use ssh2 command\r\n"
+"-I id                                  ssh authentication identity name\r\n"
 //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
 //  "                                (example: \"ssh -p 2222\")\r\n"
 //  "                                (default: \"ssh\")\r\n"
 "\r\n"
-"                --verbose            verbose mode\r\n"
-"                --help               this message\r\n"
+"                --verbose              verbose mode\r\n"
+"                --help                 this message\r\n"
 "\r\n"
-" --experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
-"                                            (default: local)\r\n"
+"--experimental-remote-ip={default|remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
 "\r\n";
 
 
@@ -101,6 +105,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     @(BKMoshPredictionExperimental): @"experimental",
     @(BKMoshPredictionUnknown): @"adaptive"
   };
+  
+  experimentalIPStrings = @{
+    @(BKMoshExperimentalIPNone): @"default",
+    @(BKMoshExperimentalIPLocal): @"local",
+    @(BKMoshExperimentalIPRemote): @"remote"
+  };
 }
 
 - (int)initParamaters:(int)argc argv:(char **)argv
@@ -120,6 +130,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     {"ip", optional_argument, 0, 'i'},
     {"key", optional_argument, 0, 'k'},
     {"no-ssh-pty", optional_argument, 0, 'T'},
+    {"predict-overwrite", no_argument, 0, 'o'},
     //{"ssh", required_argument, 0, 'S'},
     {"verbose", no_argument, &_debug, 1},
     {"help", no_argument, &help, 1},
@@ -133,7 +144,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   while (1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "anp:I:P:k:T2", long_options, &option_index);
+    int c = getopt_long(argc, argv, "anop:I:P:k:T2", long_options, &option_index);
     if (c == -1) {
       break;
     }
@@ -155,6 +166,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       break;
       case 'p':
       self.sessionParams.port = [NSString stringWithFormat:@"%s", optarg];
+      break;
+      case 'o':
+      self.sessionParams.predictOverwrite = @"yes";
       break;
       case 'k':
       self.sessionParams.key = [NSString stringWithFormat:@"%s", optarg];
@@ -191,14 +205,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   }
   
   if (help) {
-    return [self dieMsg:@(usage_format)];
-  }
-  
-  // Our default is local
-  if (!self.sessionParams.experimentalRemoteIp) {
-    self.sessionParams.experimentalRemoteIp = @"local";
-  }
-  if (![@[@"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
     return [self dieMsg:@(usage_format)];
   }
   
@@ -252,6 +258,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:self.sessionParams.predictionMode] == NSNotFound) {
     return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
   }
+  
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: @"default";
+  if (![@[@"default", @"remote", @"local"] containsObject:self.sessionParams.experimentalRemoteIp]) {
+    return [self dieMsg:@"Unknown experimental IP mode. Use one of: default, remote, local"];
+  }
+  
   return 0;
 }
 
@@ -290,7 +302,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             [self.sessionParams.key UTF8String],
             [self.sessionParams.predictionMode UTF8String],
             encodedState.bytes,
-            encodedState.length
+            encodedState.length,
+            [self.sessionParams.predictOverwrite UTF8String]
             );
   
   [_device setRawMode:NO];
@@ -330,6 +343,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
+  self.sessionParams.predictOverwrite = self.sessionParams.predictOverwrite ?: host.moshPredictOverwrite;
+
+  NSString *experimentalIP = host.moshExperimentalIP ? experimentalIPStrings[host.moshExperimentalIP] : @"default";
+  self.sessionParams.experimentalRemoteIp = self.sessionParams.experimentalRemoteIp ?: experimentalIP;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server
@@ -403,16 +420,18 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString * line;
   
   NSString* ipPattern;
-  int ipMatchIdx;
+  int ipMatchIdx = -1;
   
+  NSRegularExpression *ipFormat = NULL;
   if (useIPFromSSHConnectionEnv) {
     ipPattern = @"MOSH SSH_CONNECTION (\\S*) (\\d*) (\\S*) (\\d*)$";
     ipMatchIdx = 3;
-  } else {
+    ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
+  } else if ([@"default" isEqual:self.sessionParams.experimentalRemoteIp]) {
     ipPattern = @"Connected to (\\S*)$";
     ipMatchIdx = 1;
+    ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
   }
-  NSRegularExpression *ipFormat = [NSRegularExpression regularExpressionWithPattern:ipPattern options:0 error:nil];
     
   NSString * connPattern = @"MOSH CONNECT (\\d+) (\\S*)$";
   NSRegularExpression * connFormat = [NSRegularExpression regularExpressionWithPattern:connPattern options:0 error:nil];
@@ -423,10 +442,30 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     NSRange lineRange = NSMakeRange(0, line.length);
     
-    match = [ipFormat firstMatchInString:line options:0 range:lineRange];
-    if (match) {
-      self.sessionParams.ip = [line substringWithRange:[match rangeAtIndex:ipMatchIdx]];
-      continue;
+    if (ipFormat != NULL) {
+      match = [ipFormat firstMatchInString:line options:0 range:lineRange];
+      if (match) {
+        self.sessionParams.ip = [line substringWithRange:[match rangeAtIndex:ipMatchIdx]];
+        continue;
+      }
+    } else {
+      // No ipFormat for "local", so resolve locally.
+      NSString *host;
+      NSArray *userHostList = [userHost componentsSeparatedByString:@"@"];
+      if ([userHostList count] > 1) {
+        host = userHostList[1];
+      } else {
+        host = userHostList[0];
+      }
+      
+      // TODO Or to INET6 from CLI flag
+      NSString *resolvedAddress = [self resolve_addr:[host UTF8String]
+                          port:22 family:AF_INET];
+      if (resolvedAddress == NULL) {
+        *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Could not resolve address locally for host." }];
+        return;
+      }
+      self.sessionParams.ip = resolvedAddress;
     }
     
     match = [connFormat firstMatchInString:line options:0 range:lineRange];
@@ -577,4 +616,46 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSLog(@"deallocating mosh");
 }
 
+// Hosts and no hosts tested
+- (NSString*)resolve_addr:(const char *)name port:(int)port family:(int)family
+{
+  char strport[NI_MAXSERV];
+  struct addrinfo hints, *info;
+  int err;
+  
+  if (port <= 0) {
+    port = 22;
+  }
+  
+  snprintf(strport, sizeof strport, "%d", port);
+  memset(&hints, 0, sizeof(hints));
+  // IPv4 / IPv6
+  hints.ai_family = family == -1 ? AF_UNSPEC : family;
+  hints.ai_socktype = SOCK_STREAM;
+  
+  if ((err = getaddrinfo(name, strport, &hints, &info)) != 0) {
+    [self debugMsg: [NSString stringWithFormat: @"getaddrinfo failed with code: %d", err]];
+    return NULL;
+  }
+  
+  struct addrinfo *ai;
+  char ntop[NI_MAXHOST];
+
+  for (ai = info; ai; ai = ai->ai_next) {
+    if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6) {
+      continue;
+    }
+    
+    if (getnameinfo(ai->ai_addr, ai->ai_addrlen,
+                    ntop, sizeof(ntop), strport,
+                    sizeof(strport), NI_NUMERICHOST | NI_NUMERICSERV) != 0) {
+      [self debugMsg:@"Could not resolve address: getnameinfo failed"];
+      continue;
+    }
+
+    return [NSString stringWithUTF8String:ntop];
+  }
+
+  return NULL;
+}
 @end

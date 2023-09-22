@@ -35,6 +35,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString * BLGeoLockNotification;
+extern NSString * BLGeoTrackStateChangeNotification;
 
 @interface GeoManager : NSObject
 

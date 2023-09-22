@@ -57,6 +57,8 @@ public extension BKPubKey {
         publicKey: publicKey,
         keyType: key.sshKeyType.shortName,
         certType: nil,
+        rawAttestationObject: nil,
+        rpId: nil,
         storageType: BKPubKeyStorageTypeKeyChain
       ),
       let privateKey = String(data: try key.privateKeyFileBlob(), encoding: .utf8)
@@ -82,7 +84,69 @@ public extension BKPubKey {
         publicKey: publicKey,
         keyType: keyType.shortName,
         certType: nil,
+        rawAttestationObject: nil,
+        rpId: nil,
         storageType: BKPubKeyStorageTypeSecureEnclave
+      )
+    else {
+      return
+    }
+    
+    BKPubKey.addCard(card);
+  }
+  
+  static func addPasskey(
+    id: String,
+    rpId: String,
+    tag: String,
+    rawAttestationObject: Data,
+    comment: String
+  ) throws {
+    
+    let key = try WebAuthnKey(rpId: rpId, rawAttestationObject: rawAttestationObject)
+    
+    let keyType = key.sshKeyType
+    let publicKey = try key.publicKey.authorizedKey(withComment: comment)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: keyType.shortName,
+        certType: nil,
+        rawAttestationObject: rawAttestationObject,
+        rpId: rpId,
+        storageType: BKPubKeyStorageTypePlatformKey
+      )
+    else {
+      return
+    }
+    
+    BKPubKey.addCard(card);
+  }
+  
+  static func addSecurityKey(
+    id: String,
+    rpId: String,
+    tag: String,
+    rawAttestationObject: Data,
+    comment: String
+  ) throws {
+    
+    let key = try SKWebAuthnKey(rpId: rpId, rawAttestationObject: rawAttestationObject)
+    
+    let keyType = key.sshKeyType
+    let publicKey = try key.publicKey.authorizedKey(withComment: comment)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: keyType.shortName,
+        certType: nil,
+        rawAttestationObject: rawAttestationObject,
+        rpId: rpId,
+        storageType: BKPubKeyStorageTypeSecurityKey
       )
     else {
       return
@@ -125,6 +189,28 @@ extension Collection where Element == BKPubKey {
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {
       // TODO: Certs fro SEKey?
       return SEKey(tagged: card.tag)
+    }
+    
+    if card.storageType == BKPubKeyStorageTypePlatformKey {
+      guard
+        let rawAttestationObject = card.rawAttestationObject,
+        let rpId = card.rpId
+      else {
+        return nil
+      }
+
+      return try? WebAuthnKey(rpId:rpId, rawAttestationObject: rawAttestationObject)
+    }
+    
+    if card.storageType == BKPubKeyStorageTypeSecurityKey {
+      guard
+        let rawAttestationObject = card.rawAttestationObject,
+        let rpId = card.rpId
+      else {
+        return nil
+      }
+
+      return try? SKWebAuthnKey(rpId:rpId, rawAttestationObject: rawAttestationObject)
     }
     
     return nil

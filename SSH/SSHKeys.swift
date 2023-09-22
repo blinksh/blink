@@ -53,6 +53,7 @@ public enum SSHKeyError: Error, LocalizedError {
   }
 }
 
+// https://github.com/openssh/openssh-portable/blob/V_8_6/sshkey.h#L59
 public enum SSHKeyType: Int32 {
   case rsa = 0
   case dsa
@@ -62,6 +63,12 @@ public enum SSHKeyType: Int32 {
   case dsaCert
   case ecdsaCert
   case ed25519Cert
+  case xmss
+  case xmssCert
+  case ecdsaSK
+  case ecdsaSKCert
+  case ed25519SK
+  case ed25519SKCert
   
   public var shortName: String {
     switch self {
@@ -73,7 +80,21 @@ public enum SSHKeyType: Int32 {
     case .dsaCert: return "DSA-CERT"
     case .ecdsaCert: return "ECDSA-CERT"
     case .ed25519Cert: return "ED25519-CERT"
+    case .xmss: return "XMSS"
+    case .xmssCert: return "XMSS-CERT"
+    case .ecdsaSK: return "ECDSA-SK"
+    case .ecdsaSKCert: return "ECDSA-SK-CERT"
+    case .ed25519SK: return "ED25519-SK"
+    case .ed25519SKCert: return "ED25519-SK-CERT"
     }
+  }
+  
+  public var shortUnderscoredName: String {
+    self.shortName.replacingOccurrences(of: "-", with: "_")
+  }
+  
+  public var defaultKeyName: String {
+    "id_\(shortUnderscoredName.lowercased())"
   }
 }
 

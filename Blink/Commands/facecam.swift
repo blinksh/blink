@@ -31,7 +31,6 @@
 
 
 import Foundation
-import NonStdIO
 import ArgumentParser
 import AVFoundation
 
@@ -91,7 +90,21 @@ struct FaceCam: NonStdIOCommand {
       let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
       DispatchQueue.main.async {
         if let spcCtrl = session.device.view.window?.rootViewController as? SpaceController {
-          FaceCamManager.attach(spaceCtrl: spcCtrl)
+          if #available(iOS 16.0, *) {            
+            #if targetEnvironment(macCatalyst)
+            var multitaskCameraAccessSupported = false;
+            #else
+            var multitaskCameraAccessSupported = AVCaptureSession().isMultitaskingCameraAccessSupported
+            #endif
+            
+            if multitaskCameraAccessSupported {
+              PipFaceCamManager.attach(spaceCtrl: spcCtrl)
+            } else {
+              FaceCamManager.attach(spaceCtrl: spcCtrl)
+            }
+          } else {
+            FaceCamManager.attach(spaceCtrl: spcCtrl)
+          }
         }
       }
       
@@ -110,6 +123,7 @@ struct FaceCam: NonStdIOCommand {
       print("See you next time!")
       DispatchQueue.main.async {
         FaceCamManager.turnOff()
+        PipFaceCamManager.turnOff()
       }
     }
   }

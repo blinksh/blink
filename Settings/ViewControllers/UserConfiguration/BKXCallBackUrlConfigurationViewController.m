@@ -31,7 +31,7 @@
 
 
 #import "BKXCallBackUrlConfigurationViewController.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 
 #define KTextFieldTag 3001
 
@@ -49,16 +49,16 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   
-  NSString *key = [BKDefaults xCallBackURLKey];
+  NSString *key = [BLKDefaults xCallBackURLKey];
   if (key == nil) {
     key = [NSProcessInfo.processInfo.globallyUniqueString substringToIndex:6];
-    [BKDefaults setXCallBackURLKey:key];
+    [BLKDefaults setXCallBackURLKey:key];
   }
   
   _validKeyRegexp = [[NSRegularExpression alloc] initWithPattern:@"[^a-zA-Z0-9]" options:kNilOptions error:nil];
   
   _xCallbackUrlEnabledSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-  [_xCallbackUrlEnabledSwitch setOn:[BKDefaults isXCallBackURLEnabled]];
+  [_xCallbackUrlEnabledSwitch setOn:[BLKDefaults isXCallBackURLEnabled]];
   [_xCallbackUrlEnabledSwitch addTarget:self action:@selector(_onCallBackUrlEnabledChanged) forControlEvents:UIControlEventValueChanged];
   
   [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"switch"];
@@ -66,8 +66,8 @@
 
 - (void)_onCallBackUrlEnabledChanged {
   bool isOn = _xCallbackUrlEnabledSwitch.isOn;
-  [BKDefaults setXCallBackURLEnabled:isOn];
-  [BKDefaults saveDefaults];
+  [BLKDefaults setXCallBackURLEnabled:isOn];
+  [BLKDefaults saveDefaults];
   NSArray * rows = @[[NSIndexPath indexPathForRow:1 inSection:0]];
   if (isOn) {
     [self.tableView insertRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationTop];
@@ -100,7 +100,7 @@
   } else if (indexPath.row == 1) {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"URLKey" forIndexPath:indexPath];
     _xCallbackURLKeyTextField = [cell viewWithTag:KTextFieldTag];
-    _xCallbackURLKeyTextField.text = [BKDefaults xCallBackURLKey];
+    _xCallbackURLKeyTextField.text = [BLKDefaults xCallBackURLKey];
     return cell;
   }
   
@@ -130,13 +130,13 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-  NSString *urlKey = [BKDefaults xCallBackURLKey] ?: @"<URL key>";
+  NSString *urlKey = [BLKDefaults xCallBackURLKey] ?: @"<URL key>";
   return [NSString stringWithFormat: @"Use x-callback-url for automation and inter-app communication. Your URL key should be kept secret.\n\nExample:\nblinkshell://run?key=%@&cmd=ls", urlKey];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-  [BKDefaults setXCallBackURLKey:textField.text];
-  [BKDefaults saveDefaults];
+  [BLKDefaults setXCallBackURLKey:textField.text];
+  [BLKDefaults saveDefaults];
   [self.tableView reloadData];
 }
 

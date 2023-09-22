@@ -38,9 +38,9 @@ NSString *_encodeString(NSString *str)
   return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-NSString *term_init(BOOL accessibilityEnabled)
+NSString *term_init(BOOL accessibilityEnabled, BOOL lockdownMode)
 {
-  return [NSString stringWithFormat:@"term_init(%@);", accessibilityEnabled ? @"true" : @"false" ];
+  return [NSString stringWithFormat:@"term_init(%@, %@);", accessibilityEnabled ? @"true" : @"false", lockdownMode ? @"true" : @"false"];
 }
 
 NSString *term_write(NSString *data) {
@@ -139,6 +139,11 @@ NSString *term_setBoldEnabled(NSUInteger state)
     stateStr = @"false";
   }
   return [NSString stringWithFormat:@"term_set('enable-bold', %@);", stateStr];
+}
+
+NSString *term_setClipboardWrite(BOOL state)
+{
+  return [NSString stringWithFormat:@"term_setClipboardWrite(%@);", state ? @"true" : @"false"];
 }
 
 NSString *term_setFontFamily(NSString *family, NSString * fontSizeDetectionMethod)

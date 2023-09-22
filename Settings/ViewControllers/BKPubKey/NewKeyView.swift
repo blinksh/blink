@@ -43,7 +43,7 @@ struct NewKeyView: View {
     List {
       Section(
         header: Text("NAME"),
-        footer: Text("Default key must be named `id_\(_state.keyType.shortName.lowercased())`")
+        footer: Text("Default key must be named `\(_state.keyType.defaultKeyName)`")
       ) {
         FixedTextField(
           "Enter a name for the key",
@@ -129,7 +129,7 @@ fileprivate class NewKeyObservable: ObservableObject {
   }
   @Published var keyName: String = ""
   @Published var keyBits: UInt32 = 4096
-  @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+  @Published var keyComment: String = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorMessage = ""
   

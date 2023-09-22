@@ -40,7 +40,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #import "SSHSession.h"
@@ -217,7 +217,7 @@ static void kbd_callback(const char *name, int name_len,
   
   if (!_options.user) {
     // If no user provided, use the default
-    _options.user = [[BKDefaults defaultUserName] UTF8String];
+    _options.user = [[BLKDefaults defaultUserName] UTF8String];
   }
   
   NSMutableArray *command_args = [[NSMutableArray alloc] init];

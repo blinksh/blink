@@ -43,7 +43,7 @@ import SSH
 
 struct MountEntry: Codable {
   let name: String
-  let root: String
+  let root: URI
 }
 
 class TranslatorControl {
@@ -84,7 +84,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
     server.listener.state
   }
 
-  public func registerMount(name: String, root: String) -> Int {
+  // TODO It looks like this "root" should be something else
+  public func registerMount(name: String, root: URI) -> Int {
     tokenIdx += 1
     tokens[tokenIdx] = MountEntry(name: name, root: root)
     log.info("Registered mount \(tokenIdx) for \(name) at \(root)")
@@ -97,7 +98,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
     guard let token = tokens.removeValue(forKey: tokenIdx) else {
       return
     }
-    let root = URL(string: token.root)!
+    let root = token.root
 
     // If we have no host, there is no remote translator
     guard let host = root.host,
@@ -107,9 +108,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
 
     // Remove the Translator if no other mounts use it.
     if let _ = tokens.first(where: { (_, tk) in
-                                   let url = URL(string: tk.root)!
-                                   return host == url.host
-                                 }) {
+      return host == tk.root.host
+    }) {
       return
     }
 
@@ -144,7 +144,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
       switch request.op {
       case .getRoot:
         let msg: GetRootRequest = try decode(encodedData)
-        return try getRoot(token: msg.token, version: msg.version)
+        return getRoot(token: msg.token, version: msg.version)
       case .stat:
         let msg: StatFileSystemRequest = try decode(encodedData)
         return try fileSystem(for: msg.uri).stat()
@@ -177,9 +177,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
   }
 
   private func fileSystem(for uri: URI) throws -> CodeFileSystem {
-    let rootPath = uri.rootPath
-
-    if let host = rootPath.host,
+    if let host = uri.host,
        let tRef = translators[host] {
       if tRef.translator != nil && tRef.isConnected {
         return CodeFileSystem(tRef.builder, uri: uri)
@@ -191,10 +189,10 @@ public class CodeFileSystemService: CodeSocketDelegate {
     // If we have a host, check the builders, otherwise it is local
     // If there is a builder, check if there is a Translator it is connected
 
-    switch(rootPath.protocolIdentifier) {
+    switch(uri.protocolId) {
     case "blinksftp":
-      guard let hostAlias = rootPath.host else {
-        throw WebSocketError(message: "Missing host on rootpath")
+      guard let hostAlias = uri.host else {
+        throw WebSocketError(message: "Missing host on URI for SFTP protocol")
       }
       let translator = AnyPublisher(SSHClient
         .dial(hostAlias, withConfigProvider: SSHClientFileProviderConfig.config)
@@ -219,29 +217,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
       // The local one does not need to be saved.
       return CodeFileSystem(.just(BlinkFiles.Local()), uri: uri)
     default:
-      throw WebSocketError(message: "Unknown protocol - \(rootPath.protocolIdentifier)")
+      throw WebSocketError(message: "Unknown protocol - \(uri.protocolId)")
     }
-  }
-}
-
-public struct RootPath {
-  let url: URL // should be private
-
-  //var fullPath: String { url.absoluteString }
-  var protocolIdentifier: String { url.scheme! }
-  var host: String? { url.host }
-  var filesAtPath: String { url.path }
-
-  init(_ rootPath: String) {
-    self.url = URL(string: rootPath)!
-  }
-
-  init(_ url: URL) {
-    self.url = url
-  }
-
-  public var parent: RootPath {
-    return RootPath(url.deletingLastPathComponent())
   }
 }
 
@@ -260,12 +237,12 @@ class SSHClientFileProviderConfig {
 
     if let signers = bkConfig.signer(forHost: host) {
       signers.forEach { (signer, name) in
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+        agent.loadKey(signer, aka: name, constraints: consts)
       }
     }
 
     for (signer, name) in bkConfig.defaultSigners() {
-      _ = agent.loadKey(signer, aka: name, constraints: consts)
+      agent.loadKey(signer, aka: name, constraints: consts)
     }
 
     var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]

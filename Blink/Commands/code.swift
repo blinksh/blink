@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import NonStdIO
 import ArgumentParser
 import BlinkCode
 import Network
@@ -66,7 +65,7 @@ class SharedFP {
 enum FileLocationPathOrURL {
   case fileLocationPath(FileLocationPath)
   case url(URL)
-  
+
   init(_ str: String) throws {
     if str.starts(with: "http://") || str.starts(with: "https://") {
       if let url = URL(string: str) {
@@ -113,14 +112,14 @@ struct CodeCommand: NonStdIOCommand {
     }
   )
   var vscodeURL: URL?
-  
+
   mutating func run() throws {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-    
+
     var path: FileLocationPath
 
     try showBlinkFSWarning()
-    
+
     switch pathOrUrl {
     case .url(var url):
       var str = url.absoluteString
@@ -130,20 +129,24 @@ struct CodeCommand: NonStdIOCommand {
         str = "https://github.dev/" + str[githubCom.endIndex...]
         url = URL(string: str)!
       }
+      let view = session.device?.view
       DispatchQueue.main.async {
-        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
+        view?.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     case .fileLocationPath(let p):
       path = p
     default:
+      // Start vscode.dev without blink-fs but with inject user IO.
+      // This is useful to connect to vscode tunnels (remote server) from vscode.dev.
+      let url = URL(string: "https://vscode.dev")!
+      let view = session.device?.view
       DispatchQueue.main.async {
-        let url = URL(string: "https://vscode.dev/github/blinksh/blink/blob/raw/CODE.md")!
-        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
+        view?.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     }
-    
+
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
 
@@ -151,23 +154,25 @@ struct CodeCommand: NonStdIOCommand {
       throw CommandError(message: "Could not parse path.")
     }
 
-    let token = fp.service.registerMount(name: "xxx", root: rootURI.absoluteString)
-    
-    var observer: NSObjectProtocol = NSObject()
-    observer = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
-      guard let device = notification.userInfo?["device"] as? TermDevice else {
+    let token = fp.service.registerMount(name: "xxx", root: rootURI)
+
+    var observers: [NSObjectProtocol] = [NSObject()]
+    observers[0] = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
+      guard let device = notification.userInfo?["device"] as? TermDevice
+      else {
         return
       }
-      if session.device == device {
+      if let sessionDevice = session.device, sessionDevice == device {
         fp.service.deregisterMount(token)
       }
-      NotificationCenter.default.removeObserver(observer)
+      NotificationCenter.default.removeObserver(observers[0])
     }
 
     let url = vscodeURL ?? URL(string: "https://vscode.dev")!
+    let agent = "BlinkSH/15 (wss;\(port);\(token))"
+    let view = session.device?.view
     DispatchQueue.main.async {
-      let agent = "BlinkSH/15 (wss;\(port);\(token))"
-      session.device.view.addBrowserWebView(url, agent: agent, injectUIO: true)
+      view?.addBrowserWebView(url, agent: agent, injectUIO: true)
     }
   }
 
@@ -192,35 +197,40 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
-  
+
   return CodeCommand.main(Array(argv.args(count: argc)[1...]), io: io)
 }
 
 extension FileLocationPath {
   // blinkfs:/path
   // blinksftp://user@host:port/path
-  fileprivate var codeFileSystemURI: URL? {
+
+  internal var codeFileSystemURI: URI? {
     if proto == .local {
-      return URL(string: uriProtocolIdentifier +
-                 filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+      // /var/__PATH__/home/. -> /var/__PATH__/home
+      let resolvedPath = (filePath as NSString).standardizingPath
+      return try? URI(string: uriProtocolIdentifier +
+                      resolvedPath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
     } else {
-      // "/user@host#port" -> "/user@host:port"
+      // "user@host#port" -> "user@host:port"
       guard let hostPath = hostPath else {
         return nil
       }
       let host = "/\(hostPath.replacingOccurrences(of: "#", with: ":"))"
-      if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
-        filePath = "~/\(filePath)"
-      }
-      return URL(string: uriProtocolIdentifier + host)?.appendingPathComponent(filePath)
+
+      return try? URI(string: "\(uriProtocolIdentifier)\(host)\(filePath)")
     }
   }
 
   fileprivate var uriProtocolIdentifier: String {
     switch proto {
     case .local:
+      // local paths do not need a domain, just the colon separator.
+      // blinkfs:path/to/files
       return "blinkfs:"
     default:
+      // remote paths need a domain, so we add an extra slash for the host
+      // blinksftp://host/path/to
       return "blinksftp:/"
     }
   }

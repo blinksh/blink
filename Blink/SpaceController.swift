@@ -28,10 +28,15 @@
 // <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
+@objc protocol CommandsHUDViewDelegate: NSObjectProtocol {
+  func currentTerm() -> TermController?
+  func spaceController() -> SpaceController?
+}
 
 
 import MBProgressHUD
 import SwiftUI
+
 
 class SpaceController: UIViewController {
   
@@ -54,12 +59,16 @@ class SpaceController: UIViewController {
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
-  private let _commandsHUD = CommandsHUGView(frame: .zero)
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
   private weak var _termViewToFocus: TermView? = nil
   var stuckKeyCode: KeyCode? = nil
+  
+  private var _kbObserver = KBObserver()
+  private var _snippetsVC: SnippetsViewController? = nil
+  private var _blinkMenu: BlinkMenu? = nil
+  private var _bottomTapAreaView = UIView()
   
   var safeFrame: CGRect {
     _overlay.frame
@@ -73,17 +82,27 @@ class SpaceController: UIViewController {
       return
     }
     
-    if window.screen === UIScreen.main {
-      var insets = UIEdgeInsets.zero
-      insets.bottom = LayoutManager.mainWindowKBBottomInset()
-      _overlay.frame = view.bounds.inset(by: insets)
-    } else {
-      _overlay.frame = view.bounds
+    let bottomInset = _kbObserver.bottomInset ?? 0
+    var insets = UIEdgeInsets.zero
+    insets.bottom = bottomInset
+    _overlay.frame = view.bounds.inset(by: insets)
+    _snippetsVC?.view.frame = _overlay.frame
+    
+    if let menu = _blinkMenu {
+      let size = _overlay.frame.size;
+      let menuSize = menu.layout(for: size)
+      
+      menu.frame = CGRect(
+        x: size.width * 0.5 - menuSize.width * 0.5,
+        y: _overlay.frame.size.height - menuSize.height - 20,
+        width: menuSize.width,
+        height: menuSize.height
+      )
+      self.view.bringSubviewToFront(menu)
     }
-    
-    _commandsHUD.setNeedsLayout()
-    
+        
     FaceCamManager.update(in: self)
+    PipFaceCamManager.update(in: self)
    
     DispatchQueue.main.async {
       self.forEachActive { t in
@@ -92,6 +111,11 @@ class SpaceController: UIViewController {
         }
       }
     }
+    let windowBounds = window.bounds
+    _bottomTapAreaView.frame = CGRect(x: windowBounds.width * 0.5 - 250, y: windowBounds.height - 18, width: 250 * 2, height: 18)
+//    _bottomTapAreaView.backgroundColor = UIColor.red
+    self.view.bringSubviewToFront(_bottomTapAreaView);
+    
   }
   
   private func forEachActive(block:(TermController) -> ()) {
@@ -138,9 +162,13 @@ class SpaceController: UIViewController {
     view.setNeedsLayout()
   }
   
+  @objc public func bottomInset() -> CGFloat {
+    _kbObserver.bottomInset ?? 0
+  }
+  
   @objc private func _setupAppearance() {
     self.view.tintColor = .cyan
-    switch BKDefaults.keyboardStyle() {
+    switch BLKDefaults.keyboardStyle() {
     case .light:
       overrideUserInterfaceStyle = .light
     case .dark:
@@ -176,7 +204,6 @@ class SpaceController: UIViewController {
     _overlay.isUserInteractionEnabled = false
     view.addSubview(_overlay)
     
-    _commandsHUD.delegate = self
     _registerForNotifications()
     
     if _viewportsKeys.isEmpty {
@@ -188,31 +215,26 @@ class SpaceController: UIViewController {
       _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
     
+    self.view.addInteraction(_kbObserver)
+    
+    self.view.addSubview(_bottomTapAreaView)
+    
+    let doubleTap = UITapGestureRecognizer(target: self, action: #selector(toggleQuickActionsAction))
+    doubleTap.numberOfTapsRequired = 2
+    doubleTap.numberOfTouchesRequired = 1
+    _bottomTapAreaView.addGestureRecognizer(doubleTap)
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(_geoTrackStateChanged), name: NSNotification.Name.BLGeoTrackStateChange, object: nil)
+    
 //    view.addSubview(_faceCam)
 //    addChild(_faceCam.controller)
   }
   
 
-  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransition(to: size, with: coordinator)
-    if view.window?.isKeyWindow == true {
-      DispatchQueue.main.async {
-//        KBTracker.shared.attach(input: KBTracker.shared.input)
-//        input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
-//        self.currentTerm()?.termDevice.view?.webView?.kbView.reset()
-//        SmarterTermInput.shared.contentView()?.reloadInputViews()
-      }
-    }
-  }
-  
-  
-  
-  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-// iOS 16 doesn't call this method anymore.
-//    DispatchQueue.main.async {
-//      self._attachHUD()
-//    }
-    return .default
+  func showAlert(msg: String) {
+    let ctrl = UIAlertController(title: "Error", message: msg, preferredStyle: .alert)
+    ctrl.addAction(UIAlertAction(title: "Ok", style: .default))
+    self.present(ctrl, animated: true)
   }
   
   deinit {
@@ -248,6 +270,7 @@ class SpaceController: UIViewController {
     
     nc.addObserver(self, selector: #selector(_UISceneWillEnterForegroundNotification(_:)),
                    name: UIScene.willEnterForegroundNotification, object: nil)
+    
   }
                    
   @objc func _UISceneDidEnterBackgroundNotification(_ n: Notification) {
@@ -281,7 +304,7 @@ class SpaceController: UIViewController {
     
     #endif
     
-    if scene.session.role == .windowExternalDisplay,
+    if scene.session.role == .windowExternalDisplayNonInteractive,
       let sharedWindow = ShadowWindow.shared,
        sharedWindow === view.window,
        let ctrl = sharedWindow.spaceController.currentTerm() {
@@ -309,16 +332,7 @@ class SpaceController: UIViewController {
     }
     #endif
   }
-  
-  private func _attachHUD() {
-    if
-      sceneRole == .windowApplication,
-      let win = view.window?.windowScene?.windows.last,
-      win !== view.window {
-      _commandsHUD.attachToWindow(inputWindow: win)
-    }
-  }
-  
+    
   @objc func _didBecomeKeyWindow() {
     guard
       presentedViewController == nil,
@@ -456,7 +470,7 @@ class SpaceController: UIViewController {
     device.attachInput(deviceView.webView)
     deviceView.webView.reportFocus(true)
     device.focus()
-    _attachHUD()
+//    _attachHUD()
     if input != KBTracker.shared.input {
       input?.reportFocus(false)
     }
@@ -516,7 +530,7 @@ class SpaceController: UIViewController {
     hud.hide(animated: true, afterDelay: 1)
     
     view.window?.windowScene?.title = sceneTitle
-    _commandsHUD.updateHUD()
+    self.view.setNeedsLayout()
   }
   
 }
@@ -689,6 +703,9 @@ extension SpaceController {
 
     switch cmd {
     case .configShow: showConfigAction()
+    case .snippetsShow: showSnippetsAction()
+    case .toggleQuickActions: toggleQuickActionsAction()
+    case .toggleGeoTrack: toggleGeoTrack()
     case .tab1: _moveToShell(idx: 0)
     case .tab2: _moveToShell(idx: 1)
     case .tab3: _moveToShell(idx: 2)
@@ -721,6 +738,7 @@ extension SpaceController {
     case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
     case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
     case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()
+    
     }
   }
   
@@ -769,7 +787,7 @@ extension SpaceController {
       return
     }
           
-    sessions = sessions.filter { $0.role != .windowExternalDisplay }
+    sessions = sessions.filter { $0.role != .windowExternalDisplayNonInteractive }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -820,7 +838,7 @@ extension SpaceController {
       return
     }
           
-    sessions = sessions.filter { $0.role != .windowExternalDisplay }
+    sessions = sessions.filter { $0.role != .windowExternalDisplayNonInteractive }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -846,8 +864,8 @@ extension SpaceController {
   }
   
   func _toggleKeyCast() {
-    BKDefaults.setKeycasts(!BKDefaults.isKeyCastsOn())
-    BKDefaults.save()
+    BLKDefaults.setKeycasts(!BLKDefaults.isKeyCastsOn())
+    BLKDefaults.save()
   }
   
   func _activeSessions() -> [UISceneSession] {
@@ -857,11 +875,14 @@ extension SpaceController {
   }
   
   @objc func _newWindowAction() {
+    let options = UIWindowScene.ActivationRequestOptions()
+    options.requestingScene = self.view.window?.windowScene
+    
     UIApplication
       .shared
       .requestSceneSessionActivation(nil,
                                      userActivity: nil,
-                                     options: nil,
+                                     options: options,
                                      errorHandler: nil)
   }
   
@@ -901,6 +922,144 @@ extension SpaceController {
       let s = SettingsHostingController.createSettings(nav: navCtrl)
       navCtrl.setViewControllers([s], animated: false)
       self.present(navCtrl, animated: true, completion: nil)
+    }
+  }
+  
+  @objc func showWalkthroughAction() {
+    if self.view.window == ShadowWindow.shared {
+      return
+    }
+    DispatchQueue.main.async {
+      _ = KBTracker.shared.input?.resignFirstResponder()
+      let ctrl = UIHostingController(rootView: WalkthroughView(urlHandler: blink_openurl,
+                                                               dismissHandler: { self.dismiss(animated: true) })
+      )
+      ctrl.modalPresentationStyle = .formSheet
+      self.present(ctrl, animated: false)
+    }
+  }
+  
+  @objc func showSnippetsAction() {
+    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures else {
+      return
+    }
+    if let _ = _snippetsVC {
+      return
+    }
+    self.presentSnippetsController()
+    if let _ = self._interactiveSpaceController()._blinkMenu {
+      self.toggleQuickActionsAction()
+    }
+  }
+  
+  private func _toggleQuickActionActionWith(receiver: SpaceController) {
+    if let menu = _blinkMenu {
+      _blinkMenu = nil
+      UIView.animate(withDuration: 0.15) {
+        menu.alpha = 0
+      } completion: { _ in
+        menu.removeFromSuperview()
+      }
+    } else {
+      let menu = BlinkMenu()
+      self.view.addSubview(menu.tapToCloseView)
+      
+      var ids: [BlinkActionID] = []
+      if EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures {
+        ids.append(contentsOf:  [.snippets])
+      }
+      
+      ids.append(contentsOf:  [.tabClose, .tabCreate])
+      
+      if DeviceInfo.shared().hasCorners {
+        ids.append(contentsOf:  [.layoutMenu])
+      }
+      ids.append(contentsOf:  [.toggleLayoutLock, .toggleGeoTrack])
+      menu.delegate = receiver;
+      menu.build(withIDs: ids, andAppearance: [:])
+      _blinkMenu = menu
+      self.view.addSubview(menu)
+      let size = self.view.frame.size;
+      let menuSize = menu.layout(for: size)
+      
+      let finalMenuFrame = CGRect(x: size.width * 0.5 - menuSize.width * 0.5, y: _overlay.frame.maxY - menuSize.height - 20, width: menuSize.width, height: menuSize.height)
+      
+      menu.frame = CGRect(origin: CGPoint(x: finalMenuFrame.minX, y: _overlay.frame.maxY + 10), size: finalMenuFrame.size);
+      
+      UIView.animate(withDuration: 0.25) {
+        menu.frame = finalMenuFrame
+      }
+    }
+  }
+  
+  func _interactiveSpaceController() -> SpaceController {
+    if let shadowWin = ShadowWindow.shared,
+       self.view.window == shadowWin,
+       let mainScreenSession = _activeSessions()
+          .first(where: {$0.role == .windowApplication }),
+       let delegate = mainScreenSession.scene?.delegate as? SceneDelegate
+    {
+      return delegate.spaceController
+    }
+    return self
+  }
+  
+  @objc func toggleQuickActionsAction() {
+    _interactiveSpaceController()
+      ._toggleQuickActionActionWith(receiver: self)
+  }
+  
+  @objc func toggleGeoTrack() {
+    if GeoManager.shared().traking {
+      GeoManager.shared().stop()
+      return
+    }
+
+    let manager = CLLocationManager()
+    let status = manager.authorizationStatus
+    
+    switch status  {
+    case .authorizedAlways, .authorizedWhenInUse: break
+    case .restricted:
+      showAlert(msg: "Geo services are restricted on this device.")
+      return
+    case .denied:
+      showAlert(msg: "Please allow Blink.app to use geo in Settings.app.")
+      return
+    case .notDetermined:
+      GeoManager.shared().authorize()
+      return
+    @unknown default:
+      return
+    }
+    
+    GeoManager.shared().start()
+  }
+  
+  @objc func _geoTrackStateChanged() {
+    self.view.setNeedsLayout()
+  }
+  
+  @objc func showWhatsNewAction() {
+    if let shadowWindow = ShadowWindow.shared,
+      view.window == shadowWindow {
+      
+      _ = currentDevice?.view?.webView.resignFirstResponder()
+      
+      let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController
+      spCtrl?.showWhatsNewAction()
+      
+      return
+    }
+    
+    DispatchQueue.main.async {
+      _ = KBTracker.shared.input?.resignFirstResponder();
+      
+      // Reset version when opening.
+      WhatsNewInfo.setNewVersion()
+      let root = UIHostingController(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL())))
+      self.present(root, animated: true, completion: nil)
+      
     }
   }
   
@@ -986,7 +1145,7 @@ extension SpaceController {
   
 }
 
-extension SpaceController: CommandsHUDViewDelegate {
+extension SpaceController: CommandsHUDDelegate {
   @objc func currentTerm() -> TermController? {
     if let currentKey = _currentKey {
       return SessionRegistry.shared[currentKey]
@@ -996,3 +1155,49 @@ extension SpaceController: CommandsHUDViewDelegate {
   
   @objc func spaceController() -> SpaceController? { self }
 }
+
+extension SpaceController: SnippetContext {
+  
+  func _presentSnippetsController(receiver: SpaceController) {
+    do {
+      self.view.window?.makeKeyAndVisible()
+      let ctrl = try SnippetsViewController.create(context: receiver, transitionFrame: _blinkMenu?.bounds)
+      DispatchQueue.main.async {
+        ctrl.view.frame = self.view.bounds
+        ctrl.willMove(toParent: self)
+        self.view.addSubview(ctrl.view)
+        self.addChild(ctrl)
+        ctrl.didMove(toParent: self)
+        self._snippetsVC = ctrl
+      }
+    } catch {
+      self.showAlert(msg: "Could not display Snips: \(error)")
+    }
+  }
+  
+  func presentSnippetsController() {
+    _interactiveSpaceController()._presentSnippetsController(receiver: self)
+  }
+  
+  func _dismissSnippetsController(ctrl: SpaceController) {
+    ctrl.presentedViewController?.dismiss(animated: true)
+    ctrl._snippetsVC?.willMove(toParent: nil)
+    ctrl._snippetsVC?.view.removeFromSuperview()
+    ctrl._snippetsVC?.removeFromParent()
+    ctrl._snippetsVC?.didMove(toParent: nil)
+    ctrl._snippetsVC = nil
+  }
+  
+  func dismissSnippetsController() {
+    _dismissSnippetsController(ctrl: _interactiveSpaceController())
+    self.focusOnShellAction()
+  }
+  
+  func providerSnippetReceiver() -> (any SnippetReceiver)? {
+    self.focusOnShellAction()
+    return self.currentDevice
+  }
+  
+}
+
+

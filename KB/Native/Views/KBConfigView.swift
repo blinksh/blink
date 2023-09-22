@@ -32,7 +32,7 @@
 
 import SwiftUI
 import Combine
-import GameController
+//import GameController
 
 private func _row(_ key: KeyConfig) -> some View {
   DefaultRow(title: key.fullName, description: key.description) {
@@ -54,16 +54,16 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
 
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
-  @State private var _enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
-  @State private var _keyboardConnectPublisher = KBConfigView.keyboardPublisher
-  @State private var _connectedKeyboardVendorName: String? = GCKeyboard.coalesced?.vendorName
+  @State private var _enableCustomKeyboards = !BLKDefaults.disableCustomKeyboards()
+//  @State private var _keyboardConnectPublisher = KBConfigView.keyboardPublisher
+//  @State private var _connectedKeyboardVendorName: String? = GCKeyboard.coalesced?.vendorName
   
   
-  static var keyboardPublisher: AnyPublisher<NotificationCenter.Publisher.Output, Never> {
-    let connectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)
-    let disconnectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)
-    return connectPublisher.merge(with: disconnectPublisher).eraseToAnyPublisher()
-  }
+//  static var keyboardPublisher: AnyPublisher<NotificationCenter.Publisher.Output, Never> {
+//    let connectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)
+//    let disconnectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)
+//    return connectPublisher.merge(with: disconnectPublisher).eraseToAnyPublisher()
+//  }
   
   init(config: KBConfig) {
     self.config = config
@@ -74,8 +74,8 @@ struct KBConfigView: View {
       return self._enableCustomKeyboards
     }, set: { value in
       self._enableCustomKeyboards = value
-      BKDefaults.setDisableCustomKeyboards(!value)
-      BKDefaults.save()
+      BLKDefaults.setDisableCustomKeyboards(!value)
+      BLKDefaults.save()
     })
     return List {
       Section(
@@ -94,7 +94,7 @@ struct KBConfigView: View {
       }
       Section(
         header: Text("Terminal"),
-        footer: Text(_connectedKeyboardVendorName == nil ? "" : "Connected Keyboard: \(_connectedKeyboardVendorName ?? "")" )
+        footer: Text("")//Text(_connectedKeyboardVendorName == nil ? "" : "Connected Keyboard: \(_connectedKeyboardVendorName ?? "")" )
       ) {
         _row(config.capsLock)
         _pairRow(config.shift)
@@ -117,9 +117,9 @@ struct KBConfigView: View {
     .navigationBarItems(trailing:
       Button(
         action: {
-          BKDefaults.setDisableCustomKeyboards(false)
-          BKDefaults.save()
-          self._enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
+          BLKDefaults.setDisableCustomKeyboards(false)
+          BLKDefaults.save()
+          self._enableCustomKeyboards = !BLKDefaults.disableCustomKeyboards()
           self.config.reset()
         },
         label: { Text("Reset") }
@@ -128,8 +128,8 @@ struct KBConfigView: View {
     .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
       KBTracker.shared.saveAndApply(config: self.config)
     }
-    .onReceive(_keyboardConnectPublisher) { _ in
-      _connectedKeyboardVendorName = GCKeyboard.coalesced?.vendorName
-    }
+//    .onReceive(_keyboardConnectPublisher) { _ in
+//      _connectedKeyboardVendorName = GCKeyboard.coalesced?.vendorName
+//    }
   }
 }

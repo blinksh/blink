@@ -4,18 +4,18 @@ import PackageDescription
 var binaryTargets: [PackageDescription.Target] = [
   ( 
     "Protobuf_C_",
-    "a90dbb75b3ef12224d66cddee28073066e0cab6453f79392d8f954b5904b8790",
-    "https://github.com/blinksh/protobuf-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip"
+    "a74e23890cf2093047544e18e999f493cf90be42a0ebd1bf5d4c0252d7cf377a",
+    "https://github.com/blinksh/protobuf-apple/releases/download/v3.21.1/Protobuf_C_-static.xcframework.zip"
   ),
   (
     "mosh",
-    "f564b29d11bed18b64c780f90bfd9fd188f145dd849565f90664f3023808370d",
-    "https://github.com/blinksh/mosh-apple/releases/download/v1.3.2/mosh.xcframework.zip"
+    "cd92212248429478a0f24346ca48397191409be0c8692b067a13eb9b17e50f27",
+    "https://github.com/blinksh/mosh-apple/releases/download/v1.4.0/mosh.xcframework.zip"
   ),
   (
     "LibSSH",
-    "509bf7d6ece0bafeb108e8dd3d310779911f297f1628bb9a3bc753a8f33dbe07",
-    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.5/LibSSH-static.xcframework.zip"
+    "d41fbdd749a74ec6d5f728f94ab33281193b68b81db242e13e43993f4d6de58f",
+    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.6/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
@@ -32,41 +32,40 @@ var binaryTargets: [PackageDescription.Target] = [
     "6a14c161ee389ef64dfd4f13eedbdf8628bbe430d686a08c4bf30a6484f07dcb",
     "https://github.com/blinksh/libssh2-apple/releases/download/v1.9.0/libssh2-static.xcframework.zip"
   ),
-
   (
     "ios_system",
-    "908ab71b2218de791635ffa4928a819ff8e21dd7652a8e98057988b7db856b6e",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/ios_system.xcframework.zip"
+    "f8e1364037de546809065ecdf804277fa7b95faffc32604e91ecb4de44d6294e",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/ios_system.xcframework.zip"
   ),
   (
     "awk",
-    "4eae71d775e5bb304a9f4dde79cbba4b45586c344b21df1484e0a827fc049b5f",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/awk.xcframework.zip"
+    "73abc0d502eab50e6bbdd0e49b0cf592f3a85b3843c43de6d7f42c27cde9b953",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/awk.xcframework.zip"
   ),
   (
     "files",
-    "dce416ae2a9b3bf40399af67bee41a30a72df27038febdf61204b816664f4ff1",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/files.xcframework.zip"
+    "d0643e2244009fc5279f1f969c6da47ca197b4e7c9dac27dea09ba0a5f1567d7",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/files.xcframework.zip"
   ),
   (
     "shell",
-    "57452605a8f3d84212d2a6de0215c99df3ffd644fd6a400debf50d77faa5f404",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/shell.xcframework.zip"
+    "876b709c1b76cbc1748d434fcbc2cea1aea2e281572e5fadc40244dd8a549757",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/shell.xcframework.zip"
   ),
   (
     "ssh_cmd",
-    "7dbff3bac11e77f3a0dd154de237b28a6fd387b358dd54f2b46470e6b59c1236",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/ssh_cmd.xcframework.zip"
+    "342065209123f54c92eb78a0fbda579e61948443e5f60e41d8fe356a3fe8f2ff",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/ssh_cmd.xcframework.zip"
   ),
   (
     "tar",
-    "c18a50dab43bf5ef583c07119f3c321374ccce692b7ad2967dbac0ebb5529c29",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/tar.xcframework.zip"
+    "6ffe4ed265060f971df229dd1d2bff90e7bc78c80c50dcc3a0a633face440bc4",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/tar.xcframework.zip"
   ),
   (
     "text",
-    "c91dea4306d0b8603aa7a390297ddc0947254b35faa9b07514ae34fcab6fe970",
-    "https://github.com/yury/ios_system/releases/download/v2.9.3/text.xcframework.zip"
+    "697bee697b509d0dc8acc156a7430f453c29878d8af273adfb8902643c70ea0f",
+    "https://github.com/holzschu/ios_system/releases/download/v3.0.2/text.xcframework.zip"
   ),
   (
     "network_ios",
@@ -81,7 +80,6 @@ _ = Package(
   dependencies: [
     .package(url: "https://github.com/yury/FMake", from: "0.0.15"),
     .package(url: "https://github.com/blinksh/swift-argument-parser", .upToNextMinor(from: "0.5.1")),
-    .package(url: "https://github.com/blinksh/BlinkBuild", from: "0.0.22"),
     .package(url: "https://github.com/yury/SSHConfig", from: "0.0.5"),
   ],
   

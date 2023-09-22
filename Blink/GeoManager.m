@@ -37,6 +37,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 NSString * BLGeoLockNotification = @"BLGeoLockNotification";
+NSString * BLGeoTrackStateChangeNotification = @"BLGeoTrackStateChangeNotification";
 
 @interface GeoManager() <CLLocationManagerDelegate>
 
@@ -152,6 +153,7 @@ NSDictionary *__locationToJson(CLLocation * location) {
   [_locManager startUpdatingLocation];
   
   _traking = YES;
+  [[NSNotificationCenter defaultCenter] postNotificationName:BLGeoTrackStateChangeNotification object:nil];
 }
 
 - (void)lockInDistance:(NSNumber *)meters {
@@ -257,6 +259,7 @@ NSDictionary *__locationToJson(CLLocation * location) {
   _lockCenter = nil;
   [_locManager stopUpdatingLocation];
   _traking = NO;
+  [[NSNotificationCenter defaultCenter] postNotificationName:BLGeoTrackStateChangeNotification object:nil];
 }
 
 @end

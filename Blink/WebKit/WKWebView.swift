@@ -237,7 +237,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     case .recognized:
       
       if focused {
-        _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
+        _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BLKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
       }
       if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
         target.perform(#selector(focusOnShellAction), with: self)
@@ -337,7 +337,7 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
       
       let defaultFontSize = 20
       if _characterSize == .none || _characterSize == .zero {
-        var size = BKDefaults.selectedFontSize().intValue
+        var size = BLKDefaults.selectedFontSize().intValue
         if size == 0 {
           size = defaultFontSize
         }
@@ -359,7 +359,7 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
       
       let point = _scrollPoint ?? _scrollPointTrackpad ?? CGPoint(x: scrollView.bounds.size.width * 0.5, y: scrollView.bounds.size.height * 0.5)
      
-      if BKDefaults.doInvertVerticalScroll() {
+      if BLKDefaults.doInvertVerticalScroll() {
         dY *= -1.0;
       }
       

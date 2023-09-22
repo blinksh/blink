@@ -133,6 +133,10 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
     self.init(action: action, modifiers: modifiers, input: input)
   }
   
+  static var snippetsShowShortcut: KeyShortcut {
+    KeyShortcut(.snippetsShow, [.command, .shift], ",")
+  }
+  
   static var defaultList: [KeyShortcut] {
     [
       KeyShortcut(.clipboardCopy, .command, "c"),
@@ -151,11 +155,12 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       
       KeyShortcut(.tabMoveToOtherWindow, [.command, .shift], "o"),
       
-      KeyShortcut(.zoomIn, .command, "+"),
+      KeyShortcut(.zoomIn, [.command, .shift], "="),
       KeyShortcut(.zoomOut, .command, "-"),
       KeyShortcut(.zoomReset, .command, "="),
       
-      KeyShortcut(.configShow, [.command], ","),
+      KeyShortcut(.configShow, .command, ","),
+      Self.snippetsShowShortcut
     ]
   }
 }

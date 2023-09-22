@@ -33,24 +33,7 @@
 import Foundation
 import BlinkConfig
 
-enum UDKeys: String {
-  case machinesToken
-}
-
 extension UserDefaults {
-  static var suiteName: String  { XCConfig.infoPlistFullGroupID() } // = "group.Com.CarlosCabanero.BlinkShell"
+  static var suiteName: String  { XCConfig.infoPlistFullGroupID() }
   static let suite = UserDefaults(suiteName: suiteName)!
-  
-  var machinesToken: [String: Any]? {
-    get {
-      object(forKey: UDKeys.machinesToken.rawValue) as? [String: Any]
-    }
-    set {
-      if let token = newValue {
-        setValue(token, forKey: UDKeys.machinesToken.rawValue)
-      } else {
-        setValue(nil, forKey: UDKeys.machinesToken.rawValue)
-      }
-    }
-  }
 }

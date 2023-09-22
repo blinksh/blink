@@ -32,11 +32,8 @@
 
 import Foundation
 import StoreKit
-
 import ArgumentParser
-
 import BlinkConfig
-import NonStdIO
 
 
 struct SKStoreCmd: NonStdIOCommand {
@@ -58,7 +55,7 @@ struct SKStoreCmd: NonStdIOCommand {
   func run() throws {
     let sema = DispatchSemaphore(value: 0)
     
-    if attribute != "" {
+    if attribute != "blink-rules" {
       return
     }
     

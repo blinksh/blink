@@ -220,10 +220,11 @@ class WebSocketConnection {
           guard let self = self else { return }
           switch completion {
           case .failure(let error):
-            self.log.error("Error completing operation - \(error)")
-            if case is CodeFileSystemError = error {
-              self.sendError(operationId: operationId,
-                             error: error as! CodeFileSystemError)
+//            self.log.error("Error completing operation - \(error)")
+            if let error = error as? CodeFileSystemError {
+              self.sendError(operationId: operationId, error: error)
+            } else {
+              self.log.error("Not handled error - \(error)")
             }
           case .finished:
             self.cancellables.removeValue(forKey: operationId)

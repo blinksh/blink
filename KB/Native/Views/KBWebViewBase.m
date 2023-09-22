@@ -145,7 +145,15 @@ NSString *_encodeString(NSString *str);
 }
 
 - ( UIView * _Nullable )selectionView {
-  return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
+  if (@available(iOS 17, *)) {
+    return self.scrollView.subviews.firstObject;
+  } else {
+    return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
+  }
+}
+
+- (UIEditingInteractionConfiguration)editingInteractionConfiguration {
+  return [super editingInteractionConfiguration];
 }
 
 
@@ -159,6 +167,9 @@ NSString *_encodeString(NSString *str);
     _focused = NO;
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
     self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
+    if (@available(iOS 16.4, *)) {
+      self.inspectable = true;
+    }
 //    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
     NSMutableArray *imeGuards = [[NSMutableArray alloc] init];
     
@@ -288,6 +299,7 @@ NSString *_encodeString(NSString *str);
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
+  
   if (res) {
     [self reportFocus:YES];
   }
@@ -323,7 +335,7 @@ NSString *_encodeString(NSString *str);
       @selector(toggleFontPanel:) == action ||
       @selector(select:) == action ||
       @selector(selectAll:) == action ||
-      @selector(_share:) == action ||
+//      @selector(_share:) == action ||
       @selector(toggleUnderline:) == action) {
     return NO;
   }
@@ -376,6 +388,10 @@ NSString *_encodeString(NSString *str);
   [self removeAssistantsFromView];
 }
 
+- (void)removeAssistantsFromContentView {
+  [self _removeAssistantsFromView:self.scrollView];
+}
+
 - (void)removeAssistantsFromView {
   [self _removeAssistantsFromView:self];
 }
@@ -399,6 +415,15 @@ NSString *_encodeString(NSString *str);
   [self _rebuildKeyCommands];
   [self onMods];
 }
+
+- (void)hideCaret {
+  
+}
+
+- (void)showCaret {
+  
+}
+
 
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
@@ -445,7 +470,13 @@ NSString *_encodeString(NSString *str);
     [self onCommand: body[@"command"]];
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
+  } else if ([@"hide-caret" isEqual:op]) {
+    [self hideCaret];
+  } else if ([@"show-caret" isEqual:op]) {
+    [self showCaret];
   }
+  
+  
   
 }
 

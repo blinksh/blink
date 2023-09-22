@@ -34,23 +34,39 @@ import Foundation
 import UIKit
 
 let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
+let EarlyAccessFeaturesEntitlementID = "early_access_features"
+let BuildEntitlementID = "build"
+
+let ProductBlinkPlusID = "blink_plus_1y_2999"
 let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
 let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
+let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
+let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
 
+
+private let NagTimestamp = "NagTimestamp"
+extension Notification.Name {
+  public static let subscriptionNag = Notification.Name("SubscriptionNag")
+}
 
 // Decoupled from RevCat Entitlement
 public struct Entitlement: Identifiable, Equatable, Hashable {
   public let id: String
   public var active: Bool
   public var unlockProductID: String?
+  public var period: EntitlementPeriodType
   
-  public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil)
+  public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil, period: .None)
+  
+  public static var earlyAccessFeatures = Self(id: EarlyAccessFeaturesEntitlementID, active: false, unlockProductID: nil, period: .None)
+  
+  public static var build = Self(id: BuildEntitlementID, active: false, unlockProductID: nil, period: .None)
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
   func didUpdateEntitlements(
     source: EntitlementsSource,
-    entitlements :Dictionary<String, Entitlement>,
+    entitlements: Dictionary<String, Entitlement>,
     activeSubscriptions: Set<String>,
     nonSubscriptionTransactions: Set<String>
   )
@@ -61,15 +77,20 @@ public protocol EntitlementsSource: AnyObject {
   func startUpdates()
 }
 
-
 public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
   
   @Published var unlimitedTimeAccess: Entitlement = .inactiveUnlimitedScreenTime
+  @Published var earlyAccessFeatures: Entitlement = .earlyAccessFeatures
+  @Published var build: Entitlement = .build
+  
   @Published var activeSubscriptions: Set<String> = .init()
   @Published var nonSubscriptionTransactions: Set<String> = .init()
   @Published var isUnknownState: Bool = true
+  
+  public var navigationCtrl: UINavigationController? = nil
+  @Published var navigationSteps: [EarlyFeatureAccessSteps] = []
 
   private let _sources: [EntitlementsSource]
   
@@ -106,6 +127,14 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
       self.unlimitedTimeAccess = newValue
     }
     
+    if let newValue = entitlements[EarlyAccessFeaturesEntitlementID] {
+      self.earlyAccessFeatures = newValue
+    }
+    
+    if let newValue = entitlements[BuildEntitlementID] {
+      self.build = newValue
+    }
+    
     if isUnknownState {
       _updateSubscriptionNag()
     } else {
@@ -117,20 +146,50 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   private func _updateSubscriptionNag() {
-    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
-      SubscriptionNag.shared.terminate()
-      return
+    showPaywall()
+  }
+  
+  @Published var keepShowingPaywall: Bool = false
+  @Published var shouldDismissPaywall: Bool = false
+  
+  func showPaywall(force: Bool = false) {
+    keepShowingPaywall = force
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+  }
+  
+  func doShowPaywall() -> Bool {
+    if keepShowingPaywall {
+      return true
     }
-    if self.unlimitedTimeAccess.active {
-      SubscriptionNag.shared.terminate()
-    } else {
-      SubscriptionNag.shared.start()
+    if shouldDismissPaywall {
+      return false
     }
+    
+    if ProcessInfo().isMacCatalystApp {
+      return false
+    }
+    return !(self.unlimitedTimeAccess.active || FeatureFlags.earlyAccessFeatures)
+  }
+  
+  func dismissPaywall() {
+    keepShowingPaywall = false
+    shouldDismissPaywall = true
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+    shouldDismissPaywall = false
   }
   
   public func currentPlanName() -> String {
+    if FeatureFlags.earlyAccessFeatures {
+      return "TestFlight Plan"
+    }
     if activeSubscriptions.contains(ProductBlinkShellPlusID) {
       return "Blink+ Plan"
+    }
+    if activeSubscriptions.contains(ProductBlinkPlusID) {
+      return "Blink+ Plan"
+    }
+    if activeSubscriptions.contains(ProductBlinkPlusBuildBasicID) {
+      return "Blink+Build Plan"
     }
     if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
       return "Blink Classic Plan"
@@ -138,4 +197,31 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     return "Free Plan"
   }
   
+  public func customerTier() -> CustomerTier {
+    if activeSubscriptions.contains(ProductBlinkShellPlusID)  || activeSubscriptions.contains(ProductBlinkPlusID){
+      return CustomerTier.Plus
+    }
+    if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+      return CustomerTier.Classic
+    }
+    if PublishingOptions.current == .testFlight {
+      return CustomerTier.TestFlight
+    }
+    
+    return CustomerTier.Free
+  }
+}
+
+public enum CustomerTier {
+  case Free
+  case Plus
+  case Classic
+  case TestFlight
+}
+
+public enum EntitlementPeriodType {
+  case Trial
+  case Intro
+  case Normal
+  case None
 }

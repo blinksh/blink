@@ -35,7 +35,7 @@ import Foundation
 
 @objc class Migrator : NSObject {
   @objc static func perform() {
-    Self.perform(steps: [MigrationToAppGroup()])
+    Self.perform(steps: [MigrationToAppGroup(), MigrationAddSnippetsShortcut()])
   }
   
   static func perform(steps: [MigrationStep]) {

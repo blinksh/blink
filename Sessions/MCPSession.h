@@ -33,6 +33,7 @@
 
 
 #import "Session.h"
+#import "TokioSignals.h"
 
 
 @class MCPParams;
@@ -42,6 +43,7 @@
 
 @property (strong) MCPParams *sessionParams;
 @property (readonly) dispatch_queue_t cmdQueue;
+@property (strong) TokioSignals *tokioSignals;
 
 - (void)registerSSHClient:(id __weak)sshClient;
 - (void)unregisterSSHClient:(id __weak)sshClient;

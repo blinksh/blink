@@ -35,31 +35,9 @@
 #import <Blink-Swift.h>
 
 
-CGFloat __mainWindowKBBottomInset = 0;
-
 NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpdate";
-NSTimer *__debounceTimer = nil;
 
-@implementation LayoutManager {
-
-}
-
-+ (CGFloat) mainWindowKBBottomInset {
-  return __mainWindowKBBottomInset;
-}
-
-+ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset {
-  if (__mainWindowKBBottomInset == bottomInset) {
-    return;
-  }
-
-  __mainWindowKBBottomInset = bottomInset;
-  [__debounceTimer invalidate];
-  
-  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
-    [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
-  }];
-}
+@implementation LayoutManager
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
   DeviceInfo *device = [DeviceInfo shared];
@@ -78,17 +56,33 @@ NSTimer *__debounceTimer = nil;
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
   UIWindow *window = ctrl.view.window;
   
-  if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplay) {
+  if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive) {
     // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
     // it is like BKLayoutModeSafeFit mode
     return ShadowWindow.shared.refWindow.safeAreaInsets;
   }
   
   UIScreen *mainScreen = UIScreen.mainScreen;
+  
+  // We are on external display with stage mode on.
+  // Fix for #1621
+  if (mainScreen != window.screen) {
+    return window.safeAreaInsets;
+  }
+  
+  SpaceController *spaceCtrl = nil;
+  UIViewController *parent = ctrl.parentViewController;
+  while (parent) {
+    if ([parent isKindOfClass:[SpaceController class]]) {
+      spaceCtrl = (SpaceController *)parent;
+      break;
+    }
+    parent = parent.parentViewController;
+  }
+  
   UIEdgeInsets deviceMargins = window.safeAreaInsets;// UIEdgeInsetsZero;// ctrl.viewDeviceSafeMargins;
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
-  CGFloat slideOverVerticalMargin = (mainScreen.bounds.size.height - window.bounds.size.height) * 0.5;
   
   UIEdgeInsets result = UIEdgeInsetsZero;
   
@@ -149,12 +143,8 @@ NSTimer *__debounceTimer = nil;
     }
   }
   
-  result.bottom = MAX(result.bottom, __mainWindowKBBottomInset);
-  
-  if (slideOverVerticalMargin > 0 && result.bottom > slideOverVerticalMargin) {
-    result.bottom -= slideOverVerticalMargin;
-  }
-  
+  result.bottom = MAX(result.bottom, [spaceCtrl bottomInset]);
+    
   return result;
 }
 

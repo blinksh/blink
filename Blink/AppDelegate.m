@@ -32,7 +32,7 @@
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
 #import <BlinkConfig/BlinkPaths.h>
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import <BlinkConfig/BKHosts.h>
 #import <BlinkConfig/BKPubKey.h>
 #import <ios_system/ios_system.h>
@@ -40,6 +40,11 @@
 #include <libssh/callbacks.h>
 #include "xcall.h"
 #include "Blink-Swift.h"
+
+#ifdef BLINK_BUILD_ENABLED
+extern void build_auto_start_wg_ports(void);
+extern void rebind_ports(void);
+#endif
 
 
 @import CloudKit;
@@ -83,23 +88,21 @@ void __setupProcessEnv(void) {
   [AppDelegate reloadDefaults];
   [[UIView appearance] setTintColor:[UIColor blinkTint]];
   
-  if (!FeatureFlags.checkReceipt) {
-//    [SubscriptionNag.shared start];
-  }
-  
   signal(SIGPIPE, __on_pipebroken_signal);
  
   dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
   dispatch_async(bgQueue, ^{
     [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
+    
   });
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
   dispatch_async(bgQueue, ^{
     addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
-      __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+    __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+    [AppDelegate _loadProfileVars];
   });
   
   NSString *homePath = BlinkPaths.homePath;
@@ -133,6 +136,10 @@ void __setupProcessEnv(void) {
   
   [PurchasesUserModelObjc preparePurchasesUserModel];
   
+#ifdef BLINK_BUILD_ENABLED
+  build_auto_start_wg_ports();
+#endif
+  
   return YES;
 }
 
@@ -148,7 +155,7 @@ void __setupProcessEnv(void) {
 //}
 
 + (void)reloadDefaults {
-  [BKDefaults loadDefaults];
+  [BLKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
   [AppDelegate _loadProfileVars];
@@ -206,7 +213,7 @@ void __setupProcessEnv(void) {
 
 - (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
   if ([extensionPointIdentifier isEqualToString: UIApplicationKeyboardExtensionPointIdentifier]) {
-    return ![BKDefaults disableCustomKeyboards];
+    return ![BLKDefaults disableCustomKeyboards];
   }
   return YES;
 }
@@ -265,9 +272,15 @@ void __setupProcessEnv(void) {
 
 - (void)_cancelApplicationSuspend {
   [self _cancelApplicationSuspendTask];
-  
+ 
   // We can't resume if we don't have access to protected data
   if (UIApplication.sharedApplication.isProtectedDataAvailable) {
+    if (_suspendedMode) {
+#ifdef BLINK_BUILD_ENABLED
+      rebind_ports();
+#endif
+    }
+
     _suspendedMode = NO;
   }
 }
@@ -305,12 +318,20 @@ void __setupProcessEnv(void) {
 
 #pragma mark - Scenes
 
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-  
-  
-  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
-  
+- (UISceneConfiguration *) application:(UIApplication *)application
+configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
+                               options:(UISceneConnectionOptions *)options {
+  for (NSUserActivity * activity in options.userActivities) {
+    if ([activity.activityType isEqual:@"com.blink.whatsnew"]) {
+      return [UISceneConfiguration configurationWithName:@"whatsnew"
+                                             sessionRole:connectingSceneSession.role];
+    }
+  }
+  return [UISceneConfiguration configurationWithName:@"main"
+                                         sessionRole:connectingSceneSession.role];
 }
+
+
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
   [SpaceController onDidDiscardSceneSessions: sceneSessions];
@@ -339,7 +360,7 @@ void __setupProcessEnv(void) {
 }
 
 - (void)_onScreenConnect {
-  [BKDefaults applyExternalScreenCompensation:BKDefaults.overscanCompensation];
+  [BLKDefaults applyExternalScreenCompensation:BLKDefaults.overscanCompensation];
 }
 
 #pragma mark - UNUserNotificationCenterDelegate

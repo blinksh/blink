@@ -46,7 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) NSString *marketingName;
 
 @property (readonly) BOOL hasNotch;
+@property (readonly) BOOL hasDynamicIsland;
 @property (readonly) BOOL hasCorners;
+@property (readonly) BOOL hasAppleSilicon;
+
+- (NSString *)deviceIcon;
+- (NSString *)onMyDevice;
 
 @end
 

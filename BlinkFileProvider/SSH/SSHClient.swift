@@ -64,18 +64,21 @@ extension SSHClient {
       return .fail(error: error)
     }
 
-    let threadIsReady = Future<RunLoop, Error> { promise in
-      thread = Thread {
-        let timer = Timer(timeInterval: TimeInterval(1), repeats: true) { _ in
-          //print("timer")
+    let threadIsReady = Deferred {
+      Future<RunLoop, Error> { promise in
+        thread = Thread {
+          print("THREAD STARTED!!")
+          let timer = Timer(timeInterval: TimeInterval(1), repeats: true) { _ in
+            //print("timer")
+          }
+          RunLoop.current.add(timer, forMode: .default)
+          promise(.success(RunLoop.current))
+          CFRunLoopRun()
+          // Wrap it up
+          RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
         }
-        RunLoop.current.add(timer, forMode: .default)
-        promise(.success(RunLoop.current))
-        CFRunLoopRun()
-        // Wrap it up
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+        thread.start()
       }
-      thread.start()
     }
 
     var proxyCancellable: AnyCancellable?
@@ -139,7 +142,8 @@ extension SSHClient {
     }
 
     return AnyPublisher(threadIsReady.flatMap { runloop in
-      Just(()).receive(on: runloop).flatMap {
+      print("THREAD IS READY")
+      return Just(()).receive(on: runloop).flatMap {
         SSHClient
           .dial(hostName, with: config, withProxy: execProxyCommand)
           .map { conn -> SSHClient in
@@ -169,10 +173,11 @@ fileprivate struct ProxyCommand {
   let stdioForward: BindAddressInfo
   let hostAlias: String
   
-  // The command we receive is pre-fabricated by LibSSH, so we just parse.
+  // The command we receive is pre-fabricated by LibSSH, so we capture
+  // looped JumpHosts, StdioForward and HostAlias in that order.
   // ssh -J l,l -W [127.0.0.1]:22 l
   private let pattern =
-    #"ssh (-J (?<JumpHost>.*))? (-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
+    #"ssh (-J (?<JumpHost>.*) )?(-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
   init(_ command: String) throws {
     let regex = try NSRegularExpression(pattern: pattern)
     let matchRange = NSRange(command.startIndex..., in: command)

@@ -35,6 +35,7 @@ import FileProvider
 import MobileCoreServices
 
 import BlinkFiles
+import UniformTypeIdentifiers
 
 
 // Goal is to bridge the Identifier to the underlying BlinkFiles system, and to offer
@@ -43,6 +44,7 @@ final class BlinkItemReference: NSObject {
   private let identifier: BlinkItemIdentifier
   var remote: BlinkFiles.FileAttributes?
   var local: BlinkFiles.FileAttributes?
+  var parentItem: BlinkItemReference?
 
   var primary: BlinkFiles.FileAttributes = [:]
   var replica: BlinkFiles.FileAttributes?
@@ -62,12 +64,15 @@ final class BlinkItemReference: NSObject {
   // Identifier format <encodedRootPath>/path/to/more/components/filename
   init(_ itemIdentifier: BlinkItemIdentifier,
        remote: BlinkFiles.FileAttributes? = nil,
-       local: BlinkFiles.FileAttributes? = nil) {
+       local: BlinkFiles.FileAttributes? = nil,
+       cache: FileTranslatorCache) {
     self.remote = remote
     self.identifier = itemIdentifier
     self.local = local
 
     super.init()
+    
+    self.parentItem = cache.reference(identifier: BlinkItemIdentifier(self.parentItemIdentifier))
 
     evaluate()
   }
@@ -102,7 +107,7 @@ final class BlinkItemReference: NSObject {
       isDownloaded = false
       return
     }
-
+    
     // Floor modified times as on some platforms it is a dobule with decimals
     let epochRemote = floor(remoteModified.timeIntervalSince1970)
     let epochLocal =  floor(localModified.timeIntervalSince1970)
@@ -112,22 +117,18 @@ final class BlinkItemReference: NSObject {
       isDownloaded = false
       isUploaded = true
     } else if epochRemote == epochLocal {
-      primary = remote!
-      replica = local
+      primary = local!
+      replica = remote
       isDownloaded = true
       isUploaded = true
     } else {
-      primary = local!
+      // This is inconsistent (maybe an interrupted upload?), so we go with
+      // whatever the remote has.
+      primary = remote!
       replica = primary
-      // TODO Not sure in this case.
-      isDownloaded = true
+      isDownloaded = false
       isUploaded = false
     }
-  }
-
-  var parentItem: BlinkItemReference? {
-    FileTranslatorCache
-      .reference(identifier: BlinkItemIdentifier(self.parentItemIdentifier))
   }
   
   var path: String {
@@ -217,32 +218,30 @@ extension BlinkItemReference: NSFileProviderItem {
   var isTrashed: Bool { false }
   var isUploading: Bool { uploadingTask != nil }
 
-  // iOS14
-  //  var contentType: UTType
-
-  var typeIdentifier: String {
+  var contentType: UTType {
     guard let type = primary[.type] as? FileAttributeType else {
       print("\(itemIdentifier) missing type")
-      return ""
+      return UTType.data
     }
     if type == .typeDirectory {
-      return kUTTypeFolder as String
+      return UTType.directory
     }
 
     let pathExtension = (filename as NSString).pathExtension
-    guard let typeIdentifier = (UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassFilenameExtension,
-      pathExtension as CFString,
-      nil
-    )?.takeRetainedValue() as String?) else {
-      return kUTTypeItem as String
+    if let type = UTType(filenameExtension: pathExtension) {
+      return type
+    } else {
+      return UTType.item
     }
 
-    if typeIdentifier.starts(with: "dyn") {
-      return kUTTypeItem as String
-    }
-
-    return typeIdentifier
+    // Old API would assign dyn when converting to unknown types.
+    // https://stackoverflow.com/questions/43518514/why-is-uttypecreatepreferredidentifierfortag-returning-strange-uti
+    // It looks like this is not necessary anymore as we will receive always a valid type or we can return item directly.
+    // Leaving here for now as reference in case we cause a regression.
+    //    if typeIdentifier.starts(with: "dyn") {
+    //      return kUTTypeItem as String
+    //    }
+    //
   }
 
   var capabilities: NSFileProviderItemCapabilities {

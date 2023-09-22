@@ -265,8 +265,8 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 }
 
 - (void)prompt:(NSString *)prompt secure:(BOOL)secure shell:(BOOL)shell {
-  _readlineResult = nil;
-  _readlineSema = nil;
+  [self closeReadline];
+
   _rawMode = NO;
   
   

@@ -31,57 +31,80 @@
 
 
 import SwiftUI
+import RevenueCat
 
 struct SupportView: View {
-    var body: some View {
-      List {
-        Section(header: Text("Tracker")) {
-          HStack {
-            Button {
-              BKLinkActions.send(toGitHub: "blink/issues")
-            } label: {
-              Label("Known Issues", systemImage: "magnifyingglass")
-            }
-            
-            Spacer()
-            Text("").foregroundColor(.secondary)
+  @EnvironmentObject private var _nav: Nav
+
+  var body: some View {
+    List {
+      Section() {
+        HStack {
+          Button {
+            BKLinkActions.sendToDocumentation()
+          } label: {
+            Label("Documentation", systemImage: "book")
           }
-          HStack {
-            Button {
-              BKLinkActions.send(toGitHub: "blink/issues/new")
-            } label: {
-              Label("Report a Problem", systemImage: "plus")
-            }
-            
-            Spacer()
-            Text("").foregroundColor(.secondary)
-          }
-        }
-        
-        Section(header:Text("Contact us")) {
-          HStack {
-            Button {
-              BKLinkActions.sendToEmailApp()
-            } label: {
-              Label("Email", systemImage: "mail")
-            }
-            
-            Spacer()
-            Text("support@blink.sh").foregroundColor(.secondary)
-          }
-          HStack {
-            Button {
-              BKLinkActions.sendToDiscordSupport()
-            } label: {
-              Label("Discord", systemImage: "ellipsis.bubble")
-            }
-            
-            Spacer()
-            Text("#support").foregroundColor(.secondary)
-          }
+          Spacer()
+          Text("").foregroundColor(.secondary)
         }
       }
+      Section(header: Text("Tracker")) {
+        HStack {
+          Button {
+            BKLinkActions.send(toGitHub: "blink/issues")
+          } label: {
+            Label("Known Issues", systemImage: "magnifyingglass")
+          }
+          
+          Spacer()
+          Text("").foregroundColor(.secondary)
+        }
+        HStack {
+          Button {
+            BKLinkActions.send(toGitHub: "blink/issues/new")
+          } label: {
+            Label("Report a Problem", systemImage: "plus")
+          }
+          
+          Spacer()
+          Text("").foregroundColor(.secondary)
+        }
+      }
+      
+      Section(header:Text("Contact us")) {
+        HStack {
+          Button {
+            BKLinkActions.sendToDiscordSupport()
+          } label: {
+            Label("Discord", systemImage: "ellipsis.bubble")
+          }
+          
+          Spacer()
+          Text("#support").foregroundColor(.secondary)
+        }
+        
+        HStack {
+          Button {
+            BKLinkActions.sendToGithubDiscussions()
+          } label: {
+            Label("GitHub", systemImage: "exclamationmark.bubble")
+          }
+          
+          Spacer()
+          Text("Discussions").foregroundColor(.secondary)
+        }
+      }
+      
+      Section {
+        Button {
+          UIPasteboard.general.string = Purchases.shared.appUserID
+        } label: {
+          Label("Copy User ID", systemImage: "doc.on.clipboard")
+        }
+      }
+    }
       .listStyle(.grouped)
       .navigationTitle("Support")
-    }
+  }
 }

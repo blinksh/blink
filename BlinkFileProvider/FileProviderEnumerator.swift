@@ -38,12 +38,14 @@ import SSH
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   let identifier: BlinkItemIdentifier
   let translator: AnyPublisher<Translator, Error>
+  let cache: FileTranslatorCache
   var cancellableBag: Set<AnyCancellable> = []
   var currentAnchor: Int = 0
   let log: BlinkLogger
 
   init(enumeratedItemIdentifier: NSFileProviderItemIdentifier,
-       domain: NSFileProviderDomain) {
+       domain: NSFileProviderDomain,
+       cache: FileTranslatorCache) {
     // TODO An enumerator may be requested for an open file, in order to enumerate changes to it.
     if enumeratedItemIdentifier == .rootContainer {
       self.identifier = BlinkItemIdentifier(domain.pathRelativeToDocumentStorage)
@@ -52,10 +54,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     let path = self.identifier.path
+    self.cache = cache
+    
     self.log = BlinkLogger("enumeratorFor \(path)")
     self.log.debug("Initialized")
 
-    self.translator = FileTranslatorCache.translator(for: self.identifier)
+    self.translator = cache.rootTranslator(for: self.identifier)
       .flatMap { t -> AnyPublisher<Translator, Error> in
         path.isEmpty ? .just(t.clone()) : t.cloneWalkTo(path)
       }.eraseToAnyPublisher()
@@ -97,12 +101,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
       .map { containerAttrs -> Translator in
         // 1. Store the container reference
         // TODO We may be able to skip this if stat would return '.'
-        if let reference = FileTranslatorCache.reference(identifier: self.identifier) {
+        if let reference = self.cache.reference(identifier: self.identifier) {
           reference.updateAttributes(remote: containerAttrs)
         } else {
           let ref = BlinkItemReference(self.identifier,
-                                       remote: containerAttrs)
-          FileTranslatorCache.store(reference: ref)
+                                       remote: containerAttrs,
+                                       cache: self.cache)
+          self.cache.store(reference: ref)
         }
         return containerTranslator
       }
@@ -123,16 +128,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
           // Find a local file that matches the remote.
           let localAttrs = localFilesAttributes.first(where: { $0[.name] as! String == fileIdentifier.filename })
 
-          if let reference = FileTranslatorCache.reference(identifier: fileIdentifier) {
+          if let reference = self.cache.reference(identifier: fileIdentifier) {
             reference.updateAttributes(remote: attrs, local: localAttrs)
             return reference
           } else {
             let ref = BlinkItemReference(fileIdentifier,
                                          remote: attrs,
-                                         local: localAttrs)
+                                         local: localAttrs,
+                                         cache: self.cache)
 
             // Store the reference in the internal DB for later usage.
-            FileTranslatorCache.store(reference: ref)
+            self.cache.store(reference: ref)
             return ref
           }
         }
@@ -168,12 +174,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let anchor = UInt(String(data: anchor.rawValue, encoding: .utf8)!)!
     self.log.info("Enumerating changes at \(anchor) anchor")
     
-    guard let ref = FileTranslatorCache.reference(identifier: self.identifier) else {
+    guard let ref = self.cache.reference(identifier: self.identifier) else {
       observer.finishEnumeratingWithError("Op not supported")
       return
     }
     
-    if let updatedItems = FileTranslatorCache.updatedItems(container: self.identifier, since: anchor) {
+    if let updatedItems = self.cache.updatedItems(container: self.identifier, since: anchor) {
       // Atm only update changes, no deletion as we don't provide tombstone values.
       self.log.info("\(updatedItems.count) items updated.")
       observer.didUpdate(updatedItems)
@@ -213,7 +219,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   */
   func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
 
-    guard let ref = FileTranslatorCache.reference(identifier: self.identifier) else {
+    guard let ref = self.cache.reference(identifier: self.identifier) else {
       completionHandler(nil)
       return
     }

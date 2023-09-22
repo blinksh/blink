@@ -36,11 +36,11 @@ import Combine
 import BlinkConfig
 
 
-fileprivate let HostKeyChangedWarningMessage = "@@WARNING! REMOTE IDENTIFICATION HAS CHANGED. New Public key hash: %@. Accepting the following prompt will add a new entry for this host. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedWarningMessage = "@@WARNING! REMOTE IDENTIFICATION HAS CHANGED.\nNew Public key hash: %@.\nAccepting the following prompt will add a new entry for this host.\nDo you trust the host key? [Y/n]: "
 
-fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@.\nThe server is unknown.\nDo you trust the host key? [Y/n]: "
 
-fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@.\nThe server is unknown.\nDo you trust the host key? [Y/n]: "
 // Having access from CLI
 // Having access from UI. Some parameters must already exist, others need to be tweaked.
 // Pass it a host and get everything necessary to connect, but some functions still need to be setup.
@@ -113,6 +113,8 @@ extension SSHClientConfigProvider {
   }
   
   fileprivate func authPrompt(_ prompt: Prompt) -> AnyPublisher<[String], Error> {
+    self.printLn(prompt.instruction, err: true)
+
     return prompt.userPrompts.publisher.tryMap { question -> String in
       guard let input = self.device.readline(question.prompt, secure: true) else {
         throw CommandError(message: "Couldn't read input")
@@ -126,20 +128,20 @@ extension SSHClientConfigProvider {
     let agent = SSHAgent()
 
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
+    //let consts: [SSHAgentConstraint] = [SSHAgentUserPrompt()]
 
-    if let signers = config.signer(forHost: host) {
-      signers.forEach { (signer, name) in
-        // NOTE We could also keep the reference and just read the key at the proper time.
-        // TODO Errors. Either pass or log here, or if we create a different
-        // type of key, then let the Agent fail.
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+    let signers = config.signer(forHost: host) ?? config.defaultSigners()
+
+    signers.forEach { (signer, name) in
+      // NOTE We could also keep the reference and just read the key at the proper time.
+      // TODO Errors. Either pass or log here, or if we create a different
+      // type of key, then let the Agent fail.
+      if let signer = signer as? BlinkConfig.InputPrompter {
+        signer.setPromptOnView(device.view)
       }
-    } else {
-      for (signer, name) in config.defaultSigners() {
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
-      }
+      agent.loadKey(signer, aka: name, constraints: consts)
     }
-    
+
     // Link to Default Agent
     agent.linkTo(agent: SSHAgentPool.defaultAgent)
     return agent

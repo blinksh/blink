@@ -40,7 +40,7 @@ import SSHConfig
 // SSHClient requirements, facilitating information between them.
 // TODO This will work a lot better as a singleton.
 public struct BKConfig {
-  let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
+  let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ecdsa_sk", "id_ed25519"]
 
   private let _allHosts: [BKHosts]
   private let _allIdentities: [BKPubKey]

@@ -43,7 +43,7 @@ struct ImportKeyView: View {
     List {
       Section(
         header: Text("NAME"),
-        footer: Text("Default key must be named `id_\(state.keyType.lowercased())`")
+        footer: Text("Default key must be named `id_\(state.keyType.lowercased().replacingOccurrences(of: "-", with: "_"))`")
       ) {
         FixedTextField(
           "Enter a name for the key",

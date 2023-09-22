@@ -56,6 +56,7 @@ fileprivate extension CGFloat {
   static var heightTiny:  Self { 38 }
   static var heightSmall: Self { 44 }
   static var height:      Self { 55 }
+  static var heightMoreSpace:  Self { 67 }
   
   static var icon: Self { 48 }
 }
@@ -126,8 +127,16 @@ extension KBSizes {
     Self(kb: (.height, padding: 6, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 56, wide: 82)))
   }
   
+  static var portrait_iPad_10_9_MoreSpace: Self {
+    Self(kb: (.heightMoreSpace - 3.5, padding: 7, spacer: 2.5), key: (_fonts, _insets, .corner, widths: (.icon, key: 68, wide: 86)))
+  }
+  
   static var portrait_iPad_11: Self {
     Self(kb: (.height, padding: 6, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 58, wide: 82)))
+  }
+  
+  static var portrait_iPad_11_MoreSpace: Self {
+    Self(kb: (.heightMoreSpace - 3.5, padding: 7, spacer: 2.5), key: (_fonts, _insets, .corner, widths: (.icon, key: 68, wide: 90)))
   }
   
   static var portrait_iPad_12_9: Self {
@@ -178,8 +187,16 @@ extension KBSizes {
     Self(kb: (.height, padding: 11.5, spacer: 6), key: (_fonts, _insets, .corner, widths: (.icon, key: 78.5, wide: 107)))
   }
   
+  static var landscape_iPad_10_9_MoreSpace: Self {
+    Self(kb: (.heightMoreSpace, padding: 11.5, spacer: 7), key: (_fonts, _insets, .corner, widths: (.icon, key: 98, wide: 115)))
+  }
+  
   static var landscape_iPad_11: Self {
     Self(kb: (.height, padding: 11.5, spacer: 6.5), key: (_fonts, _insets, .corner, widths: (.icon, key: 79, wide: 108)))
+  }
+  
+  static var landscape_iPad_11_MoreSpace: Self {
+    Self(kb: (.heightMoreSpace, padding: 11.5, spacer: 7), key: (_fonts, _insets, .corner, widths: (.icon, key: 98, wide: 118)))
   }
   
   static var landscape_iPad_12_9: Self {

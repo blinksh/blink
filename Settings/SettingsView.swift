@@ -41,45 +41,53 @@ struct SettingsView: View {
   @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
   @State private var _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
   @State private var _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
-  @State private var _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
-  @State private var _defaultUser = BKDefaults.defaultUserName() ?? ""
-  @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @State private var _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
+  @State private var _defaultUser = BLKDefaults.defaultUserName() ?? ""
+  @StateObject private var _entitlements: EntitlementsManager = .shared
+  @StateObject private var _model = PurchasesUserModel.shared
   
   var body: some View {
     List {
-      if FeatureFlags.checkReceipt {        
-        Section(header: Text("Information"), footer: Text("Upgrade is free for you. Thanks for your support. ❤️")) {
+      if _entitlements.earlyAccessFeatures.active && _entitlements.earlyAccessFeatures.period == .Trial {
+        Section {
           Row {
-            HStack {
-              Label("New Blink.app", systemImage: "exclamationmark.circle")
-              Spacer()
-              Image(systemName: "questionmark.circle").foregroundColor(Color(UIColor.blinkTint))
-            }
+            Label(title: {
+                    VStack(alignment: .leading, spacing: 1) {
+                      Text("Need extra help?")
+                      Text("Don't be shy. We want Blink to work for you. Ask us questions during your trial.").foregroundColor(.secondary).font(.subheadline)
+                    }
+                  }, icon: { Image(systemName: "questionmark.bubble") })
           } details: {
-            ScrollView {
-              ExplanationView()
+            TrialSupportView()
           }
+        } header: {
+          Text("Trial support")
         }
       }
-      } else {
-        Section("Subscription") {
-          Row {
-            HStack {
-              Label("Subscription", systemImage: "bag")
-              Spacer()
-              Text(_entitlements.currentPlanName())
-                  .foregroundColor(.secondary)
+
+      Section("Subscription") {
+        HStack {
+          Label(_entitlements.currentPlanName(), systemImage: "bag")
+          Spacer()
+          if !(_entitlements.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures) {
+            Button("Upgrade") {
+              let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
+              _nav.navController.pushViewController(vc, animated: true)
+              _entitlements.navigationCtrl = _nav.navController
             }
-          } details: {
-            PlansView()
           }
-          Row {
-            HStack {
-              Label("For Blink 14 Owners", systemImage: "14.square")
-            }
-          } details: {
-            BlinkClassPlanView()
+        }
+        Row {
+          HStack {
+            Label("Build Beta", systemImage: "hammer.circle")
+            Spacer()
+            Text("") // TODO: show status?
+              .foregroundColor(.secondary)
           }
+        } details: {
+          BuildView().onAppear(perform: {
+            PurchasesUserModel.shared.refresh()
+          })
         }
       }
       Section("Connect") {
@@ -129,6 +137,13 @@ struct SettingsView: View {
       }
       
       Section("Configuration") {
+        if EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures {
+          Row {
+            Label("Snips", systemImage: "chevron.left.square")
+          } details: {
+            SnippetsConfigView()
+          }
+        }
         RowWithStoryBoardId(content: {
           HStack {
             Label("iCloud Sync", systemImage: "icloud")
@@ -155,25 +170,25 @@ struct SettingsView: View {
       
       Section("Get in touch") {
         Row {
-          Label("Feedback", systemImage: "bubble.left")
-        } details: {
-          FeedbackView()
-        }
-        Row {
           Label("Support", systemImage: "book")
         } details: {
           SupportView()
         }
-        HStack {
-          Button {
-            BKLinkActions.sendToAppStore()
-          } label: {
-            Label("Rate Blink", systemImage: "star")
-          }
-          
-          Spacer()
-          Text("App Store").foregroundColor(.secondary)
+        Row {
+          Label("Feedback", systemImage: "bubble.left")
+        } details: {
+          FeedbackView()
         }
+        // HStack {
+        //   Button {
+        //     BKLinkActions.sendToAppStore()
+        //   } label: {
+        //     Label("Rate Blink", systemImage: "star")
+        //   }
+          
+        //   Spacer()
+        //   Text("App Store").foregroundColor(.secondary)
+        // }
       }
       
       Section {
@@ -184,13 +199,28 @@ struct SettingsView: View {
             Text(_blinkVersion).foregroundColor(.secondary)
           }
         }, storyBoardId: "BKAboutViewController")
+        HStack {
+          Button {
+            _model.openPrivacyAndPolicy()
+          } label: {
+            Label("Privacy Policy", systemImage: "link")
+          }
+        }
+        HStack {
+          Button {
+            _model.openTermsOfUse()
+          } label: {
+            Label("Terms of Use", systemImage: "link")
+          }
+        }
       }
     }
     .onAppear {
       _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
       _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
-      _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
-      _defaultUser = BKDefaults.defaultUserName() ?? ""
+      _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
+      _defaultUser = BLKDefaults.defaultUserName() ?? ""
+      
     }
     .listStyle(.grouped)
     .navigationTitle("Settings")

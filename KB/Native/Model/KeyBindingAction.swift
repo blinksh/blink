@@ -63,6 +63,9 @@ enum Command: String, Codable, CaseIterable {
   case selectionStackOverflow
   case selectionShare
   case configShow
+  case snippetsShow
+  case toggleQuickActions
+  case toggleGeoTrack
   
   var title: String {
     switch self {
@@ -99,6 +102,9 @@ enum Command: String, Codable, CaseIterable {
     case .selectionStackOverflow: return "StackOverflow Selection"
     case .selectionShare:         return "Share Selection"
     case .configShow:             return "Show Config"
+    case .snippetsShow:           return "Show Snippets"
+    case .toggleQuickActions:     return "Toggle Quick Actions"
+    case .toggleGeoTrack:         return "Toggle Geo Track"
     }
   }
 }
@@ -167,6 +173,10 @@ enum KeyBindingAction: Codable, Identifiable {
       .hex("7E", comment: "Press ~"),
       .hex("7C", comment: "Press |"),
       .hex("5C", comment: "Press \\"),
+      .press(.w, [.command]),
+      .press(.t, [.command]),
+//      .press(.left, [.shift, .command]),
+//      .press(.right, [.shift, .command]),
     ]
   }
   

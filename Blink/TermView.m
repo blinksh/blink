@@ -31,7 +31,7 @@
 
 #import "TermView.h"
 #import "TermDevice.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
@@ -52,7 +52,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate, UIGestureRecognizerDelegate>
+
+@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate, UIGestureRecognizerDelegate, UIEditMenuInteractionDelegate>
 @end
 
 @implementation TermView {
@@ -69,6 +70,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   UIView *_parentScrollView;
   NSInteger _touchID;
   NSMutableArray *_touchesArray;
+  
+  id<UIInteraction> _editMenuIteraction;
 }
 
 
@@ -118,7 +121,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     return;
   }
   
-  if (CGRectEqualToRect(_currentBounds, self.bounds) && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)) {
+  CGRect webViewFrame = [self webViewFrame];
+  if (CGRectEqualToRect(_currentBounds, self.bounds)
+      && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)
+      && CGRectEqualToRect(webViewFrame, _webView.frame)
+      )
+  {
     return;
   }
   
@@ -172,6 +180,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _webView.UIDelegate = self;
+  
+  if (@available(iOS 16.0, *)) {
+    _editMenuIteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [_webView addInteraction:_editMenuIteraction];
+  }
   
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
@@ -207,35 +221,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _browserView.UIDelegate = self;
   _browserView.navigationDelegate = self;
   
-  if (injectUIO) {
-  
-    _browserView.scrollView.delaysContentTouches = NO;
-    _browserView.scrollView.canCancelContentTouches = NO;
-    [_browserView.scrollView setScrollEnabled:NO];
-    [_browserView.scrollView.panGestureRecognizer setEnabled:NO];
-  //   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
-  //  [_webView addInteraction:_gestureInteraction];
-    
-    UIPanGestureRecognizer *rec = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_pan:)];
-    rec.maximumNumberOfTouches = 1;
-    rec.cancelsTouchesInView = YES;
-    rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-    rec.delegate = self;
-    
-    
-    UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
-  //  rec2.maximumNumberOfTouches = 1;
-    rec2.cancelsTouchesInView = YES;
-    //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-    rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-    rec2.delegate = self;
-    
-    [_browserView addGestureRecognizer:rec];
-    [_browserView addGestureRecognizer:rec2];
-      
-  }
-
   [self addSubview:_browserView];
   [_browserView setOpaque:NO];
   _browserView.backgroundColor = [UIColor clearColor];
@@ -461,6 +446,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_resetFontSize() completionHandler:nil];
 }
 
+- (void)setClipboardWrite:(BOOL)state {
+  [_webView evaluateJavaScript:term_setClipboardWrite(state) completionHandler:nil];
+}
+
 - (void)focus {
   _gestureInteraction.focused = YES;
 //  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
@@ -482,7 +471,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)displayInput:(NSString *)input {
-  [self _evalJSScript: term_displayInput(input, BKDefaults.isKeyCastsOn)];
+  [self _evalJSScript: term_displayInput(input, BLKDefaults.isKeyCastsOn)];
 }
 
 // Write data to terminal control
@@ -802,6 +791,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self cleanSelection];
 }
 
+- (void)pasteString:(NSString *)str {
+  if (str) {
+    if (_browserView) {
+      [_browserView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    } else {
+      [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    }
+  }
+}
+
 - (NSString *)_detectFontFamilyFromContent:(NSString *)content
 {
   NSRegularExpression *regex = [NSRegularExpression
@@ -825,7 +824,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (WKUserScript *)_termInitScriptWith:(MCPParams *)params;
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
-  BKFont *font = [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
+  BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
+  BKFont *font = lockdownMode ? nil : [BKFont withName: params.fontName ?: [BLKDefaults selectedFontName]];
   NSString *fontFamily = font.name;
   NSString *content = font.content;
   if (font && font.isCustom && content) {
@@ -842,18 +842,18 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [script addObject:term_setBoldEnabled(params.enableBold)];
     [script addObject:term_setBoldAsBright(params.boldAsBright)];
     
-    NSString *themeContent = [[BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]] content];
+    NSString *themeContent = [[BKTheme withName: params.themeName ?: [BLKDefaults selectedThemeName]] content];
     if (themeContent) {
       [script addObject:themeContent];
     }
     
-    [script addObject:term_setFontSize(params.fontSize == 0 ? [BKDefaults selectedFontSize] : @(params.fontSize))];
+    [script addObject:term_setFontSize(params.fontSize == 0 ? [BLKDefaults selectedFontSize] : @(params.fontSize))];
     
-    [script addObject: term_setCursorBlink([BKDefaults isCursorBlink])];
+    [script addObject: term_setCursorBlink([BLKDefaults isCursorBlink])];
   }
   [script addObject:@"};"];
 
-  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning())];
+  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning(), lockdownMode)];
 
   return [[WKUserScript alloc] initWithSource:
           [script componentsJoinedByString:@"\n"]
@@ -862,7 +862,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)applyTheme:(NSString *)themeName {
-  NSString *themeContent = [[BKTheme withName: themeName ?: [BKDefaults selectedThemeName]] content];
+  NSString *themeContent = [[BKTheme withName: themeName ?: [BLKDefaults selectedThemeName]] content];
   if (themeContent) {
     NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
     [_webView evaluateJavaScript:script completionHandler:nil];
@@ -887,6 +887,158 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
   return YES;
+}
+
+@end
+
+
+@implementation TermView (UIEditMenuInteractionDelegate)
+
+- (UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction menuForConfiguration:(UIEditMenuConfiguration *)configuration suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions  API_AVAILABLE(ios(16.0)){
+  
+  NSMutableArray *actions = [[NSMutableArray alloc] init];
+  
+  if (_hasSelection) {
+    if (_detectedLink) {
+      NSString *urlName = [self _menuTitleFromNSURL: _detectedLink];
+      NSMutableArray *urlActions = [[NSMutableArray alloc] init];
+      
+      [urlActions addObject:[UICommand commandWithTitle:@"Copy full URL" image: [UIImage systemImageNamed:@"doc.on.doc"]
+                                                 action:@selector(copyLink:) propertyList: nil]];
+      
+      [urlActions addObject:[UICommand commandWithTitle:@"Open URL" image: [UIImage systemImageNamed:@"safari"]
+                                                 action:@selector(openLink:) propertyList:nil]];
+      
+      UIMenu *urlMenu = [UIMenu menuWithTitle:urlName image:[UIImage systemImageNamed:@"link"]  identifier:nil options:UIMenuOptionsDisplayInline children: urlActions];
+      
+      
+      [actions addObject:urlMenu];
+      
+    } else {
+      [actions addObject:[UICommand commandWithTitle:@"Search" image: [UIImage systemImageNamed:@"safari"]
+                                              action:@selector(googleSelection:) propertyList:nil]];
+    }
+  } else {
+    NSMutableArray *layoutActions = [[NSMutableArray alloc] init];
+    
+    if ([[DeviceInfo shared] hasCorners]) {
+      BKLayoutMode mode = [self _currentLayoutMode];
+      UICommand *fitCmd = [UICommand commandWithTitle:@"Fit" image: nil
+                                               action:@selector(_setLayoutModeFit) propertyList:nil];
+      //      fitCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      fitCmd.state = mode == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
+      UICommand *fillCmd = [UICommand commandWithTitle:@"Fill" image: nil
+                                                action:@selector(_setLayoutModeFill) propertyList:nil];
+      //      fillCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      fillCmd.state = mode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
+      UICommand *coverCmd = [UICommand commandWithTitle:@"Cover" image: nil
+                                                 action:@selector(_setLayoutModeCover) propertyList:nil];
+      coverCmd.state = mode == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
+      //      coverCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Mode" image:nil identifier:nil options:UIMenuOptionsDisplayInline children: @[ fitCmd, fillCmd, coverCmd ]];
+      
+      [layoutActions addObject:layoutMenu];
+    }
+    
+    if ([self _isLayoutLocked]) {
+      [layoutActions addObject:[UICommand commandWithTitle:@"Unlock" image: [UIImage systemImageNamed:@"lock.slash"]
+                                                    action:@selector(_changeLayoutLock) propertyList:nil]];
+    } else {
+      [layoutActions addObject:[UICommand commandWithTitle:@"Lock" image: [UIImage systemImageNamed:@"lock"]
+                                                    action:@selector(_changeLayoutLock) propertyList:nil]];
+    }
+    
+    UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Layout" image:[UIImage systemImageNamed:@"squareshape.squareshape.dashed"] identifier:nil options:UIMenuOptionsSingleSelection children:layoutActions];
+    
+    [actions addObject:layoutMenu];
+    
+    UICommand *closeTabCmd = [UICommand commandWithTitle:@"Close Tab" image: [UIImage systemImageNamed:@"xmark.rectangle"]
+                                                  action:@selector(_closeCurrentTab) propertyList:nil];
+    
+    closeTabCmd.attributes = UIMenuElementAttributesDestructive;
+    
+    UIMenu *tabsMenu = [UIMenu menuWithTitle:@"Tab" image:[UIImage systemImageNamed:@"rectangle"] identifier:nil options:UIMenuOptionsSingleSelection children:@[
+      [UICommand commandWithTitle:@"New Tab" image: [UIImage systemImageNamed:@"plus.rectangle"]
+                           action:@selector(_createNewTab) propertyList:nil],
+      [UIMenu menuWithTitle:@"" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[closeTabCmd] ]
+      
+    ]];
+    
+    [actions addObject:tabsMenu];
+  }
+  
+  
+  // Copy useful commands, skip cut: and replace paste: with pasteSelection:
+  for (UIMenuElement *elem in suggestedActions) {
+    if ([elem isKindOfClass:[UIMenu class]]) {
+      UIMenu *menu = (UIMenu *)elem;
+      if ([menu.identifier isEqual:UIMenuStandardEdit]) {
+        NSMutableArray *editItems = [[NSMutableArray alloc] init];
+        for (UIMenuElement *editElem in menu.children) {
+          if ([editElem isKindOfClass:[UICommand class]]) {
+            
+            UICommand *cmd = (UICommand *)editElem;
+            if (cmd.action == @selector(cut:)) {
+              continue;
+            } else if (cmd.action == @selector(paste:) && _hasSelection) {
+              [editItems addObject:[UICommand commandWithTitle:@"Paste" image:[UIImage systemImageNamed:@"doc.on.clipboard"] action:@selector(pasteSelection:) propertyList:nil]];
+            } else {
+              [editItems addObject:editElem];
+            }
+          }
+        }
+        UIMenu *newMenu = [UIMenu menuWithTitle:menu.title image:menu.image identifier:menu.identifier options:menu.options children:editItems];
+        newMenu.preferredElementSize = menu.preferredElementSize;
+        [actions insertObject: newMenu atIndex:0];
+        continue;
+      }
+      [actions addObject:elem];
+    }
+  }
+  
+  
+  
+  return [UIMenu menuWithChildren:actions];
+}
+
+- (void)_changeLayoutLock {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm toggleLayoutLock];
+}
+
+- (bool)_isLayoutLocked {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  return sp.currentTerm.sessionParams.layoutLocked;
+}
+
+-(void)_setLayoutModeFill {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeFill];
+}
+
+-(void)_setLayoutModeFit {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeSafeFit];
+}
+
+-(void)_setLayoutModeCover {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeCover];
+}
+
+-(BKLayoutMode)_currentLayoutMode {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  return sp.currentTerm.sessionParams.layoutMode;
+}
+
+-(void)_closeCurrentTab {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp closeShellAction];
+}
+
+-(void)_createNewTab {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp newShellAction];
 }
 
 @end

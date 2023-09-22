@@ -31,6 +31,8 @@
 
 #import <Foundation/Foundation.h>
 @import CloudKit;
+
+
 enum BKMoshPrediction {
   BKMoshPredictionAdaptive,
   BKMoshPredictionAlways,
@@ -38,6 +40,19 @@ enum BKMoshPrediction {
   BKMoshPredictionExperimental,
   BKMoshPredictionUnknown
 };
+
+enum BKMoshExperimentalIP {
+  BKMoshExperimentalIPNone,
+  BKMoshExperimentalIPLocal,
+  BKMoshExperimentalIPRemote,
+};
+
+enum BKAgentForward {
+  BKAgentForwardNo,
+  BKAgentForwardConfirm,
+  BKAgentForwardYes,
+};
+
 
 @interface BKHosts : NSObject <NSSecureCoding>
 
@@ -49,6 +64,8 @@ enum BKMoshPrediction {
 @property (readonly) NSString *password;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *moshServer;
+@property (nonatomic, strong) NSString *moshPredictOverwrite;
+@property (nonatomic, strong) NSNumber *moshExperimentalIP;
 @property (nonatomic, strong) NSNumber *moshPort;
 @property (nonatomic, strong) NSNumber *moshPortEnd;
 @property (nonatomic, strong) NSString *moshStartup;
@@ -61,6 +78,8 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) BKHosts *iCloudConflictCopy;
 @property (nonatomic, strong) NSString *sshConfigAttachment;
 @property (nonatomic, strong) NSString *fpDomainsJSON;
+@property (nonatomic, strong) NSNumber *agentForwardPrompt;
+@property (nonatomic, strong) NSArray<NSString *> *agentForwardKeys;
 
 + (instancetype)withHost:(NSString *)ID;
 + (void)loadHosts NS_SWIFT_NAME(loadHosts());
@@ -75,6 +94,8 @@ enum BKMoshPrediction {
                 password:(NSString *)password
                  hostKey:(NSString *)hostKey
               moshServer:(NSString *)moshServer
+    moshPredictOverwrite:(NSString *)moshPredictOverwrite
+      moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
            moshPortRange:(NSString *)moshPortRange
               startUpCmd:(NSString *)startUpCmd
               prediction:(enum BKMoshPrediction)prediction
@@ -82,6 +103,8 @@ enum BKMoshPrediction {
                proxyJump:(NSString *)proxyJump
      sshConfigAttachment:(NSString *)sshConfigAttachment
            fpDomainsJSON:(NSString *)fpDomainsJSON
+      agentForwardPrompt:(enum BKAgentForward)agentForwardPrompt
+        agentForwardKeys:(NSArray<NSString *> *)agentForwardKeys
 ;
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
@@ -101,11 +124,15 @@ enum BKMoshPrediction {
             hostKey:(NSString *)hostKey
          moshServer:(NSString *)moshServer
       moshPortRange:(NSString *)moshPortRange
+moshPredictOverwrite:(NSString *)moshPredictOverwrite
+ moshExperimentalIP:(enum BKMoshExperimentalIP)moshExperimentalIP
          startUpCmd:(NSString *)startUpCmd
          prediction:(enum BKMoshPrediction)prediction
            proxyCmd:(NSString *)proxyCmd
           proxyJump:(NSString *)proxyJump
 sshConfigAttachment:(NSString *)sshConfigAttachment
-      fpDomainsJSON:(NSString *)fpDomainsJSON;
+      fpDomainsJSON:(NSString *)fpDomainsJSON
+ agentForwardPrompt:(enum BKAgentForward)agentForwardPrompt
+   agentForwardKeys:(NSArray<NSString *> *)agentForwardKeys;
 
 @end

@@ -145,14 +145,19 @@ function term_setup(accessibilityEnabled) {
   t.decorate(document.getElementById('terminal'));
 }
 
-function term_init(accessibilityEnabled) {
+function term_init(accessibilityEnabled, lockdownMode) {
   term_setupDefaults();
   try {
     applyUserSettings();
     //    var bgColor = term_get('background-color');
     //    document.body.style.backgroundColor = bgColor;
     //    document.body.parentNode.style.backgroundColor = bgColor;
-    waitForFontFamily(term_setup);
+    if (lockdownMode) {
+      term_set('font-family', 'monospace');
+      term_setup(accessibilityEnabled);
+    } else {
+      waitForFontFamily(term_setup);
+    }
   } catch (e) {
     _postMessage('alert', {
       title: 'Error',
@@ -331,6 +336,18 @@ function term_setFontSize(size) {
 function term_setFontFamily(name, fontSizeDetectionMethod) {
   window.fontSizeDetectionMethod = fontSizeDetectionMethod;
   term_set('font-family', name + ', "DejaVu Sans Mono"');
+}
+
+function term_setClipboardWrite(state) {
+  if (state === false) {
+    t.vt.enableClipboardWrite = false;
+  } else {
+    setTimeout(() => {
+      // Delay a tiny bit so operations that reset the clipboard
+      // can have a tiny bit more margin. #1205
+      t.vt.enableClipboardWrite = true;
+    }, 500);
+  }
 }
 
 function term_appendUserCss(css) {
