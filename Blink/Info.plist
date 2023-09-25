@@ -160,12 +160,6 @@
 					<key>UISceneDelegateClassName</key>
 					<string>Blink.SceneDelegate</string>
 				</dict>
-				<dict>
-					<key>UISceneConfigurationName</key>
-					<string>whatsnew</string>
-					<key>UISceneDelegateClassName</key>
-					<string>Blink.WhatsNewSceneDelegate</string>
-				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
 			<array>
