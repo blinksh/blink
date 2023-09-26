@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Combine
+import Dispatch
 
 import SSH
 import ios_system
@@ -54,15 +55,16 @@ enum MoshError: Error {
 @objc public class BlinkMosh: Session {
   var exitCode: Int32 = 0
   var sshCancellable: AnyCancellable? = nil
-  var command: MoshCommand!
+  //var command: MoshCommand!
   // let device = tty()
   let currentRunLoop = RunLoop.current
   var stdin: InputStream!
   var stdout: OutputStream!
   var stderr: OutputStream!
   var bootstrapSequence: [MoshBootstrap] = []
-  var moshParams: MoshParams? = nil
-  let mcpSession: MCPSession
+  private var initialMoshParams: MoshParams? = nil
+  private let mcpSession: MCPSession
+  private var suspendSemaphore: DispatchSemaphore? = nil
 
   let stateCallback: mosh_state_callback = { (context, buffer, size) in
     // TODO buffer nil?
@@ -80,12 +82,44 @@ enum MoshError: Error {
     self.stderr = OutputStream(file: stream.err)
   }
 
-  @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
-    let originalRawMode = device.rawMode
-    defer {
-      device.rawMode = originalRawMode
-    }
+  @objc public override func main(_ argc: Int32, argv: Argv) -> Int32 {
+    mcpSession.setActiveSession()
 
+    // TODO MOSH_ESCAPE_KEY
+
+    // In objc, sessionParams is a covariable for moshparams.
+    // Here we need to force transform.
+    if let initialMoshParams = self.sessionParams as? MoshParams,
+       let _ = initialMoshParams.encodedState {
+      moshMain(initialMoshParams)
+      return 0
+    } else {
+      let command: MoshCommand
+      do {
+        command = try MoshCommand.parse(argv.args(count: argc))
+        //command = try MoshCommand.parse(Array(argv[1...]))
+      } catch {
+        let message = MoshCommand.message(for: error)
+        print("\(message)", to: &stderr)
+        return -1
+      }
+      
+      let moshParams: MoshParams
+      do {
+        try connectMoshServer(command)
+      } catch {
+        return die(message: "(\(error)")
+      }
+      
+      //return start(argc, argv: argv.args(count: argc))
+    }
+  }
+
+  func connectMoshServer(_ command: MoshCommand) throws {
+    
+  }
+  
+  @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     do {
       self.command = try MoshCommand.parse(Array(argv[1...]))
     } catch {
@@ -160,18 +194,21 @@ enum MoshError: Error {
 
     self.device.rawMode = true
 
-    let moshParams = self.moshParams ?? MoshParams(server: moshServerParams, client: moshClientParams)
-    self.sessionParams = moshParams
+    // TODO the self.initialMoshParams here may not be needed anymore. Depends on how we structure the main now.
+    let moshParams = self.initialMoshParams ?? MoshParams(server: moshServerParams, client: moshClientParams)
+    self.copyToSession(moshParams: moshParams)
+    // TODO This is incorrect. We cannot replace sessionParams as there are multiple objects pointing to it.
+    // We need to copy moshParams into sessionParams
 
     // TODO Using SSH Host, but the Host may not be resolved,
     // we need to expose one level deeper, at the socket level.
-    var _selfRef = CFBridgingRetain(self);
+    let _selfRef = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
     mosh_main(
       self.stdin.file,
       self.stdout.file,
       &self.device.win,
-      nil,//&__state_callback,
-      &_selfRef,
+      self.stateCallback,
+      _selfRef,
       moshParams.ip,
       moshParams.port,
       moshParams.key,
@@ -191,6 +228,36 @@ enum MoshError: Error {
     return 0
   }
 
+  private func moshMain(_ moshParams: MoshParams) {
+    let originalRawMode = device.rawMode
+    defer {
+      device.rawMode = originalRawMode
+    }
+    
+    let _selfRef = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+    mosh_main(
+      self.stdin.file,
+      self.stdout.file,
+      &self.device.win,
+      self.stateCallback,
+      _selfRef,
+      moshParams.ip,
+      moshParams.port,
+      moshParams.key,
+      moshParams.predictionMode,
+      [], // encoded state *CChar U8
+      0, // encoded state bytes
+      moshParams.predictOverwrite // predictoverwrite
+    // [self.sessionParams.ip UTF8String],
+    // [self.sessionParams.port UTF8String],
+    // [self.sessionParams.key UTF8String],
+    // [self.sessionParams.predictionMode UTF8String],
+    // encodedState.bytes,
+    // encodedState.length,
+    // [self.sessionParams.predictOverwrite UTF8String]
+    )
+  }
+  
   private func getMoshServerStartupArgs(udpPort: String?,
                                  colors: String?,
                                  exec: [String]?) -> String {
@@ -248,8 +315,10 @@ enum MoshError: Error {
       .eraseToAnyPublisher()
   }
 
-  func onStateEncoded(_ encodedState: Data) {
-    // self.encodedState = encodedState
+  private func copyToSession(moshParams: MoshParams) {
+    if let sessionParams = self.sessionParams as? MoshParams {
+      sessionParams.copy(from: moshParams)
+    }
   }
 
   @objc public override func kill() {
@@ -257,10 +326,27 @@ enum MoshError: Error {
     // Trying to do it at the runloop has the issue that flows may continue running.
     print("Kill received")
     sshCancellable = nil
-
     awake(runLoop: currentRunLoop)
   }
 
+  @objc public override func suspend() {
+    suspendSemaphore = DispatchSemaphore(value: 0)
+    // TODO NSString stringWithFormat:@"%@%@", _escapeKey ?: @"\x1e", @"\x1a"
+    self.device.write(String("\u{1e}\u{1a}"))
+    print("Session suspend called")
+    let _ = suspendSemaphore!.wait(timeout: (DispatchTime.now() + 2.0))
+    print("Session suspended")
+    //dispatch_semaphore_wait(_sema, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+  }
+
+  func onStateEncoded(_ encodedState: Data) {
+    self.sessionParams.encodedState = encodedState
+    print("Encoding session")
+    if let sema = suspendSemaphore {
+      sema.signal()
+    }
+  }
+  
   func die(message: String) -> Int32 {
     print(message, to: &stderr)
     return -1

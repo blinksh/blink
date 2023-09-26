@@ -102,16 +102,17 @@
 
     // We are restoring mosh session if possible first.
     // TODO Restore BlinkMosh
-//    if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
-//      MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
-//      mosh.mcpSession = self;
-//      _childSession = mosh;
-//      [_childSession executeAttachedWithArgs:@""];
-//      _childSession = nil;
-//      if (self.sessionParams.hasEncodedState) {
-//        return;
-//      }
-//    }
+   if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+     BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
+//     MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+//     mosh.mcpSession = self;
+     _childSession = mosh;
+     [_childSession executeAttachedWithArgs:@""];
+     _childSession = nil;
+     if (self.sessionParams.hasEncodedState) {
+       return;
+     }
+   }
     #if TARGET_OS_MACCATALYST
       BKHosts *localhost = [BKHosts withHost:@"localhost"];
       if (localhost) {
