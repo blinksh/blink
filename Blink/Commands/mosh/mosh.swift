@@ -34,35 +34,51 @@ import Combine
 import SSH
 import ios_system
 
-@_cdecl("blink_mosh_main")
-public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
-  setvbuf(thread_stdin, nil, _IONBF, 0)
-  setvbuf(thread_stdout, nil, _IONBF, 0)
-  setvbuf(thread_stderr, nil, _IONBF, 0)
+// @_cdecl("blink_mosh_main")
+// public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
+//   setvbuf(thread_stdin, nil, _IONBF, 0)
+//   setvbuf(thread_stdout, nil, _IONBF, 0)
+//   setvbuf(thread_stderr, nil, _IONBF, 0)
 
-  let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-  let cmd = BlinkMosh()
-  return cmd.start(argc, argv: argv.args(count: argc))
-}
+//   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
+//   // TODO How about register and deregister here?
+//   let cmd = BlinkMosh()
+//   return cmd.start(argc, argv: argv.args(count: argc))
+// }
 
 enum MoshError: Error {
   case NoBinaryAvailable
   case NoMoshServerArgs
 }
 
-@objc public class BlinkMosh: NSObject {
+@objc public class BlinkMosh: Session {
   var exitCode: Int32 = 0
   var sshCancellable: AnyCancellable? = nil
   var command: MoshCommand!
-  let device = tty()
+  // let device = tty()
   let currentRunLoop = RunLoop.current
-  var stdin = InputStream(file: thread_stdin)
-  var stdout = OutputStream(file: thread_stdout)
-  var stderr = OutputStream(file: thread_stderr)
+  var stdin: InputStream!
+  var stdout: OutputStream!
+  var stderr: OutputStream!
   var bootstrapSequence: [MoshBootstrap] = []
+  var moshParams: MoshParams? = nil
+  let mcpSession: MCPSession
 
-  // TODO A different main will process if there is any initial state first, otherwise
-  // call here.
+  let stateCallback: mosh_state_callback = { (context, buffer, size) in
+    // TODO buffer nil?
+    let data = Data(bytes: buffer!, count: size)
+    let session = Unmanaged<BlinkMosh>.fromOpaque(context!).takeUnretainedValue()
+    session.onStateEncoded(data)
+  }
+
+  @objc init!(mcpSession: MCPSession, device: TermDevice!, andParams params: SessionParams!) {
+    self.mcpSession = mcpSession
+    super.init(device: device, andParams: params)
+
+    self.stdin = InputStream(file: stream.in)
+    self.stdout = OutputStream(file: stream.out)
+    self.stderr = OutputStream(file: stream.err)
+  }
 
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     let originalRawMode = device.rawMode
@@ -138,11 +154,14 @@ enum MoshError: Error {
     guard let moshServerParams = moshServerParams else {
       // TODO Not sure I need this one here as we have no other thread. It should close as-is.
       // It does not look like we do. But will keep an eye on Stream Deinit.
-      //RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+      RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
       return exitCode
     }
 
     self.device.rawMode = true
+
+    let moshParams = self.moshParams ?? MoshParams(server: moshServerParams, client: moshClientParams)
+    self.sessionParams = moshParams
 
     // TODO Using SSH Host, but the Host may not be resolved,
     // we need to expose one level deeper, at the socket level.
@@ -153,13 +172,13 @@ enum MoshError: Error {
       &self.device.win,
       nil,//&__state_callback,
       &_selfRef,
-      moshServerParams.remoteIP,
-      moshServerParams.udpPort,
-      moshServerParams.key,
-      String(describing: moshClientParams.predictionMode),
+      moshParams.ip,
+      moshParams.port,
+      moshParams.key,
+      moshParams.predictionMode,
       [], // encoded state *CChar U8
       0, // encoded state bytes
-      moshClientParams.predictOverwrite // predictoverwrite
+      moshParams.predictOverwrite // predictoverwrite
     // [self.sessionParams.ip UTF8String],
     // [self.sessionParams.port UTF8String],
     // [self.sessionParams.key UTF8String],
@@ -229,7 +248,11 @@ enum MoshError: Error {
       .eraseToAnyPublisher()
   }
 
-  @objc public func kill() {
+  func onStateEncoded(_ encodedState: Data) {
+    // self.encodedState = encodedState
+  }
+
+  @objc public override func kill() {
     // Cancelling here makes sure the flows are cancelled.
     // Trying to do it at the runloop has the issue that flows may continue running.
     print("Kill received")
@@ -241,5 +264,20 @@ enum MoshError: Error {
   func die(message: String) -> Int32 {
     print(message, to: &stderr)
     return -1
+  }
+}
+
+extension MoshParams {
+  convenience init(server: MoshServerParams, client: MoshClientParams) {
+    self.init()
+
+    self.key = server.key
+    self.port = server.udpPort
+    self.ip = server.remoteIP
+    self.predictionMode = String(describing: client.predictionMode)
+    self.predictOverwrite = client.predictOverwrite
+    self.serverPath = client.server
+    // TODO self.startupCmd - maybe even use on SSH as well?
+    // TODO self.experimentalRemoteIp
   }
 }
