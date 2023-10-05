@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "FMake",
-        "repositoryURL": "https://github.com/yury/FMake",
+        "repositoryURL": "https://github.com/blinksh/FMake",
         "state": {
           "branch": null,
           "revision": "db46d80e35764c2367fb23ea01e1876d2c2fa9a6",
@@ -12,7 +12,7 @@
       },
       {
         "package": "SSHConfig",
-        "repositoryURL": "https://github.com/yury/SSHConfig",
+        "repositoryURL": "https://github.com/blinksh/SSHConfig",
         "state": {
           "branch": null,
           "revision": "357648c1ecd2206585a14e61d09e6bb781d085b0",
