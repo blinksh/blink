@@ -95,11 +95,11 @@ struct FileDomainView: View {
     }
   }
   
-  private func _eraseCache() {
-    if let nsDomain = domain.nsFileProviderDomain(alias: alias) {
-      _NSFileProviderManager.clearFileProviderCache(nsDomain)
-    }
-  }
+//  private func _eraseCache() {
+//    if let nsDomain = domain.nsFileProviderDomain(alias: alias) {
+//      _NSFileProviderManager.clearFileProviderCache(nsDomain)
+//    }
+//  }
 }
 
 fileprivate struct FileDomainRow: View {

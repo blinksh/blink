@@ -269,5 +269,7 @@ fileprivate class HostsObservable: ObservableObject {
     BKHosts.forceSave()
     filteredList.remove(atOffsets: indexSet)
     reloadHosts()
+    
+    _NSFileProviderManager.syncWithBKHosts()
   }
 }
