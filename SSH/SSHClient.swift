@@ -74,6 +74,14 @@ public class SSHClient {
   public var agent: SSHAgent? {
     self.options.agent
   }
+  
+  public var issueBanner: String? {
+    if isConnected,
+       let banner = ssh_get_issue_banner(session) {
+      return String(cString: banner, encoding: .utf8)
+    }
+    return nil
+  }
 
   // When a connection is local, we consider it trusted and we use this flag to indicate that
   // to the agent. On an untrusted connection, the Agent may decide not to use specific keys.

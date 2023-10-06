@@ -52,6 +52,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   
   var outstream: Int32
   var instream: Int32
+  var errstream: Int32
   let device: TermDevice
   var isTTY: Bool
   var stdout = OutputStream(file: thread_stdout)
@@ -71,11 +72,13 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
+  var errStream: DispatchOutputStream?
   
   init(mcp: MCPSession) {
     _mcp = mcp;
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
+    self.errstream = fileno(thread_stderr)
     self.device = tty()
     self.isTTY = ios_isatty(self.instream) != 0
     super.init()
@@ -176,6 +179,11 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     connect.flatMap { conn -> SSHConnection in
       self.connection = conn
 
+      if let banner = conn.issueBanner,
+         !banner.isEmpty {
+        print(banner, to: &self.stdout)
+      }
+      
       if cmd.startsSession {
         if let addr = conn.clientAddressIP() {
           print("Connected to \(addr)", to: &self.stdout)
@@ -228,6 +236,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     stream?.cancel()
     outStream?.close()
     inStream?.close()
+    errStream?.close()
     // Dispatch streams need a cycle to close.
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
 
@@ -297,6 +306,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     return session.tryMap { s in
       let outs = DispatchOutputStream(stream: self.outstream)
       let ins = DispatchInputStream(stream: self.instream)
+      let errs = DispatchOutputStream(stream: self.errstream)
 
       s.handleCompletion = {
         // Once finished, exit.
@@ -310,9 +320,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         return
       }
 
-      s.connect(stdout: outs, stdin: ins)
+      s.connect(stdout: outs, stdin: ins, stderr: errs)
       self.outStream = outs
       self.inStream = ins
+      self.errStream = errs
       SSHPool.register(shellOn: conn)
       self.stream = s
       return conn
