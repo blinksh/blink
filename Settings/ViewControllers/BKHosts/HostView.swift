@@ -307,6 +307,7 @@ struct HostView: View {
   @EnvironmentObject private var _nav: Nav
   
   @State private var _host: BKHosts?
+  private var _duplicatedHost: BKHosts? = nil
   @State private var _conflictedICloudHost: BKHosts? = nil
   @State private var _alias: String = ""
   @State private var _hostName: String = ""
@@ -345,6 +346,14 @@ struct HostView: View {
     _host = host
     _iCloudVersion = iCloudVersion
     _conflictedICloudHost = host?.iCloudConflictCopy
+    _reloadList = reloadList
+  }
+  
+  init(duplicatingHost host: BKHosts, reloadList: @escaping () -> ()) {
+    _host = nil
+    _duplicatedHost = host
+    _iCloudVersion = false
+    _conflictedICloudHost = nil
     _reloadList = reloadList
   }
   
@@ -476,7 +485,6 @@ struct HostView: View {
     .onAppear {
       if !_loaded {
         loadHost()
-        _loaded = true
       }
     }
     
@@ -485,36 +493,43 @@ struct HostView: View {
   private static var __sshConfigAttachmentExample: String { "# Compression no" }
   
   func loadHost() {
-    if let host = _host {
-      _alias = host.host ?? ""
-      _hostName = host.hostName ?? ""
-      _port = host.port == nil ? "" : host.port.stringValue
-      _user = host.user ?? ""
-      _password = host.password ?? ""
-      _sshKeyName = (host.key == nil || host.key.isEmpty) ? [] : [host.key]
-      _proxyCmd = host.proxyCmd ?? ""
-      _proxyJump = host.proxyJump ?? ""
-      _sshConfigAttachment = host.sshConfigAttachment ?? ""
-      if _sshConfigAttachment.isEmpty {
-        _sshConfigAttachment = HostView.__sshConfigAttachmentExample
-      }
-      if let moshPort = host.moshPort {
-        if let moshPortEnd = host.moshPortEnd {
-          _moshPort = "\(moshPort):\(moshPortEnd)"
-        } else {
-          _moshPort = moshPort.stringValue
-        }
-      }
+    _loaded = true
 
-      _moshPrediction.rawValue = UInt32(host.prediction?.intValue ?? 0)
-      _moshPredictOverwrite = host.moshPredictOverwrite == "yes"
-      _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP?.intValue ?? 0)
-      _moshServer  = host.moshServer ?? ""
-      _moshCommand = host.moshStartup ?? ""
+    guard let host = _host ?? _duplicatedHost else {
+      return
+    }
+
+    _alias = host.host ?? ""
+    _hostName = host.hostName ?? ""
+    _port = host.port == nil ? "" : host.port.stringValue
+    _user = host.user ?? ""
+    _password = host.password ?? ""
+    _sshKeyName = (host.key == nil || host.key.isEmpty) ? [] : [host.key]
+    _proxyCmd = host.proxyCmd ?? ""
+    _proxyJump = host.proxyJump ?? ""
+    _sshConfigAttachment = host.sshConfigAttachment ?? ""
+    if _sshConfigAttachment.isEmpty {
+      _sshConfigAttachment = HostView.__sshConfigAttachmentExample
+    }
+    if let moshPort = host.moshPort {
+      if let moshPortEnd = host.moshPortEnd {
+        _moshPort = "\(moshPort):\(moshPortEnd)"
+      } else {
+        _moshPort = moshPort.stringValue
+      }
+    }
+
+    _moshPrediction.rawValue = UInt32(host.prediction?.intValue ?? 0)
+    _moshPredictOverwrite = host.moshPredictOverwrite == "yes"
+    _moshExperimentalIP.rawValue = UInt32(host.moshExperimentalIP?.intValue ?? 0)
+    _moshServer  = host.moshServer ?? ""
+    _moshCommand = host.moshStartup ?? ""
+    _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt?.intValue ?? 0)
+    _agentForwardKeys = host.agentForwardKeys ?? []
+    _enabled = !( _conflictedICloudHost != nil || _iCloudVersion)
+
+    if _duplicatedHost == nil {
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
-      _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt?.intValue ?? 0)
-      _agentForwardKeys = host.agentForwardKeys ?? []
-      _enabled = !( _conflictedICloudHost != nil || _iCloudVersion) 
     }
   }
   

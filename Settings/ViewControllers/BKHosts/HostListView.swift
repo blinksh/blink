@@ -128,8 +128,17 @@ struct HostListView: View {
             )
           } else {
               List {
-                ForEach(_state.filteredList, id: \.alias) {
-                  HostRow(card: $0, reloadList: _state.reloadHosts)
+                ForEach(Array(_state.filteredList.enumerated()), id: \.element.alias) { index, card in
+                  HostRow(card: card, reloadList: _state.reloadHosts)
+                    .contextMenu(menuItems: {
+                      Button(action: {
+                        _duplicateHost(card: card)
+                      }, label: { Label("Duplicate", systemImage: "plus.square.on.square")})
+                      Divider()
+                      Button(role: .destructive, action: {
+                        _state.deleteHosts(indexSet: IndexSet([index]))
+                      }, label: { Label("Delete", systemImage: "trash") })
+                    })
                 }.onDelete(perform: _state.deleteHosts)
               }
               .listStyle(InsetGroupedListStyle())
@@ -159,6 +168,12 @@ struct HostListView: View {
   
   private func _addHost() {
     let rootView = HostView(host: nil, reloadList: _state.reloadHosts).environmentObject(_nav)
+    let vc = UIHostingController(rootView: rootView)
+    _nav.navController.pushViewController(vc, animated: true)
+  }
+  
+  private func _duplicateHost(card: HostCard) {
+    let rootView = HostView(duplicatingHost: card.host, reloadList:  _state.reloadHosts).environmentObject(_nav)
     let vc = UIHostingController(rootView: rootView)
     _nav.navController.pushViewController(vc, animated: true)
   }
@@ -256,5 +271,3 @@ fileprivate class HostsObservable: ObservableObject {
     reloadHosts()
   }
 }
-
-
