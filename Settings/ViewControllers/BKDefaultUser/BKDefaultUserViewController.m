@@ -67,7 +67,7 @@
     return 1;
 }
 
-- (IBAction)unwindForSegue:(UIStoryboardSegue *)unwindSegue towardsViewController:(UIViewController *)subsequentVC{
+- (void)willMoveToParentViewController:(UIViewController *)parent {
   if(self.userNameField.text != nil && ![self.userNameField.text isEqualToString:@""]){
     NSString *sanitisedName = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
     [BLKDefaults setDefaultUserName:sanitisedName];
