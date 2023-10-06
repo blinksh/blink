@@ -465,6 +465,11 @@ struct HostView: View {
     .listStyle(GroupedListStyle())
     .alert(errorMessage: $_errorMessage)
     .navigationBarItems(
+      leading: Group {
+        Button("Discard", action: {
+          _nav.navController.popViewController(animated: true)
+        })
+      },
       trailing: Group {
         if !_iCloudVersion {
           Button("Save", action: {
@@ -481,6 +486,7 @@ struct HostView: View {
         }
       }
     )
+    .navigationBarBackButtonHidden(true)
     .navigationBarTitle(_host == nil ? "New Host" : _iCloudVersion ? "iCloud Host Version" : "Host" )
     .onAppear {
       if !_loaded {
