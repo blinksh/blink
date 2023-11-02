@@ -676,7 +676,7 @@ extension SpaceController {
     
 //    input.reportStateReset()
     switch cmd.bindingAction {
-    case .hex(let hex, comment: _):
+    case .hex(let hex, stringInput: _, comment: _):
       input.reportHex(hex)
     case .press(let keyCode, mods: let mods):
       input.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)

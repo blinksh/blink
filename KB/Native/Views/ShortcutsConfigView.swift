@@ -51,6 +51,7 @@ struct ActionsList: View {
       } else {
         Section(header: Text("Send")) {
           self._rowHex(action: self.action)
+          self._rowCustomInput(action: self.action)
         }
         Section(header: Text("Press")) {
           ForEach(pressList, id: \.id) { ka in
@@ -66,7 +67,8 @@ struct ActionsList: View {
   private func _rowHex(action: KeyBindingAction) -> some View {
     var checked = false
     var value = ""
-    if case .hex(let val, let comment) = action, comment == nil {
+    
+    if case .hex(let val, let input, let comment) = action, input == nil, comment == nil {
       checked = true
       value = val
     }
@@ -76,7 +78,30 @@ struct ActionsList: View {
       Checkmark(checked: checked)
     }.overlay(
       Button(action: {
-        self.action = .hex(value, comment: nil)
+        self.action = .hex(value, stringInput: nil, comment: nil)
+        self.updatedAt = Date()
+      }, label: { EmptyView() }
+      )
+    )
+  }
+  
+  private func _rowCustomInput(action: KeyBindingAction) -> some View {
+    var checked = false
+    var value = ""
+    var stringInput = ""
+    
+    if case .hex(let val, let input, let comment) = action, input != nil, comment == nil {
+      checked = true
+      value = val
+      stringInput = input!
+    }
+    return HStack {
+      Text("Custom String")
+      Spacer()
+      Checkmark(checked: checked)
+    }.overlay(
+      Button(action: {
+        self.action = .hex(value, stringInput: stringInput, comment: nil)
         self.updatedAt = Date()
       }, label: { EmptyView() }
       )
@@ -132,22 +157,77 @@ class HexFormatter: Formatter {
         .prefix(1000)
     )
   }
+  
+  func stringToHexString(_ input: String) -> String {
+    var result = ""
+    var currentIndex = input.startIndex
+    
+    while currentIndex < input.endIndex {
+      let currentCharacter = input[currentIndex]
+      
+      if currentCharacter == "\\" && input.index(currentIndex, offsetBy: 1) < input.endIndex && input[input.index(currentIndex, offsetBy: 1)] == "x" {
+        // Skip "\x"
+        currentIndex = input.index(currentIndex, offsetBy: 2)
+        var hexSubstring = ""
+        for _ in 0..<2 {
+          if currentIndex < input.endIndex, "0123456789ABCDEFabcdef".contains(input[currentIndex]) {
+            hexSubstring.append(input[currentIndex])
+            currentIndex = input.index(after: currentIndex)
+          } else {
+            break
+          }
+        }
+        // Ensure is double digit.
+        if hexSubstring.count == 1 {
+          hexSubstring = "0" + hexSubstring
+        }
+        result.append(hexSubstring)
+      } else {
+        let hexValue = String(format: "%02X", currentCharacter.unicodeScalars.first?.value ?? 0)
+        result.append(hexValue)
+        currentIndex = input.index(after: currentIndex)
+      }
+    }
+    
+    return result
+  }
 }
 
 struct HexEditorView: View {
   @ObservedObject var shortcut: KeyShortcut
-  @State var value: String = ""
+  @State var input: String = ""
+  var value: String { shortcut.action.hexValues.0 }
+  var stringInput: String? { shortcut.action.hexValues.1 }
   private let _formatter = HexFormatter()
   
   var body: some View {
-    TextField("HEX", text: $value, onEditingChanged: { _ in
-      // Whenever the view is first shown, enter pressed, tap back on Navigation Link & TextField selected
-      // Update the HEX code using the HexFormatter to only accept valid HEX encoded Strings
-      value = _formatter.hexString(str: value)
-      shortcut.action = .hex(value, comment: nil)
-    })
-    .disableAutocorrection(true)
-    .keyboardType(.asciiCapable)
+    _editor()
+      .onAppear {
+        if let stringInput = stringInput {
+          self.input = stringInput
+        } else {
+          self.input = value
+        }
+      }
+      .disableAutocorrection(true)
+      .keyboardType(.asciiCapable)
+  }
+  
+  private func _editor() -> some View {
+    if self.stringInput != nil {
+      return TextField("Custom String", text: $input,
+                onEditingChanged: { _ in
+        let value = _formatter.stringToHexString(input)
+        shortcut.action = .hex(value, stringInput: input, comment: nil)
+      })
+    } else {
+      return TextField("HEX", text: $input, onEditingChanged: { _ in
+        // Whenever the view is first shown, enter pressed, tap back on Navigation Link & TextField selected
+        // Update the HEX code using the HexFormatter to only accept valid HEX encoded Strings
+        let value = _formatter.hexString(str: input)
+        shortcut.action = .hex(value, stringInput: nil, comment: nil)
+      })
+    }
   }
 }
 
@@ -171,15 +251,16 @@ struct ShortcutConfigView: View {
         }
         Section(
           header: Text("Action"),
-          footer: Text(self.shortcut.action.isCustomHEX ? "Use hex encoded sequence" : ""))
+          footer: Text(self.shortcut.action.isCustomHEX ? (self.shortcut.action.isHexStringInput ?
+                                                            "Use string sequence, with \\x for escape characters." :
+                                                            "Use hex encoded sequence") : ""))
         {
           DefaultRow(title: shortcut.action.titleWithoutValue) {
             ActionsList(action: self.$shortcut.action, commandsMode: self.commandsMode)
           }
           if self.shortcut.action.isCustomHEX {
             HexEditorView(
-              shortcut: self.shortcut,
-              value: self.shortcut.action.hexValue
+              shortcut: self.shortcut
             )
           }
         }
