@@ -34,6 +34,39 @@ import Foundation
 import UIKit
 import SwiftUI
 
+struct EmptyStateHandlerView: View {
+  
+  let action: (() -> Void)
+  let title: String
+  let systemIconName: String
+  
+  init(action: @escaping (() -> Void), title: String, systemIconName: String) {
+    self.title = title
+    self.action = action
+    self.systemIconName = systemIconName
+  }
+  
+  var body: some View {
+    VStack {
+      Spacer()
+      VStack {
+        HStack {
+          Label(title, systemImage: "plus")
+            .labelStyle(.titleAndIcon)
+            .font(.system(size: 18.5))
+        }
+        Image(systemName: systemIconName).imageScale(.large).opacity(0.7)
+          .padding(.init(top: 12, leading: 0, bottom: 20, trailing: 0))
+      }
+      .foregroundStyle(Color(.systemTeal))
+      .onTapGesture {
+        action()
+      }
+      Spacer()
+    }
+  }
+}
+
 struct EmptyStateView<Action: View>: View {
   
   let action: Action
