@@ -171,14 +171,6 @@ public class SSHClient {
     if options.sshDirectory != nil {
       try _setSessionOption(SSH_OPTIONS_SSH_DIR, options.sshDirectory)
     }
-    
-    /// Parse `~/.ssh/config` file.
-    /// This should be the last call of all options, it may overwrite options which are already set.
-    /// It requires that the host name is already set with ssh_options_set_host().
-    if let sshConfigPath = options.sshClientConfigPath,
-       ssh_options_parse_config(session, sshConfigPath) != SSH_OK {
-      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
-    }
 
     if let ciphers = options.ciphers {
       try _setSessionOption(SSH_OPTIONS_CIPHERS_C_S, ciphers)
@@ -219,6 +211,18 @@ public class SSHClient {
     
     if var pubKeyAuthentication = options.pubKeyAuthentication {
       try _setSessionOption(SSH_OPTIONS_PUBKEY_AUTH, &pubKeyAuthentication)
+    }
+    
+    /// Parse `~/.ssh/config` file.
+    /// This should be the last call of all options, it may overwrite options which are already set.
+    /// It requires that the host name is already set with ssh_options_set_host().
+    if let sshConfigPath = options.sshClientConfigPath,
+       ssh_options_parse_config(session, sshConfigPath) != SSH_OK {
+      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
+    } else {
+      // Adding this atm may actually break the configuration for others. The config file is still processed.
+      var processConfig = false
+      try _setSessionOption(SSH_OPTIONS_PROCESS_CONFIG, &processConfig)
     }
   }
   
