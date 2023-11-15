@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -887,7 +888,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="Lock Blink after 10 minutes in the background. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
+                            <tableViewSection footerTitle="Lock Blink after a period of inactivity in the background. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="qGk-FE-K2U">
                                         <rect key="frame" x="0.0" y="18" width="768" height="44"/>
@@ -927,16 +928,56 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="fcI-pN-PV8">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="WSw-zp-Iml">
+                                        <rect key="frame" x="0.0" y="110" width="768" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="WSw-zp-Iml" id="Tit-4H-P2r">
+                                            <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lock After" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sdc-Af-TXU">
+                                                    <rect key="frame" x="20" y="11.5" width="208" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="J1p-D2-EyG"/>
+                                                        <constraint firstAttribute="width" constant="208" id="iqd-cP-7TS"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sG1-c0-NbF">
+                                                    <rect key="frame" x="645" y="0.0" width="107" height="44"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" title="10 minutes">
+                                                        <color key="baseForegroundColor" systemColor="systemMintColor"/>
+                                                    </buttonConfiguration>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="sG1-c0-NbF" firstAttribute="top" secondItem="Tit-4H-P2r" secondAttribute="top" id="4cH-xB-ODn"/>
+                                                <constraint firstAttribute="bottom" secondItem="sG1-c0-NbF" secondAttribute="bottom" id="Xdg-rK-ozo"/>
+                                                <constraint firstItem="sdc-Af-TXU" firstAttribute="centerY" secondItem="Tit-4H-P2r" secondAttribute="centerY" id="YW7-eL-Ntw"/>
+                                                <constraint firstAttribute="trailing" secondItem="sG1-c0-NbF" secondAttribute="trailing" constant="16" id="eij-oE-DtS"/>
+                                                <constraint firstAttribute="leadingMargin" secondItem="sdc-Af-TXU" secondAttribute="leading" id="fEm-pS-60r"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                         </sections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Auto Lock" id="fUX-nP-y9g"/>
                     <connections>
+                        <outlet property="customLockButton" destination="sG1-c0-NbF" id="ggB-bw-vXw"/>
+                        <outlet property="customLockTableViewCell" destination="WSw-zp-Iml" id="a2C-Pl-bPm"/>
                         <outlet property="toggleAppLock" destination="BXl-xh-xd4" id="sfi-Iw-uOG"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="txA-GO-e3M" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1316" y="2606"/>
+            <point key="canvasLocation" x="1315.625" y="2605.6640625"/>
         </scene>
         <!--X Callback URL-->
         <scene sceneID="uic-TX-QrF">
@@ -992,6 +1033,9 @@
     <resources>
         <systemColor name="groupTableViewBackgroundColor">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemMintColor">
+            <color red="0.0" green="0.78039215689999997" blue="0.74509803919999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -38,7 +38,6 @@ import LocalAuthentication
   
   @objc static let shared = LocalAuth()
   
-  private static var _maxInactiveInterval = TimeInterval(10 * 60)
   private var _didEnterBackgroundAt: Date? = nil
   private var _inProgress = false
   
@@ -57,10 +56,10 @@ import LocalAuthentication
       object: nil,
       queue: OperationQueue.main
     ) { _ in
-
+      
       // Do not reset didEnterBackground if we locked
       if let didEnterBackgroundAt = self._didEnterBackgroundAt,
-        Date().timeIntervalSince(didEnterBackgroundAt) > LocalAuth._maxInactiveInterval {
+         Date().timeIntervalSince(didEnterBackgroundAt) > TimeInterval(self.getMaxMinutesTimeInterval() * 60) {
         return
       }
       self._didEnterBackgroundAt = Date()
@@ -71,12 +70,20 @@ import LocalAuthentication
     guard
       let didEnterBackgroundAt = _didEnterBackgroundAt,
       BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock),
-      Date().timeIntervalSince(didEnterBackgroundAt) > LocalAuth._maxInactiveInterval
+      Date().timeIntervalSince(didEnterBackgroundAt) > TimeInterval(getMaxMinutesTimeInterval() * 60)
     else {
       return false
     }
     
     return true
+  }
+  
+  @objc func getMaxMinutesTimeInterval() -> Int {
+    UserDefaults.standard.value(forKey: "BKUserConfigLockIntervalKey") as? Int ?? 10
+  }
+  
+  @objc func setNewLockTimeInterval(minutes: Int) {
+    UserDefaults.standard.set(minutes, forKey: "BKUserConfigLockIntervalKey")
   }
   
   func unlock() {
@@ -119,5 +126,4 @@ import LocalAuthentication
       }
     }
   }
-  
 }
