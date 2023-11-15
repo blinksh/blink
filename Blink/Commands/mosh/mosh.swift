@@ -190,14 +190,14 @@ enum MoshError: Error {
           }
         })
         .sink(
-          receiveCompletion: { completion in
+          receiveCompletion: { [weak self] completion in
             switch completion {
             case .failure(let error):
               sshError = error
             default:
               break
             }
-            self.kill()
+            self?.kill()
           },
           receiveValue: { params in
             _moshServerParams = params
