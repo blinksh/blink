@@ -62,6 +62,8 @@ struct MoshCommand: ParsableCommand {
   var predict: BKMoshPrediction?
 
   @Flag var predictOverwrite: Bool = false
+  
+  @Flag var verbose: Bool = false
 
   @Flag var noSshPty: Bool = false
   
@@ -150,6 +152,9 @@ extension MoshCommand {
     }
 
     // TODO - Careful here as a high log level like DEBUG will introduce a lot of noise.
+    if self.verbose {
+      params["loglevel"] = "INFO"
+    }
     // params["loglevel"] = "DEBUG"
 
     params["compression"] = "no"

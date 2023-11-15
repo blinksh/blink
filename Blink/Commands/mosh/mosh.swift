@@ -71,6 +71,7 @@ enum MoshError: Error {
   private let mcpSession: MCPSession
   private var suspendSemaphore: DispatchSemaphore? = nil
   private let escapeKey: String
+  private var logger: MoshLogger! = nil
 
   let stateCallback: mosh_state_callback = { (context, buffer, size) in
     guard let buffer = buffer, let context = context else {
@@ -114,6 +115,8 @@ enum MoshError: Error {
         return die(message: message)
       }
 
+      self.logger = MoshLogger(output: self.stderr, logLevel: command.verbose ? .info : .error)
+      
       let moshParams: MoshParams
       do {
         moshParams = try startMoshServer(using: command)
@@ -130,6 +133,7 @@ enum MoshError: Error {
     let host: BKSSHHost
     let config: SSHClientConfig
     let hostName: String
+    let log = logger.log("startMoshServer")
 
     host = try BKConfig().bkSSHHost(command.hostAlias, extending: command.bkSSHHost())
     hostName = host.hostName ?? command.hostAlias
@@ -145,6 +149,7 @@ enum MoshError: Error {
       // Resolved as part of the host info or explicit on params.
       let remoteIP = hostName
       moshServerParams = MoshServerParams(key: customKey, udpPort: customUDPPort, remoteIP: remoteIP)
+      log.info("Manual Mosh server bootstrapped with params \(moshServerParams)")
     } else {
       let moshServerStartupArgs = getMoshServerStartupArgs(udpPort: moshClientParams.customUDPPort,
                                                            colors: nil,
@@ -158,7 +163,7 @@ enum MoshError: Error {
       } else {
         sequence = [UseMoshOnPath(path: moshClientParams.server),
                     UseMoshOnPath.staticMosh(),
-                    InstallStaticMosh(onCancel: { [weak self] in self?.kill() })]
+                    InstallStaticMosh(onCancel: { [weak self] in self?.kill() }, logger: self.logger)]
       }
       
       let pty: SSH.SSHClient.PTY?
@@ -171,17 +176,16 @@ enum MoshError: Error {
       var sshError: Error? = nil
       var _moshServerParams: MoshServerParams? = nil
       self.sshCancellable = SSHClient.dial(hostName, with: config)
-        .flatMap { self.startMoshServer(on: $0,
-                                        sequence: sequence,
-                                        experimentalRemoteIP: moshClientParams.experimentalRemoteIP,
-                                        args: moshServerStartupArgs,
-                                        withPTY: pty) }
-        .print()
+        .flatMap { self.bootstrapMoshServer(on: $0,
+                                            sequence: sequence,
+                                            experimentalRemoteIP: moshClientParams.experimentalRemoteIP,
+                                            args: moshServerStartupArgs,
+                                            withPTY: pty) }
+        //.print()
         .sink(
           receiveCompletion: { completion in
             switch completion {
             case .failure(let error):
-              print("Mosh bootstrap failed \(error)")
               sshError = error
             default:
               break
@@ -202,6 +206,7 @@ enum MoshError: Error {
         throw MoshError.NoMoshServerArgs
       }
       moshServerParams = _moshServerParams
+      log.info("Remote Mosh server bootstrapped with params \(moshServerParams)")
     }
 
     return MoshParams(server: moshServerParams, client: moshClientParams)
@@ -258,11 +263,14 @@ enum MoshError: Error {
     return args.joined(separator: " ")
   }
 
-  private func startMoshServer(on client: SSHClient,
-                               sequence: [MoshBootstrap],
-                               experimentalRemoteIP: BKMoshExperimentalIP,
-                               args: String,
-                               withPTY pty: SSH.SSHClient.PTY? = nil) -> AnyPublisher<MoshServerParams, Error> {
+  private func bootstrapMoshServer(on client: SSHClient,
+                                   sequence: [MoshBootstrap],
+                                   experimentalRemoteIP: BKMoshExperimentalIP,
+                                   args: String,
+                                   withPTY pty: SSH.SSHClient.PTY? = nil) -> AnyPublisher<MoshServerParams, Error> {
+    let log = logger.log("bootstrapMoshServer")
+    log.info("Trying bootstrap with sequence: \(sequence), experimental: \(experimentalRemoteIP), args: \(args)")
+    
     if sequence.isEmpty {
       return Fail(error: MoshError.NoBinaryAvailable).eraseToAnyPublisher()
     }
@@ -273,6 +281,7 @@ enum MoshError: Error {
       }
 
       let bootstrap = sequence.first!
+      log.info("Trying \(bootstrap)")
       return Just(bootstrap)
         .flatMap { $0.start(on: client) }
         .map { moshServerPath -> String in
@@ -283,7 +292,7 @@ enum MoshError: Error {
           }
         }
         .flatMap {
-          print("Connecting to \($0)")
+          log.info("Connecting to \($0)")
           return client.requestExec(command: $0, withPTY: pty)
         }
         .flatMap { s -> AnyPublisher<DispatchData, Error> in
@@ -296,7 +305,7 @@ enum MoshError: Error {
               String(decoding: $0 as AnyObject as! Data, as: UTF8.self)
             }
             .tryMap { output -> MoshServerParams in
-              print("Mosh server sent \(output)")
+              log.info("Command output: \(output)")
               // IP Resolution
               switch experimentalRemoteIP {
               case BKMoshExperimentalIPRemote:
@@ -312,10 +321,9 @@ enum MoshError: Error {
                 return try MoshServerParams(parsing: output, remoteIP: client.clientAddressIP())
               }
             }
-            .catch{ _ in
+            .catch{ err in
               //let err = String(decoding: err as AnyObject as! Data, as: UTF8.self)
-              print("Could not bootstrap with sequence")
-              //print("Error received: \(err)")
+              log.warn("Bootstrap failed with \(err)")
               var sequence = sequence
               sequence.removeFirst()
               return tryBootstrap(sequence)
@@ -441,5 +449,35 @@ extension MoshParams {
     self.predictionMode = String(describing: client.predictionMode)
     self.predictOverwrite = client.predictOverwrite
     self.serverPath = client.server
+  }
+}
+
+class MoshLogger {
+  var handler = [BlinkLogging.LogHandlerFactory]()
+  init(output: OutputStream, logLevel: BlinkLogLevel = .error) {
+    handler.append(
+      {
+        $0
+          .filter(logLevel: logLevel)
+          .format { [ ($0[.component] as? String)?.appending(":") ?? "global:",
+                    $0[.message] as? String ?? ""
+                  ].joined(separator: " ") }
+        .sinkToStream(output)
+      }
+    )
+  }
+  
+  func log(_ component: String) -> BlinkLogger {
+    BlinkLogger(component, handlers: handler)
+  }
+}
+
+extension Publisher {
+  fileprivate func sinkToStream(_ stream: OutputStream) -> AnyCancellable where Self.Output == [BlinkLogKeys:Any] {
+    let out = NonStdIO(err: stream)
+    return sink(receiveCompletion: { _ in },
+                receiveValue: {
+      out.printError($0[.message] ?? "")
+    })
   }
 }
