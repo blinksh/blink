@@ -59,6 +59,10 @@ extension BKHosts {
       if let proxyJump = h.proxyJump, !proxyJump.isEmpty {
         cfg.append(("ProxyJump", proxyJump))
       }
+      if let agentForwardPrompt = h.agentForwardPrompt,
+         agentForwardPrompt.intValue > 0 {
+        cfg.append(("ForwardAgent", "yes"))
+      }
       if let sshConfigAttachment = h.sshConfigAttachment, !sshConfigAttachment.isEmpty {
         sshConfigAttachment.split(whereSeparator: \.isNewline).forEach { line in
           let components = line

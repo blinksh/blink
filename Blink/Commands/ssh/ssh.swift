@@ -191,7 +191,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
         // AgentForwardingPrompt
         var sendAgent = host.forwardAgent ?? false
-
+        // Add forwarded keys after the connection is established, to make sure they won't be used
+        // during login.
+        // TODO: We do not need to change the sendAgent flag here, but ssh_config was not adding it.
+        // Let configs change and do later.
         if let bkHost = BKHosts.withHost(cmd.hostAlias),
            let agent = conn.agent {
           if self.loadAgentForwardKeys(bkHost: bkHost, agent: agent) {
