@@ -51,12 +51,7 @@ public class SSHAgentUserPrompt: SSHAgentConstraint {
 
     let semaphore = DispatchSemaphore(value: 0)
     var shouldForwardKey: Bool = false
-    // TODO Figure out the proper control
-    // If we requested permission using a notification, once the notification disappears, there
-    // would be no way of doing it.
-    // But the Alert controller blocks if you are working somewhere else.
-    // We need a combo, and use a custom UI instead of the UIAlertController.
-    // If the connection is reused, the view may also come from the wrong place.
+    
     let alert = UIAlertController(title: "Agent", message: "Forward key \"\(key.name)\" on \(client.host)?", preferredStyle: .alert)
     alert.addAction(
       UIAlertAction(title: NSLocalizedString("Forward Once", comment: "Forward the key this time"),

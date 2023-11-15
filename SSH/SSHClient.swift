@@ -547,7 +547,7 @@ public class SSHClient {
       log.message("Trying \(method.displayName)...", SSH_LOG_INFO)
       
       return method
-        .auth(connection())
+        .auth(user: self.options.user, host: self.host, on: connection())
         .flatMap { result -> AnyPublisher<SSHClient, Error> in
           switch result {
           case .success:

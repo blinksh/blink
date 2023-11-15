@@ -45,7 +45,7 @@ extension AuthMethod {
 }
 
 protocol Authenticator: AuthMethod {
-  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error>
+  func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error>
 }
 
 public enum AuthState {
@@ -76,7 +76,7 @@ public class AuthPassword: AuthMethod, Authenticator {
     }
   }
   
-  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+  func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
     conn.tryAuth { try self.auth($0) }
   }
   
@@ -106,7 +106,7 @@ public class AuthNone: AuthMethod, Authenticator {
     }
   }
   
-  internal func auth(_ connection: SSHConnection) -> AnyPublisher<AuthState, Error> {
+  internal func auth(user: String, host: String, on connection: SSHConnection) -> AnyPublisher<AuthState, Error> {
     connection.tryAuth { try self.auth($0) }
   }
   
@@ -147,8 +147,8 @@ public class AuthPasswordInteractive: AuthMethod, Authenticator {
     self.wrongRetriesLeft = wrongRetriesAllowed
   }
   
-  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
-    let p = Prompt(name: "password", instruction: "password", userPrompts: [Prompt.Question(prompt: "password:", echo: false)])
+  func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+    let p = Prompt(name: "password", instruction: "(\(user)@\(host))", userPrompts: [Prompt.Question(prompt: "password:", echo: false)])
 
     return self.requestAnswers(p)
         .flatMap { answers -> AnyPublisher<AuthState, Error> in
@@ -161,7 +161,7 @@ public class AuthPasswordInteractive: AuthMethod, Authenticator {
             case SSH_AUTH_DENIED:
               self.wrongRetriesLeft -= 1
               if self.wrongRetriesLeft >= 0 {
-                return .continue(auth: self.auth(conn))
+                return .continue(auth: self.auth(user: user, host: host, on: conn))
               }
               return .denied
             case SSH_AUTH_PARTIAL: return .partial
@@ -191,7 +191,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
     self.wrongRetriesLeft = wrongRetriesAllowed
   }
   
-  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+  func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
     return conn.tryAuth { session in
       let rc = ssh_userauth_kbdint(session, nil, nil)
       let auth = ssh_auth_e(rc)
@@ -210,7 +210,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
         return .denied
       case SSH_AUTH_INFO:
         // Get prompt info
-        let p = self.prompts(session)
+        let p = self.prompts(user: user, host: host, session: session)
         
         return AuthState.continue(
           auth: self.requestAnswers(p)
@@ -227,7 +227,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
               return conn
             }
             // We need to loop, as we may receive questions in multiple phases.
-            .flatMap { self.auth($0) }
+            .flatMap { self.auth(user: user, host: host, on: $0) }
             .eraseToAnyPublisher()
         )
       default:
@@ -236,7 +236,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
     }
   }
   
-  func prompts(_ session: ssh_session) -> Prompt {
+  func prompts(user: String, host: String, session: ssh_session) -> Prompt {
     let name = ssh_userauth_kbdint_getname(session)
     let instruction = ssh_userauth_kbdint_getinstruction(session)
     let nprompts = ssh_userauth_kbdint_getnprompts(session)
@@ -254,7 +254,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
     }
     
     return Prompt(name: String(cString: name!),
-                  instruction: String(cString: instruction!),
+                  instruction: "\(user)@\(host)'s \(String(cString: instruction!))",
                   userPrompts: userPrompts)
   }
   
@@ -327,7 +327,7 @@ public class AuthPublicKey: AuthMethod, Authenticator {
     }
   }
   
-  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+  func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
     return conn.tryAuth { session in
       let state = try self.publicKeyNegotiation(session)
       switch state {
@@ -360,7 +360,7 @@ public class AuthAgent: AuthMethod, Authenticator {
     self.agent = agent
   }
   
-  internal func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+  internal func auth(user: String, host: String, on conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
     return conn.tryAuth { try self.auth($0) }
   }
   
