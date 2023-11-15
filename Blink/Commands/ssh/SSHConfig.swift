@@ -49,6 +49,41 @@ struct SSHCommand: ParsableCommand {
     // Commands can define a version for automatic '--version' support.
     version: Version)
 
+  // Connect to User at Host
+  @Argument(help: "[user@]host[#port]")
+  var userAtHost: String
+  var hostAlias: String {
+    get {
+      let comps = userAtHost.components(separatedBy: "@")
+      let hostAndPort = comps[comps.count - 1]
+      let compsHost = hostAndPort.components(separatedBy: "#")
+      return compsHost[0]
+    }
+  }
+  var user: String? {
+    get {
+      // Login name preference over user@host
+      if let user = loginName {
+        return user
+      }
+      var comps = userAtHost.components(separatedBy: "@")
+      if comps.count > 1 {
+        comps.removeLast()
+        return comps.joined(separator: "@")
+      }
+      return nil
+    }
+  }
+  var port: UInt16? {
+    get {
+      if let port = customPort {
+        return port
+      }
+      let comps = userAtHost.components(separatedBy: "#")
+      return comps.count > 1 ? UInt16(comps[1]) : nil
+    }
+  }
+  
   // Port forwarding options
   @Option(name: .customShort("L"),
           help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side."
@@ -198,43 +233,8 @@ struct SSHCommand: ParsableCommand {
   )
   var identityFile: String?
 
-  // Connect to User at Host
-  @Argument(help: "[user@]host[#port]")
-  var userAtHost: String
-  var hostAlias: String {
-    get {
-      let comps = userAtHost.components(separatedBy: "@")
-      let hostAndPort = comps[comps.count - 1]
-      let compsHost = hostAndPort.components(separatedBy: "#")
-      return compsHost[0]
-    }
-  }
-  var user: String? {
-    get {
-      // Login name preference over user@host
-      if let user = loginName {
-        return user
-      }
-      var comps = userAtHost.components(separatedBy: "@")
-      if comps.count > 1 {
-        comps.removeLast()
-        return comps.joined(separator: "@")
-      }
-      return nil
-    }
-  }
-  var port: UInt16? {
-    get {
-      if let port = customPort {
-        return port
-      }
-      let comps = userAtHost.components(separatedBy: "#")
-      return comps.count > 1 ? UInt16(comps[1]) : nil
-    }
-  }
-
   @Argument(
-    parsing: .unconditionalRemaining,
+    parsing: .remaining,
     help: .init(
       "If a <command> is specified, it is executed on the remote host instead of a login shell",
       valueName: "command"

@@ -92,6 +92,7 @@
 		BD028AF32A8EC509002F5F54 /* TrialSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */; };
 		BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
+		BD19DB412B056E9C003A4367 /* SSHCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD19DB402B056E9C003A4367 /* SSHCommandTest.swift */; };
 		BD2E27B529BAA8DA003AF1DA /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
@@ -822,6 +823,7 @@
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialSupportView.swift; sourceTree = "<group>"; };
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		BD19DB402B056E9C003A4367 /* SSHCommandTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHCommandTest.swift; sourceTree = "<group>"; };
 		BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
@@ -2090,6 +2092,7 @@
 				BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */,
 				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
 				BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */,
+				BD19DB402B056E9C003A4367 /* SSHCommandTest.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -3229,6 +3232,7 @@
 				BD9EA218271F846400874007 /* Publisher.swift in Sources */,
 				BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */,
 				BD9EA216271F83B400874007 /* BlinkLoggingTests.swift in Sources */,
+				BD19DB412B056E9C003A4367 /* SSHCommandTest.swift in Sources */,
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
