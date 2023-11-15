@@ -249,7 +249,7 @@ class OutStream {
   
   deinit {
     if self.isStderr == 1 {
-      log.message("Errstream deinit", SSH_LOG_DEBUG)
+      log.message("Errstream deinit", SSH_LOG_INFO)
     } else {
       log.message("Outstream deinit", SSH_LOG_INFO)
     }
