@@ -65,10 +65,10 @@ public class NonStdIO: Codable {
   public var verbose: Bool = false
   public var quiet: Bool = false
   
-  public init() {
-    self.in_ = InputStream.stdin
-    self.out = OutputStream.stdout
-    self.err = OutputStream.stderr
+  public init(in_: InputStream? = nil, out: OutputStream? = nil, err: OutputStream? = nil) {
+    self.in_ = in_ ?? InputStream.stdin
+    self.out = out ?? OutputStream.stdout
+    self.err = err ?? OutputStream.stderr
   }
   
   public required init(from decoder: Decoder) throws {
@@ -80,7 +80,7 @@ public class NonStdIO: Codable {
   public func encode(to encoder: Encoder) throws {
   }
   
-  public static let standart = NonStdIO()
+  public static let standard = NonStdIO()
 }
 
 public protocol WithNonStdIO {

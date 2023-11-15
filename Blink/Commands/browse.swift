@@ -46,7 +46,7 @@ struct BrowseCommand: NonStdIOCommand {
     """
 
   @OptionGroup var verboseOptions: VerboseOptions
-  var io = NonStdIO.standart
+  var io = NonStdIO.standard
 
   @Argument(
     help: "Path to connect to or http(s) vscode like editor url",
@@ -77,7 +77,7 @@ public func browse_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
-  let io = NonStdIO.standart
+  let io = NonStdIO.standard
   io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
