@@ -72,6 +72,7 @@ enum MoshError: Error {
   private var suspendSemaphore: DispatchSemaphore? = nil
   private let escapeKey: String
   private var logger: MoshLogger! = nil
+  var isRunloopRunning = false
 
   let stateCallback: mosh_state_callback = { (context, buffer, size) in
     guard let buffer = buffer, let context = context else {
@@ -182,6 +183,12 @@ enum MoshError: Error {
                                             args: moshServerStartupArgs,
                                             withPTY: pty) }
         //.print()
+        .handleEvents(receiveCancel: { [weak self] in
+          if let self = self {
+            self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
+            awake(runLoop: currentRunLoop)
+          }
+        })
         .sink(
           receiveCompletion: { completion in
             switch completion {
@@ -196,7 +203,9 @@ enum MoshError: Error {
             _moshServerParams = params
           })
 
+      self.isRunloopRunning = true
       awaitRunLoop(currentRunLoop)
+      self.isRunloopRunning = false
 
       if let error = sshError {
         throw error
@@ -393,10 +402,11 @@ enum MoshError: Error {
   }
 
   @objc public override func kill() {
-    if sshCancellable != nil {
+    if isRunloopRunning {
       // Cancelling here makes sure the flows are cancelled.
       // Trying to do it at the runloop has the issue that flows may continue running.
       print("Kill received")
+      self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
       awake(runLoop: currentRunLoop)
       sshCancellable = nil
     } else {
@@ -419,6 +429,15 @@ enum MoshError: Error {
 
   @objc public override func sigwinch() {
     pthread_kill(self.tid, SIGWINCH);
+  }
+  
+  @objc public override func handleControl(_ control: String!) -> Bool {
+    if isRunloopRunning {
+      self.kill()
+      return true
+    } else {
+      return false
+    }
   }
   
   func onStateEncoded(_ encodedState: Data) {
@@ -452,7 +471,7 @@ extension MoshParams {
   }
 }
 
-class MoshLogger {
+struct MoshLogger {
   var handler = [BlinkLogging.LogHandlerFactory]()
   init(output: OutputStream, logLevel: BlinkLogLevel = .error) {
     handler.append(
@@ -462,7 +481,8 @@ class MoshLogger {
           .format { [ ($0[.component] as? String)?.appending(":") ?? "global:",
                     $0[.message] as? String ?? ""
                   ].joined(separator: " ") }
-        .sinkToStream(output)
+          .sink(receiveValue: { print($0[.message]) })
+        //.sinkToStream(output)
       }
     )
   }
