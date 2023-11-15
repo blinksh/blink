@@ -48,6 +48,8 @@ extern void __thread_ssh_execute_command(const char *command, socket_t in, socke
 extern int ios_dup2(int fd1, int fd2);
 extern void ios_exit(int errorCode) __dead2; // set error code and exits from the thread.
 
+typedef void (*mosh_state_callback) (const void *context, const void *buffer, size_t size);
+
 #import "BLKDefaults.h"
 #import "UIDevice+DeviceName.h"
 #import "BKHosts.h"
@@ -70,5 +72,7 @@ extern void ios_exit(int errorCode) __dead2; // set error code and exits from th
 #import "TokioSignals.h"
 #import "BlinkMenu.h"
 #import "GeoManager.h"
+#import "mosh/moshiosbridge.h"
+
 
 #endif /* Blink_bridge_h */

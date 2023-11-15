@@ -99,9 +99,22 @@
     thread_stderr = nil;
     
     ios_setStreams(_stream.in, _stream.out, _stream.err);
-    
+
     // We are restoring mosh session if possible first.
+    // TODO Restore BlinkMosh
     if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+      BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
+      //     MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+      //     mosh.mcpSession = self;
+      _childSession = mosh;
+      [_childSession executeAttachedWithArgs:@""];
+      _childSession = nil;
+      if (self.sessionParams.hasEncodedState) {
+        return;
+      }
+    }
+    if ([@"mosh2" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+      //BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
       MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
       mosh.mcpSession = self;
       _childSession = mosh;
@@ -201,6 +214,11 @@
     if (self.sessionParams.hasEncodedState) {
       return NO;
     }
+  } else if ([cmd isEqualToString:@"mosh2"]) {
+    [self _runMosh2WithArgs:cmdline];
+    if (self.sessionParams.hasEncodedState) {
+      return NO;
+    }
   } else if ([cmd isEqualToString:@"ssh2"]) {
     [self _runSSHWithArgs:cmdline];
   } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
@@ -275,6 +293,25 @@
 {
   self.sessionParams.childSessionParams = [[MoshParams alloc] init];
   self.sessionParams.childSessionType = @"mosh";
+  BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
+  // TODO Connect previous mosh
+  //MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+  //mosh.mcpSession = self;
+  _childSession = mosh;
+  
+  // duplicate args
+  NSString *str = [NSString stringWithFormat:@"%@", args];
+  [_childSession executeAttachedWithArgs:str];
+  
+  _childSession = nil;
+}
+
+- (void)_runMosh2WithArgs:(NSString *)args
+{
+  self.sessionParams.childSessionParams = [[MoshParams alloc] init];
+  self.sessionParams.childSessionType = @"mosh2";
+  //BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
+  // TODO Connect previous mosh
   MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
   mosh.mcpSession = self;
   _childSession = mosh;

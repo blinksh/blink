@@ -161,6 +161,11 @@ public class Stream : Reader, Writer, WriterTo {
     return outstream.read(max: length)
   }
   
+  public func read_err(max length: Int) -> AnyPublisher<DispatchData, Error> {
+    let errstream = OutStream(self, isStderr: true)
+    return errstream.read(max: length)
+  }
+  
   public func write(_ buf: DispatchData, max length: Int) -> AnyPublisher<Int, Error> {
     let instream = InStream(self)
     return instream.write(buf, max: length)

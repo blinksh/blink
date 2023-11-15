@@ -76,6 +76,9 @@
 @property (nonatomic) NSInteger rows;
 @property (nonatomic) NSInteger cols;
 
+// Offer the pointer as it is a struct on itself. This is helpful because on Swift,
+// we cannot used a synthesized expression to get the UnsafeMutablePointer.
+- (struct winsize *)window;
 - (void)attachInput:(UIView<TermInput> *)termInput;
 - (void)attachView:(TermView *)termView;
 

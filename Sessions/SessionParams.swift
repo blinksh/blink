@@ -117,6 +117,17 @@ import UIKit
   
   static var secureCoding2 = true
   override class var supportsSecureCoding: Bool { secureCoding2 }
+  
+  public func copy(from params: MoshParams) {
+    self.ip = params.ip
+    self.port = params.port
+    self.key = params.key
+    self.predictionMode = params.predictionMode
+    self.predictOverwrite = params.predictOverwrite
+    self.startupCmd = params.startupCmd
+    self.serverPath = params.serverPath
+    self.experimentalRemoteIp = params.experimentalRemoteIp
+  }
 }
 
 @objc class MCPParams: SessionParams {

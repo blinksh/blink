@@ -96,4 +96,17 @@ extension Translator {
           .eraseToAnyPublisher()
       }.eraseToAnyPublisher()
   }
+
+  public func mkdir(name: String) -> AnyPublisher<Translator, Error> {
+    mkdir(name: name, mode: S_IRWXU | S_IRWXG | S_IRWXO)
+  }
+
+  public func mkPath(path: String) -> AnyPublisher<Translator, Error> {
+    cloneWalkTo(path)
+      .catch { _ in
+        let name = (path as NSString).lastPathComponent
+        let parentPath = (path as NSString).deletingLastPathComponent
+        return mkPath(path: parentPath).flatMap { $0.mkdir(name: name ) }.eraseToAnyPublisher()
+      }.eraseToAnyPublisher()
+  }
 }
