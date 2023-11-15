@@ -43,7 +43,7 @@ struct FaceCam: NonStdIOCommand {
   )
   
   @OptionGroup var verboseOptions: VerboseOptions
-  var io = NonStdIO.standart
+  var io = NonStdIO.standard
   
   struct On: NonStdIOCommand {
     static var configuration = CommandConfiguration(
@@ -52,7 +52,7 @@ struct FaceCam: NonStdIOCommand {
     )
     
     @OptionGroup var verboseOptions: VerboseOptions
-    var io = NonStdIO.standart
+    var io = NonStdIO.standard
     
     func run() throws {
       var sema: DispatchSemaphore? = nil
@@ -117,7 +117,7 @@ struct FaceCam: NonStdIOCommand {
     )
     
     @OptionGroup var verboseOptions: VerboseOptions
-    var io = NonStdIO.standart
+    var io = NonStdIO.standard
     
     func run() throws {
       print("See you next time!")
@@ -135,7 +135,7 @@ public func facecam_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
-  let io = NonStdIO.standart
+  let io = NonStdIO.standard
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
   
