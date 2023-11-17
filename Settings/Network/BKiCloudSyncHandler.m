@@ -143,18 +143,19 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   }
 }
 
-- (void)deleteAllItems
+- (void)deleteSyncScheduledItems
 {
+  
   NSMutableArray *deletedHosts = [NSMutableArray arrayWithArray:[syncItems objectForKey:BKiCloudSyncDeletedHosts]];
+  [syncItems removeObjectForKey:BKiCloudSyncDeletedHosts];
   for (CKRecordID *recordId in deletedHosts) {
     [self deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
   }
-  [syncItems removeObjectForKey:BKiCloudSyncDeletedHosts];
 }
 
 - (void)syncFromiCloud
 {
-  [self deleteAllItems];
+  [self deleteSyncScheduledItems];
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
   CKQuery *hostQuery = [[CKQuery alloc] initWithRecordType:@"BKHost" predicate:[NSPredicate predicateWithValue:YES]];
   [database performQuery:hostQuery
@@ -174,18 +175,23 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   if (recordType == BKiCloudRecordTypeHosts) {
     key = BKiCloudSyncDeletedHosts;
   }
-
+  NSLog(@"Host %@ scheduled for deletion", recordId);
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
   [database deleteRecordWithID:recordId
 	     completionHandler:^(CKRecordID *_Nullable recordID, NSError *_Nullable error) {
 	       if (error) {
+      NSLog(@"Deletion failed. Syncing later %@", recordId);
+
 		 NSMutableArray *deletedItems = [NSMutableArray array];
 		 if ([syncItems objectForKey:key]) {
 		   deletedItems = [NSMutableArray arrayWithArray:[syncItems objectForKey:key]];
 		 }
 		 [deletedItems addObject:recordId];
 		 [syncItems setObject:deletedItems forKey:key];
-	       }
+           [BKiCloudSyncHandler saveSyncItems];
+         } else {
+           NSLog(@"Deleted %@", recordId);
+         }
 	     }];
 }
 
@@ -195,9 +201,15 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 {
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
   CKRecord *hostRecord = [BKHosts recordFromHost:host];
+  NSLog(@"Host %@ scheduled for creation", host.host);
   [database saveRecord:hostRecord
      completionHandler:^(CKRecord *_Nullable record, NSError *_Nullable error) {
-       [BKHosts updateHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
+    if (error == nil) {
+      NSLog(@"Created host %@, record %@", host.host, record.recordID);
+      [BKHosts updateHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
+    } else {
+      NSLog(@"Host %@ upload to iCloud failed: %@", host.host, error);
+    }
      }];
 }
 
@@ -208,10 +220,10 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     if ([hostRecord valueForKey:@"host"]) {
       NSString *host = [hostRecord valueForKey:@"host"];
       BKHosts *hosts = [BKHosts withiCloudId:hostRecord.recordID];
-      //If host exists in system, Find which is new
+      //If host exists in system, Find which is newer
       if (hosts) {
         if ([hosts.lastModifiedTime compare:hostRecord.modificationDate] == NSOrderedDescending) {
-          //Local is new...Update iCloud to Local values
+          //Local is newer...Update iCloud to Local values
           CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
           CKRecord *udpatedRecord = [BKHosts recordFromHost:hosts];
           CKModifyRecordsOperation *updateOperation = [[CKModifyRecordsOperation alloc] initWithRecordsToSave:@[ udpatedRecord ] recordIDsToDelete:nil];
@@ -223,12 +235,12 @@ static BKiCloudSyncHandler *sharedHandler = nil;
           };
           [database addOperation:updateOperation];
         } else {
-          //iCloud is new, update local to reflect iCLoud values
+          //iCloud is newer, update local to reflect iCLoud values
           [self saveHostRecord:hostRecord withHost:host];
         }
       } else {
         //If hosts is new, see if it exists
-        //Check if name exists, if YES, Mark as conflict else, add to local
+        //Check if iCloud host exists locally by name. If YES, Mark as conflict. Otherwise store local copy.
         BKHosts *existingHost = [BKHosts withHost:host];
         if (existingHost) {
           [BKHosts markHost:host forRecord:hostRecord withConflict:YES];
@@ -244,19 +256,25 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     if (hosts.iCloudRecordId == nil && (!hosts.iCloudConflictDetected || !hosts.iCloudConflictDetected.boolValue)) {
       [self createNewHost:hosts];
     } else {
-      NSLog(@"Conflict detected Hence not saving to iCloud");
       //Find items deleted from iCloud
       if ((!hosts.iCloudConflictDetected || !hosts.iCloudConflictDetected.boolValue)) {
         NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@", hosts.iCloudRecordId.recordName];
         NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
-        if (filteredAray.count <= 0) {
+        NSTimeInterval timeDifference = [[NSDate date] timeIntervalSinceDate:hosts.lastModifiedTime];
+        // The DB is eventually consistent, so we cannot mark a host for deletion that may have just been created.
+        if (fabs(timeDifference) > 60.0 && filteredAray.count <= 0) {
+          NSLog(@"Host not found on iCloud, scheduled for deletion: %@, record: %@", hosts, hosts.iCloudRecordId);
           [itemsDeletedFromiCloud addObject:hosts];
         }
+      } else {
+        NSLog(@"Conflict detected Hence not saving to iCloud");
+        continue;
       }
     }
   }
   if (itemsDeletedFromiCloud.count > 0) {
     [[BKHosts all] removeObjectsInArray:itemsDeletedFromiCloud];
+    [BKHosts saveHosts];
   }
 
 
