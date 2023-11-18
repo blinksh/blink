@@ -159,6 +159,7 @@ void *run_session(void *sessionData)
 }
 
 - (void)_run {
+  assert(_args.UTF8String != NULL);
   int argc = makeargs(_args.UTF8String, &_argv);
   [self main:argc argv:_argv];
 }
