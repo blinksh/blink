@@ -423,7 +423,7 @@ fileprivate class KeysObservable: ObservableObject {
       case .typeAsc:     return { a, b in a.keyType ?? "" < b.keyType ?? "" }
       case .typeDesc:    return { a, b in b.keyType ?? "" < a.keyType ?? "" }
       case .storageAsc:  return { a, b in a.key.storageType.rawValue < b.key.storageType.rawValue }
-      case .storageDesc: return { a, b in b.key.storageType.rawValue < b.key.storageType.rawValue }
+      case .storageDesc: return { a, b in b.key.storageType.rawValue < a.key.storageType.rawValue }
       }
     }
   }
