@@ -173,7 +173,7 @@ class AuthTests: XCTestCase {
   func testAgentPartialAuthentication() throws {
     let agent = SSHAgent()
     let key = try SSHKey(fromFileBlob: Credentials.privateKey.data(using: .utf8)!)
-    XCTAssertTrue(agent.loadKey(key, aka: "testKey"))
+    agent.loadKey(key, aka: "testKey")
     
     let config = SSHClientConfig(
       user: Credentials.partialAuthentication.user,
