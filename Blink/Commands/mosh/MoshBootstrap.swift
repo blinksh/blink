@@ -102,6 +102,7 @@ extension Platform: CustomStringConvertible {
 enum Architecture {
   case X86_64
   case Amd64
+  case Aarch64
   case Arm64
   case Armv7
 }
@@ -111,6 +112,8 @@ extension Architecture {
     switch str.lowercased() {
     case "x86_64":
       self = .X86_64
+    case "aarch64":
+      self = .Arm64
     case "arm64":
       self = .Arm64
     case "amd64":
@@ -125,11 +128,13 @@ extension Architecture {
   }
 }
 
-extension Architecture: CustomStringConvertible {
-  public var description: String {
+extension Architecture {
+  public var downloadableDescription: String {
     switch self {
     case .X86_64:
       return "x86_64"
+    case .Aarch64:
+      return "arm64"
     case .Arm64:
       return "arm64"
     case .Amd64:
@@ -220,13 +225,13 @@ class InstallStaticMosh: MoshBootstrap {
   }
 
   func getMoshServerBinary(platform: Platform, architecture: Architecture) -> AnyPublisher<Translator, Error> {
-    let moshServerReleaseName = "\(MoshServerBinaryName)-\(MoshServerVersion)-\(platform)-\(architecture)"
+    let moshServerReleaseName = "\(MoshServerBinaryName)-\(MoshServerVersion)-\(platform)-\(architecture.downloadableDescription)"
     let localMoshServerURL = BlinkPaths.blinkURL().appending(path: moshServerReleaseName)
     let moshServerDownloadURL = MoshServerDownloadPathURL.appending(path: moshServerReleaseName)
     let log = logger.log("getMoshServerBinary")
     let prompt = InstallStaticMoshPrompt()
     
-    log.info("\(platform) \(architecture)")
+    log.info("\(platform) \(architecture.downloadableDescription)")
     return Local().cloneWalkTo(localMoshServerURL.path)
       .catch { _ in
         log.info("Downloading \(moshServerDownloadURL)")
