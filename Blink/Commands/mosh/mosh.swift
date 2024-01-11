@@ -205,6 +205,7 @@ enum MoshError: Error {
 
       self.isRunloopRunning = true
       awaitRunLoop(currentRunLoop)
+      self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
       self.isRunloopRunning = false
 
       if let error = sshError {
@@ -408,7 +409,6 @@ enum MoshError: Error {
       // Cancelling here makes sure the flows are cancelled.
       // Trying to do it at the runloop has the issue that flows may continue running.
       print("Kill received")
-      self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
       awake(runLoop: currentRunLoop)
       sshCancellable = nil
     } else {
