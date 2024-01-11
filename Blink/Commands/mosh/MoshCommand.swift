@@ -29,19 +29,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-// mosh [options] [user@]host|IP [--] [command]
-// "anop:I:P:k:T2"
-// {"server", required_argument, 0, 's'},
-// {"predict", required_argument, 0, 'r'},
-// {"port", required_argument, 0, 'p'},
-// {"ip", optional_argument, 0, 'i'},
-// {"key", optional_argument, 0, 'k'},
-// {"no-ssh-pty", optional_argument, 0, 'T'},
-// {"predict-overwrite", no_argument, 0, 'o'},
-// //{"ssh", required_argument, 0, 'S'},
-// {"verbose", no_argument, &_debug, 1},
-// {"help", no_argument, &help, 1},
-// {"experimental-remote-ip", required_argument, 0, 'R'},
 import Foundation
 import ArgumentParser
 
@@ -57,18 +44,29 @@ struct MoshCommand: ParsableCommand {
   @Option(name: .shortAndLong)
   var server: String?
 
-  @Option(help: "Prediction mode",
-          transform: { try BKMoshPrediction(parsing: $0) })
+  @Option(
+    name: [.customShort("r")],
+    help: "Prediction mode",
+    transform: { try BKMoshPrediction(parsing: $0) })
   var predict: BKMoshPrediction?
 
-  @Flag var predictOverwrite: Bool = false
+  @Flag (
+    name: [.customShort("o")]
+  )
+  var predictOverwrite: Bool = false
   
   @Flag var verbose: Bool = false
 
-  @Flag var noSshPty: Bool = false
+  @Flag (
+    name: [.customShort("T")]
+  )
+  var noSshPty: Bool = false
   
-  @Option(help: "How to discover the IP address that the mosh-client connects to: default, remote or local",
-          transform: { try BKMoshExperimentalIP(parsing: $0) })
+  @Option(
+    name: [.customShort("R")],
+    help: "How to discover the IP address that the mosh-client connects to: default, remote or local",
+    transform: { try BKMoshExperimentalIP(parsing: $0) }
+  )
   var experimentalRemoteIP: BKMoshExperimentalIP?
   
   // Mosh Key
@@ -94,7 +92,7 @@ struct MoshCommand: ParsableCommand {
 
   // Identity
   @Option(
-    name: [.customShort("i")],
+    name: [.customShort("I")],
     help: .init(
       """
         Selects a file from which the identity (private key) for public key authentication is read. The default is ~/.ssh/id_dsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ed25519 and ~/.ssh/id_rsa.  Identity files may also be specified on a per-host basis in the configuration pane in the Settings of Blink.
@@ -104,7 +102,6 @@ struct MoshCommand: ParsableCommand {
   )
   var identityFile: String?
 
-  // TODO Reuse fields
   // Connect to User at Host
   @Argument(help: "[user@]host[#port]",
             transform: { UserAtHostAndPort($0) })
@@ -151,7 +148,6 @@ extension MoshCommand {
       params["identityfile"] = identityFile
     }
 
-    // TODO - Careful here as a high log level like DEBUG will introduce a lot of noise.
     if self.verbose {
       params["loglevel"] = "INFO"
     }
