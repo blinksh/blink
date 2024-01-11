@@ -237,6 +237,8 @@ enum MoshError: Error {
       setenv("PATH_LOCALE", ccharLocalesPath, 1)
     }
     
+    self.sessionParams.cleanEncodedState()
+    
     mosh_main(
       self.stdin.file,
       self.stdout.file,
