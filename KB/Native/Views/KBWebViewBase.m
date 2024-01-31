@@ -135,7 +135,11 @@ NSString *_encodeString(NSString *str);
   traits.autocorrectionType = UITextAutocorrectionTypeNo;
   traits.autocapitalizationType = UITextAutocapitalizationTypeNone;
   traits.spellCheckingType = UITextSpellCheckingTypeNo;
-  traits.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
+  // NOTE: Fixes crash introduced on iOS 17.4. This function is called multiple times, and for
+  // some reason, on one of them the selector will not exist and it will crash the app on start. Issue #1945
+  if ([traits respondsToSelector:@selector(setSmartInsertDeleteType:)]) {
+    traits.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
+  }
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {
