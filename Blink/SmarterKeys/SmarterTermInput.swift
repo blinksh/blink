@@ -121,9 +121,6 @@ class CaretHider {
     } else {
       _setupAccessoryView()
     }
-    
-    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
-    
   }
   
   override func layoutSubviews() {
@@ -493,8 +490,6 @@ extension SmarterTermInput {
 extension SmarterTermInput {
   
   @objc private func _updateSettings() {
-    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
-    
 //    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
 //    
 //    if hideSmartKeysWithHKB != hideSmartKeysWithHKB {

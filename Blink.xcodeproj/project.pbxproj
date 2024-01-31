@@ -303,7 +303,6 @@
 		D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */; };
 		D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */; };
 		D241CBD223040734003D64A5 /* KBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC023040733003D64A5 /* KBDevice.swift */; };
-		D241CBD323040734003D64A5 /* KBSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC123040733003D64A5 /* KBSound.swift */; };
 		D241CBD423040734003D64A5 /* KBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC223040733003D64A5 /* KBView.swift */; };
 		D241CBD523040734003D64A5 /* KBKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC323040733003D64A5 /* KBKey.swift */; };
 		D241CBD623040734003D64A5 /* KBSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC423040733003D64A5 /* KBSection.swift */; };
@@ -1025,7 +1024,6 @@
 		D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewFlexible.swift; sourceTree = "<group>"; };
 		D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewArrows.swift; sourceTree = "<group>"; };
 		D241CBC023040733003D64A5 /* KBDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBDevice.swift; sourceTree = "<group>"; };
-		D241CBC123040733003D64A5 /* KBSound.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSound.swift; sourceTree = "<group>"; };
 		D241CBC223040733003D64A5 /* KBView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBView.swift; sourceTree = "<group>"; };
 		D241CBC323040733003D64A5 /* KBKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKey.swift; sourceTree = "<group>"; };
 		D241CBC423040733003D64A5 /* KBSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSection.swift; sourceTree = "<group>"; };
@@ -2061,7 +2059,6 @@
 				D241CBCC23040734003D64A5 /* KBKeyValue.swift */,
 				D241CBC623040733003D64A5 /* KBLayout.swift */,
 				D241CBC423040733003D64A5 /* KBSection.swift */,
-				D241CBC123040733003D64A5 /* KBSound.swift */,
 				D241CBC823040733003D64A5 /* KBTraits.swift */,
 				D241CBC223040733003D64A5 /* KBView.swift */,
 				D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */,
@@ -3322,7 +3319,6 @@
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
-				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
 				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,

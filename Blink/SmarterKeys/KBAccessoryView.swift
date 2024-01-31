@@ -66,3 +66,9 @@ class KBAccessoryView: UIInputView {
     return CGSize(width: -1, height: h)
   }
 }
+
+extension KBAccessoryView: UIInputViewAudioFeedback {
+  var enableInputClicksWhenVisible: Bool {
+    return !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+  }
+}

@@ -286,7 +286,7 @@ class KBView: UIView {
         return
       }
       
-      view.key.sound.playIfPossible()
+      UIDevice.current.playInputClick()
       view.keyDelegate.keyViewTriggered(keyView: view, value: view.currentValue)
     }
   }

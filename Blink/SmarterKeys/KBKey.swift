@@ -96,15 +96,6 @@ extension KBKey: Identifiable {
 }
 
 extension KBKey {
-  var sound: KBSound {
-    switch shape.primaryValue {
-    case .text: return .text
-    default: return .modifier
-    }
-  }
-}
-
-extension KBKey {
   var isModifier: Bool {
     switch shape.primaryValue {
     case .cmd, .alt, .ctrl: return true

@@ -141,6 +141,8 @@ class KBKeyView: UIView {
     backgroundColor = .tertiarySystemBackground
     
     keyDelegate.keyViewOn(keyView: self, value: currentValue)
-    key.sound.playIfPossible()
+    UIDevice.current.playInputClick()
   }
 }
+
+
