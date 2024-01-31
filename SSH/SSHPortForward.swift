@@ -82,7 +82,13 @@ public class SSHPortForwardListener {
   func start() {
     let listener: NWListener
     do {
-      listener = try NWListener(using: .tcp, on: self.localPort)
+      var tcpOptions = NWProtocolTCP.Options()
+      let tcpParameters = NWParameters(tls:nil, tcp:tcpOptions)
+      if !client.options.gatewayPorts {
+        // By default, do not expose ports outside the local interface.
+        tcpParameters.requiredInterfaceType = .loopback
+      }
+      listener = try NWListener(using: tcpParameters, on: self.localPort)
     } catch {
       self.status.send(completion: .failure(SSHPortForwardError(title: "Could not initialize listener", error)))
       return

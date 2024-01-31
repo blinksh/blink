@@ -48,6 +48,7 @@ public struct BKSSHHost {
   public var dynamicForward: [OptionalBindAddressInfo]?
   public var exitOnForwardFailure: Bool?
   public var forwardAgent: Bool?
+  public var gatewayPorts: Bool?
   //public var hostKeyAlias: String?
   public var hostbasedAuthentication: Bool?
   public var hostKeyAlgorithms: String?
@@ -113,6 +114,7 @@ public struct BKSSHHost {
         case "dynamicforward":                self.dynamicForward               = try castList(value)
         case "exitonforwardfailure":          self.exitOnForwardFailure         = try castValue(value)
         case "forwardagent":                  self.forwardAgent                 = try castValue(value)
+        case "gatewayports":                  self.gatewayPorts                 = try castValue(value)
         case "kbdinteractiveauthentication":  self.kbdInteractiveAuthentication = try castValue(value)
         case "hostbasedauthentication":       self.hostbasedAuthentication      = try castValue(value)
         case "hostkeyalgorithms":             self.hostKeyAlgorithms            = try castValue(value)
@@ -182,7 +184,8 @@ public struct BKSSHHost {
       kbdInteractiveAuthentication: kbdInteractiveAuthentication,
       passwordAuthentication: passwordAuthentication,
       pubKeyAuthentication: pubKeyAuthentication,
-      hostbasedAuthentication: hostbasedAuthentication
+      hostbasedAuthentication: hostbasedAuthentication,
+      gatewayPorts: gatewayPorts
     )
   }
 }

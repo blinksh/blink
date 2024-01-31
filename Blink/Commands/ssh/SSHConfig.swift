@@ -302,7 +302,7 @@ extension SSHCommand {
     if !self.dynamicForward.isEmpty {
       params["dynamicforward"] = dynamicForward
     }
-
+    
     if agentForward {
       params["forwardagent"] = "yes"
     } 

@@ -123,11 +123,14 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
   let pubKeyAuthentication: Bool?
   let hostbasedAuthentication: Bool?
 
+  let gatewayPorts: Bool
+
   // Offer a description based on what the final configuration is.
   public var description: String { """
   user: \(user)
   port: \(port)
   authenticators: \(authenticators.map { $0.displayName }.joined(separator: ", "))
+  gatewayPorts: \(gatewayPorts)
   proxyJump: \(proxyJump)
   proxyCommand: \(proxyCommand)
   compression: \(compression)
@@ -169,7 +172,8 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
               kbdInteractiveAuthentication: Bool? = nil,
               passwordAuthentication: Bool? = nil,
               pubKeyAuthentication: Bool? = nil,
-              hostbasedAuthentication: Bool? = nil
+              hostbasedAuthentication: Bool? = nil,
+              gatewayPorts: Bool? = nil
               ) {
     // We do our own constructor because the automatic one cannot define optional params.
     self.user = user
@@ -195,6 +199,7 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
     self.passwordAuthentication = passwordAuthentication
     self.pubKeyAuthentication = pubKeyAuthentication
     self.hostbasedAuthentication = hostbasedAuthentication
+    self.gatewayPorts = gatewayPorts ?? false
     // TODO Disable Keep Alive for now. LibSSH is not processing correctly the messages
     // that may come back from the server.
     // self.keepAliveInterval = keepAliveInterval
