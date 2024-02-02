@@ -63,6 +63,8 @@ fileprivate enum Checksum {
       checksum = Self.LinuxArm64
     case (.Linux, .Armv7):
       checksum = Self.LinuxArmv7
+    case (.Linux, .X86_64):
+      checksum = Self.LinuxAmd64
     default:
       return false
     }
@@ -210,8 +212,8 @@ class InstallStaticMosh: MoshBootstrap {
       }
       .map { String(decoding: $0 as AnyObject as! Data, as: UTF8.self).components(separatedBy: .newlines) }
       .map { lines -> (Platform, Architecture)? in
+        log.info("uname output: \(lines)")
         if lines.count != 3 {
-          log.error("uname output: \(lines)")
           return nil
         }
 

@@ -41,7 +41,11 @@ struct MoshCommand: ParsableCommand {
       """,
     version: Version)
 
-  @Option(name: .shortAndLong)
+  @Flag(help: "Use Blink's static mosh-server bin on remote .local/blink.")
+  var installStatic: Bool = false
+  
+  @Option(name: .shortAndLong,
+          help: "Path to remote mosh-server binary.")
   var server: String?
 
   @Option(

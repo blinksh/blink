@@ -58,6 +58,27 @@ enum MoshError: Error {
   case NoRemoteServerIP
   case AddressInfo(String)
   case StartMoshServerError(String)
+  
+  public var description: String {
+    switch self {
+    case .NoBinaryAvailable:
+      return "Could not find static binary for the remote platform and architecture."
+    case .NoBinaryExecFlag:
+      return "Could not set execution flag for static mosh-server binary."
+    case .NoChecksumMatch:
+      return "Error downloading binary. The checksums do not match."
+    case .UserCancelled:
+      return "User cancelled the operation"
+    case .NoMoshServerArgs:
+      return "Error connecting to mosh-server. Could not parse arguments for client connection."
+    case .NoRemoteServerIP:
+      return "ExperimentalIPRemote error. IP not found."
+    case .AddressInfo(let error):
+      return "Address resolution failed - \(error)"
+    case .StartMoshServerError(let error):
+      return "Error starting remote mosh-server: \(error)"
+    }
+  }
 }
 
 @objc public class BlinkMosh: Session {
@@ -123,7 +144,7 @@ enum MoshError: Error {
         moshParams = try startMoshServer(using: command)
         self.copyToSession(moshParams: moshParams)
       } catch {
-        return die(message: "\(error)")
+        return die(message: "\(error) - \(error.localizedDescription)")
       }
 
       return moshMain(moshParams)
@@ -157,14 +178,13 @@ enum MoshError: Error {
                                                            exec: moshClientParams.remoteExecCommand)
 
       let sequence: [MoshBootstrap]
-      // NOTE Users may want a way to disable or make installation explicit. Right now, we offer it by default.
-      if moshClientParams.server != "mosh-server" {
-        // If the server is specific, go after that one only.
-        sequence = [UseMoshOnPath(path: moshClientParams.server)]
-      } else {
-        sequence = [UseMoshOnPath(path: moshClientParams.server),
-                    UseMoshOnPath.staticMosh(),
+      // NOTE This is an extra non-standard parameter, so don't want to change the typical mosh flow. Some may
+      // install it by mistake and in some cases, this could be a security concern.
+      if command.installStatic {
+        sequence = [UseMoshOnPath.staticMosh(),
                     InstallStaticMosh(onCancel: { [weak self] in self?.kill() }, logger: self.logger)]
+      } else {
+        sequence = [UseMoshOnPath(path: moshClientParams.server)]
       }
       
       let pty: SSH.SSHClient.PTY?
