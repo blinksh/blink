@@ -49,7 +49,7 @@ import ios_system
 //   return cmd.start(argc, argv: argv.args(count: argc))
 // }
 
-enum MoshError: Error {
+enum MoshError: Error, LocalizedError {
   case NoBinaryAvailable
   case NoBinaryExecFlag
   case NoChecksumMatch
@@ -57,9 +57,9 @@ enum MoshError: Error {
   case NoMoshServerArgs
   case NoRemoteServerIP
   case AddressInfo(String)
-  case StartMoshServerError(String)
+  case MissingArguments(String)
   
-  public var description: String {
+  public var errorDescription: String? {
     switch self {
     case .NoBinaryAvailable:
       return "Could not find static binary for the remote platform and architecture."
@@ -70,13 +70,13 @@ enum MoshError: Error {
     case .UserCancelled:
       return "User cancelled the operation"
     case .NoMoshServerArgs:
-      return "Error connecting to mosh-server. Could not parse arguments for client connection."
+      return "Did not find mosh server startup message. (Have you installed mosh on your server?)"
     case .NoRemoteServerIP:
-      return "ExperimentalIPRemote error. IP not found."
+      return "Bad Mosh SSH_CONNECTION String."
     case .AddressInfo(let error):
       return "Address resolution failed - \(error)"
-    case .StartMoshServerError(let error):
-      return "Error starting remote mosh-server: \(error)"
+    case .MissingArguments(let message):
+      return "\(message)"
     }
   }
 }
@@ -165,7 +165,7 @@ enum MoshError: Error {
     let moshServerParams: MoshServerParams
     if let customKey = command.customKey {
       guard let customUDPPort = moshClientParams.customUDPPort else {
-        throw MoshError.StartMoshServerError("If MOSH_KEY is set, port is required. (-p)")
+        throw MoshError.MissingArguments("If MOSH_KEY is set, port is required. (-p)")
       }
 
       // Resolved as part of the host info or explicit on params.
@@ -200,6 +200,7 @@ enum MoshError: Error {
         .flatMap { self.bootstrapMoshServer(on: $0,
                                             sequence: sequence,
                                             experimentalRemoteIP: moshClientParams.experimentalRemoteIP,
+                                            family: command.addressFamily,
                                             args: moshServerStartupArgs,
                                             withPTY: pty) }
         //.print()
@@ -298,10 +299,11 @@ enum MoshError: Error {
   private func bootstrapMoshServer(on client: SSHClient,
                                    sequence: [MoshBootstrap],
                                    experimentalRemoteIP: BKMoshExperimentalIP,
+                                   family: AddressFamily?,
                                    args: String,
                                    withPTY pty: SSH.SSHClient.PTY? = nil) -> AnyPublisher<MoshServerParams, Error> {
     let log = logger.log("bootstrapMoshServer")
-    log.info("Trying bootstrap with sequence: \(sequence), experimental: \(experimentalRemoteIP), args: \(args)")
+    log.info("Trying bootstrap with sequence: \(sequence), experimental: \(experimentalRemoteIP), family: \(family), args: \(args)")
     
     if sequence.isEmpty {
       return Fail(error: MoshError.NoBinaryAvailable).eraseToAnyPublisher()
@@ -345,8 +347,7 @@ enum MoshError: Error {
                 return try MoshServerParams(parsing: output, remoteIP: nil)
               case BKMoshExperimentalIPLocal:
                 // local - resolve address on its own.
-                // TODO Or to INET6 from CLI flag
-                let remoteIP = try self.resolveAddress(host: client.host, port: client.options.port, family: nil)
+                let remoteIP = try self.resolveAddress(host: client.host, port: client.options.port, family: family)
                 return try MoshServerParams(parsing: output, remoteIP: remoteIP)
               default:
                 // default - get it from the established SSH Connection.
@@ -380,13 +381,25 @@ enum MoshError: Error {
   // https://stackoverflow.com/questions/39857435/swift-getaddrinfo
   // getnameinfo
   // https://stackoverflow.com/questions/44478074/swift-getnameinfo-unreliable-results-for-ipv6
-  private func resolveAddress(host: String, port: String?, family: Int32?) throws -> String {
+  private func resolveAddress(host: String, port: String?, family: AddressFamily?) throws -> String {
     guard let port = (port ?? "22").cString(using: .utf8) else {
       throw MoshError.AddressInfo("Invalid port")
     }
+    
+    let ai_family = { 
+      switch family {
+      case .IPv4:
+        AF_INET
+      case .IPv6:
+        AF_INET6
+      default:
+        AF_UNSPEC
+      }
+    }()
+    
     var hints = addrinfo(
       ai_flags: 0,
-      ai_family: family ?? AF_UNSPEC,
+      ai_family: ai_family,
       ai_socktype: SOCK_STREAM,
       ai_protocol: IPPROTO_TCP,
       ai_addrlen: 0,
@@ -503,8 +516,8 @@ struct MoshLogger {
           .format { [ ($0[.component] as? String)?.appending(":") ?? "global:",
                     $0[.message] as? String ?? ""
                   ].joined(separator: " ") }
-          .sink(receiveValue: { print($0[.message]) })
-        //.sinkToStream(output)
+         // .sink(receiveValue: { print($0[.message]) })
+        .sinkToStream(output)
       }
     )
   }

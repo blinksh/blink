@@ -62,7 +62,8 @@ struct MoshCommand: ParsableCommand {
   @Flag var verbose: Bool = false
 
   @Flag (
-    name: [.customShort("T")]
+    name: [.customShort("T")],
+    help: "Do not start a TTY"
   )
   var noSshPty: Bool = false
   
@@ -72,6 +73,9 @@ struct MoshCommand: ParsableCommand {
     transform: { try BKMoshExperimentalIP(parsing: $0) }
   )
   var experimentalRemoteIP: BKMoshExperimentalIP?
+  
+  @Flag(exclusivity: .exclusive)
+  var addressFamily: AddressFamily?
   
   // Mosh Key
   @Option(
@@ -132,6 +136,12 @@ struct MoshCommand: ParsableCommand {
       } else {
         return cmd
       }
+    }
+  }
+  
+  func validate() throws {
+    if addressFamily != nil && experimentalRemoteIP != BKMoshExperimentalIPLocal {
+      throw ValidationError("Address Family can only be used with 'local' IP resolution (-R).")
     }
   }
 }
@@ -205,6 +215,29 @@ extension BKMoshExperimentalIP {
       self = BKMoshExperimentalIPRemote
     default:
       throw ValidationError("Unknown experimental-ip mode, must be: default, local or remote.")
+    }
+  }
+}
+
+enum AddressFamily: String, EnumerableFlag {
+  case IPv4
+  case IPv6
+  
+  static func name(for value: AddressFamily) -> NameSpecification {
+    switch value {
+    case .IPv4:
+      return NameSpecification([.customShort(Character("4")), .customLong("inet4")])
+    case .IPv6:
+      return NameSpecification([.customShort(Character("6")), .customLong("inet6")])
+    }
+  }
+  
+  static func help(for value: AddressFamily) -> ArgumentHelp? {
+    switch value {
+    case .IPv4:
+      return "Use IPv4 only on 'local' IP resolution"
+    case .IPv6:
+      return "Use IPv6 only on 'local' IP resolution"
     }
   }
 }
