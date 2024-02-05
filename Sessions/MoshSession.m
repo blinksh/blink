@@ -48,7 +48,9 @@ static NSDictionary *predictionModeStrings = nil;
 static NSDictionary *experimentalIPStrings = nil;
 
 static const char *usage_format =
-"Usage: mosh [options] [user@]host|IP [--] [command]"
+"This is the Original mosh command. Use in case new mosh command does not work.\r\n"
+"Please let us know in that case.\r\n"
+"Usage: mosh1 [options] [user@]host|IP [--] [command]"
 "\r\n"
 "                --server=PATH          mosh server on remote machine\r\n"
 "                                       (default: mosh-server)\r\n"

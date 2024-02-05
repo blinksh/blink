@@ -113,7 +113,7 @@
         return;
       }
     }
-    if ([@"mosh2" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+    if ([@"mosh1" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
       //BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
       MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
       mosh.mcpSession = self;
@@ -214,8 +214,8 @@
     if (self.sessionParams.hasEncodedState) {
       return NO;
     }
-  } else if ([cmd isEqualToString:@"mosh2"]) {
-    [self _runMosh2WithArgs:cmdline];
+  } else if ([cmd isEqualToString:@"mosh1"]) {
+    [self _runMosh1WithArgs:cmdline];
     if (self.sessionParams.hasEncodedState) {
       return NO;
     }
@@ -306,10 +306,10 @@
   _childSession = nil;
 }
 
-- (void)_runMosh2WithArgs:(NSString *)args
+- (void)_runMosh1WithArgs:(NSString *)args
 {
   self.sessionParams.childSessionParams = [[MoshParams alloc] init];
-  self.sessionParams.childSessionType = @"mosh2";
+  self.sessionParams.childSessionType = @"mosh1";
   //BlinkMosh *mosh = [[BlinkMosh alloc] initWithMcpSession: self device:_device andParams:self.sessionParams.childSessionParams];
   // TODO Connect previous mosh
   MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
