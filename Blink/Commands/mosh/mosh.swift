@@ -183,8 +183,10 @@ enum MoshError: Error, LocalizedError {
       if command.installStatic {
         sequence = [UseMoshOnPath.staticMosh(),
                     InstallStaticMosh(onCancel: { [weak self] in self?.kill() }, logger: self.logger)]
-      } else {
+      } else if moshClientParams.server != "mosh-server" {
         sequence = [UseMoshOnPath(path: moshClientParams.server)]
+      } else {
+        sequence = [UseMoshOnPath.staticMosh(), UseMoshOnPath(path: moshClientParams.server)]
       }
       
       let pty: SSH.SSHClient.PTY?
