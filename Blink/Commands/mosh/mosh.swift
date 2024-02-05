@@ -35,20 +35,6 @@ import Dispatch
 import SSH
 import ios_system
 
-// TODO Enable mosh2 as the old mosh session. Will have to be hard-coded on MCP.
-
-// @_cdecl("blink_mosh_main")
-// public func blink_mosh_main(argc: Int32, argv: Argv) -> Int32 {
-//   setvbuf(thread_stdin, nil, _IONBF, 0)
-//   setvbuf(thread_stdout, nil, _IONBF, 0)
-//   setvbuf(thread_stderr, nil, _IONBF, 0)
-
-//   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-//   // TODO How about register and deregister here?
-//   let cmd = BlinkMosh()
-//   return cmd.start(argc, argv: argv.args(count: argc))
-// }
-
 enum MoshError: Error, LocalizedError {
   case NoBinaryAvailable
   case NoBinaryExecFlag
