@@ -113,8 +113,9 @@ function term_setup(accessibilityEnabled) {
   t.onTerminalReady = function() {
     window.installKB(t, t.scrollPort_.screen_);
     term_setAutoCarriageReturn(true);
+    term_setClipboardWrite(false);
+
     t.setCursorVisible(true);
-    
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', {cols, rows});
       if (t.prompt) {
@@ -342,11 +343,7 @@ function term_setClipboardWrite(state) {
   if (state === false) {
     t.vt.enableClipboardWrite = false;
   } else {
-    setTimeout(() => {
-      // Delay a tiny bit so operations that reset the clipboard
-      // can have a tiny bit more margin. #1205
-      t.vt.enableClipboardWrite = true;
-    }, 500);
+    t.vt.enableClipboardWrite = true;
   }
 }
 

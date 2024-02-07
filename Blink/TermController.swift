@@ -496,6 +496,10 @@ extension TermController: SuspendableSession {
     if view.bounds.size != _sessionParams.viewSize {
       _session?.sigwinch()
     }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+      self._termView.setClipboardWrite(true)
+    }
   }
   
   
@@ -518,7 +522,9 @@ extension TermController: SuspendableSession {
       _session?.sigwinch()
     }
     
-    _termView.setClipboardWrite(true)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+      self._termView.setClipboardWrite(true)
+    }
   }
   
   func suspendedSession(with archiver: NSKeyedArchiver) {
