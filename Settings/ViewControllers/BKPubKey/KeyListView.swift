@@ -151,7 +151,7 @@ private extension NewKeyMenuContentView {
         
         VStack(alignment: .leading) {
           baseCellTitle("Plain-text Key")
-          baseCellSubtitle("Create RSA, EDSA and ED25519 keys, securely stored in the keychain.")
+          baseCellSubtitle("Create RSA, EDSA and ED25519 keys, securely stored in the keychain.", docsLink: "basics/ssh-keys")
           
           actionsDivider()
           actionButtonTitle(title: "Generate New", tintColor: .systemTeal)
@@ -188,13 +188,13 @@ private extension NewKeyMenuContentView {
         
         VStack(alignment: .leading) {
           baseCellTitle("Secure Enclave Key")
-          baseCellSubtitle("Isolated in your device, enhances security by managing keys without exposing plain-text.")
+          baseCellSubtitle("Isolated in your device, enhances security by managing keys without exposing plain-text.", docsLink: "basics/ssh-keys")
           
           actionsDivider()
           actionButtonTitle(title: "Generate New", tintColor: .systemTeal)
             .onTapGesture {
               dismissView()
-              self.state.modal = .newSecurityKey
+              self.state.modal = .newSEKey
             }
         }
         .padding([.top], 4)
@@ -213,7 +213,7 @@ private extension NewKeyMenuContentView {
         
         VStack(alignment: .leading) {
           baseCellTitle("Passkey (experimental)")
-          baseCellSubtitle("WebAuth keys for SSH are stored in your device or hardware key. Limitations apply.")
+          baseCellSubtitle("WebAuthn keys for SSH are stored in your device or hardware key. Limitations apply.", docsLink: "advanced/webauthn")
           
           actionsDivider()
           actionButtonTitle(title: "Generate on device", tintColor: .systemTeal)
@@ -225,7 +225,7 @@ private extension NewKeyMenuContentView {
           actionButtonTitle(title: "Generate on Hardware key", tintColor: .label)
             .onTapGesture {
               dismissView()
-              self.state.modal = .newPasskey
+              self.state.modal = .newSecurityKey
             }
         }
         .padding([.top], 4)
@@ -247,8 +247,9 @@ private extension NewKeyMenuContentView {
       .frame(height: 14)
   }
   
-  func baseCellSubtitle(_ content: String) -> some View {
-    Text("\(content)\n[Read more.](https://github.com/blinksh/blink)")
+  func baseCellSubtitle(_ content: String, docsLink: String) -> some View {
+    let docsLink = "https://docs.blink.sh/\(docsLink)"
+    return Text(try! AttributedString(markdown: "\(content)\n[Read more.](\(docsLink))"))
       .font(.system(size: 14, weight: .regular))
       .foregroundStyle(Color.secondary)
   }

@@ -78,7 +78,7 @@ struct NewSEKeyView: View {
       trailing: Button("Create", action: _createKey)
       .disabled(!_state.isValid)
     )
-    .navigationBarTitle("New ECDSA Key")
+    .navigationBarTitle("New Secure Enclave Key")
     .alert(errorMessage: $_state.errorMessage)
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")
