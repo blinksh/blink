@@ -276,7 +276,14 @@ public class SSHClient {
         let command = String(cString: cmd!)
         // Will break if unconfigured. It can be considered
         // a code error.
-        return ctxt.proxyCb!(command, inSock, outSock)
+        guard let proxyCb = ctxt.proxyCb else {
+          ctxt.log.message("No proxy callback configured. Cannot run ProxyCommand", SSH_LOG_WARN)
+          shutdown(inSock, SHUT_RDWR)
+          shutdown(outSock, SHUT_RDWR)
+          return
+        }
+        
+        return proxyCb(command, inSock, outSock)
       }
     }
     
