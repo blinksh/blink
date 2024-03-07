@@ -194,8 +194,7 @@ enum MoshError: Error, LocalizedError {
         //.print()
         .handleEvents(receiveCancel: { [weak self] in
           if let self = self {
-            self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
-            awake(runLoop: currentRunLoop)
+            self.kill()
           }
         })
         .sink(
@@ -213,7 +212,8 @@ enum MoshError: Error, LocalizedError {
           })
 
       self.isRunloopRunning = true
-      awaitRunLoop(currentRunLoop)
+      //awaitRunLoop(currentRunLoop)
+      CFRunLoopRunInMode(.defaultMode, TimeInterval(INT_MAX), false)
       self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
       self.isRunloopRunning = false
 
@@ -430,7 +430,8 @@ enum MoshError: Error, LocalizedError {
       // Cancelling here makes sure the flows are cancelled.
       // Trying to do it at the runloop has the issue that flows may continue running.
       print("Kill received")
-      awake(runLoop: currentRunLoop)
+      CFRunLoopStop(currentRunLoop.getCFRunLoop())
+      //awake(runLoop: currentRunLoop)
       sshCancellable = nil
     } else {
       // MOSH-ESC .

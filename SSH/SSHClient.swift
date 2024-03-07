@@ -292,8 +292,8 @@ public class SSHClient {
   
   func connection() -> SSHConnection {
     AnyPublisher
-      .just(self.session).print("Before rloop")
-      .subscribe(on: rloop).print("After rloop")
+      .just(self.session)//.print("Before rloop")
+      .subscribe(on: rloop)//.print("After rloop")
       .eraseToAnyPublisher()
   }
   
@@ -874,9 +874,17 @@ public class SSHClient {
     }
   }
   
+  public static func run() {
+    CFRunLoopRunInMode(.defaultMode, TimeInterval(INT_MAX), false)
+  }
+  
   deinit {
-    self.log.message("Session deinit", SSH_LOG_INFO)
+    print("SSH Session deinit")
+    self.log.message("SSH Session deinit", SSH_LOG_INFO)
+    // NOTE Disconnecting the socket from the RunLoop won't free it (?), so we still need to stop it.
+    // ssh_disconnect(session)
     ssh_free(session)
+    CFRunLoopStop(self.rloop.getCFRunLoop())
   }
 }
 

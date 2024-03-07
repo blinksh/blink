@@ -166,6 +166,7 @@ class FileLocationPath {
 
 public class BlinkCopy: NSObject {
   var copyCancellable: AnyCancellable?
+  
   let device: TermDevice = tty()
   let currentRunLoop = RunLoop.current
   var stdout = OutputStream(file: thread_stdout)
@@ -201,28 +202,26 @@ public class BlinkCopy: NSObject {
     // Connect to the destination first, as it will be the one driving the operation.
     let destProtocol = command.destination.proto ?? defaultRemoteProtocol
 
-    let destTranslator = (destProtocol == .local) ? localTranslator(to: command.destination.filePath) :
+    var destTranslator: AnyPublisher<Translator, Error>? = (destProtocol == .local) ? localTranslator(to: command.destination.filePath) :
       remoteTranslator(toFilePath: command.destination.filePath, atHost: command.destination.hostPath!, using: destProtocol, isSource: false)
 
     // Source
     let sourceProtocol = command.source.proto ?? defaultRemoteProtocol
-    let sourceTranslator = (sourceProtocol == .local) ? localTranslator(to: command.source.filePath) :
+    var sourceTranslator: AnyPublisher<Translator, Error>? = (sourceProtocol == .local) ? localTranslator(to: command.source.filePath) :
       remoteTranslator(toFilePath: command.source.filePath, atHost: command.source.hostPath!, using: sourceProtocol)
 
-    // TODO Output object for reports
     var rc: Int32 = 0
     var rootFilePath: String!
     var currentFile = ""
     var displayFileName = ""
     var currentCopied: UInt64 = 0
     var currentSpeed: String?
-    var sourceBasePath: String?
     var startTimestamp = 0
     var lastElapsed = 0
-    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
+    copyCancellable = destTranslator!.flatMap { d -> CopyProgressInfoPublisher in
       rootFilePath = d.current
 
-      return sourceTranslator
+      return sourceTranslator!
         .flatMap {
           $0.cloneWalkTo(self.command.source.filePath)
         }
@@ -267,7 +266,8 @@ public class BlinkCopy: NSObject {
         print("Copy failed. \(error)", to: &self.stderr)
         rc = -1
       }
-      awake(runLoop: self.currentRunLoop)
+      
+      self.kill()
     }, receiveValue: { progress in //(file, size, written) in
       // ProgressReport object, which we can use here or at the Dashboard.
       if currentFile != progress.name {
@@ -306,11 +306,13 @@ public class BlinkCopy: NSObject {
       }
     })
 
-    awaitRunLoop(currentRunLoop)
-
-    // Make another run on the loop to close extra stuff in blocks.
+    // Run everything in its own loop...
+    CFRunLoopRunInMode(.defaultMode, TimeInterval(INT_MAX), false)
+    
+    // ...and because of that, make another run after cleanup to let hanging self-loops close.
+    sourceTranslator = nil
+    destTranslator = nil
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
-
     return rc
   }
 
@@ -350,8 +352,8 @@ public class BlinkCopy: NSObject {
 
   // Make signals objc funcs so we can duck type them.
   @objc func kill() {
-    copyCancellable?.cancel()
-
-    awake(runLoop: currentRunLoop)
+    print("\r\nOperation cancelled", to: &self.stderr)
+    copyCancellable = nil
+    CFRunLoopStop(self.currentRunLoop.getCFRunLoop())
   }
 }

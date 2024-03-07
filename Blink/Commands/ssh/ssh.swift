@@ -41,7 +41,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdin, nil, _IONBF, 0)
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
-
+  
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   let cmd = BlinkSSH(mcp: session)
   return cmd.start(argc, argv: argv.args(count: argc))
@@ -60,7 +60,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   private var _mcp: MCPSession;
 
   var exitCode: Int32 = 0
-  var cancellableBag: Set<AnyCancellable> = []
+  var connectionCancellable: AnyCancellable?
   let currentRunLoop = RunLoop.current
   var command: SSHCommand?
   var stream: SSH.Stream?
@@ -69,6 +69,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var remoteTunnels: [PortForwardInfo] = []
   var proxyThread: Thread?
   var socks: [OptionalBindAddressInfo] = []
+  var timer: Timer?
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
@@ -76,6 +77,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   
   init(mcp: MCPSession) {
     _mcp = mcp;
+    // Owed by ios_system, so beware to dup before using.
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
     self.errstream = fileno(thread_stderr)
@@ -176,7 +178,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }
     })
 
-    connect.flatMap { conn -> SSHConnection in
+    connectionCancellable = connect.flatMap { conn -> SSHConnection in
       self.connection = conn
 
       if let banner = conn.issueBanner,
@@ -232,25 +234,18 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         self.kill()
       }
     })
-    .store(in: &cancellableBag)
 
-    awaitRunLoop(currentRunLoop)
+    awaitRunLoop()
 
     stream?.cancel()
-    outStream?.close()
-    inStream?.close()
-    errStream?.close()
-    // Dispatch streams need a cycle to close.
-    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
-
-    // Need to get rid of the stream because the channel needs a cycle to be closed.
-    self.stream = nil
 
     if let conn = self.connection, cmd.blocks {
       if cmd.startsSession { SSHPool.deregister(shellOn: conn) }
       forwardTunnels.forEach { SSHPool.deregister(localForward:  $0, on: conn) }
       remoteTunnels.forEach  { SSHPool.deregister(remoteForward: $0, on: conn) }
       socks.forEach { SSHPool.deregister(socksBindAddress: $0, on: conn) }
+    } else {
+      connectionCancellable = nil
     }
     
     return exitCode
@@ -307,16 +302,19 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }
 
     return session.tryMap { s in
-      let outs = DispatchOutputStream(stream: self.outstream)
-      let ins = DispatchInputStream(stream: self.instream)
-      let errs = DispatchOutputStream(stream: self.errstream)
+      let outs = DispatchOutputStream(stream: dup(self.outstream))
+      let ins = DispatchInputStream(stream: dup(self.instream))
+      let errs = DispatchOutputStream(stream: dup(self.errstream))
 
-      s.handleCompletion = {
+      s.handleCompletion = { [weak self] in
         // Once finished, exit.
-        self.kill()
+        self?.kill()
         return
       }
-      s.handleFailure = { error in
+      s.handleFailure = { [weak self] error in
+        guard let self = self else {
+          return
+        }
         self.exitCode = -1
         print("Interactive Shell error. \(error)", to: &self.stderr)
         self.kill()
@@ -498,9 +496,24 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // Cancelling here makes sure the flows are cancelled.
     // Trying to do it at the runloop has the issue that flows may continue running.
     print("Kill received")
-    cancellableBag = []
+    connectionCancellable = nil
+    
+    awake()
+  }
 
-    awake(runLoop: currentRunLoop)
+  func awaitRunLoop() {
+    let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
+      print("timer")
+    }
+    self.timer = timer
+    self.currentRunLoop.add(timer, forMode: .default)
+    CFRunLoopRun()
+  }
+
+  func awake() {
+    let cfRunLoop = self.currentRunLoop.getCFRunLoop()
+    self.timer?.invalidate()
+    CFRunLoopStop(cfRunLoop)
   }
 
   deinit {

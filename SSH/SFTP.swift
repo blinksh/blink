@@ -89,8 +89,8 @@ public class SFTPClient {
   }
   
   deinit {
-    print("SFTP Out!!")
     self.client.closeSFTP(sftp)
+    print("SFTP Out!!")
   }
 }
 
@@ -482,6 +482,10 @@ public class SFTPFile : BlinkFiles.File {
       
       return true
     }.eraseToAnyPublisher()
+  }
+  
+  deinit {
+    print("SFTP file out")
   }
 }
 

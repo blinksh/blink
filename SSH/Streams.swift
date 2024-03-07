@@ -209,9 +209,9 @@ public class Stream : Reader, Writer, WriterTo {
   
   public func cancel() {
     self.log.message("Stream Cancelled", SSH_LOG_INFO)
-    stdoutCancellable?.cancel()
-    stdinCancellable?.cancel()
-    stderrCancellable?.cancel()
+    stdoutCancellable = nil
+    stdinCancellable = nil
+    stderrCancellable = nil
   }
   
   deinit {

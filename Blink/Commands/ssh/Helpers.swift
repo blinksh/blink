@@ -92,16 +92,3 @@ func tty() -> TermDevice {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   return session.device
 }
-
-func awaitRunLoop(_ runLoop: RunLoop) {
-  let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
-    print("timer")
-  }
-  runLoop.add(timer, forMode: .default)
-  CFRunLoopRun()
-}
-
-func awake(runLoop: RunLoop) {
-  let cfRunLoop = runLoop.getCFRunLoop()
-  CFRunLoopStop(cfRunLoop)
-}

@@ -55,39 +55,40 @@ class SSHPool {
       // For now we will not allow that situation.
       return shared.startConnection(host, with: config, proxy: proxy, exposeSocket: false)
     }
-    guard let ctrl = shared.control(for: host, with: config) else {
-      return shared.startConnection(host, with: config, proxy: proxy)
+    if let ctrl = shared.control(for: host, with: config) {
+      if let conn = ctrl.connection, conn.isConnected {
+        return .just(conn)
+      } else {
+        shared.removeControl(ctrl)
+      }
     }
     
-    guard let conn = ctrl.connection, conn.isConnected else {
-      shared.removeControl(ctrl)
-      return shared.startConnection(host, with: config, proxy: proxy)
-    }
-    
-    return .just(conn)
+    return shared.startConnection(host, with: config, proxy: proxy)
   }
 
   private func startConnection(_ host: String, with config: SSHClientConfig,
                                proxy: SSH.SSHClient.ExecProxyCommandCallback? = nil,
                                exposeSocket exposed: Bool = true) -> AnyPublisher<SSH.SSHClient, Error> {
     let pb = PassthroughSubject<SSH.SSHClient, Error>()
-    var cancel: AnyCancellable?
+    var dial: AnyCancellable?
     var runLoop: RunLoop!
 
     let t = Thread {
       runLoop = RunLoop.current
 
-      cancel = SSH.SSHClient.dial(host, with: config, withProxy: proxy)
-        .sink(receiveCompletion: { pb.send(completion: $0) },
-              receiveValue: { conn in
-                let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop, exposed: exposed)
-                SSHPool.shared.controls.append(control)
-                pb.send(conn)
-        })
+      dial = SSH.SSHClient.dial(host, with: config, withProxy: proxy)
+        //.print("SSHClient Pool")
+        .sink(
+          receiveCompletion: { completion in
+            pb.send(completion: completion)
+          },
+          receiveValue: { conn in
+            let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop, exposed: exposed)
+            SSHPool.shared.controls.append(control)
+            pb.send(conn)
+          })
 
-      awaitRunLoop(runLoop)
-      // Make another run on the loop to close extra stuff in blocks.
-      RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+      SSH.SSHClient.run()
       print("Pool Thread out")
     }
 
@@ -95,7 +96,7 @@ class SSHPool {
 
     return pb.buffer(size: 1, prefetch: .byRequest, whenFull: .dropOldest)
       .handleEvents(receiveCancel: {
-        cancel?.cancel()
+        dial = nil
       }).eraseToAnyPublisher()
   }
 
@@ -116,16 +117,7 @@ class SSHPool {
     print("\(control.localTunnels)")
     print("\(control.remoteTunnels)")
     if control.numChannels == 0 {
-      // For now, we just stop the connection as is
-      // We could use a delegate just to notify when a connection is dead, and the control could
-      // take care of figuring out when the connection it contains must go.
-      awake(runLoop: control.runLoop)
-      let idx = controls.firstIndex { $0 === control }!
-      
-      // Removing references to connection to deinit.
-      // We could also handle the pool with references to the connection.
-      // But the shell or time based persistance may become more difficult.
-      controls.remove(at: idx)
+      self.removeControl(control)
     }
   }
 }
@@ -256,12 +248,18 @@ extension SSHPool {
   }
   
   private func removeControl(_ control: SSHClientControl) {
-    awake(runLoop: control.runLoop)
+    // For now, we just stop the connection as is
+    // We could use a delegate just to notify when a connection is dead, and the control could
+    // take care of figuring out when the connection it contains must go.
     guard
       let idx = controls.firstIndex(where: { $0 === control })
     else {
       return
     }
+    
+    // Removing references to connection to deinit.
+    // We could also handle the pool with references to the connection.
+    // But the shell or time based persistance may become more difficult.
     controls.remove(at: idx)
   }
 }
