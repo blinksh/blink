@@ -70,10 +70,13 @@ enum MoshError: Error, LocalizedError {
 @objc public class BlinkMosh: Session {
   var exitCode: Int32 = 0
   var sshCancellable: AnyCancellable? = nil
+  var proxyCancellable: AnyCancellable? = nil
+  var proxyStream: SSH.Stream? = nil
   var currentRunLoop: RunLoop!
   var stdin: InputStream!
   var stdout: OutputStream!
   var stderr: OutputStream!
+  var isVerbose: Bool = false
   private var initialMoshParams: MoshParams? = nil
   private let mcpSession: MCPSession
   private var suspendSemaphore: DispatchSemaphore? = nil
@@ -122,9 +125,9 @@ enum MoshError: Error, LocalizedError {
         let message = MoshCommand.message(for: error)
         return die(message: message)
       }
-
+      self.isVerbose = command.verbose
       self.logger = MoshLogger(output: self.stderr, logLevel: command.verbose ? .info : .error)
-      
+
       let moshParams: MoshParams
       do {
         moshParams = try startMoshServer(using: command)
@@ -184,7 +187,14 @@ enum MoshError: Error, LocalizedError {
       
       var sshError: Error? = nil
       var _moshServerParams: MoshServerParams? = nil
-      self.sshCancellable = SSHClient.dial(hostName, with: config)
+      self.sshCancellable = SSHClient.dial(hostName, with: config, withProxy: { [weak self] in
+        guard let self = self
+        else {
+          return
+        }
+        self.mcpSession.setActiveSession()
+        self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
+      })
         .flatMap { self.bootstrapMoshServer(on: $0,
                                             sequence: sequence,
                                             experimentalRemoteIP: moshClientParams.experimentalRemoteIP,
@@ -192,29 +202,22 @@ enum MoshError: Error, LocalizedError {
                                             args: moshServerStartupArgs,
                                             withPTY: pty) }
         //.print()
-        .handleEvents(receiveCancel: { [weak self] in
-          if let self = self {
-            self.kill()
-          }
-        })
         .sink(
-          receiveCompletion: { [weak self] completion in
+          receiveCompletion: { completion in
             switch completion {
             case .failure(let error):
               sshError = error
             default:
               break
             }
-            self?.kill()
+            self.kill()
           },
           receiveValue: { params in
             _moshServerParams = params
           })
 
       self.isRunloopRunning = true
-      //awaitRunLoop(currentRunLoop)
-      CFRunLoopRunInMode(.defaultMode, TimeInterval(INT_MAX), false)
-      self.currentRunLoop.run(until: Date(timeIntervalSinceNow: 0.5))
+      SSHClient.run()
       self.isRunloopRunning = false
 
       if let error = sshError {
@@ -425,13 +428,63 @@ enum MoshError: Error, LocalizedError {
     throw MoshError.AddressInfo("Could not resolve address through getnameinfo.")
   }
 
+  private func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
+    print("Running ProxyCommand")
+
+    let hostName: String
+    let config: SSHClientConfig
+    let stdioHostAndPort: BindAddressInfo
+    let proxyCommand: SSHCommand
+    do {
+      var argv = command.components(separatedBy: " ")
+      if self.isVerbose {
+        argv.append("-vv")
+      }
+      proxyCommand = try SSHCommand.parse(Array(argv[1...]))
+      stdioHostAndPort = proxyCommand.stdioHostAndPort!
+      let commandHost = try proxyCommand.bkSSHHost()
+      let host = try BKConfig().bkSSHHost(proxyCommand.hostAlias, extending: commandHost)
+      hostName = host.hostName ?? proxyCommand.hostAlias
+      config = try SSHClientConfigProvider.config(host: host, using: device)
+    } catch {
+      print("Configuration error - \(error)", to: &stderr)
+      shutdown(sockIn, SHUT_RDWR)
+      shutdown(sockOut, SHUT_RDWR)
+      return
+    }
+    
+    let outStream = DispatchOutputStream(stream: sockOut)
+    let inStream = DispatchInputStream(stream: sockIn)
+
+    Thread {
+      self.proxyCancellable = SSHClient.dial(hostName, with: config)
+        .flatMap() { $0.requestForward(to: stdioHostAndPort.bindAddress, port: Int32(stdioHostAndPort.port), from: "stdio", localPort: 22)
+        }
+        .sink(
+          receiveCompletion: { completion in
+            if case .failure(let error) = completion {
+              print("Proxy forward error - \(error)", to: &self.stderr)
+              self.proxyCancellable = nil
+              shutdown(sockIn, SHUT_RDWR)
+              shutdown(sockOut, SHUT_RDWR)
+            }
+          },
+          receiveValue: { s in
+            self.proxyStream = s
+            s.connect(stdout: outStream, stdin: inStream)
+          })
+      
+      SSHClient.run()
+      print("Mosh proxy thread out")
+    }.start()
+    
+  }
+  
   @objc public override func kill() {
     if isRunloopRunning {
-      // Cancelling here makes sure the flows are cancelled.
-      // Trying to do it at the runloop has the issue that flows may continue running.
-      print("Kill received")
-      CFRunLoopStop(currentRunLoop.getCFRunLoop())
-      //awake(runLoop: currentRunLoop)
+      proxyStream?.cancel()
+      proxyStream = nil
+      proxyCancellable = nil
       sshCancellable = nil
     } else {
       // MOSH-ESC .
