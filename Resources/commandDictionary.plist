@@ -247,6 +247,13 @@
 		<string>AaB:b:Cc:DdfG:g:h:I:i:k:K:Ll:M:m:noP:p:QqRrS:s:T:t:vW:z:</string>
 		<string>no</string>
 	</array>
+	<key>ping6</key>
+	<array>
+		<string>network_ios.framework/network_ios</string>
+		<string>ping6_main</string>
+		<string>DdfHnNoqrRtvwWa:b:c:g:h:I:i:l:p:S:s:z:k:K:</string>
+		<string>no</string>
+	</array>
 	<key>printenv</key>
 	<array>
 		<string>shell.framework/shell</string>
@@ -464,12 +471,12 @@
 		<string>0E:I:J:L:n:oP:pR:s:tx</string>
 		<string>no</string>
 	</array>
-  <key>wol</key>
-  <array>
-    <string>network_ios.framework/network_ios</string>
-    <string>_Z8wol_mainiPKPc</string>
-    <string>hqb:p:d:</string>
-    <string>no</string>
-  </array>
+	<key>wol</key>
+	<array>
+		<string>network_ios.framework/network_ios</string>
+		<string>_Z8wol_mainiPKPc</string>
+		<string>hqb:p:d:</string>
+		<string>no</string>
+	</array>
 </dict>
 </plist>
