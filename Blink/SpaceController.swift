@@ -38,6 +38,7 @@ import MBProgressHUD
 import SwiftUI
 
 
+// MARK: UIViewController
 class SpaceController: UIViewController {
   
   struct UIState: UserActivityCodable {
@@ -536,6 +537,7 @@ class SpaceController: UIViewController {
   
 }
 
+// MARK: UIStateRestorable
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
     _viewportsKeys = state.keys
@@ -566,6 +568,7 @@ extension SpaceController: UIStateRestorable {
   }
 }
 
+// MARK: UIPageViewControllerDelegate
 extension SpaceController: UIPageViewControllerDelegate {
   public func pageViewController(
     _ pageViewController: UIPageViewController,
@@ -586,6 +589,7 @@ extension SpaceController: UIPageViewControllerDelegate {
   }
 }
 
+// MARK: UIPageViewControllerDataSource
 extension SpaceController: UIPageViewControllerDataSource {
   private func _controller(controller: UIViewController, advancedBy: Int) -> UIViewController? {
     guard let ctrl = controller as? TermController else {
@@ -616,6 +620,7 @@ extension SpaceController: UIPageViewControllerDataSource {
   
 }
 
+// MARK: TermControlDelegate
 extension SpaceController: TermControlDelegate {
   
   func terminalHangup(control: TermController) {
@@ -1146,6 +1151,7 @@ extension SpaceController {
   
 }
 
+// MARK: CommandsHUDDelegate
 extension SpaceController: CommandsHUDDelegate {
   @objc func currentTerm() -> TermController? {
     if let currentKey = _currentKey {
@@ -1156,6 +1162,8 @@ extension SpaceController: CommandsHUDDelegate {
   
   @objc func spaceController() -> SpaceController? { self }
 }
+
+// MARK: SnippetContext
 
 extension SpaceController: SnippetContext {
   

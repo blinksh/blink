@@ -911,6 +911,7 @@
 		BDD6D148275951D900E76F1F /* BKGlobalSSHConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKGlobalSSHConfig.swift; sourceTree = "<group>"; };
 		BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentUserPrompt.swift; sourceTree = "<group>"; };
 		BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLocationPathTests.swift; sourceTree = "<group>"; };
+		BDEEE36B2B8951D3003003FD /* get_frameworks.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = get_frameworks.sh; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
 		C944375F1D831CD30096F84E /* Themes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Themes; sourceTree = "<group>"; };
@@ -2309,6 +2310,7 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				BDEEE36B2B8951D3003003FD /* get_frameworks.sh */,
 				D23FFC69261C2D46003E9227 /* template_setup.xcconfig */,
 				D27D01232615F1BD00128C23 /* developer_setup.xcconfig */,
 				D2C243F7238E44960082C69C /* KB */,

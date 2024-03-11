@@ -134,7 +134,7 @@ extension Architecture {
   public var downloadableDescription: String {
     switch self {
     case .X86_64:
-      return "x86_64"
+      return "amd64"
     case .Aarch64:
       return "arm64"
     case .Arm64:
