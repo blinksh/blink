@@ -39,6 +39,7 @@ import SwiftCBOR
 
 public protocol InputPrompter {
   func setPromptOnView(_ view: UIView)
+  func setLogger(_ logger: SSHLogPublisher, verbosity: SSHLogLevel)
 }
 
 public class WebAuthnKey: NSObject {
@@ -46,6 +47,7 @@ public class WebAuthnKey: NSObject {
   let rawAttestationObject: Data
   
   var termView: UIView? = nil
+  var log: SSHLogger? = nil
   //var authAnchor: ASPresentationAnchor? = nil
   var signaturePub: PassthroughSubject<Data, Error>!
 
@@ -74,6 +76,10 @@ extension WebAuthnKey: InputPrompter {
   public func setPromptOnView(_ view: UIView) {
     self.termView = view
   }
+  
+  public func setLogger(_ logger: SSHLogPublisher, verbosity: SSHLogLevel) {
+    self.log = SSHLogger(verbosity: verbosity, logger: logger)
+  }
 }
 
 
@@ -86,24 +92,26 @@ extension WebAuthnKey: Signer {
   // an async interface to the Signers and Constraints.
   public func sign(_ message: Data, algorithm: String?) throws -> Data {
     guard self.termView != nil else {
-      throw WebAuthnError.clientError("Prompt not configured for request")
+      throw WebAuthnError.clientError("Prompt not configured for request.")
     }
+
+    self.log?.message("WebAuthn signature requested.", .info)
 
     let authController = ASAuthorizationController(authorizationRequests: [self.signAuthorizationRequest(message)])
     authController.delegate = self
     authController.presentationContextProvider = self
-    
     
     if #available(iOS 16.0, *) {
       let semaphore = DispatchSemaphore(value: 0)
       var signature: Data? = nil
       var error: Error? = nil
       self.signaturePub = PassthroughSubject<Data, Error>()
-      // TODO Send it on main for now
+      // Controller needs to be displayed on main.
       let cancel = Just(authController)
         .receive(on: DispatchQueue.main)
         .flatMap { authController in
-          authController.performRequests(options: .preferImmediatelyAvailableCredentials)
+          authController.performRequests() // options: .preferImmediatelyAvailableCredentials may suppress the UI, and it doesn't make sense in our scenario
+          self.log?.message("WebAuthn Controller called to perform request.", .debug)
           return self.signaturePub!
         }
         .sink(receiveCompletion: { completion in
@@ -115,13 +123,15 @@ extension WebAuthnKey: Signer {
         }
         semaphore.signal()
       }, receiveValue: { signature = $0 })
-      
+
+      self.log?.message("WebAuthn Controller awaiting response.", .debug)
       semaphore.wait()
       
       guard let signature = signature else {
         throw error!
       }
       
+      self.log?.message("WebAuthn signature completed.", .info)
       return signature
     } else {
       // Fallback on earlier versions
@@ -135,7 +145,8 @@ extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControl
     controller: ASAuthorizationController,
     didCompleteWithAuthorization authorization: ASAuthorization
   ) {
-    
+    self.log?.message("WebAuthn Controller received response.", .debug)
+
     guard
       let credentialAssertion = authorization.credential as? ASAuthorizationPublicKeyCredentialAssertion,
       let rawSignature = credentialAssertion.signature
@@ -159,6 +170,7 @@ extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControl
   
   public func authorizationController(controller: ASAuthorizationController,
                                       didCompleteWithError error: Error) {
+    self.log?.message("WebAuthn signature failed or cancelled - \(error)", .warn)
     signaturePub.send(completion: .failure(error))
   }
   

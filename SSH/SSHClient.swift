@@ -915,13 +915,17 @@ public enum SSHLogLevel: Int {
   }
 }
 
-class SSHLogger {
+public class SSHLogger {
   let verbosity: SSHLogLevel
   let logger: SSHLogPublisher?
   
-  init(verbosity level: SSHLogLevel, logger: SSHLogPublisher?) {
+  public init(verbosity level: SSHLogLevel, logger: SSHLogPublisher?) {
     self.verbosity = level
     self.logger = logger
+  }
+  
+  public func message(_ message: String, _ level: SSHLogLevel) {
+    self.message(message, Int32(level.rawValue))
   }
   
   func message(_ message: String, _ level: Int32) {

@@ -61,7 +61,7 @@ class SSHClientConfigProvider {
   // Return HostName, SSHClientConfig for the server
   static func config(host: BKSSHHost, using device: TermDevice) throws -> SSHClientConfig {
     let prov = try SSHClientConfigProvider(using: device)
-
+    
     let agent = prov.agent(for: host)
 
     let availableAuthMethods: [AuthMethod] = [AuthAgent(agent)] + prov.passwordAuthMethods(for: host)
@@ -134,10 +134,9 @@ extension SSHClientConfigProvider {
 
     signers.forEach { (signer, name) in
       // NOTE We could also keep the reference and just read the key at the proper time.
-      // TODO Errors. Either pass or log here, or if we create a different
-      // type of key, then let the Agent fail.
       if let signer = signer as? BlinkConfig.InputPrompter {
         signer.setPromptOnView(device.view)
+        signer.setLogger(self.logger, verbosity: host.logLevel ?? .none)
       }
       agent.loadKey(signer, aka: name, constraints: consts)
     }
