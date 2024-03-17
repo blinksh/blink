@@ -93,6 +93,8 @@ class KBObserver: NSObject, UIInteraction {
       return
     }
      
+    KBTracker.shared.detectHardwareKBWithSoftwareKBHeight(height: kbEndFrame.height)
+
     self.kbScreenFrame = kbEndFrame
     self.view?.setNeedsLayout()
     NotificationCenter.default.post(name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
@@ -110,12 +112,16 @@ class KBObserver: NSObject, UIInteraction {
       return
     }
      
+    KBTracker.shared.detectHardwareKBWithSoftwareKBHeight(height: kbEndFrame.height)
+
     self.kbScreenFrame = kbEndFrame
     self.view?.setNeedsLayout()
     NotificationCenter.default.post(name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
   }
 
   @objc private func _keyboardWillChangeFrame(notification: Notification) {
+    // keyboardWillChangeFrameNotification always comes with a corresponding keyboardWillShowNotification or keyboardWillHideNotification.
+    // Code moved to the more explicit show and hide notifications.
     return
     guard
       let screen = notification.object as? UIScreen,

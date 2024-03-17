@@ -175,34 +175,6 @@ class CaretHider {
     reportLang(lang, isHardwareKB: kbView.traits.isHKBAttached)
   }
   
-  override var inputAssistantItem: UITextInputAssistantItem {
-    let item = super.inputAssistantItem
-    if KBTracker.shared.isHardwareKB {
-      item.trailingBarButtonGroups = []
-      item.leadingBarButtonGroups = []
-    } else if _barButtonItemGroup != nil {
-      item.leadingBarButtonGroups = []
-      if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
-        item.trailingBarButtonGroups = [_barButtonItemGroup]
-        
-        // Reload input views later. Fixes crash for detaching/attaching KB
-        if let contentView = self.contentView() {
-          DispatchQueue.main.async {
-            contentView.reloadInputViews()
-          }
-        }
-        
-      }
-      kbView.isHidden = false
-      
-    } else {
-      item.trailingBarButtonGroups = []
-      item.leadingBarButtonGroups = []
-    }
-    
-    return item
-  }
-  
   override func becomeFirstResponder() -> Bool {
     
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
@@ -275,21 +247,41 @@ class CaretHider {
   
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {
     kbView.kbDevice = device
+    kbView.traits = traits
     
-    defer {
-      
-      kbView.traits = traits
-      
-      if let scene = window?.windowScene {
-        if traitCollection.userInterfaceIdiom == .phone {
-          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-        } else if kbView.traits.isFloatingKB {
-          kbView.traits.isPortrait = true
-        } else {
-          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-        }
+    if let scene = window?.windowScene {
+      if traitCollection.userInterfaceIdiom == .phone {
+        kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+      } else if kbView.traits.isFloatingKB {
+        kbView.traits.isPortrait = true
+      } else {
+        kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
       }
+    }
       
+    // Update Shortcuts Bar depending on if Hardware KeyBoard (HKB) is attached.
+    let item = inputAssistantItem
+    if traits.isHKBAttached {
+      item.trailingBarButtonGroups = []
+      item.leadingBarButtonGroups = []
+    } else if _barButtonItemGroup != nil {
+      item.leadingBarButtonGroups = []
+      if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
+        item.trailingBarButtonGroups = [_barButtonItemGroup]
+        
+        // Reload input views later. Fixes crash for detaching/attaching KB
+        if let contentView = self.contentView() {
+          DispatchQueue.main.async {
+            contentView.reloadInputViews()
+          }
+        }
+        
+      }
+      kbView.isHidden = false
+      
+    } else {
+      item.trailingBarButtonGroups = []
+      item.leadingBarButtonGroups = []
     }
     
     if traitCollection.userInterfaceIdiom == .phone {
