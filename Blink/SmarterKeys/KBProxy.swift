@@ -90,18 +90,6 @@ class KBProxy: UIView {
     
     var bKBframe = placeView.bounds
     
-    var hardwareKBAttached = false
-    if bKBframe.size.width - rightBottom.x > 58 /* better check? */ {
-      bKBframe.size.width -= (bKBframe.size.width - rightBottom.x) - 6
-      hardwareKBAttached = true
-    }
-//    var traits = _kbView.traits
-    
-//    traits.isHKBAttached = hardwareKBAttached
-//    traits.isPortrait = win.bounds.width < win.bounds.height
-//    debugPrint("KBProxy isPortatit", traits.isPortrait)
-    
-//    _kbView.traits = traits
     _kbView.safeBarWidth = barButtonView.frame.width
     _kbView.frame = bKBframe
   }
