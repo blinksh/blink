@@ -34,6 +34,7 @@ import ArgumentParser
 import BlinkCode
 import Network
 
+import ios_system
 
 struct BrowseCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(

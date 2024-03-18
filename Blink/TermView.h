@@ -44,7 +44,6 @@ extern NSString * TermViewBrowserReadyNotificationKey;
 
 @property BOOL rawMode;
 
-- (BOOL)handleControl:(NSString *)control;
 - (void)viewIsReady;
 - (void)viewFontSizeChanged:(NSInteger)size;
 - (void)viewWinSizeChanged:(struct winsize)win;

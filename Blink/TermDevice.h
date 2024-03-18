@@ -97,4 +97,8 @@
 - (void)writeOutLn:(NSString *)output;
 - (void)close;
 
+
+@end
+
+@interface TermDevice () <TermViewDeviceProtocol>
 @end

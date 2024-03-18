@@ -37,6 +37,7 @@
 @property FILE *out;
 @property FILE *err;
 
+- (FILE*)openTTY;
 - (void)close;
 - (void)closeIn;
 

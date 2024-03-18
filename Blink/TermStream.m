@@ -48,6 +48,12 @@
   }
 }
 
+// We are not a TTY, but the closest is to read directly from stdin as we offer it, without
+// intermediaries (except the terminal itself).
+- (FILE*)openTTY {
+  return fdopen(dup(fileno(_in)), "rb");
+}
+
 - (void)closeIn {
   if (_in) {
     fflush(_in);

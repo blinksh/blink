@@ -35,6 +35,7 @@ import StoreKit
 import ArgumentParser
 import BlinkConfig
 
+import ios_system
 
 struct SKStoreCmd: NonStdIOCommand {
   static var configuration = CommandConfiguration(

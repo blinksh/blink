@@ -34,6 +34,9 @@ import Foundation
 import ArgumentParser
 import AVFoundation
 
+import ios_system
+
+
 struct FaceCam: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "facecam",

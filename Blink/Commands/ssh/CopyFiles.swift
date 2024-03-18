@@ -37,6 +37,7 @@ import Foundation
 import ArgumentParser
 import BlinkFiles
 import SSH
+import ios_system
 
 fileprivate let Version = "1.0.1"
 

@@ -34,6 +34,7 @@ import Foundation
 
 import ArgumentParser
 import SSH
+import ios_system
 
 
 struct BlinkSSHAgentAddCommand: ParsableCommand {

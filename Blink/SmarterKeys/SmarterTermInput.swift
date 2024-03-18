@@ -399,13 +399,6 @@ extension SmarterTermInput {
     
     deviceView.displayInput(data)
     
-    let ctrlC = "\u{0003}"
-    let ctrlD = "\u{0004}"
-    
-    if data == ctrlC || data == ctrlD,
-      device.delegate?.handleControl(data) == true {
-      return
-    }
     device.write(data)
   }
   

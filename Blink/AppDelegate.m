@@ -75,7 +75,7 @@ void __setupProcessEnv(void) {
   setlocale(LC_ALL, "UTF-8");
   setenv("TERM", "xterm-256color", forceOverwrite);
   setenv("LANG", "en_US.UTF-8", forceOverwrite);
-  
+  setenv("VIMRUNTIME", [[mainBundle resourcePath] stringByAppendingPathComponent:@"/vim"].UTF8String, 1);
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
   ssh_init();
 }

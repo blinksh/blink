@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>mosh2</key>
+	<key>mosh1</key>
 	<array>
 		<string>MAIN</string>
 		<string>blink_mosh_main</string>

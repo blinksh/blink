@@ -142,9 +142,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 @end
 
-@interface TermDevice () <TermViewDeviceProtocol>
-@end
-
 
 // The TermStream is the PTYDevice
 // They might actually be different. The Device listens, the stream is lower level.
@@ -207,11 +204,30 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)write:(NSString *)input
 {
-  if (!_rawMode) {
-    [self.view processKB:input];
+  NSString *ctrlC = @"\x03";
+  NSString *ctrlD = @"\x04";
+
+  // NOTE Terminals may still filter some control sequences, but we don't need that yet.
+  if (_rawMode) {
+    [self writeInDirectly: input];
     return;
   }
-  [self writeInDirectly: input];
+  
+  // Cook
+  if ([input isEqualToString:ctrlC] || [input isEqualToString:ctrlD]) {
+    [self closeReadline];
+
+    if ([input isEqualToString:ctrlD]) {
+      // TODO This should release whatever the input has stored, but we don't have any commands
+      // where this is critical.
+      [self _EOT];
+    }
+    // TODO This should send specific signals instead of handling the control openly.
+    [self.delegate handleControl: input];
+    return;
+  }
+  
+  [self.view processKB:input];
 }
 
 - (void)writeInDirectly:(NSString *)input
@@ -236,7 +252,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)close
 {
-  // TODO: Closing the streams!! But they are duplicated!!!!
+  // Closing the Device streams. These are the main device, usually duped in Sessions.
   [_stream close];
   [_outStream close];
   [_errStream close];
@@ -303,6 +319,19 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     dispatch_semaphore_signal(_readlineSema);
     _readlineSema = nil;
   }
+}
+
+- (void)_EOT {
+  // On EOT, a PTY on the kernel would release linereads, etc... without closing the stream.
+  // We do not have that kind of access, so we "simulate" it by recycling stdin. Then we give an opportunity
+  // through the Terminal Delegate so sessions can "restore" stdin and continue reading from it if necessary.
+  // TODO We should return the last input we have from the device, but not easy to do atm.
+  [self closeReadline];
+  close(_pinput[1]);
+  close(_pinput[0]);
+  pipe(_pinput);
+  _stream.in = fdopen(_pinput[0], "rb");
+  setvbuf(_stream.in, NULL, _IONBF, 0);
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
@@ -435,11 +464,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)viewSelectionChanged {
   [_input setHasSelection:_view.hasSelection];
-}
-
-- (BOOL)handleControl:(NSString *)control
-{
-  return NO;
 }
 
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message {

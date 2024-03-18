@@ -442,7 +442,6 @@ extension TermController: TermDeviceDelegate {
   }
   
   public func deviceFocused() {
-    _session?.setActiveSession()
     view.setNeedsLayout()
   }
   

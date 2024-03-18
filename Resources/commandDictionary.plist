@@ -93,13 +93,6 @@
 		<string>n</string>
 		<string>no</string>
 	</array>
-	<key>ed</key>
-	<array>
-		<string>text.framework/text</string>
-		<string>ed_main</string>
-		<string>p:sx</string>
-		<string>file</string>
-	</array>
 	<key>egrep</key>
 	<array>
 		<string>text.framework/text</string>
@@ -168,6 +161,13 @@
 		<string>network_ios.framework/network_ios</string>
 		<string>ifconfig_main</string>
 		<string>abdlmruv</string>
+		<string>no</string>
+	</array>
+	<key>less</key>
+	<array>
+		<string>files.framework/files</string>
+		<string>less_main</string>
+		<string></string>
 		<string>no</string>
 	</array>
 	<key>link</key>
@@ -435,6 +435,13 @@
 		<string>unsetenv_main</string>
 		<string></string>
 		<string>no</string>
+	</array>
+	<key>vim</key>
+	<array>
+		<string>vim.framework/vim</string>
+		<string>main</string>
+		<string></string>
+		<string></string>
 	</array>
 	<key>uptime</key>
 	<array>
