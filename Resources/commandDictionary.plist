@@ -9,6 +9,13 @@
 		<string>dhiflM:N:nsuw</string>
 		<string>file</string>
 	</array>
+	<key>bc</key>
+	<array>
+		<string>bc_ios.framework/bc_ios</string>
+		<string>bcdc_main</string>
+		<string>e:f:hilqsvVwx</string>
+		<string>no</string>
+	</array>
 	<key>cat</key>
 	<array>
 		<string>text.framework/text</string>
