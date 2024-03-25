@@ -139,8 +139,9 @@
 }
 
 - (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord {
-  // TODO This is crazy ugly. The MCP should read from, but not write to the input.
-  // The terminal device in this case is acting like a shell, which is not fully wrong.
+  // NOTE This shouldn't be done this way. The MCP should read from, but not write to the input.
+  // The terminal device in this case is acting like a shell, which is not fully wrong, but I don't like it.
+  // The terminal view is also receiving requests for "what's being typed" in order to then do Completion, etc...
   if (_cmdStream) {
     [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
     return;
@@ -355,8 +356,7 @@
   [_childSession suspend];
 }
 
-// TODO This doesn't need to be a boolean anymore.
-- (BOOL)handleControl:(NSString *)control
+- (void)handleControl:(NSString *)control
 {
   NSString *ctrlC = @"\x03";
   NSString *ctrlD = @"\x04";
@@ -369,13 +369,13 @@
         }
       });
     }
-    return [_childSession handleControl:control];
+    return;
   } else if (_currentCmd) {
     if ([control isEqualToString:ctrlD]) {
       // We give a chance to the session to capture the new stdin, as it may have changed.
       [self setActiveSession];
       ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.out);
-      return NO;
+      return;
     }
     
     if ([control isEqualToString:ctrlC]) {
@@ -393,11 +393,11 @@
           ios_kill();
         }
       }
-      return YES;
+      return;
     }
   }
 
-  return NO;
+  return;
 }
 
 - (void)setActiveSession {

@@ -508,12 +508,9 @@ enum MoshError: Error, LocalizedError {
     pthread_kill(self.tid, SIGWINCH);
   }
   
-  @objc public override func handleControl(_ control: String!) -> Bool {
+  @objc public override func handleControl(_ control: String!) {
     if isRunloopRunning {
       self.kill()
-      return true
-    } else {
-      return false
     }
   }
   

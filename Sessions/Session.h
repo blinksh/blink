@@ -65,7 +65,7 @@
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;
-- (BOOL)handleControl:(NSString *)control;
+- (void)handleControl:(NSString *)control;
 - (void)setActiveSession;
 
 @end

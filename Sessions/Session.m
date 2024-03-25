@@ -226,9 +226,8 @@ void *run_session(void *sessionData)
 {
 }
 
-- (BOOL)handleControl:(NSString *)control
+- (void)handleControl:(NSString *)control
 {
-  return NO;
 }
 
 - (void)setActiveSession {

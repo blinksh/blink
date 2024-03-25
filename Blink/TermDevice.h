@@ -52,7 +52,7 @@
 - (void)deviceIsReady;
 - (void)deviceSizeChanged;
 - (void)viewFontSizeChanged:(NSInteger)size;
-- (BOOL)handleControl:(NSString *)control;
+- (void)handleControl:(NSString *)control;
 - (void)lineSubmitted:(NSString *)line;
 - (void)deviceFocused;
 - (void)apiCall:(NSString *)api andRequest:(NSString *)request;
