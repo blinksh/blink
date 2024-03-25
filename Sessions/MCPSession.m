@@ -200,8 +200,7 @@
       if ([cmd isEqualToString:@"less"]) {
         // Less needs a different carriage return.
         // This is part of the control by apps that we need to define manually.
-        // TODO Move to its own function instead.
-        fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=1\x07");
+        self.device.autoCR = TRUE;
       }
     }
     [self setActiveSession];

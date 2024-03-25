@@ -72,6 +72,7 @@
 @property (readonly) UIView<TermInput> *input;
 @property id<TermDeviceDelegate> delegate;
 @property (nonatomic) BOOL rawMode;
+@property (nonatomic) BOOL autoCR;
 @property (nonatomic) BOOL secureTextEntry;
 @property (nonatomic) NSInteger rows;
 @property (nonatomic) NSInteger cols;

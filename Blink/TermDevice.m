@@ -207,7 +207,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   NSString *ctrlC = @"\x03";
   NSString *ctrlD = @"\x04";
 
-  // NOTE Terminals may still filter some control sequences, but we don't need that yet.
   if (_rawMode) {
     [self writeInDirectly: input];
     return;
@@ -218,12 +217,16 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [self closeReadline];
 
     if ([input isEqualToString:ctrlD]) {
-      // TODO This should release whatever the input has stored, but we don't have any commands
-      // where this is critical.
       [self _EOT];
     }
-    // TODO This should send specific signals instead of handling the control openly.
+    // NOTE This should send specific signals instead of handling the control openly, but won't change for now.
     [self.delegate handleControl: input];
+    return;
+  }
+  
+  // Ignore some C0 Control codes - https://wezfurlong.org/wezterm/escape-sequences.html#c0-control-codes
+  NSArray *ignoredSequences = [NSArray arrayWithObjects:@"\x1c", @"\x1d", @"\x1e", @"\x1f", nil];
+  if ([ignoredSequences containsObject:input]) {
     return;
   }
   
@@ -277,12 +280,22 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 {
   if (_stream.out) {
     if (rawMode) {
-      fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=0\x07");
+      [self setAutoCR: FALSE];
     } else {
-      fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=1\x07");
+      [self setAutoCR: TRUE];
     }
   }
   _rawMode = rawMode;
+}
+
+- (void)setAutoCR:(BOOL)autoCR {
+  if (autoCR) {
+    fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=1\x07");
+  } else {
+    fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=0\x07");
+  }
+  
+  _autoCR = autoCR;
 }
 
 - (void)prompt:(NSString *)prompt secure:(BOOL)secure shell:(BOOL)shell {
