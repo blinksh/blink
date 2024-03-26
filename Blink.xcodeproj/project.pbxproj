@@ -97,10 +97,6 @@
 		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
 		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
-		BD4437722BA916820094E90A /* vim.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD4437712BA9156C0094E90A /* vim.xcframework */; };
-		BD4437732BA9176A0094E90A /* vim.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BD4437712BA9156C0094E90A /* vim.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BD44377A2BACD7A60094E90A /* xxd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD4437792BACD78E0094E90A /* xxd.xcframework */; };
-		BD44377B2BACD7A60094E90A /* xxd.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BD4437792BACD78E0094E90A /* xxd.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
 		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
@@ -694,11 +690,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BD4437732BA9176A0094E90A /* vim.xcframework in Embed Frameworks */,
 				D2A9B2F8272E6F26009FCBDE /* BlinkCode.framework in Embed Frameworks */,
 				D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */,
 				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
-				BD44377B2BACD7A60094E90A /* xxd.xcframework in Embed Frameworks */,
 				07FABB9A25C9AEC100E1CC2C /* SSH.framework in Embed Frameworks */,
 				BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */,
 				D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */,
@@ -843,8 +837,6 @@
 		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
 		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
-		BD4437712BA9156C0094E90A /* vim.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = vim.xcframework; sourceTree = "<group>"; };
-		BD4437792BACD78E0094E90A /* xxd.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = xxd.xcframework; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskMonitor.swift; sourceTree = "<group>"; };
@@ -925,6 +917,8 @@
 		BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLocationPathTests.swift; sourceTree = "<group>"; };
 		BDE84C3B2BAE335100457391 /* vim */ = {isa = PBXFileReference; lastKnownFileType = folder; path = vim; sourceTree = "<group>"; };
 		BDE84C502BB233F100457391 /* bc_ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = bc_ios.xcframework; path = xcfs/.build/artifacts/xcfs/bc/bc_ios.xcframework; sourceTree = SOURCE_ROOT; };
+		BDE84C762BB33AB800457391 /* xxd.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = xxd.xcframework; path = xcfs/.build/artifacts/xcfs/xxd/xxd.xcframework; sourceTree = SOURCE_ROOT; };
+		BDE84C772BB33AD700457391 /* vim.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = vim.xcframework; path = xcfs/.build/artifacts/xcfs/vim/vim.xcframework; sourceTree = SOURCE_ROOT; };
 		BDEEE36B2B8951D3003003FD /* get_frameworks.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = get_frameworks.sh; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
@@ -1330,7 +1324,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD4437722BA916820094E90A /* vim.xcframework in Frameworks */,
 				D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
 				D2334F0225C1C28F00385378 /* ssh_cmd.xcframework in Frameworks */,
@@ -1349,7 +1342,6 @@
 				D222780C2A26216900D4C708 /* TreeSitterBashRunestone in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				07FABBC425C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
-				BD44377A2BACD7A60094E90A /* xxd.xcframework in Frameworks */,
 				BD7AFC4128E8E98C004BCDA4 /* Base32Kit in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				D2F64CA925CAA92700F2225D /* curl_ios_static.framework in Frameworks */,
@@ -1465,9 +1457,9 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BDE84C772BB33AD700457391 /* vim.xcframework */,
+				BDE84C762BB33AB800457391 /* xxd.xcframework */,
 				BDE84C502BB233F100457391 /* bc_ios.xcframework */,
-				BD4437792BACD78E0094E90A /* xxd.xcframework */,
-				BD4437712BA9156C0094E90A /* vim.xcframework */,
 				D2771510287F0EA200D31F4E /* libbuild_cli.a */,
 				BDB72CB127A9C08500DCC446 /* StoreKit.framework */,
 				D248EC542689EAD7009FD817 /* SSHConfig */,

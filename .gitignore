@@ -28,6 +28,7 @@ Frameworks/libssh2.framework
 Frameworks/openssl.framework
 
 Resources/AppFont/
+Resources/vim/
 
 ## Other
 *.moved-aside
