@@ -115,6 +115,7 @@ struct Complete {
     }
     let result = [
       "awk": "Select particular records in a file and perform operations upon them.",
+      "bc": "Calculator 🧮.",
       "cat": "Concatenate and print files.",
       "cd":  "Change directory.",
 //  //    "chflags": "chflags", // TODO
@@ -204,7 +205,7 @@ struct Complete {
     case "ssh", "ssh2", "mosh", "mosh1": return .blinkHost
     case "ping": return .host
     case "ls": return .directory
-    case "file", "vim": return .file
+    case "file", "vim", "less": return .file
     case "geo": return .blinkGeo
     case "build": return .blinkBuild
     case "facecam": return .facecam
