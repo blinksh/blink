@@ -165,6 +165,11 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
 
   public func hasActiveSubscriptions() -> Bool {
+    // Allow developer/TestFlight builds to bypass the paywall so
+    // self-built installs can proceed without RevenueCat configuration.
+    if FeatureFlags.noSubscriptionNag {
+      return true
+    }
     print(currentPlanName())
     return customerTier() != CustomerTier.Free
   }
