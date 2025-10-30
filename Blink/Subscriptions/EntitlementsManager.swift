@@ -165,13 +165,12 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
 
   public func hasActiveSubscriptions() -> Bool {
-    // Allow developer/TestFlight builds to bypass the paywall so
-    // self-built installs can proceed without RevenueCat configuration.
-    if FeatureFlags.noSubscriptionNag {
-      return true
-    }
+    #if BLINK_PUBLISHING_OPTION_DEVELOPER
+    return true
+    #else
     print(currentPlanName())
     return customerTier() != CustomerTier.Free
+    #endif
   }
   
   public func groupsCheckViolation() -> Bool {
