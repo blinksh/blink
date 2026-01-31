@@ -117,6 +117,9 @@ function term_setup(accessibilityEnabled) {
 
     t.setCursorVisible(true);
     t.io.onTerminalResize = function(cols, rows) {
+      // App needs to redraw for the new size, so end any in-progress
+      // synchronized update immediately. Matches ghostty / spec.
+      _syncOutputReset(t);
       _postMessage('sigwinch', {cols, rows});
       if (t.prompt) {
         t.prompt.resize();
@@ -239,10 +242,12 @@ function b64_to_uint8_array(b64Str) {
 }
 
 function term_clear() {
+  _syncOutputReset(t);
   t.clear();
 }
 
 function term_reset() {
+  _syncOutputReset(t);
   t.reset();
 }
 

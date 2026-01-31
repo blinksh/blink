@@ -59,10 +59,41 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
 // DEC mode 1003 and DEC mode 1002 (which hterm does support) are almost identical. The only difference is that mode 1003 includes mouse movement tracking events which are rarely used.
 // This patches hterm to treat DEC mode 1003 the same as DEC mode 1002.
 
+// -- Synchronized output (DEC mode 2026)
+// Process all escape sequences normally but suppress rendering until the
+// mode is reset.  A 1 s safety timer force-resets if the end sequence
+// never arrives, matching ghostty's behaviour.
+
+var _syncOutputTimeout = null;
+
+function _syncOutputSet(terminal) {
+  terminal.scrollPort_.screen_.style.visibility = 'hidden';
+  if (_syncOutputTimeout) clearTimeout(_syncOutputTimeout);
+  _syncOutputTimeout = setTimeout(function() {
+    _syncOutputReset(terminal);
+  }, 1000);
+}
+
+function _syncOutputReset(terminal) {
+  if (_syncOutputTimeout) {
+    clearTimeout(_syncOutputTimeout);
+    _syncOutputTimeout = null;
+  }
+  terminal.scrollPort_.screen_.style.visibility = '';
+}
+
 hterm.VT.prototype.setDECMode_original = hterm.VT.prototype.setDECMode;
 hterm.VT.prototype.setDECMode = function(code, state) {
   if (code === "1003") {
     code = "1002";
+  }
+  if (code === "2026") {
+    if (state) {
+      _syncOutputSet(this.terminal);
+    } else {
+      _syncOutputReset(this.terminal);
+    }
+    return;
   }
   hterm.VT.prototype.setDECMode_original.call(this, code, state);
 };
