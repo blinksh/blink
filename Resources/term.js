@@ -36,8 +36,9 @@ hterm.Terminal.prototype.copyStringToClipboard = function(content) {
     setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
   }
 
+  const normalizedContent = term_normalizeSelectionForClipboard(content);
   document.getSelection().removeAllRanges();
-  _postMessage('copy', {content});
+  _postMessage('copy', {content: normalizedContent});
 };
 
 document.addEventListener('selectionchange', function() {
@@ -369,6 +370,19 @@ function term_loadFontFromCss(url, name) {
   term_setFontFamily(name);
 }
 
+function term_normalizeSelectionForClipboard(text) {
+  if (typeof text !== 'string' || text.length === 0) {
+    return '';
+  }
+
+  // hterm selection may include row-padding spaces at EOL; those should not leak
+  // into the system clipboard as trailing whitespace.
+  return text
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/[ \t]+$/g, '');
+}
+
 function term_getCurrentSelection() {
   const selection = document.getSelection();
     if (!selection || selection.rangeCount === 0 || selection.type === 'Caret') {
@@ -382,7 +396,8 @@ function term_getCurrentSelection() {
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
-    text: t.getSelectionText() || "",
+    // Avoid hterm wide-char offset math edge cases (e.g. single CJK char).
+    text: term_normalizeSelectionForClipboard(selection.toString() || ""),
     rect,
   };
 }
