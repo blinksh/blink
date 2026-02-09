@@ -49,7 +49,8 @@
 + (NSMutableArray *)defaultResources;
 + (NSMutableArray *)customResources;
 
-- (BOOL)isCustom;
+- (BOOL)isBundled;
+- (BOOL)isAvailableInLockdownMode;
 - (NSString *)fullPath;
 - (NSString *)content;
 
