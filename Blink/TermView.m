@@ -825,8 +825,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
   BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
-  BKFont *font = lockdownMode ? nil : [BKFont withName: params.fontName ?: [BLKDefaults selectedFontName]];
-  NSString *fontFamily = font.name;
+  BKFont *selectedFont = [BKFont withName: params.fontName ?: [BLKDefaults selectedFontName]];
+  // In Lockdown mode, keep bundled fonts but disable non-bundled ones.
+  BKFont *font = (lockdownMode && selectedFont.isCustom) ? nil : selectedFont;
+  NSString *fontFamily = font.name ?: (lockdownMode ? @"monospace" : nil);
   NSString *content = font.content;
   if (font && font.isCustom && content) {
     [script addObject:term_appendUserCss(content)];
