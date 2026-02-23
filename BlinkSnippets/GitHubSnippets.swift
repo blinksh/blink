@@ -75,11 +75,19 @@ public class GitHubSnippets: LocalSnippets {
     self.owner = owner
     self.repo = repo
     self.rootLocation = location.appending(path: "com.github")
-    
-    if !FileManager.default.fileExists(atPath: rootLocation.path()) {
-      try FileManager.default.createDirectory(at: rootLocation, withIntermediateDirectories: false)
+
+    let fm = FileManager.default
+    var isDirectory = ObjCBool(false)
+    let rootExists = fm.fileExists(atPath: rootLocation.path(), isDirectory: &isDirectory)
+
+    if rootExists, !isDirectory.boolValue {
+      try fm.removeItem(at: rootLocation)
     }
-    
+
+    if !rootExists || !isDirectory.boolValue {
+      try fm.createDirectory(at: rootLocation, withIntermediateDirectories: true)
+    }
+
     self.location = rootLocation.appending(path: "\(self.owner)-\(self.repo)")
     super.init(from: self.location)
   }

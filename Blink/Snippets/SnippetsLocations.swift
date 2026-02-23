@@ -69,7 +69,17 @@ class SnippetsLocations {
     // Create main snippets location. Each location then is responsible for its structure.
     if !fm.fileExists(atPath: snippetsLocation.path()) {
       try fm.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
-      if !dontUseBlinkSnippets {
+    }
+
+    if !dontUseBlinkSnippets {
+      var isDirectory = ObjCBool(false)
+      let cachedExists = fm.fileExists(atPath: cachedSnippetsLocation.path(), isDirectory: &isDirectory)
+
+      if cachedExists, !isDirectory.boolValue {
+        try fm.removeItem(at: cachedSnippetsLocation)
+      }
+
+      if !cachedExists || !isDirectory.boolValue {
         try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
       }
     }
