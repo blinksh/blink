@@ -264,7 +264,8 @@ public class SSHClient {
     callbacks.session_exception_function = { (session, userdata) in
       // Pass the callback to the other side, and let that wrap up this
       // connection, but also start a new one if necessary.
-      let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata!).takeUnretainedValue()
+      guard let userdata = userdata else { return }
+      let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata).takeUnretainedValue()
       let error = SSHError(title: "Session Exception", forSession: session)
       ctxt.log.message("\(error)", SSH_LOG_WARN)
       ctxt.handleSessionException?(error)
@@ -272,7 +273,9 @@ public class SSHClient {
     
     if options.proxyCommand != nil || options.proxyJump != nil {
       callbacks.set_proxycommand_function = { (cmd, inSock, outSock, userdata) in
-        let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata!).takeUnretainedValue()
+        guard let userdata = userdata else { return }
+
+        let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata).takeUnretainedValue()
         let command = String(cString: cmd!)
         // Will break if unconfigured. It can be considered
         // a code error.

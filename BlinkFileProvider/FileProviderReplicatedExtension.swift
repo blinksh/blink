@@ -91,11 +91,9 @@ public class FileProviderReplicatedExtension: NSObject, NSFileProviderReplicated
     let log = logger("FP")
     log.info("Started")
 
-    DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 5) {
+    DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 5) { [weak self] in
+      guard let self = self else { return }
       self.workingSet.resumeChangesTimerEvery(seconds: 5)
-    }
-
-    DispatchQueue.global(qos: .background).async {
       // Background clean-up
       self.cancellables.insert(self.cleanUpOldTmpFiles())
     }

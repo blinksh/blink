@@ -44,6 +44,7 @@ class KBView: UIView {
   private var _timer: Timer? = nil
   private var _repeatingKeyView: KBKeyView? = nil
   private var _commandPressTimestamp: TimeInterval = 0
+  //private var _glassEffectView: UIVisualEffectView?
   
   var repeatingSequence: String? = nil
   
@@ -115,12 +116,40 @@ class KBView: UIView {
     
     _indicatorLeft.backgroundColor = UIColor.blue.withAlphaComponent(0.45)
     _indicatorRight.backgroundColor = UIColor.orange.withAlphaComponent(0.45)
+    
+    // // Setup glass material effect for iOS 26+ to handle transparency issues
+    // if #available(iOS 26.0, *) {
+    //   _setupGlassMaterialEffect()
+    // }
 
   }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  // @available(iOS 26.0, *)
+  // private func _setupGlassMaterialEffect() {
+  //   // Create a glass material effect that adapts to background changes
+  //   // Use systemThinMaterial for better contrast while maintaining glass effect
+  //   let glassEffect = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+  //   glassEffect.translatesAutoresizingMaskIntoConstraints = false
+  //   _glassEffectView = glassEffect
+    
+  //   // Insert the glass effect behind all other views
+  //   insertSubview(glassEffect, at: 0)
+    
+  //   // Make the glass effect fill the entire keyboard view
+  //   NSLayoutConstraint.activate([
+  //     glassEffect.leadingAnchor.constraint(equalTo: leadingAnchor),
+  //     glassEffect.trailingAnchor.constraint(equalTo: trailingAnchor),
+  //     glassEffect.topAnchor.constraint(equalTo: topAnchor),
+  //     glassEffect.bottomAnchor.constraint(equalTo: bottomAnchor)
+  //   ])
+    
+  //   // Set a subtle background color for better contrast
+  //   backgroundColor = UIColor.systemBackground.withAlphaComponent(0.1)
+  // }
   
   func _updateSections() {
     _leftSection.views.forEach { $0.removeFromSuperview() }
@@ -147,10 +176,22 @@ class KBView: UIView {
       _scrollViewLeftBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.45)
       _scrollViewRightBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.45)
     }
+    
+    // // Update glass effect for iOS 26+ when trait collection changes
+    // if #available(iOS 26.0, *), let glassEffect = _glassEffectView {
+    //   // The system material will automatically adapt to the new trait collection
+    //   // but we can ensure it's properly positioned
+    //   glassEffect.frame = bounds
+    // }
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
+    
+    // // Update glass effect frame for iOS 26+
+    // if #available(iOS 26.0, *), let glassEffect = _glassEffectView {
+    //   glassEffect.frame = bounds
+    // }
    
     let strictSpace = !traits.isHKBAttached && traits.hasSuggestions
     self.kbSizes = kbDevice.sizesFor(portrait: traits.isPortrait)

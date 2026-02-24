@@ -34,9 +34,39 @@ import Combine
 import Foundation
 
 
+private final class ShareReplayPublisher<Upstream: Publisher>: Publisher {
+    typealias Output = Upstream.Output
+    typealias Failure = Upstream.Failure
+
+    private let upstream: Upstream
+    private let subject: ReplaySubject<Output, Failure>
+    private let lock = NSLock()
+    private var connection: Cancellable?
+    private var refCount = 0
+
+    init(upstream: Upstream, maxValues: Int) {
+        self.upstream = upstream
+        self.subject = ReplaySubject<Output, Failure>(maxValues: maxValues)
+    }
+
+    func receive<S: Subscriber>(subscriber: S) where S.Input == Output, S.Failure == Failure {
+        lock.lock()
+        let shouldConnect = (refCount == 0)
+        refCount += 1
+
+        if shouldConnect {
+            connection = upstream
+                .subscribe(subject)
+        }
+        lock.unlock()
+
+        subject.subscribe(subscriber)
+    }
+}
+
 extension Publisher {
     func shareReplay(maxValues: Int = 0) -> AnyPublisher<Output, Failure> {
-        multicast(subject: ReplaySubject(maxValues: maxValues)).autoconnect().eraseToAnyPublisher()
+        ShareReplayPublisher(upstream: self, maxValues: maxValues).eraseToAnyPublisher()
     }
 }
 
@@ -56,6 +86,7 @@ final class ReplaySubject<Input, Failure: Error>: Subject {
     }
     func send(_ value: Input) {
       lock.lock(); defer { lock.unlock() }
+      guard !completed else { return }
         recording.receive(value)
         stream.send(value)
         if recording.output.count == maxValues {
@@ -64,6 +95,7 @@ final class ReplaySubject<Input, Failure: Error>: Subject {
     }
     func send(completion: Subscribers.Completion<Failure>) {
       lock.lock(); defer { lock.unlock() }
+      guard !completed else { return }
       if !completed {
         completed = true
         recording.receive(completion: completion)

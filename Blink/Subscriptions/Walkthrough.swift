@@ -70,7 +70,7 @@ struct PageInfo: Identifiable {
   static let multipleTerminalsInfo = PageInfo(
     title: "MULTIPLE TERMINALS & WINDOWS",
     linkText: Text("READ DOCS"),
-    url: URL(string: "https://docs.blink.sh/basics/navigation")!,
+    url: URL(string: "https://docs.blink.sh")!,
     info: Text("Use **pinch** to zoom. **Two finger tap** to create a new shell. **Slide** to move between shells. **Double tap ⌘ or Home bar** for menu.\nType **help** if you need it."),
     compactInfo: Text("Not to use in compact"),
     image: "intro-windows"

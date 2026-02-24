@@ -46,28 +46,34 @@ import AVFoundation
   func currentTerm() -> TermController!
 }
 
+protocol LayoutInsetsProvider: AnyObject {
+  func provideInsets(for controller: TermController) -> UIEdgeInsets
+}
+
 private class ProxyView: UIView {
   var controlledView: UIView? = nil
   private var _cancelable: AnyCancellable? = nil
-  
+  private var _hasBeenPlaced: Bool = false  // TEST: Track if view has been placed
+  private var _isTerminated: Bool = false   // TEST: Prevent re-placement after termination
+
   override func willMove(toSuperview newSuperview: UIView?) {
     super.willMove(toSuperview: newSuperview)
     if superview == nil {
       _cancelable = nil
     }
   }
-  
+
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
-    
+
     _cancelable = nil
-    
+
     guard
       let parent = superview
     else {
       return
     }
-    
+
     _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
       guard let controlledView = self?.controlledView,
             controlledView.superview != nil
@@ -76,10 +82,10 @@ private class ProxyView: UIView {
       }
       controlledView.frame = frame
     }
-  
+
     placeControlledView()
   }
-  
+
   override func layoutSubviews() {
     super.layoutSubviews()
     guard
@@ -90,12 +96,33 @@ private class ProxyView: UIView {
     }
     controlledView.frame = parent.frame
   }
-  
+
   func removeControlledView() {
-    controlledView?.removeFromSuperview()
+    // TEST: Hide instead of remove (for temporary switching)
+    guard let controlledView = controlledView else { return }
+    controlledView.isHidden = true
   }
-  
+
+  func destroyControlledView() {
+    // TEST: Full removal for terminal termination
+    guard let controlledView = controlledView else { return }
+    controlledView.removeFromSuperview()
+    _hasBeenPlaced = false
+    _isTerminated = true  // Prevent any future re-placement
+  }
+
+  func prepareForWindowMove() {
+    // TEST: Remove for window move but allow re-placement in new window
+    guard let controlledView = controlledView else { return }
+    controlledView.removeFromSuperview()
+    _hasBeenPlaced = false
+    // Note: Don't set _isTerminated - this is a move, not termination
+  }
+
   func placeControlledView() {
+    // TEST: Never place if terminal was terminated
+    if _isTerminated { return }
+
     guard
       let parent = superview,
       let container = parent.superview,
@@ -103,20 +130,28 @@ private class ProxyView: UIView {
     else {
       return
     }
-    
+
     controlledView.frame = parent.frame
-    
-    if
-      let sharedWindow = ShadowWindow.shared,
-      container.window == sharedWindow {
-      
-      sharedWindow.layer.removeFromSuperlayer()
-      container.addSubview(controlledView)
-      sharedWindow.refWindow.layer.addSublayer(sharedWindow.layer)
-      
-    } else {
-      container.addSubview(controlledView)
+
+    // TEST: Place once per container, then just show/hide
+    // If view is in a different container (window changed), we need to re-place
+    if !_hasBeenPlaced || controlledView.superview !== container {
+      if
+        let sharedWindow = ShadowWindow.shared,
+        container.window == sharedWindow {
+
+        sharedWindow.layer.removeFromSuperlayer()
+        container.addSubview(controlledView)
+        sharedWindow.refWindow.layer.addSublayer(sharedWindow.layer)
+
+      } else {
+        container.addSubview(controlledView)
+      }
+      _hasBeenPlaced = true
     }
+
+    // Show the view when placing
+    controlledView.isHidden = false
   }
 }
 
@@ -148,10 +183,24 @@ class TermController: UIViewController {
   @objc public var activityKey: String? = nil
   @objc public var termDevice: TermDevice { _termDevice }
   @objc weak var delegate: TermControlDelegate? = nil
+  weak var layoutProvider: LayoutInsetsProvider? = nil
   @objc var sessionParams: MCPParams { _sessionParams }
   @objc var bgColor: UIColor? {
     get { _bgColor }
     set { _bgColor = newValue }
+  }
+  
+  // State Properties for Input Management
+  var isReady: Bool {
+    _termDevice.view?.isReady ?? false
+  }
+  
+  var isAttached: Bool {
+    KBTracker.shared.input == _termDevice.view?.webView
+  }
+  
+  override var isFirstResponder: Bool {
+    _termDevice.view?.webView.isFirstResponder ?? false
   }
   
   
@@ -184,21 +233,30 @@ class TermController: UIViewController {
   func placeToContainer() {
     _proxyView.placeControlledView()
   }
-  
+
   func removeFromContainer() -> Bool {
     if KBTracker.shared.input == _termView.webView {
       return false
     }
-    _proxyView.controlledView?.removeFromSuperview()
+    _proxyView.removeControlledView()
     return true
   }
-  
+
+  func prepareForWindowMove() {
+    // TEST: Prepare terminal for move to different window
+    _proxyView.prepareForWindowMove()
+  }
+
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     if !coordinator.isAnimated {
       return
     }
 
     super.viewWillTransition(to: size, with: coordinator)
+    
+    coordinator.animate(alongsideTransition: nil) { _ in
+      NotificationCenter.default.post(name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
+    }
   }
   
   public override func loadView() {
@@ -214,15 +272,20 @@ class TermController: UIViewController {
   public override func viewDidLoad() {
     super.viewDidLoad()
     viewIsLoaded = true
-    
+
     resumeIfNeeded()
-    
+
     _termView.load(with: _sessionParams)
+    
+    let layoutMode = BKLayoutMode(rawValue: _sessionParams.layoutMode) ?? BKLayoutMode.default
+    _termView.additionalInsets = layoutProvider?.provideInsets(for: self) ?? LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
+    print("🔧 termView initialInsets: \(_termView.additionalInsets)")
     
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(_relayout),
       name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
+    
   }
   
   @objc func _relayout() {
@@ -238,16 +301,21 @@ class TermController: UIViewController {
   
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
-    
+
     guard let window = view.window,
       let windowScene = window.windowScene,
       windowScene.activationState == .foregroundActive
     else {
       return
     }
-    
+
     let layoutMode = BKLayoutMode(rawValue: _sessionParams.layoutMode) ?? BKLayoutMode.default
-    _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
+    _termView.additionalInsets = layoutProvider?.provideInsets(for: self) ?? LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
+    // print("🔧 termView initialInsets: \(_termView.additionalInsets)")
+    // let layoutMode = BKLayoutMode(rawValue: _sessionParams.layoutMode) ?? BKLayoutMode.default
+    // print("🔧 Layout Mode: \(layoutMode)")
+    // _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
+    //print("🔧 termView additionalInsets: \(_termView.additionalInsets)")
     _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
     _termView.layoutLocked = _sessionParams.layoutLocked
     _termView.setNeedsLayout()
@@ -260,6 +328,7 @@ class TermController: UIViewController {
   
   @objc public func terminate() {
     NotificationCenter.default.post(name: .deviceTerminated, object: nil, userInfo: ["device": _termDevice])
+    _proxyView.destroyControlledView()
     _termDevice.delegate = nil
     _termView.terminate()
     _session?.kill()
@@ -406,19 +475,75 @@ extension TermController: TermDeviceDelegate {
   
   public func deviceIsReady() {
     startSession()
-
-    guard
-      let input = KBTracker.shared.input,
-      input == _termDevice.view.webView,
-      _termDevice.view.browserView == nil
-    else {
-      return
+    
+    // Input progression. When device becomes ready, check if we need to become first responder
+    if isAttached {
+      _becomeFirstResponder()
     }
-    _termDevice.attachInput(input)
-    _termDevice.focus()
-    input.reportFocus(true)
   }
   
+  func activateInput() {
+    if !isAttached {
+      _attachInput()
+    }
+    
+    if isReady {
+      _becomeFirstResponder()
+    }
+    // If not ready, wait for isReady call to trigger _becomeFirstResponder()
+  }
+
+  func resignInput() {
+    guard isAttached && isReady else {
+      return
+    }
+
+    guard let deviceView = _termDevice.view else { return }
+
+    deviceView.webView.reportFocus(false)
+
+    // It is key to reset here so when attached again, settings are synced and the keyboard state is properly reset.
+    KBTracker.shared.attach(input: nil)
+
+    _ = _termDevice.view?.webView.resignFirstResponder()
+  }
+  
+  private func _attachInput() {
+    guard let deviceView = _termDevice.view else { return }
+    
+    let input = KBTracker.shared.input
+    
+    if deviceView.browserView != nil {
+      KBTracker.shared.attach(input: deviceView.browserView)
+      _termDevice.attachInput(deviceView.browserView)
+      _ = deviceView.browserView.becomeFirstResponder()
+      if input != KBTracker.shared.input {
+        input?.reportFocus(false)
+      }
+      return
+    }
+
+    KBTracker.shared.attach(input: deviceView.webView)
+    _termDevice.attachInput(deviceView.webView)
+  }
+  
+  private func _becomeFirstResponder() {
+    guard let deviceView = _termDevice.view else { return }
+    
+    if !isAttached && !isReady{ return }
+    
+    deviceView.webView.reportFocus(true)
+    _termDevice.focus()
+    
+    let input = KBTracker.shared.input
+
+    if input != KBTracker.shared.input {
+      input?.reportFocus(false)
+    }
+
+    _ = _termDevice.view?.webView.becomeFirstResponder()
+  }
+    
   public func deviceSizeChanged() {
     _sessionParams.rows = _termDevice.rows
     _sessionParams.cols = _termDevice.cols
@@ -454,6 +579,9 @@ extension TermController: TermDeviceDelegate {
   
   @objc public func setLayoutMode(layoutMode: BKLayoutMode) {
     self.sessionParams.layoutMode = layoutMode.rawValue
+    
+    NotificationCenter.default.post(name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
+    
     if (self.sessionParams.layoutLocked) {
       self.unlockLayout()
     }

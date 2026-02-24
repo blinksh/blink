@@ -33,53 +33,6 @@ import UIKit
 import Combine
 
 
-class CaretHider {
-  var _cancelable: AnyCancellable? = nil
-  weak var _view: UIView?
-  
-  init(view: UIView) {
-    _view = view;
-    _cancelable = view.layer.publisher(for: \.sublayers).sink { (layers) in
-      if #available(iOS 17.0, *) {
-        let cursorView = view.subviews.first(where: { v in
-          v.classForCoder.description().hasSuffix("CursorView")
-        })
-        cursorView?.layer.sublayers?.first?.isHidden = true
-      } else {
-        if let caretView = view.value(forKeyPath: "caretView") as? UIView {
-          caretView.isHidden = true
-        }
-        
-        if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
-          floatingView.isHidden = true
-        }
-      }
-    }
-  }
-  
-  func show() {
-    guard let view = _view
-    else {
-      return
-    }
-    
-    if #available(iOS 17.0, *) {
-      let cursorView = view.subviews.first(where: { v in
-        v.classForCoder.description().hasSuffix("CursorView")
-      })
-      cursorView?.layer.sublayers?.first?.isHidden = false
-    } else {
-      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
-        caretView.isHidden = false
-      }
-      
-      if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
-        floatingView.isHidden = false
-      }
-    }
-  }
-}
-
 @objc class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
@@ -136,10 +89,6 @@ class CaretHider {
     false
   }
   
-  
-  private var _caretHider: CaretHider? = nil
-  
-  
   override func ready() {
     super.ready()
     reportLang()
@@ -147,26 +96,10 @@ class CaretHider {
 //    device?.focus()
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
-    hideCaret()
   }
   
   func reset() {
     
-  }
-   
-  override func showCaret() {
-    _caretHider?.show()
-    _caretHider = nil
-  }
-  
-  override func hideCaret() {
-    if let _ = _caretHider {
-      return
-    }
-    
-    if let v = selectionView() {
-      _caretHider = CaretHider(view: v)
-    }
   }
   
   func reportLang() {
@@ -256,23 +189,24 @@ class CaretHider {
     }
     return res
   }
-  
+
   func _setupAccessoryView() {
     if isHardwareKB {
       return
     }
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
+
     if let _ = _inputAccessoryView as? KBAccessoryView {
     } else {
       _inputAccessoryView = KBAccessoryView(kbView: kbView)
     }
   }
-  
+
   override var inputAccessoryView: UIView? {
-    _inputAccessoryView
+    return _inputAccessoryView
   }
-  
+
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {
     kbView.kbDevice = device
     
@@ -339,23 +273,9 @@ class CaretHider {
     setNeedsLayout()
   }
   
-  override func _keyboardDidChangeFrame(_ notification: Notification) {
-  }
-  
-  override func _keyboardWillChangeFrame(_ notification: Notification) {
-  }
-  
-  override func _keyboardWillShow(_ notification: Notification) {
-  }
-  
-  override func _keyboardWillHide(_ notification: Notification) {
-  }
-  
-  override func _keyboardDidHide(_ notification: Notification) {
-  }
-  
-  override func _keyboardDidShow(_ notification: Notification) {
-  }
+  // MARK: - Legacy Keyboard Methods Removed
+  // These empty override methods have been removed as keyboard tracking
+  // is now handled by UIKeyboardLayoutGuide in SpaceController
   
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
     super.pressesBegan(presses, with: event)

@@ -254,6 +254,48 @@ struct Field: View {
   }
 }
 
+struct FieldPassword: View {
+  private let _label: String
+  private let _placeholder: String
+  @Binding private var value: String
+  private let _next: String?
+  private let _enabled: Bool
+  @State private var _showPassword: Bool = false
+
+  init(_ label: String, _ value: Binding<String>, next: String, placeholder: String, enabled: Bool = true) {
+    _label = label
+    _value = value
+    _placeholder = placeholder
+    _next = next
+    _enabled = enabled
+  }
+
+  var body: some View {
+    HStack {
+      FormLabel(text: _label)
+      FixedTextField(
+        _placeholder,
+        text: $value,
+        id: _label,
+        nextId: _next,
+        secureTextEntry: !_showPassword,
+        keyboardType: .default,
+        autocorrectionType: .no,
+        autocapitalizationType: .none,
+        enabled: _enabled
+      )
+      Button(action: {
+        _showPassword.toggle()
+      }) {
+        Image(systemName: _showPassword ? "eye.slash.fill" : "eye.fill")
+          .foregroundColor(.secondary)
+      }
+      .buttonStyle(PlainButtonStyle())
+      .disabled(!_enabled)
+    }
+  }
+}
+
 struct FieldSSHKey: View {
   @Binding var value: [String]
   var enabled: Bool = true
@@ -489,7 +531,7 @@ struct HostView: View {
         Field("HostName",  $_hostName,  next: "Port",      placeholder: "Host or IP address. Required", enabled: _enabled, kbType: .URL)
         Field("Port",      $_port,      next: "User",      placeholder: "22", enabled: _enabled, kbType: .numberPad)
         Field("User",      $_user,      next: "Password",  placeholder: BLKDefaults.defaultUserName(), enabled: _enabled)
-        Field("Password",  $_password,  next: "ProxyCmd",  placeholder: "Ask Every Time", secureTextEntry: true, enabled: _enabled)
+        FieldPassword("Password",  $_password,  next: "ProxyCmd",  placeholder: "Ask Every Time", enabled: _enabled)
         FieldSSHKey(value: $_sshKeyName, enabled: _enabled, hasSSHKey: BKPubKey.all().contains(where: {
           if let keyName = _sshKeyName.first {
             return $0.id == keyName

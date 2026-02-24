@@ -69,10 +69,12 @@ class SnippetsLocations {
     // Create main snippets location. Each location then is responsible for its structure.
     if !fm.fileExists(atPath: snippetsLocation.path()) {
       try fm.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
-      if !dontUseBlinkSnippets {
-        try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
-      }
     }
+
+    if !fm.fileExists(atPath: cachedSnippetsLocation.path()) {
+      try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+    }
+
    
     if useiCloud, let location = icloudSnippetsLocation {
       if !fm.fileExists(atPath: location.path) {

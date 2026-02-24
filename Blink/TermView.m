@@ -174,6 +174,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)_addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  if (@available(iOS 18.0, *)) {
+    configuration.writingToolsBehavior = UIWritingToolsBehaviorNone;
+  }
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
 //  configuration.limitsNavigationsToAppBoundDomains = YES;
@@ -196,6 +199,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)addBrowserWebView:(NSURL *)url agent: (NSString *)agent injectUIO: (BOOL) injectUIO
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  if (@available(iOS 18.0, *)) {
+    configuration.writingToolsBehavior = UIWritingToolsBehaviorNone;
+  }
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   
