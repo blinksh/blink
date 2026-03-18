@@ -157,7 +157,7 @@ class FileProviderReplicatedEnumerator: NSObject, NSFileProviderEnumerator {
       .flatMap { $0.isDirectory ? $0.directoryFilesAndAttributesWithTargetLinks() : AnyPublisher($0.stat().collect()) }
       .map { allAttributes -> [BlinkFiles.FileAttributes] in
         allAttributes.compactMap { fileAttributes -> BlinkFiles.FileAttributes? in
-          let fileName = fileAttributes[.name] as! String
+          guard let fileName = fileAttributes[.name] as? String else { return nil }
           if fileName == ".." ||
                // This is recognized as a special directory by the system, we skip it.
                fileName == ".Trash" ||

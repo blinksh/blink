@@ -140,6 +140,10 @@ NSString *_encodeString(NSString *str);
   if ([traits respondsToSelector:@selector(setSmartInsertDeleteType:)]) {
     traits.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
   }
+  // Disable WritingTools support (AI functions)
+  if ([traits respondsToSelector:@selector(setWritingToolsBehavior:)]) {
+    traits.writingToolsBehavior = UIWritingToolsBehaviorNone;
+  }
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {

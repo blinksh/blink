@@ -41,7 +41,7 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
   DeviceInfo *device = [DeviceInfo shared];
-  if (device.hasNotch) {
+  if (device.hasNotch || device.hasDynamicIsland) {
     return BKLayoutModeSafeFit;
   }
   
@@ -56,7 +56,7 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
   UIWindow *window = ctrl.view.window;
   
-  if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive) {
+  if ((window != NULL) && (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive)) {
     // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
     // it is like BKLayoutModeSafeFit mode
     return ShadowWindow.shared.refWindow.safeAreaInsets;
@@ -66,12 +66,12 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
   
   // We are on external display with stage mode on.
   // Fix for #1621
-  if (mainScreen != window.screen) {
+  if ((window != NULL) && (mainScreen != window.screen)) {
     return window.safeAreaInsets;
   }
   
   SpaceController *spaceCtrl = nil;
-  UIViewController *parent = ctrl.parentViewController;
+  UIViewController *parent = ctrl;
   while (parent) {
     if ([parent isKindOfClass:[SpaceController class]]) {
       spaceCtrl = (SpaceController *)parent;
@@ -95,7 +95,8 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
       result = deviceMargins;
       if (DeviceInfo.shared.hasCorners &&
           UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        if ([DeviceInfo.shared.marketingName containsString:@"M4"]) {
+        if ([DeviceInfo.shared.marketingName containsString:@"M4"] ||
+            [DeviceInfo.shared.marketingName containsString:@"M5"]) {
           result.top = 25;
           result.bottom = 25;
         } else {
@@ -112,8 +113,9 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
         break;
       }
       
-      if (!deviceInfo.hasNotch) {
-        if ([DeviceInfo.shared.marketingName containsString:@"M4"]) {
+      if (!deviceInfo.hasNotch && !deviceInfo.hasDynamicIsland) {
+        if ([DeviceInfo.shared.marketingName containsString:@"M4"] ||
+            [DeviceInfo.shared.marketingName containsString:@"M5"]) {
           result.top = 8;
           result.left = 8;
           result.right = MAX(deviceMargins.right, 8);
@@ -125,36 +127,38 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
           result.bottom = fullScreen ? 5 : 10;
         }
         break;
-      }
-      
-      UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
-      
-      if (UIInterfaceOrientationIsPortrait(orientation)) {
-        result.top = deviceMargins.top - 10;
-        result.bottom = deviceMargins.bottom - 10;
-        break;
-      }
-      
-      if (orientation == UIInterfaceOrientationLandscapeRight) {
-        result.left = deviceMargins.left - 4; // notch
-        result.right = 10;
-        result.top = 10;
-        result.bottom = 8;
-        break;
-      }
-      
-      if (orientation == UIInterfaceOrientationLandscapeLeft) {
-        result.right = deviceMargins.right - 4;  // notch
-        result.left = 10;
-        result.top = 10;
-        result.bottom = 8;
-        break;
+      } else {
+        
+        UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
+        
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+          result.top = deviceMargins.top - 10;
+          result.bottom = deviceMargins.bottom - 10;
+          break;
+        }
+        
+        if (orientation == UIInterfaceOrientationLandscapeRight) {
+          result.left = deviceMargins.left - 4; // notch
+          result.right = 10;
+          result.top = 10;
+          result.bottom = 8;
+          break;
+        }
+        
+        if (orientation == UIInterfaceOrientationLandscapeLeft) {
+          result.right = deviceMargins.right - 4;  // notch
+          result.left = 10;
+          result.top = 10;
+          result.bottom = 8;
+          break;
+        }
       }
       
       result = deviceMargins;
     }
   }
   
+  // spaceCtrl now uses keyboardGuidelines.bottom
   result.bottom = MAX(result.bottom, [spaceCtrl bottomInset]);
     
   return result;

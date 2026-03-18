@@ -46,8 +46,6 @@ final class FileTranslatorFactoryTests: XCTestCase {
   }
 
   func testSFTPFactory() throws {
-    // The issue is that the SSHClient is dropped all the time. This shouldn't happen, the client should be maintained, and only
-    // reset when the connection is closed.
     let providerPath = try BlinkFileProviderPath(TestFactoryConfigurator.LocalTestPath)
 
     var rootTranslatorPublisher = try FileTranslatorFactory.rootTranslator(for: providerPath, configurator: TestFactoryConfigurator())

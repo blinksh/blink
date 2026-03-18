@@ -225,9 +225,18 @@ public class BlinkCopy: NSObject {
       let rootTranslator = (sourceProtocol == .local) ? self.localTranslator(to: source.filePath) :
         self.remoteTranslator(toFilePath: source.filePath, atHost: source.hostPath!, using: sourceProtocol)
       
-      return rootTranslator.flatMap { t -> AnyPublisher<Translator, Error> in
+      return rootTranslator.flatMap { t in
         t.translatorsMatching(path: source.filePath)
-      }.eraseToAnyPublisher()
+          .collect()
+          .tryMap { ts in
+            guard !ts.isEmpty else {
+              throw CommandError(message: "No files found matching '\(source.fullPath)'")
+            }
+            return ts
+          }
+          .flatMap { $0.publisher }
+          .eraseToAnyPublisher()
+      }
     }.eraseToAnyPublisher()
 
     var rc: Int32 = 0

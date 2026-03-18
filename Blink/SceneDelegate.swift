@@ -445,7 +445,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 fileprivate extension URL {
   func getQueryStringParameter(param: String) -> String? {
     guard let url = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
-    return url.queryItems?.first(where: { $0.name == param })?.value
+    return url.percentEncodedQueryItems?.first(where: { $0.name == param })?.value
   }
 }
 
@@ -458,44 +458,66 @@ extension SceneDelegate {
      - xCallbackUrl: The x-callback-url specified by the user
    */
   private func _handleSshUrlScheme(with sshUrl: URL) {
+    func buildSSHCommand(from url: URL) -> String? {
+      // Goal is to tokenize a SSH Command. The risk is that the URL may contian injection parameters.
+      // We sanitize the input and make sure the result, specially the user@host part is a valid shell token.
+      // The SSH library takes care of validating the host, user, etc...
+      guard url.scheme == "ssh" else { return nil }
+      guard let host = url.host?.removingPercentEncoding,
+            host.rangeOfCharacter(from: .controlCharacters) == nil,
+            host.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
+            !host.starts(with:"-"),
+            !host.starts(with:".") else {
+        return nil
+      }
 
-    var sshCommand = "ssh"
+      var sshCommand = "ssh "
 
-    // Progressively unwrap all of the parameters available on the URL to form
-    // the SSH command to be later passed to the shell
-    if let port = sshUrl.port {
-      sshCommand += " -p \(port)"
-    }
+      if let port = url.port {
+        sshCommand += "-p \(port) "
+      }
 
-    if let username = sshUrl.user {
-      sshCommand += " \(username)@"
-    }
+      if let userinfo = url.user?.removingPercentEncoding,
+         userinfo.rangeOfCharacter(from: .controlCharacters) == nil {
+        // Extract only the username before the first ";" if conn-params exist
+        let username = userinfo.components(separatedBy: ";").first ?? ""
+        guard username.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
+              !username.starts(with:"-"),
+              !username.starts(with:".") else {
+          return nil
+        }
 
-    if let host = sshUrl.host {
+        if username.count > 0 {
+          sshCommand += "-l \(username) "
+        }
+      }
+
       sshCommand += "\(host)"
+      return sshCommand
+    }
+
+    guard let sshCommand = buildSSHCommand(from: sshUrl),
+          sshCommand.rangeOfCharacter(from: .controlCharacters) == nil else {
+      return
     }
 
     guard let term = _spCtrl.currentTerm() else {
       return
     }
 
-    guard term.isRunningCmd() else {
-       // No running command or shell found running, run the SSH command on the
-       // available shell
-       term.termDevice.write(sshCommand)
-       return
+    if !term.isRunningCmd() {
+      term.termDevice.write(sshCommand)
+      return
     }
 
-    // If a SSH/mosh connection is already open in the current terminal shell
-    // create a new one and then write the command
     _spCtrl.newShellAction()
 
     guard let newTerm = _spCtrl.currentTerm() else {
-       return
+      return
     }
 
-    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-       newTerm.termDevice.write(sshCommand)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      newTerm.termDevice.write(sshCommand)
     }
   }
 
@@ -637,6 +659,10 @@ extension SceneDelegate {
       codeCommand += url.absoluteString
     }
 
+    if codeCommand.rangeOfCharacter(from: .controlCharacters) != nil {
+      return
+    }
+
     // Call 'code'
     guard let term = _spCtrl.currentTerm() else {
       return
@@ -667,8 +693,13 @@ extension SceneDelegate {
       return
     }
 
+    let urlCommand = url.absoluteString
+    if urlCommand.rangeOfCharacter(from: .controlCharacters) != nil {
+      return
+    }
+
     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-      newTerm.termDevice.write(url.absoluteString)
+      newTerm.termDevice.write(urlCommand)
       newTerm.termDevice.write("\n")
     }
   }

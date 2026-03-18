@@ -383,6 +383,13 @@ struct NewOfferingTermsButtons: View {
 
         Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
+        Button("PRIVACY") {
+          _purchases.openPrivacyAndPolicy()
+        }
+          .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+        
+        Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
+
         Button("TERMS") {
           _purchases.openTermsOfUse()
         }
@@ -396,7 +403,7 @@ struct NewOfferingTermsButtons: View {
 
       }
         .padding()
-      Text("\(UIApplication.blinkShortVersion())")
+      Text("\(UIApplication.blinkShortVersion() ?? "untagged version")")
         .foregroundColor(BlinkColors.termsText)
         .font(BlinkFonts.btnSub)
 

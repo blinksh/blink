@@ -157,7 +157,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
       return CustomerTier.Classic
     }
-    if PublishingOptions.current == .testFlight {
+    if PublishingOptions.current == .testFlight || PublishingOptions.current == .developer {
       return CustomerTier.TestFlight
     }
 

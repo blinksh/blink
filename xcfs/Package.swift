@@ -24,8 +24,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "openssl",
-    "9a7cc2686122e62445b85a8ce04f49379d99c952b8ea3534127c004b8a00af59",
-    "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1k/openssl-dynamic.xcframework.zip"
+    "cba8c2b41ab5dcd780c475466001573cb84e373f71e9c4e1b573717c91549633",
+    "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1w/openssl-dynamic.xcframework.zip"
   ),
   (
     "libssh2",

@@ -71,18 +71,17 @@ class SnippetsLocations {
       try fm.createDirectory(at: snippetsLocation, withIntermediateDirectories: true)
     }
 
-    if !dontUseBlinkSnippets {
-      var isDirectory = ObjCBool(false)
-      let cachedExists = fm.fileExists(atPath: cachedSnippetsLocation.path(), isDirectory: &isDirectory)
+    var isDirectory = ObjCBool(false)
+    let cachedExists = fm.fileExists(atPath: cachedSnippetsLocation.path(), isDirectory: &isDirectory)
 
-      if cachedExists, !isDirectory.boolValue {
-        try fm.removeItem(at: cachedSnippetsLocation)
-      }
-
-      if !cachedExists || !isDirectory.boolValue {
-        try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
-      }
+    if cachedExists, !isDirectory.boolValue {
+      try fm.removeItem(at: cachedSnippetsLocation)
     }
+
+    if !cachedExists || !isDirectory.boolValue {
+      try fm.createDirectory(at: cachedSnippetsLocation, withIntermediateDirectories: true)
+    }
+
    
     if useiCloud, let location = icloudSnippetsLocation {
       if !fm.fileExists(atPath: location.path) {

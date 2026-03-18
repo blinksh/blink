@@ -32,6 +32,7 @@
 import RevenueCat
 import Combine
 import SwiftUI
+import UIKit
 
 @MainActor
 class PurchasesUserModel: ObservableObject {
@@ -147,24 +148,49 @@ class PurchasesUserModel: ObservableObject {
       }
       return true
     } catch {
-      self.alertErrorMessage = "Could not continue with purchase - \(error.localizedDescription)"
+      self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
       return false
     }
   }
 
-  private func _setupTrialProgressNotification(_ progress: TrialProgressNotification) async -> Bool {
-    do {
-      let notificationsAccepted = try await progress.setup()
-
-      if !notificationsAccepted {
-        self.alertErrorMessage = "To continue, please accept or disable notifications for trial conversion."
+  private func _setupTrialProgressNotification(_ progress: TrialProgressNotification, didPromptSettings: Bool = false) async -> Bool {
+    switch await TrialProgressNotification.ensureNotificationsReady() {
+    case .ready:
+      do {
+        try await progress.setup()
+        return true
+      } catch {
+        self.alertErrorMessage = "Couldn’t schedule trial reminders — retry or disable reminders."
         return false
       }
 
-      return true
-    } catch {
-      self.alertErrorMessage = "Could not enable notifications - \(error.localizedDescription)"
-      return false
+    case .needsSettings:
+      // Offer to open Settings once; avoid looping if user declines or keeps it disabled.
+      if didPromptSettings {
+        self.alertErrorMessage = "Notifications are still off. You can enable them later in Settings or disable trial reminders."
+        return false
+      }
+      let opened = await promptOpenSettings(
+        title: "Enable Notifications?",
+        message: "Notifications are off. Turn them on in Settings or disable trial reminders."
+      )
+      if opened { await waitUntilAppBecomesActive() }
+
+      return await _setupTrialProgressNotification(progress, didPromptSettings: true)
+
+    case .unknown(let msg):
+      // Offer to open Settings once; avoid looping if user declines or keeps it disabled.
+      if didPromptSettings {
+        self.alertErrorMessage = "Notifications are still off. You can enable them later in Settings or disable trial reminders."
+        return false
+      }
+      let opened = await promptOpenSettings(
+        title: "Enable Notifications?",
+        message: "Notifications are off. Turn them on in Settings or disable trial reminders. Details: \(msg)"
+      )
+      if opened { await waitUntilAppBecomesActive() }
+
+      return await _setupTrialProgressNotification(progress, didPromptSettings: true)
     }
   }
 
@@ -201,6 +227,49 @@ class PurchasesUserModel: ObservableObject {
     return await _purchase(product)
   }
   
+  // MARK: - Friendly helpers
+
+  @MainActor
+  private func promptOpenSettings(title: String, message: String) async -> Bool {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    var open = false
+    await withCheckedContinuation { cont in
+      alert.addAction(UIAlertAction(title: "Not Now", style: .cancel) { _ in open = false; cont.resume() })
+      alert.addAction(UIAlertAction(title: "Open Settings", style: .default) { _ in open = true; cont.resume() })
+      topVC()?.present(alert, animated: true)
+    }
+    if open, let url = URL(string: UIApplication.openSettingsURLString),
+       UIApplication.shared.canOpenURL(url) { await UIApplication.shared.open(url) }
+    return open
+  }
+
+  @MainActor
+  private func waitUntilAppBecomesActive() async {
+    await withCheckedContinuation { cont in
+      var token: NSObjectProtocol?
+      token = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+        if let t = token { NotificationCenter.default.removeObserver(t) }
+        cont.resume()
+      }
+    }
+  }
+
+  private func topVC(
+    base: UIViewController? = UIApplication.shared.connectedScenes
+      .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+      .first?.rootViewController
+  ) -> UIViewController? {
+    if let nav = base as? UINavigationController { return topVC(base: nav.visibleViewController) }
+    if let tab = base as? UITabBarController { return topVC(base: tab.selectedViewController) }
+    if let presented = base?.presentedViewController { return topVC(base: presented) }
+    return base
+  }
+
+  @MainActor
+  private func friendlyMessage(for error: Error) -> String {
+    return "Could not enable notifications — \(error.localizedDescription)"
+  }
+
   func restoreActiveAppSubscriptions(alertIfNone: Bool) async -> Bool {
     await _restorePurchases()
 

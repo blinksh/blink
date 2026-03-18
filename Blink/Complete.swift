@@ -199,11 +199,12 @@ struct Complete {
     return result
   }
     
-  private static func _completionKind(_ cmd: String) -> Kind {
+  private static func _completionKind(_ cmd: String, query: String = "") -> Kind {
     switch cmd {
     case "": return .command
     case "ssh", "ssh2", "mosh", "mosh1": return .blinkHost
     case "ping": return .host
+    case "sftp", "scp": return _scpCompletionKind(query)
     case "ls": return .directory
     case "file", "vim", "less": return .file
     case "geo": return .blinkGeo
@@ -215,11 +216,26 @@ struct Complete {
       return Kind(rawValue: operatesOn(cmd) ?? "") ?? .no
     }
   }
-  
+
+  private static func _scpCompletionKind(_ query: String) -> Kind {
+    // No completion on remote path
+    if query.contains(":") {
+      return .no
+    }
+
+    // Host after user
+    if query.contains("@") {
+      return .blinkHost
+    }
+
+    // Otherwise, local file
+    return .file
+  }
+
   static func _hint(kind: Kind, candidates: [String]) -> String {
     guard
       _showReplHints,
-      let first = candidates.first 
+      let first = candidates.first
     else {
       return ""
     }
@@ -286,8 +302,22 @@ struct Complete {
       )
     }
     
-    let kind = _completionKind(cmd)
-    let result = _complete(kind: kind, input: token.query).map { CompleteUtils.encode(str: $0, quote: token.quote) }
+    let kind = _completionKind(cmd, query: token.query)
+
+    // For host completion with user@ prefix, extract and restore it
+    var input = token.query
+    var prefix = ""
+    if kind == .blinkHost, let atIndex = input.firstIndex(of: "@") {
+      prefix = String(input[...atIndex])
+      input = String(input[input.index(after: atIndex)...])
+    }
+
+    var result = _complete(kind: kind, input: input)
+    if !prefix.isEmpty {
+      result = result.map { prefix + $0 }
+    }
+    result = result.map { CompleteUtils.encode(str: $0, quote: token.quote) }
+
     let hint = !token.canShowHint ? "" : _hint(kind: kind, candidates: Array(result.prefix(5)))
     
     return (

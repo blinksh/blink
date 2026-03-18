@@ -31,6 +31,7 @@
 
 
 import Foundation
+import UserNotifications
 
 fileprivate let unc = UNUserNotificationCenter.current()
 fileprivate let trialWillConvertID = "trial-will-convert"
@@ -43,14 +44,56 @@ enum TrialProgressNotification {
 }
 
 extension TrialProgressNotification {
-  func setup() async throws -> Bool {
-    if !(try await unc.requestAuthorization(options: .alert)) {
-      return false
-    }
+  // MARK: - Readiness (provisional-first)
 
+  enum NotificationReadiness {
+    case ready
+    case needsSettings
+    case unknown(String)
+  }
+
+  private enum NotificationAuthStatus { case notDetermined, authorized, provisional, denied, ephemeral }
+
+  private static func currentAuthStatus() async -> NotificationAuthStatus {
+    await withCheckedContinuation { cont in
+      UNUserNotificationCenter.current().getNotificationSettings { s in
+        let st: NotificationAuthStatus = switch s.authorizationStatus {
+          case .notDetermined: .notDetermined
+          case .denied:        .denied
+          case .authorized:    .authorized
+          case .provisional:   .provisional
+          case .ephemeral:     .ephemeral
+          @unknown default:    .denied
+        }
+        cont.resume(returning: st)
+      }
+    }
+  }
+
+  /// Preflight status
+  static func ensureNotificationsReady() async -> NotificationReadiness {
+    let status = await currentAuthStatus()
+    switch status {
+    case .authorized, .provisional, .ephemeral:
+      return .ready
+
+    case .notDetermined:
+      do {
+        let granted = try await UNUserNotificationCenter.current()
+          .requestAuthorization(options: [.alert, .provisional])
+        return granted ? .ready : .needsSettings
+      } catch {
+        return .unknown(error.localizedDescription)
+      }
+
+    case .denied:
+      return .needsSettings
+    }
+  }
+
+  func setup() async throws {
     try await scheduleTrialWillConvertNotification()
     try await scheduleTrialSupportRequestNotification()
-    return true
   }
 
   private func scheduleTrialWillConvertNotification() async throws {

@@ -265,7 +265,8 @@ extension SSHClient {
       .flatMap { t in
         t.start()
         return pb
-      }.buffer(size: 1, prefetch: .byRequest, whenFull: .dropOldest)
+      }
+      .buffer(size: 1, prefetch: .byRequest, whenFull: .dropOldest)
       .eraseToAnyPublisher()
   }
 }

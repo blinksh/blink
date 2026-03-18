@@ -80,7 +80,7 @@ public class FilesTranslatorConnection {
   private func rootTranslatorPublisher() -> TranslatorPublisher {
     FileTranslatorFactory.rootTranslator(for: providerPath, configurator: configurator)
       .map { [weak self] t in
-        self?._rootTranslatorQueue.async(flags: .barrier) { [weak self] in
+        self?._rootTranslatorQueue.sync(flags: .barrier) { [weak self] in
           guard let self = self else { return }
           self._rootTranslator = t
           self.rootTranslatorPath = t.current
@@ -92,7 +92,7 @@ public class FilesTranslatorConnection {
       .handleEvents(
         receiveCompletion: { [weak self] completion in
           guard let self = self else { return }
-          self._rootTranslatorQueue.async(flags: .barrier) { [weak self] in
+          self._rootTranslatorQueue.sync(flags: .barrier) { [weak self] in
             guard let self = self else { return }
             if case let .failure(error) = completion {
               print("Connection error - \(error)")
@@ -103,7 +103,7 @@ public class FilesTranslatorConnection {
         },
         receiveCancel: { [weak self] in
           guard let self = self else { return }
-          self._rootTranslatorQueue.async(flags: .barrier) { [weak self] in
+          self._rootTranslatorQueue.sync(flags: .barrier) { [weak self] in
             guard let self = self else { return }
             print("TranslatorPublisher cancelled")
             self._rootTranslator = nil
@@ -211,18 +211,13 @@ public enum FileTranslatorFactory {
         return .fail(error: NSFileProviderError(errorCode: 400, errorDescription: "Missing host in Translator route"))
       }
 
-      let dial = SSHClient.dialInThread(host, withConfigProvider: configurator.sshConfig)
+      return SSHClient.dialInThread(host, withConfigProvider: configurator.sshConfig)
         .print("dialInThread")
-            .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
-              //conn.handleSessionException = { error in print("SFTP Connection Exception \(error)") }
-              return conn.requestSFTP()
-            }
-            .tryMap { try SFTPTranslator(on: $0) }
-            .flatMap { $0.walkTo(path.filePath) }
-            .shareReplay(maxValues: 1)
-            .eraseToAnyPublisher()
-
-      return dial
+        .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
+          return conn.requestSFTP()
+        }
+        .tryMap { try SFTPTranslator(on: $0) }
+        .flatMap { $0.walkTo(path.filePath) }
         .eraseToAnyPublisher()
     }
   }

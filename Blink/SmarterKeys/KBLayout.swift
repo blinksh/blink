@@ -60,6 +60,7 @@ extension KBLayout {
       .vertical2("`", "~",  traits: .default - .cmdOn),
       .vertical2("@", "#",  traits: .default - .cmdOn),
       .vertical2("$", "^",  traits: .default - .cmdOn),
+      .vertical2(";", ":",  traits: .default - .cmdOn),
       
       .vertical2("-", "_",  traits: .default - .cmdOn),
       .vertical2("=", "+",  traits: .default - .cmdOn),

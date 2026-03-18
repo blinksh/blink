@@ -138,7 +138,13 @@ class KBKeyView: UIView {
       _updateLayerShapeMask()
     }
     
-    backgroundColor = .tertiarySystemBackground
+    // Enhanced background for iOS 26+ glass material compatibility
+    if #available(iOS 26.0, *) {
+      // Use a more opaque background for better contrast with glass materials
+      backgroundColor = UIColor.systemBackground.withAlphaComponent(0.8)
+    } else {
+      backgroundColor = .tertiarySystemBackground
+    }
     
     keyDelegate.keyViewOn(keyView: self, value: currentValue)
     UIDevice.current.playInputClick()
