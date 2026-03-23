@@ -167,7 +167,7 @@ class TermController: UIViewController {
     
     params.fontSize = BLKDefaults.selectedFontSize()?.intValue ?? 16
     params.fontName = BLKDefaults.selectedFontName()
-    params.themeName = BLKDefaults.selectedThemeName()
+    params.themeName = BLKDefaults.currentThemeNameForAppearance()
     params.enableBold = BLKDefaults.enableBold()
     params.boldAsBright = BLKDefaults.isBoldAsBright()
     params.viewSize = .zero
@@ -293,6 +293,17 @@ class TermController: UIViewController {
       selector: #selector(_relayout),
       name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
     
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(_themeChanged(_:)),
+      name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
+    
+  }
+  
+  @objc private func _themeChanged(_ notification: Notification) {
+    let themeName = notification.object as? String ?? BLKDefaults.currentThemeNameForAppearance()
+    _termView.applyTheme(themeName)
+    _sessionParams.themeName = themeName
   }
   
   @objc func _relayout() {
@@ -331,6 +342,16 @@ class TermController: UIViewController {
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     _sessionParams.viewSize = view.bounds.size
+  }
+  
+  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle,
+       BLKDefaults.isAutoThemeToggleEnabled() {
+      let themeName = BLKDefaults.currentThemeNameForAppearance()
+      _termView.applyTheme(themeName)
+      _sessionParams.themeName = themeName
+    }
   }
   
   @objc public func terminate() {

@@ -54,12 +54,13 @@
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
-    BKAppearance_Themes,
-    BKAppearance_Fonts,
-    BKAppearance_FontSize,
-    BKAppearance_KeyboardAppearance,
-    BKAppearance_AppIcon,
-    BKAppearance_Layout
+  BKAppearance_SystemAppearance,
+  BKAppearance_Themes,
+  BKAppearance_Fonts,
+  BKAppearance_FontSize,
+  BKAppearance_KeyboardAppearance,
+  BKAppearance_AppIcon,
+  BKAppearance_Layout
 };
 
 @interface BKAppearanceViewController () <TermViewDeviceProtocol>
@@ -103,13 +104,19 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   
   UISegmentedControl *_keyboardStyleSegmentedControl;
   BKKeyboardStyle _keyboardStyleValue;
+  
+  BOOL _autoThemeToggleValue;
+  NSIndexPath *_selectedLightThemeIndexPath;
+  NSIndexPath *_selectedDarkThemeIndexPath;
 }
 
 - (void)viewDidLoad
 {
   [self loadDefaultValues];
   [super viewDidLoad];
-  
+
+  [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"followSystemCell"];
+
   _termView = [[TermView alloc] initWithFrame:self.view.bounds];
   _termView.backgroundColor = UIColor.systemGroupedBackgroundColor;
   _termView.userInteractionEnabled = NO;
@@ -153,6 +160,22 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   _overscanCompensationValue = BLKDefaults.overscanCompensation;
   _keyboardStyleValue = BLKDefaults.keyboardStyle;
   _keyCastsValue = [BLKDefaults isKeyCastsOn];
+  
+  _autoThemeToggleValue = [BLKDefaults isAutoThemeToggleEnabled];
+  NSString *lightThemeName = [BLKDefaults selectedLightThemeName];
+  BKTheme *lightTheme = [BKTheme withName:lightThemeName];
+  if (lightTheme != nil) {
+    _selectedLightThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:lightTheme] inSection:BKAppearance_SystemAppearance];
+  } else if ([BKTheme all].count > 0) {
+    _selectedLightThemeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BKAppearance_SystemAppearance];
+  }
+  NSString *darkThemeName = [BLKDefaults selectedDarkThemeName];
+  BKTheme *darkTheme = [BKTheme withName:darkThemeName];
+  if (darkTheme != nil) {
+    _selectedDarkThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:darkTheme] inSection:BKAppearance_SystemAppearance];
+  } else if ([BKTheme all].count > 0) {
+    _selectedDarkThemeIndexPath = [NSIndexPath indexPathForRow:0 inSection:BKAppearance_SystemAppearance];
+  }
 }
 
 - (void)saveDefaultValues
@@ -177,24 +200,31 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   [BLKDefaults setOversanCompensation:_overscanCompensationValue];
   [BLKDefaults setKeyboardStyle:_keyboardStyleValue];
   [BLKDefaults setKeycasts:_keyCastsValue];
+  [BLKDefaults setAutoThemeToggleEnabled:_autoThemeToggleValue];
+  if (_selectedLightThemeIndexPath != nil) {
+    [BLKDefaults setLightThemeName:[[[BKTheme all] objectAtIndex:_selectedLightThemeIndexPath.row] name]];
+  }
+  if (_selectedDarkThemeIndexPath != nil) {
+    [BLKDefaults setDarkThemeName:[[[BKTheme all] objectAtIndex:_selectedDarkThemeIndexPath.row] name]];
+  }
 
   [BLKDefaults saveDefaults];
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:BKAppearanceChanged
-                  object:self];
+  [BLKDefaults applyCurrentTheme];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 7;
+  return 8;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   if (section == BKAppearance_Terminal) {
     return 1;
+  } else if (section == BKAppearance_SystemAppearance) {
+    return _autoThemeToggleValue ? 3 : 1;
   } else if (section == BKAppearance_Themes) {
     return [[BKTheme all] count] + 1;
   } else if (section == BKAppearance_Fonts) {
@@ -233,11 +263,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     cell.textLabel.text = @"Add a new theme";
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   } else {
-    if (_selectedThemeIndexPath == indexPath) {
-      [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-    } else {
-      [cell setAccessoryType:UITableViewCellAccessoryNone];
-    }
+    [cell setAccessoryType:(_selectedThemeIndexPath == indexPath) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone];
     cell.textLabel.text = [[[BKTheme all] objectAtIndex:indexPath.row] name];
   }
 }
@@ -254,6 +280,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   static NSString *cellIdentifier;
   if (section == BKAppearance_Terminal) {
     cellIdentifier = @"testTerminalCell";
+  } else if (section == BKAppearance_SystemAppearance) {
+    cellIdentifier = (indexPath.row == 0) ? @"followSystemCell" : @"themeFontCell";
   } else if (section == BKAppearance_Themes || section == BKAppearance_Fonts) {
     cellIdentifier = @"themeFontCell";
   } else if (section == BKAppearance_FontSize) {
@@ -289,6 +317,9 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  if (indexPath.section == BKAppearance_SystemAppearance) {
+    return 44.0;
+  }
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[self cellIdentifierForIndexPath:indexPath]];
   return cell.bounds.size.height;
 }
@@ -298,6 +329,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   switch(section) {
   case BKAppearance_Terminal:
     return @"PREVIEW";
+  case BKAppearance_SystemAppearance:
+    return @"APPEARANCE";
   case BKAppearance_Themes:
     return @"THEMES";
   case BKAppearance_Fonts:
@@ -317,6 +350,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   switch(section) {
   case BKAppearance_Terminal:
     return @"Configuration will be applied to new terminal sessions.";
+  case BKAppearance_SystemAppearance:
+    return @"Automatically switch themes based on device appearance.";
   case BKAppearance_Layout:
     return @"Configuration will be applied after display reconnect.";
   default:
@@ -331,6 +366,26 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   
   if (indexPath.section == BKAppearance_Terminal) {
     [self attachTestTerminalToView:cell.contentView];
+  } else if (indexPath.section == BKAppearance_SystemAppearance) {
+    if (indexPath.row == 0) {
+      cell.textLabel.text = @"System";
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      UISwitch *toggle = [[UISwitch alloc] init];
+      toggle.on = _autoThemeToggleValue;
+      [toggle addTarget:self action:@selector(_autoThemeToggleChanged:) forControlEvents:UIControlEventValueChanged];
+      cell.accessoryView = toggle;
+    } else {
+      BOOL isLight = (indexPath.row == 1);
+      NSIndexPath *selection = isLight ? _selectedLightThemeIndexPath : _selectedDarkThemeIndexPath;
+      NSArray *themes = [BKTheme all];
+      NSString *themeName = @"Default";
+      if (selection && selection.row >= 0 && selection.row < (NSInteger)themes.count) {
+        themeName = [[themes objectAtIndex:selection.row] name] ?: @"Default";
+      }
+      cell.textLabel.text = [NSString stringWithFormat:@"%@ Theme: %@", isLight ? @"Light" : @"Dark", themeName];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }
+    return cell;
   } else if (indexPath.section == BKAppearance_Themes || indexPath.section == BKAppearance_Fonts) {
     if (indexPath.section == BKAppearance_Themes) {
       [self setThemesUIForCell:cell atIndexPath:indexPath];
@@ -474,12 +529,18 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == BKAppearance_Themes) {
+  if (indexPath.section == BKAppearance_SystemAppearance) {
+    if (indexPath.row == 1 || indexPath.row == 2) {
+      NSString *mode = (indexPath.row == 1) ? @"light" : @"dark";
+      UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+      [self _showThemePickerForMode:mode fromCell:cell];
+      [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+  } else if (indexPath.section == BKAppearance_Themes) {
     if (indexPath.row == [[BKTheme all] count]) {
       [self performSegueWithIdentifier:@"addTheme" sender:self];
     } else {
       if (_selectedThemeIndexPath != nil) {
-        // When in selectable mode, do not show details.
         [[tableView cellForRowAtIndexPath:_selectedThemeIndexPath] setAccessoryType:UITableViewCellAccessoryNone];
       }
       _selectedThemeIndexPath = indexPath;
@@ -487,14 +548,13 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
       [BLKDefaults setThemeName:[theme name]];
-      [_termView reloadWith:nil];
+      [BLKDefaults applyCurrentTheme];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
       [self performSegueWithIdentifier:@"addFont" sender:self];
     } else {
       if (_selectedFontIndexPath != nil) {
-        // When in selectable mode, do not show details.
         [[tableView cellForRowAtIndexPath:_selectedFontIndexPath] setAccessoryType:UITableViewCellAccessoryNone];
       }
       _selectedFontIndexPath = indexPath;
@@ -523,20 +583,20 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   }
 }
 
-// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  // Return NO if you do not want the specified item to be editable.
   if ((indexPath.section == BKAppearance_Themes && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) ||
       (indexPath.section == BKAppearance_Fonts && indexPath.row >= [BKFont defaultResourcesCount] && indexPath.row < [BKFont count])) {
     return YES;
-  } else {
-    return NO;
   }
+  return NO;
 }
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  if (indexPath.section == BKAppearance_SystemAppearance && indexPath.row == 0) {
+    return NO;
+  }
   if (indexPath.section == BKAppearance_AppIcon
       || indexPath.section == BKAppearance_KeyboardAppearance
       || indexPath.section == BKAppearance_Layout) {
@@ -545,17 +605,15 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   return indexPath.section != BKAppearance_FontSize;
 }
 
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    // Delete the row from the data source
     if (indexPath.section == BKAppearance_Themes) {
       [BKTheme removeResourceAtIndex:(int)indexPath.row];
 
-      if (indexPath.row < _selectedThemeIndexPath.row) {
+      if (_selectedThemeIndexPath && indexPath.row < _selectedThemeIndexPath.row) {
         _selectedThemeIndexPath = [NSIndexPath indexPathForRow:_selectedThemeIndexPath.row - 1 inSection:0];
-      } else if (indexPath.row == _selectedThemeIndexPath.row) {
+      } else if (_selectedThemeIndexPath && indexPath.row == _selectedThemeIndexPath.row) {
         _selectedThemeIndexPath = nil;
       }
 
@@ -569,8 +627,6 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       }
     }
     [tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationFade];
-  } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-    // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
   }
 }
 
@@ -631,6 +687,14 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 - (IBAction)keycastsSwitchChanged:(id)sender
 {
   _keyCastsValue = _keyCastsSwitch.on;
+}
+
+- (void)_autoThemeToggleChanged:(UISwitch *)sender {
+  _autoThemeToggleValue = sender.on;
+  [BLKDefaults setAutoThemeToggleEnabled:_autoThemeToggleValue];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:BKAppearance_SystemAppearance]
+                withRowAnimation:UITableViewRowAnimationFade];
+  [BLKDefaults applyCurrentTheme];
 }
 
 #pragma mark - TermViewDeviceProtocol
@@ -704,5 +768,44 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   [_termView write:showcase];
 }
 
+- (void)_showThemePickerForMode:(NSString *)mode fromCell:(UITableViewCell *)cell {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"Select %@ Theme", [mode capitalizedString]]
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+
+  for (BKTheme *theme in [BKTheme all]) {
+    NSString *themeName = [theme name];
+    NSIndexPath *currentSelection = [mode isEqualToString:@"light"] ? _selectedLightThemeIndexPath : _selectedDarkThemeIndexPath;
+    BOOL isSelected = (currentSelection && [[BKTheme all] indexOfObject:theme] == currentSelection.row);
+    NSString *displayTitle = isSelected ? [NSString stringWithFormat:@"✓ %@", themeName] : themeName;
+
+    UIAlertAction *action = [UIAlertAction actionWithTitle:displayTitle
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * _Nonnull action) {
+      if ([mode isEqualToString:@"light"]) {
+        self->_selectedLightThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:theme] inSection:BKAppearance_SystemAppearance];
+        [BLKDefaults setLightThemeName:[theme name]];
+      } else {
+        self->_selectedDarkThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:theme] inSection:BKAppearance_SystemAppearance];
+        [BLKDefaults setDarkThemeName:[theme name]];
+      }
+      [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:BKAppearance_SystemAppearance] withRowAnimation:UITableViewRowAnimationNone];
+      [BLKDefaults applyCurrentTheme];
+    }];
+    [alert addAction:action];
+  }
+
+  UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:nil];
+  [alert addAction:cancelAction];
+
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+    alert.popoverPresentationController.sourceView = cell;
+    alert.popoverPresentationController.sourceRect = cell.bounds;
+  }
+
+  [self presentViewController:alert animated:YES completion:nil];
+}
 
 @end

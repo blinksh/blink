@@ -258,6 +258,12 @@ class SpaceController: UIViewController, LayoutInsetsProvider {
 
   @objc private func _setupAppearance() {
     self.view.tintColor = .cyan
+
+    guard !BLKDefaults.isAutoThemeToggleEnabled() else {
+      overrideUserInterfaceStyle = .unspecified
+      return
+    }
+
     switch BLKDefaults.keyboardStyle() {
     case .light:
       overrideUserInterfaceStyle = .light

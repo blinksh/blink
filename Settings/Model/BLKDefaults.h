@@ -90,6 +90,10 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 @property (nonatomic) BKSnippetDefaultLocation snippetsDefaultLocation;
 @property (nonatomic, strong) NSString *scratchLanguageMode;
 
+@property (nonatomic) BOOL autoThemeToggleEnabled;
+@property (nonatomic, strong) NSString *lightThemeName;
+@property (nonatomic, strong) NSString *darkThemeName;
+
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
 + (void)setCursorBlink:(BOOL)state;
@@ -144,6 +148,14 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 + (void)setScratchLanguageMode:(NSString *)mode;
 + (NSString *)scratchLanguageMode;
 
++ (void)setAutoThemeToggleEnabled:(BOOL)enabled;
++ (BOOL)isAutoThemeToggleEnabled;
++ (void)setLightThemeName:(NSString *)themeName;
++ (NSString *)selectedLightThemeName;
++ (void)setDarkThemeName:(NSString *)themeName;
++ (NSString *)selectedDarkThemeName;
++ (NSString *)currentThemeNameForAppearance;
++ (void)applyCurrentTheme;
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value;
 @end

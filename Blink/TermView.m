@@ -928,7 +928,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 }
 
 - (void)applyTheme:(NSString *)themeName {
-  NSString *themeContent = [[BKTheme withName: themeName ?: [BLKDefaults selectedThemeName]] content];
+  NSString *themeContent = [[BKTheme withName:themeName ?: [BLKDefaults selectedThemeName]] content];
   if (themeContent) {
     NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
     [_webView evaluateJavaScript:script completionHandler:nil];

@@ -101,6 +101,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _dontUseBlinkSnippetsIndex = [coder decodeBoolForKey:@"dontUseBlinkSnippetsIndex"];
   _snippetsDefaultLocation = [coder decodeIntegerForKey:@"snippetsDefaultLocation"];
   _scratchLanguageMode = [coder decodeObjectOfClass:[NSString class] forKey:@"scratchLanguageMode"];
+  _autoThemeToggleEnabled = [coder decodeBoolForKey:@"autoThemeToggleEnabled"];
+  _lightThemeName = [coder decodeObjectOfClasses:strings forKey:@"lightThemeName"];
+  _darkThemeName = [coder decodeObjectOfClasses:strings forKey:@"darkThemeName"];
 
   return self;
 }
@@ -133,6 +136,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_dontUseBlinkSnippetsIndex forKey:@"dontUseBlinkSnippetsIndex"];
   [encoder encodeInteger:_snippetsDefaultLocation forKey:@"snippetsDefaultLocation"];
   [encoder encodeObject:_scratchLanguageMode forKey:@"scratchLanguageMode"];
+  [encoder encodeBool:_autoThemeToggleEnabled forKey:@"autoThemeToggleEnabled"];
+  [encoder encodeObject:_lightThemeName forKey:@"lightThemeName"];
+  [encoder encodeObject:_darkThemeName forKey:@"darkThemeName"];
 
 }
 
@@ -218,7 +224,13 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (!defaults.themeName) {
     [defaults setThemeName:@"Default"];
   }
-  
+  if (!defaults.lightThemeName) {
+    [defaults setLightThemeName:@"Default"];
+  }
+  if (!defaults.darkThemeName) {
+    [defaults setDarkThemeName:@"Default"];
+  }
+
   if (!defaults.fontSize) {
     #if TARGET_OS_MACCATALYST
       [defaults setFontSize:[NSNumber numberWithInt:22]];
@@ -495,6 +507,45 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   
+}
+
++ (void)setAutoThemeToggleEnabled:(BOOL)enabled {
+  defaults.autoThemeToggleEnabled = enabled;
+}
+
++ (BOOL)isAutoThemeToggleEnabled {
+  return defaults.autoThemeToggleEnabled;
+}
+
++ (void)setLightThemeName:(NSString *)themeName {
+  defaults.lightThemeName = themeName;
+}
+
++ (NSString *)selectedLightThemeName {
+  return defaults.lightThemeName;
+}
+
++ (void)setDarkThemeName:(NSString *)themeName {
+  defaults.darkThemeName = themeName;
+}
+
++ (NSString *)selectedDarkThemeName {
+  return defaults.darkThemeName;
+}
+
++ (NSString *)currentThemeNameForAppearance {
+  if (!defaults.autoThemeToggleEnabled) {
+    return defaults.themeName;
+  }
+  UIUserInterfaceStyle style = UITraitCollection.currentTraitCollection.userInterfaceStyle;
+  return (style == UIUserInterfaceStyleDark)
+    ? (defaults.darkThemeName ?: defaults.themeName)
+    : (defaults.lightThemeName ?: defaults.themeName);
+}
+
++ (void)applyCurrentTheme {
+  NSString *themeName = [self currentThemeNameForAppearance];
+  [[NSNotificationCenter defaultCenter] postNotificationName:BKAppearanceChanged object:themeName];
 }
 
 @end
