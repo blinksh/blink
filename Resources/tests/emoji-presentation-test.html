@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Emoji Presentation Test — U+23FA and related characters</title>
+  <link rel="stylesheet" type="text/css" href="../term.css">
+  <style>
+    body {
+      font-family: 'Menlo', 'DejaVu Sans Mono', monospace;
+      font-size: 14px;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+    h2 { color: #fff; margin-top: 30px; }
+    .description { color: #999; font-size: 12px; margin-bottom: 10px; }
+    table {
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 6px 12px;
+      text-align: left;
+    }
+    th { background: #333; color: #ccc; }
+
+    /* Simulate hterm's x-screen rendering context */
+    x-screen {
+      display: block;
+      font-family: 'Menlo', 'DejaVu Sans Mono', monospace;
+      font-size: 14px;
+    }
+    x-screen x-row {
+      display: block;
+      white-space: pre;
+      line-height: 1.2;
+    }
+    x-screen .wc-node.emoji {
+      /* hterm's emoji class styling */
+    }
+    /* span.emoji rule is loaded from term.css */
+
+    .result { font-weight: bold; }
+    .pass { color: #4f4; }
+    .fail { color: #f44; }
+
+    #test-results {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      background: #222;
+      border: 1px solid #555;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Emoji Presentation Rendering Test</h1>
+<p class="description">
+  Validates that characters with Emoji=Yes / Emoji_Presentation=No render
+  with text presentation (monochrome, single cell width) inside an x-screen
+  element, while true emoji with the <code>.emoji</code> class retain emoji
+  presentation.
+</p>
+
+<div id="test-results"></div>
+
+<!-- ================================================================== -->
+<h2>Positive Tests — Text Presentation (should be monochrome, single-width)</h2>
+<p class="description">
+  These characters have Emoji=Yes but Emoji_Presentation=No. Without VS16,
+  they must render in text presentation inside x-screen.
+</p>
+
+<x-screen id="text-tests">
+  <!-- Each x-row holds one test character (no VS16, no emoji class) -->
+  <x-row id="test-23FA">&#x23FA; U+23FA BLACK CIRCLE FOR RECORD</x-row>
+  <x-row id="test-23F8">&#x23F8; U+23F8 DOUBLE VERTICAL BAR</x-row>
+  <x-row id="test-23F9">&#x23F9; U+23F9 BLACK SQUARE FOR STOP</x-row>
+  <x-row id="test-23CF">&#x23CF; U+23CF EJECT SYMBOL</x-row>
+  <x-row id="test-2328">&#x2328; U+2328 KEYBOARD</x-row>
+  <x-row id="test-2139">&#x2139; U+2139 INFORMATION SOURCE</x-row>
+  <x-row id="test-2122">&#x2122; U+2122 TRADE MARK SIGN</x-row>
+  <x-row id="test-00A9">&#x00A9; U+00A9 COPYRIGHT SIGN</x-row>
+  <x-row id="test-00AE">&#x00AE; U+00AE REGISTERED SIGN</x-row>
+  <x-row id="test-2660">&#x2660; U+2660 BLACK SPADE SUIT</x-row>
+  <x-row id="test-231A">&#x231A; U+231A WATCH</x-row>
+</x-screen>
+
+<!-- ================================================================== -->
+<h2>Negative Tests — Emoji Presentation (should be colored, double-width)</h2>
+<p class="description">
+  These use the <code>.emoji</code> CSS class (as hterm applies to wcNode
+  emoji), so they must retain emoji (colored) presentation.
+</p>
+
+<x-screen id="emoji-tests">
+  <x-row><span class="wc-node emoji" id="test-emoji-23FA">&#x23FA;&#xFE0F;</span> U+23FA + VS16 (explicit emoji)</x-row>
+  <x-row><span class="wc-node emoji" id="test-emoji-heart">&#x2764;&#xFE0F;</span> U+2764 + VS16 HEAVY BLACK HEART</x-row>
+  <x-row><span class="wc-node emoji" id="test-emoji-face">&#x1F600;</span> U+1F600 GRINNING FACE</x-row>
+  <x-row><span class="wc-node emoji" id="test-emoji-rocket">&#x1F680;</span> U+1F680 ROCKET</x-row>
+</x-screen>
+
+<!-- ================================================================== -->
+<h2>Negative Tests — CJK Characters (should remain double-width)</h2>
+<p class="description">
+  CJK characters use <code>.wc-node</code> (without <code>.emoji</code>).
+  They must not be affected by the text-presentation rule.
+</p>
+
+<x-screen id="cjk-tests">
+  <x-row><span class="wc-node" id="test-cjk-4e2d">&#x4E2D;</span> U+4E2D 中 (CJK Unified)</x-row>
+  <x-row><span class="wc-node" id="test-cjk-3042">&#x3042;</span> U+3042 あ (Hiragana)</x-row>
+  <x-row><span class="wc-node" id="test-cjk-ac00">&#xAC00;</span> U+AC00 가 (Hangul)</x-row>
+</x-screen>
+
+<!-- ================================================================== -->
+<h2>Width Measurement Results</h2>
+<table id="results-table">
+  <thead>
+    <tr>
+      <th>Character</th>
+      <th>Code Point</th>
+      <th>Context</th>
+      <th>Rendered Width (px)</th>
+      <th>Cell Char Width (px)</th>
+      <th>Cells Occupied</th>
+      <th>Expected</th>
+      <th>Result</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+(function() {
+  const results = [];
+  const tbody = document.querySelector('#results-table tbody');
+  const summaryEl = document.getElementById('test-results');
+
+  // Measure the width of a single monospace character for reference
+  const refRow = document.createElement('x-row');
+  refRow.textContent = 'M';
+  document.getElementById('text-tests').appendChild(refRow);
+  const cellWidth = refRow.getBoundingClientRect().width;
+
+  // Measure width of "MM" to get true single-char width
+  refRow.textContent = 'MM';
+  const twoCharWidth = refRow.getBoundingClientRect().width;
+  const charWidth = twoCharWidth - cellWidth; // accounts for any padding
+  refRow.remove();
+
+  function measureFirstChar(element) {
+    // Create a range around just the first character/grapheme cluster
+    const range = document.createRange();
+    const textNode = element.firstChild;
+    if (!textNode) return 0;
+
+    if (textNode.nodeType === Node.TEXT_NODE) {
+      // For x-row direct text: measure just the first character
+      const firstChar = textNode.textContent.charAt(0);
+      const hasVS = textNode.textContent.charCodeAt(1) === 0xFE0F ||
+                    textNode.textContent.charCodeAt(1) === 0xFE0E;
+      const endOffset = hasVS ? 2 : (firstChar.length > 1 ? 2 : 1);
+      range.setStart(textNode, 0);
+      range.setEnd(textNode, Math.min(endOffset, textNode.textContent.length));
+    } else {
+      // For span elements, measure the whole span
+      range.selectNodeContents(textNode);
+    }
+
+    const rect = range.getBoundingClientRect();
+    return rect.width;
+  }
+
+  function addResult(label, codePoint, context, element, expectedCells) {
+    const width = measureFirstChar(element);
+    const cells = Math.round(width / charWidth);
+    const pass = cells === expectedCells;
+
+    results.push({ pass, label });
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td>${codePoint}</td>
+      <td>${context}</td>
+      <td>${width.toFixed(1)}</td>
+      <td>${charWidth.toFixed(1)}</td>
+      <td>${cells}</td>
+      <td>${expectedCells}</td>
+      <td class="result ${pass ? 'pass' : 'fail'}">${pass ? 'PASS' : 'FAIL'}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // --- Positive: text presentation, expect 1 cell ---
+  const textChars = [
+    ['⏺', 'U+23FA', 'test-23FA'],
+    ['⏸', 'U+23F8', 'test-23F8'],
+    ['⏹', 'U+23F9', 'test-23F9'],
+    ['⏏', 'U+23CF', 'test-23CF'],
+    ['⌨', 'U+2328', 'test-2328'],
+    ['ℹ', 'U+2139', 'test-2139'],
+    ['™', 'U+2122', 'test-2122'],
+    ['©', 'U+00A9', 'test-00A9'],
+    ['®', 'U+00AE', 'test-00AE'],
+    ['♠', 'U+2660', 'test-2660'],
+    ['⌚', 'U+231A', 'test-231A'],
+  ];
+  textChars.forEach(([ch, cp, id]) => {
+    addResult(ch, cp, 'x-screen (no VS16)', document.getElementById(id), 1);
+  });
+
+  // --- Negative: emoji presentation, expect 2 cells ---
+  addResult('⏺️', 'U+23FA+VS16', 'span.emoji', document.getElementById('test-emoji-23FA'), 2);
+  addResult('❤️', 'U+2764+VS16', 'span.emoji', document.getElementById('test-emoji-heart'), 2);
+  addResult('😀', 'U+1F600', 'span.emoji', document.getElementById('test-emoji-face'), 2);
+  addResult('🚀', 'U+1F680', 'span.emoji', document.getElementById('test-emoji-rocket'), 2);
+
+  // --- Negative: CJK, expect 2 cells ---
+  addResult('中', 'U+4E2D', 'span.wc-node', document.getElementById('test-cjk-4e2d'), 2);
+  addResult('あ', 'U+3042', 'span.wc-node', document.getElementById('test-cjk-3042'), 2);
+  addResult('가', 'U+AC00', 'span.wc-node', document.getElementById('test-cjk-ac00'), 2);
+
+  // --- Summary ---
+  const passed = results.filter(r => r.pass).length;
+  const failed = results.filter(r => !r.pass).length;
+  summaryEl.innerHTML = `
+    <span class="pass">${passed} passed</span> /
+    <span class="${failed ? 'fail' : 'pass'}">${failed} failed</span>
+    of ${results.length} tests
+  `;
+})();
+</script>
+</body>
+</html>
