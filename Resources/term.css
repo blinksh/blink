@@ -303,7 +303,12 @@
   font-style: italic;
 }
 
+x-screen {
+  font-variant-emoji: text;
+}
+
 span.emoji {
+  font-variant-emoji: emoji;
   -webkit-text-size-adjust: 90%;
   vertical-align: top;
 }
