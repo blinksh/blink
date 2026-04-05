@@ -606,6 +606,8 @@ extension TermController: TermDeviceDelegate {
       self.unlockLayout()
     }
     self.view?.setNeedsLayout()
+
+    (layoutProvider as? SpaceController)?.refreshSystemBarsAppearance()
   }
 }
 

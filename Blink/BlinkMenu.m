@@ -279,10 +279,7 @@ const CGFloat MENU_PADDING = 10.0;
             actionWithTitle:noTitle ? @"" : @"Fit"
             image:nil
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      [delegate.currentTerm unlockLayout];
-      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeSafeFit;
-      [self.superview setNeedsLayout];
-      
+      [delegate.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeSafeFit];
     }
     ];
     action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
@@ -293,9 +290,7 @@ const CGFloat MENU_PADDING = 10.0;
             actionWithTitle:noTitle ? @"" : @"Fill"
             image:nil
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      [delegate.currentTerm unlockLayout];
-      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeFill;
-      [self.superview setNeedsLayout];
+      [delegate.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeFill];
     }
     ];
     action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
@@ -307,9 +302,7 @@ const CGFloat MENU_PADDING = 10.0;
             actionWithTitle:noTitle ? @"" : @"Cover"
             image:nil
             identifier:elementID handler:^(__kindof UIAction * _Nonnull action) {
-      [delegate.currentTerm unlockLayout];
-      delegate.currentTerm.sessionParams.layoutMode = BKLayoutModeCover;
-      [self.superview setNeedsLayout];
+      [delegate.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeCover];
     }
     ];
     action.state = delegate.currentTerm.sessionParams.layoutMode == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;

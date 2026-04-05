@@ -57,7 +57,15 @@ class SpaceController: UIViewController, LayoutInsetsProvider {
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
   
   private var _viewportsKeys = [UUID]()
-  private var _currentKey: UUID? = nil
+  private var _currentKey: UUID? = nil {
+    didSet {
+      guard _currentKey != oldValue else {
+        return
+      }
+
+      refreshSystemBarsAppearance()
+    }
+  }
   
   private var _hud: MBProgressHUD? = nil
   
@@ -188,6 +196,7 @@ class SpaceController: UIViewController, LayoutInsetsProvider {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    refreshSystemBarsAppearance()
     
     #if targetEnvironment(macCatalyst)
     guard let appBundleUrl = Bundle.main.builtInPlugInsURL else {
@@ -266,6 +275,21 @@ class SpaceController: UIViewController, LayoutInsetsProvider {
     default:
       overrideUserInterfaceStyle = .unspecified
     }
+  }
+
+  private var _shouldShowSystemStatusBar: Bool {
+    guard view.window?.screen === UIScreen.main,
+          let term = currentTerm()
+    else {
+      return false
+    }
+
+    let layoutMode = BKLayoutMode(rawValue: term.sessionParams.layoutMode) ?? BLKDefaults.layoutMode()
+    return layoutMode == .safeFit
+  }
+
+  @objc func refreshSystemBarsAppearance() {
+    setNeedsStatusBarAppearanceUpdate()
   }
   
   public override func viewDidLoad() {
@@ -709,7 +733,7 @@ extension SpaceController: TermControlDelegate {
 // MARK: General tunning
 
 extension SpaceController {
-  public override var prefersStatusBarHidden: Bool { true }
+  public override var prefersStatusBarHidden: Bool { !_shouldShowSystemStatusBar }
   public override var prefersHomeIndicatorAutoHidden: Bool { true }
 }
 
