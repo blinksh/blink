@@ -505,12 +505,18 @@ enum MoshError: Error, LocalizedError {
 
   @objc public override func suspend() {
     if sshCancellable == nil {
+      // Freeze the last mosh frame on the device before asking mosh to wind down.
+      self.device.pauseViewOutput()
       suspendSemaphore = DispatchSemaphore(value: 0)
       // MOSH-ESC C-z
       self.device.write(String("\(self.escapeKey)\u{1a}"))
       print("Session suspend called")
-      let _ = suspendSemaphore!.wait(timeout: (DispatchTime.now() + 2.0))
+      let result = suspendSemaphore!.wait(timeout: (DispatchTime.now() + 2.0))
       print("Session suspended")
+      if result != .success {
+        // If we failed to capture state, resume now
+        self.device.resumeViewOutput()
+      }
     }
   }
 

@@ -103,6 +103,9 @@
 - (void)writeOutLn:(NSString *)output;
 - (void)close;
 
+- (void)pauseViewOutput;
+- (void)resumeViewOutput;
+
 
 @end
 

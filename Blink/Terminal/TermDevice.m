@@ -95,42 +95,42 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
       data = dispatch_data_create_concat(_splitChar, data);
       _splitChar = nil;
     }
-    
+
     const void * buffer;
     size_t len;
     data = dispatch_data_create_map(data, &buffer, &len);
-    
+
     NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSUTF8StringEncoding];
-    
+
     // Best case. We got good utf8 seq.
     if (output) {
       [_view write:output];
       return;
     }
-    
+
     // May be we have incomplete utf8 seq at the end;
     int incompleteSize = __sizeOfIncompleteSequenceAtTheEnd(buffer, len);
-    
+
     if (incompleteSize == 0) {
       // No, we didn't find any incomplete seq at the end.
       // We have wrong seq in the middle. Pass base64 data. JS will heal it.
       [_view writeB64:[NSData dataWithBytes:buffer length:len]];
       return;
     }
-    
+
     // Save splitted sequences
     _splitChar = dispatch_data_create_subrange(data, len - incompleteSize, incompleteSize);
-    
+
     // We stripped incomplete seq.
     // Let's try to create string again with range
-    
+
     output = [[NSString alloc] initWithBytes:buffer length:len - incompleteSize encoding:NSUTF8StringEncoding];
     if (output) {
       // Good seq. Write it as string.
       [_view write:output];
       return;
     }
-    
+
     // Nope, fallback to base64
     [_view writeB64:[NSData dataWithBytes:buffer length:len - incompleteSize]];
   };
@@ -153,12 +153,13 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   int _pinput[2];
   int _poutput[2];
   int _perror[2];
-  
+
   dispatch_queue_t _queue;
-  
+
   ViewStream *_outStream;
   ViewStream *_errStream;
-  
+  BOOL _outputPaused;
+
   dispatch_semaphore_t _readlineSema;
   NSString *_readlineResult;
 }
@@ -277,14 +278,38 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   if (termView) {
     _view = termView;
     _view.device = self;
-    _outStream.view = termView;
-    _errStream.view = termView;
+    if (!_outputPaused) {
+      _outStream.view = termView;
+      _errStream.view = termView;
+    }
   } else {
     _outStream.view = nil;
     _errStream.view = nil;
     _view.device = nil;
     _view = nil;
   }
+}
+
+// Temporarily detach the session's output streams from the view.
+- (void)pauseViewOutput
+{
+  dispatch_async(_queue, ^{
+    _outputPaused = YES;
+    // ViewStream's read handler sends to its `view` property; if nil, ObjC message-to-nil makes
+    // the write a no-op.
+    _outStream.view = nil;
+    _errStream.view = nil;
+  });
+}
+
+- (void)resumeViewOutput
+{
+  TermView *view = _view;
+  dispatch_async(_queue, ^{
+    _outputPaused = NO;
+    _outStream.view = view;
+    _errStream.view = view;
+  });
 }
 
 - (void)setRawMode:(BOOL)rawMode

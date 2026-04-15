@@ -102,6 +102,8 @@ class MCPSessionPayload : TermSessionPayload {
       _snapshot = nil
     }
     if session.sessionParams.hasEncodedState() {
+      // Lift the pause set during suspend so mosh's re-draw reaches hterm.
+      session.device?.resumeViewOutput()
       session.execute(withArgs: "")
     }
   }
