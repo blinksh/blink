@@ -417,8 +417,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)applyTermUIState:(TermUIState *)termUIState
 {
-  self.termUIState = termUIState;
-
   NSArray<NSString *> *commands = [self _jsCommandsForTermUIState:termUIState];
   NSString *js = [commands componentsJoinedByString:@"\n"];
   [_webView evaluateJavaScript:js completionHandler:^(id result, NSError *error) {
@@ -437,6 +435,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else if (!termUIState.layoutLocked && self.layoutLocked) {
     [self _unlockLayout];
   }
+
+  self.termUIState = termUIState;
 }
 
 // Reads back terminal-side state after JS changes. Currently just bgColor,
