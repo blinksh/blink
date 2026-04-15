@@ -1269,7 +1269,7 @@ extension SpaceController: SnippetContext {
 // MARK: SceneIntent handlers
 extension SpaceController {
   @objc func runShellSessionIntent(command: String = "") {
-    DispatchQueue.main.sync {
+    DispatchQueue.main.async {
       self._newShellAction(command: command)
     }
   }
