@@ -50,7 +50,6 @@
 		07FABBE025C9AF5F00E1CC2C /* Streams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD525C9AF5F00E1CC2C /* Streams.swift */; };
 		07FABBE125C9AF5F00E1CC2C /* SFTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD625C9AF5F00E1CC2C /* SFTP.swift */; };
 		07FABBE225C9AF5F00E1CC2C /* DispatchStreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */; };
-		07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD825C9AF5F00E1CC2C /* SCP.swift */; };
 		07FABBE425C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD925C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift */; };
 		07FABBE525C9AF5F00E1CC2C /* AuthMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */; };
 		07FABBE625C9AF5F00E1CC2C /* SSHPortForward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBDB25C9AF5F00E1CC2C /* SSHPortForward.swift */; };
@@ -105,8 +104,8 @@
 		BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */; };
 		BD55D6A02F8D000100EE80EA /* StyleCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */; };
 		BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */; };
-		BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D7142F816AFC00EE80EA /* 1860Migration.swift */; };
 		BD55D6DC2F7F2F5A00EE80EA /* DeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6DB2F7F2F5A00EE80EA /* DeviceInfo.m */; };
+		BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D7142F816AFC00EE80EA /* 1860Migration.swift */; };
 		BD5A0E3A2F89545B00AB3734 /* 1870Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A0E392F89545B00AB3734 /* 1870Migration.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
 		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
@@ -814,7 +813,6 @@
 		07FABBD525C9AF5F00E1CC2C /* Streams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Streams.swift; sourceTree = "<group>"; };
 		07FABBD625C9AF5F00E1CC2C /* SFTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFTP.swift; sourceTree = "<group>"; };
 		07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchStreams.swift; sourceTree = "<group>"; };
-		07FABBD825C9AF5F00E1CC2C /* SCP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SCP.swift; sourceTree = "<group>"; };
 		07FABBD925C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSHClient+KnownHostsHelpers.swift"; sourceTree = "<group>"; };
 		07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthMethods.swift; sourceTree = "<group>"; };
 		07FABBDB25C9AF5F00E1CC2C /* SSHPortForward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHPortForward.swift; sourceTree = "<group>"; };
@@ -876,9 +874,9 @@
 		BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleTests.swift; sourceTree = "<group>"; };
 		BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleCustomizationView.swift; sourceTree = "<group>"; };
 		BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
-		BD55D7142F816AFC00EE80EA /* 1860Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1860Migration.swift; sourceTree = "<group>"; };
 		BD55D6DA2F7F2F5A00EE80EA /* DeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		BD55D6DB2F7F2F5A00EE80EA /* DeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfo.m; sourceTree = "<group>"; };
+		BD55D7142F816AFC00EE80EA /* 1860Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1860Migration.swift; sourceTree = "<group>"; };
 		BD5A0E392F89545B00AB3734 /* 1870Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1870Migration.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskMonitor.swift; sourceTree = "<group>"; };
@@ -1649,7 +1647,6 @@
 				BD8BBFAF25F947710084705F /* Keys.swift */,
 				BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */,
 				07FABBD425C9AF5F00E1CC2C /* Publishers.swift */,
-				07FABBD825C9AF5F00E1CC2C /* SCP.swift */,
 				07FABBD625C9AF5F00E1CC2C /* SFTP.swift */,
 				BD9BF7E3262A6B0300B02074 /* SOCKS.swift */,
 				07FABBD325C9AF5F00E1CC2C /* SSHClient.swift */,
@@ -3250,7 +3247,6 @@
 				BD8BBFB025F947710084705F /* Keys.swift in Sources */,
 				07FABC2225C9AFC500E1CC2C /* String+Extension.swift in Sources */,
 				BD8D892225DC428300E55D9E /* Agent.swift in Sources */,
-				07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */,
 				BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */,
 				BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */,
 				07FABBDC25C9AF5F00E1CC2C /* SSHUtils.swift in Sources */,
@@ -3433,7 +3429,6 @@
 			files = (
 				BD74A7C22905BD5800ED01CF /* WhatsNewModelTests.swift in Sources */,
 				BDE7C45C29DCAEFA005E033E /* FileLocationPathTests.swift in Sources */,
-				BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */,
 				BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
