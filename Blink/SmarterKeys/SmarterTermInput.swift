@@ -185,12 +185,21 @@ import Combine
   
   
   override func resignFirstResponder() -> Bool {
+    // Remove accessory view BEFORE resigning so the keyboard layout guide
+    // doesn't retain its height. Otherwise, this creates a gap when dismissing keyboard.
+    let savedAccessoryView = _inputAccessoryView
+    _inputAccessoryView = nil
+    kbView.isHidden = true
+    self.contentView()?.reloadInputViews()
+
     let res = super.resignFirstResponder()
     if res {
       device?.blur()
-      kbView.isHidden = true
-      _inputAccessoryView?.isHidden = true
     }
+
+    // Restore for next becomeFirstResponder
+    _inputAccessoryView = savedAccessoryView
+    _inputAccessoryView?.isHidden = true
     return res
   }
 

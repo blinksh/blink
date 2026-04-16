@@ -760,7 +760,12 @@ extension SpaceController {
     case .zoomIn: currentTerm()?.termView.increaseFontSize()
     case .zoomOut: currentTerm()?.termView.decreaseFontSize()
     case .zoomReset: currentTerm()?.termView.resetFontSize()
-    case .hideKeyboard: KBTracker.shared.input?.resignFirstResponder()
+    case .hideKeyboard:
+      KBTracker.shared.input?.resignFirstResponder()
+      // DEBUG: Log layout state after keyboard dismiss animation completes
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+        self?.currentTerm()?.termView.constraintManager.debugLayoutState("hideKeyboard (programmatic)")
+      }
 
     }
   }

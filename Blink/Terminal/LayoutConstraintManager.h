@@ -60,6 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Get current constraint constants for debugging
 - (UIEdgeInsets)currentInsets;
 
+// Debug: log layout state to console
+- (void)debugLayoutState:(NSString *)context;
+
 @end
 
 NS_ASSUME_NONNULL_END

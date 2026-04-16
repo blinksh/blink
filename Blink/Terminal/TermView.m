@@ -203,7 +203,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   
   self.constraintManager = [LayoutConstraintManager managerForView:_webView
-                                                        layoutMode:layoutMode 
+                                                        layoutMode:layoutMode
                                                     keyboardGuide:self.keyboardLayoutGuide];
   
   // Setup browser view constraints to match web view

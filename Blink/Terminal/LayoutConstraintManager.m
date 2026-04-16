@@ -65,7 +65,17 @@
     
     [manager setupConstraints];
     [manager updateConstraintsForCurrentState];
-    
+
+    // DEBUG: observe keyboard hide to log state
+    [[NSNotificationCenter defaultCenter] addObserver:manager
+                                             selector:@selector(_debugKeyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:manager
+                                             selector:@selector(_debugKeyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+
     return manager;
 }
 
@@ -270,6 +280,32 @@
         -self.trailingConstraint.constant,
         -self.bottomConstraint.constant
     );
+}
+
+- (void)debugLayoutState:(NSString *)context {
+    UIView *view = self.managedView;
+    UIView *superview = view.superview;
+
+    NSLog(@"[LayoutDebug] === %@ ===", context);
+    NSLog(@"[LayoutDebug] managedView frame: %@", NSStringFromCGRect(view.frame));
+    NSLog(@"[LayoutDebug] superview frame: %@", NSStringFromCGRect(superview.frame));
+    NSLog(@"[LayoutDebug] superview safeAreaInsets: %@", NSStringFromUIEdgeInsets(superview.safeAreaInsets));
+    NSLog(@"[LayoutDebug] window safeAreaInsets: %@", NSStringFromUIEdgeInsets(view.window.safeAreaInsets));
+    NSLog(@"[LayoutDebug] keyboardGuide layoutFrame: %@", NSStringFromCGRect(self.keyboardGuide.layoutFrame));
+    NSLog(@"[LayoutDebug] bottomConstraint: constant=%.1f active=%d", self.bottomConstraint.constant, self.bottomConstraint.active);
+    NSLog(@"[LayoutDebug] kbConstraint: constant=%.1f active=%d priority=%f",
+          self.bottomToKeyboardConstraint.constant, self.bottomToKeyboardConstraint.active,
+          (float)self.bottomToKeyboardConstraint.priority);
+    NSLog(@"[LayoutDebug] layoutMode: %ld", (long)self.currentLayoutMode);
+    NSLog(@"[LayoutDebug] screen height: %.1f", UIScreen.mainScreen.bounds.size.height);
+}
+
+- (void)_debugKeyboardDidHide:(NSNotification *)notification {
+    [self debugLayoutState:@"keyboardDidHide notification"];
+}
+
+- (void)_debugKeyboardDidShow:(NSNotification *)notification {
+    [self debugLayoutState:@"keyboardDidShow notification"];
 }
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
