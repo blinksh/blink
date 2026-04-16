@@ -144,6 +144,8 @@ import Combine
 
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
 
+    kbView.reset()
+
     let res = super.becomeFirstResponder()
 
     if !webViewReady {
@@ -192,6 +194,7 @@ import Combine
     kbView.isHidden = true
     self.contentView()?.reloadInputViews()
 
+    kbView.reset()
     let res = super.resignFirstResponder()
     if res {
       device?.blur()

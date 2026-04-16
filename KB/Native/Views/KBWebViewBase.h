@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onOut:(NSString *)data;
 - (void)onIME:(NSString *)event data:(NSString *)data;
 - (void)setTrackingModifierFlags:(UIKeyModifierFlags)trackingModifierFlags;
+- (void)resetTrackingModifierFlags;
 - (void)terminate;
 
 - (void)_keyboardDidChangeFrame:(NSNotification *)notification;

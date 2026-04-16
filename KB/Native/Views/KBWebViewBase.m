@@ -266,6 +266,10 @@ NSString *_encodeString(NSString *str);
   [self report:@"state-reset" arg: hasSelection ? @"true" : @"false"];
 }
 
+- (void)_reportModifierReset {
+  [self report:@"state-reset" arg:@"null"];
+}
+
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags {
   [self report:@"toolbar-mods" arg:@(flags)];
 }
@@ -307,8 +311,9 @@ NSString *_encodeString(NSString *str);
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
-  
+
   if (res) {
+    [self resetTrackingModifierFlags];
     [self reportFocus:YES];
   }
   return res;
@@ -322,9 +327,23 @@ NSString *_encodeString(NSString *str);
 - (BOOL)resignFirstResponder {
   BOOL res = [super resignFirstResponder];
   if (res) {
+    [self resetTrackingModifierFlags];
     [self reportFocus:NO];
   }
   return res;
+}
+
+- (void)pressesCancelled:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event {
+  for (UIPress *p in presses) {
+    UIKey *k = p.key;
+    if (!k) continue;
+    if (k.modifierFlags & (UIKeyModifierShift | UIKeyModifierControl |
+                           UIKeyModifierAlternate | UIKeyModifierCommand)) {
+      [self resetTrackingModifierFlags];
+      break;
+    }
+  }
+  [super pressesCancelled:presses withEvent:event];
 }
 
 - (void)onSelection:(NSDictionary *)args {
@@ -424,6 +443,14 @@ NSString *_encodeString(NSString *str);
   [self onMods];
 }
 
+- (void)resetTrackingModifierFlags {
+  _trackingModifierFlags = 0;
+  _activeModsCommand = nil;
+  [self _rebuildKeyCommands];
+  [self _reportModifierReset];
+  [self onMods];
+}
+
 - (void)hideCaret {
   
 }
@@ -452,6 +479,9 @@ NSString *_encodeString(NSString *str);
       [self onOut:data];
     });
   } else if ([@"mods" isEqual:op]) {
+    if (!_focused) {
+      return;
+    }
     NSNumber *mods = body[@"mods"];
     [self setTrackingModifierFlags:(UIKeyModifierFlags)mods.integerValue];
   } else if ([@"ime" isEqual:op]) {

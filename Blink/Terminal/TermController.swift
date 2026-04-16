@@ -446,12 +446,11 @@ extension TermController: TermDeviceDelegate {
 
     guard let deviceView = _termDevice.view else { return }
 
-    deviceView.webView.reportFocus(false)
+    _ = deviceView.webView.resignFirstResponder()
 
+    // Detach KT after the cascade so the resign chain runs with KT still attached.
     // It is key to reset here so when attached again, settings are synced and the keyboard state is properly reset.
     KBTracker.shared.attach(input: nil)
-
-    _ = _termDevice.view?.webView.resignFirstResponder()
   }
   
   private func _attachInput() {
@@ -481,16 +480,9 @@ extension TermController: TermDeviceDelegate {
 
     if !isAttached && !isReady{ return }
 
-    deviceView.webView.reportFocus(true)
     _termDevice.focus()
 
-    let input = KBTracker.shared.input
-
-    if input != KBTracker.shared.input {
-      input?.reportFocus(false)
-    }
-
-    _ = _termDevice.view?.webView.becomeFirstResponder()
+    _ = deviceView.webView.becomeFirstResponder()
   }
     
   public func deviceSizeChanged() {

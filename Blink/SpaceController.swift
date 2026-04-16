@@ -1228,6 +1228,7 @@ extension SpaceController: SnippetContext {
       let ctrl = try SnippetsViewController.create(context: receiver, transitionFrame: _blinkMenu?.bounds)
       ctrl.pendingOpenScratch = openScratch
       DispatchQueue.main.async {
+        self.currentTerm()?.resignInput()
         ctrl.view.frame = self.view.bounds
         ctrl.willMove(toParent: self)
         self.view.addSubview(ctrl.view)
