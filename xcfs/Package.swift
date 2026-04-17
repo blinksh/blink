@@ -34,8 +34,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "ios_system",
-    "50f1692873e73fd862f45f73f2c08745e822c01ff5e0a0e0aec7fed6bb946e7f",
-    "https://github.com/holzschu/ios_system/releases/download/v3.0.3/ios_system.xcframework.zip"
+    "e692102956d86b7ce8730c3bb02a964eff1d5aa5a91d617742091a6c4dbebb0d",
+    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-18.6.0/ios_system.xcframework.zip"
   ),
   (
     "awk",
@@ -74,8 +74,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "curl_ios",
-    "2d5431b38dc7b06ffec13bf1dda208c670c6ceaa391220d875f681392655fead",
-    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-17.3.0/curl_ios.xcframework.zip"
+    "f8215a3c2f135e37e0fb3662f78fdaffeb3f4e9c2bea55a0adbc10e5b983cd80",
+    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-18.6.0/curl_ios.xcframework.zip"
   ),
   (
     "bc",
