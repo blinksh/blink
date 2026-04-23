@@ -183,18 +183,15 @@
     UIWindow *window = view.window;
     if (!window) return UIEdgeInsetsZero;
     
-    // Handle external display case
+    // Handle projection
     if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive) {
         return ShadowWindow.shared.refWindow.safeAreaInsets;
     }
     
-    UIScreen *mainScreen = UIScreen.mainScreen;
-    if (mainScreen != window.screen) {
-        return window.safeAreaInsets;
-    }
-    
+    BOOL isExternal = (UIScreen.mainScreen != window.screen);
+
     UIEdgeInsets deviceMargins = window.safeAreaInsets;
-    BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
+    BOOL fullScreen = CGRectEqualToRect(window.screen.bounds, window.bounds);
     UIEdgeInsets result = UIEdgeInsetsZero;
     
     switch (mode) {
@@ -207,7 +204,8 @@
             
         case BKLayoutModeSafeFit:
             result = deviceMargins;
-            if (DeviceInfo.shared.hasCorners &&
+            if (!isExternal &&
+                DeviceInfo.shared.hasCorners &&
                 UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
                 if ([DeviceInfo.shared.marketingName containsString:@"M4"]) {
                     result.top = 25;
@@ -220,8 +218,12 @@
             break;
             
         case BKLayoutModeFill: {
+            if (isExternal) {
+                result = deviceMargins;
+                break;
+            }
             DeviceInfo *deviceInfo = DeviceInfo.shared;
-            
+
             if (!deviceInfo.hasCorners) {
                 break;
             }
