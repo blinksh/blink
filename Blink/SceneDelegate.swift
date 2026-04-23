@@ -378,11 +378,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if self.paywallWindow != nil {
           _ = KBTracker.shared.input?.resignFirstResponder()
-        }
-        if KBTracker.shared.input == nil {
+        } else if KBTracker.shared.input == nil {
           window.makeKey()
           spCtrl.focusOnShellAction()
-          KBTracker.shared.input?.reportFocus(true)
         }
       }
       return

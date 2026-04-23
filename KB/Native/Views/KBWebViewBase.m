@@ -310,25 +310,33 @@ NSString *_encodeString(NSString *str);
 //}
 
 - (BOOL)becomeFirstResponder {
+  BOOL wasFocused = _focused;
+  [self _reportFocus:YES];
+  
   BOOL res = [super becomeFirstResponder];
 
   if (res) {
     [self resetTrackingModifierFlags];
-    [self reportFocus:YES];
+  } else {
+    [self _reportFocus:wasFocused];
   }
   return res;
 }
 
-- (void)reportFocus:(BOOL) value {
+- (void)_reportFocus:(BOOL) value {
   _focused = value;
   [self report:@"focus" arg:value ? @"true" : @"false"];
 }
 
 - (BOOL)resignFirstResponder {
+  BOOL wasFocused = _focused;
+  [self _reportFocus:NO];
+  
   BOOL res = [super resignFirstResponder];
   if (res) {
     [self resetTrackingModifierFlags];
-    [self reportFocus:NO];
+  } else {
+    [self _reportFocus:wasFocused];
   }
   return res;
 }

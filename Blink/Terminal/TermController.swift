@@ -463,7 +463,7 @@ extension TermController: TermDeviceDelegate {
       _termDevice.attachInput(deviceView.browserView)
       _ = deviceView.browserView.becomeFirstResponder()
       if input != KBTracker.shared.input {
-        input?.reportFocus(false)
+        _ = input?.resignFirstResponder()
       }
       return
     }

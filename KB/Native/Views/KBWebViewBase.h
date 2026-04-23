@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) UIKeyModifierFlags trackingModifierFlags;
 
 - ( UIView * _Nullable )selectionView;
-- (void)reportFocus:(BOOL) value;
 - (void)reportStateReset:(BOOL)hasSelection;
 - (void)reportLang:(NSString *) lang isHardwareKB: (BOOL)isHardwareKB;
 - (void)reportHex:(NSString *) hex;
