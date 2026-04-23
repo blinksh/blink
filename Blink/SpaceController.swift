@@ -63,8 +63,7 @@ class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
-  var stuckKeyCode: KeyCode? = nil
-  
+
   private var _snippetsVC: SnippetsViewController? = nil
   private var _blinkMenu: BlinkMenu? = nil
   private var _bottomTapAreaView = UIView()
@@ -674,19 +673,9 @@ extension SpaceController {
       return nil
     }
     
-    if let keyCode = stuckKeyCode {
-      return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
-    }
-    
     return input.blinkKeyCommands
   }
-  
-  @objc func onStuckOpCommand() {
-    stuckKeyCode = nil
-    presentedViewController?.dismiss(animated: true)
-    _focusOnShell()
-  }
-  
+
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
     guard foregroundActive,
           let input = currentDevice?.view?.browserView ?? currentDevice?.view?.webView else {

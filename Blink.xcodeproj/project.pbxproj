@@ -452,7 +452,6 @@
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D878632695AEBA00F78018 /* HostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D878622695AEBA00F78018 /* HostView.swift */; };
 		D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */; };
-		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
 		D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */; };
 		D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = D2DC5D4A295DB43D007E2B9D /* RevenueCat */; };
@@ -1205,7 +1204,6 @@
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
 		D2D878622695AEBA00F78018 /* HostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostView.swift; sourceTree = "<group>"; };
 		D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuth.swift; sourceTree = "<group>"; };
-		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
 		D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipFaceCam.swift; sourceTree = "<group>"; };
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
@@ -1498,7 +1496,6 @@
 				D25D580F2358897B00D1BCAE /* Complete.swift */,
 				D20CBA592360324100D93301 /* CompleteUtils.swift */,
 				D2499BEB2362EFD40009C701 /* cpp.cpp */,
-				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
@@ -3616,7 +3613,6 @@
 				BD55D6982F7D743500EE80EA /* TerminalStyle.swift in Sources */,
 				BD55D6992F7D743500EE80EA /* TerminalStyleStore.swift in Sources */,
 				BD55D69A2F7D743500EE80EA /* TerminalStyleBundle.swift in Sources */,
-				D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				D2C24421238E44AB0082C69C /* KeyConfigView.swift in Sources */,
 				D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */,

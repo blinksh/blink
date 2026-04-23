@@ -394,29 +394,6 @@ extension SmarterTermInput {
       kbView.traits.isIME = true
     }
   }
-  
-  func stuckKey() -> KeyCode? {
-    let mods: UIKeyModifierFlags = [.shift, .control, .alternate, .command]
-    let stuck = mods.intersection(trackingModifierFlags)
-    
-    // Return command key first
-    if stuck.contains(.command) {
-      return KeyCode.commandLeft
-    }
-
-    if stuck.contains(.shift) {
-      return KeyCode.shiftLeft
-    }
-    if stuck.contains(.control) {
-      return KeyCode.controlLeft
-    }
-    
-    if stuck.contains(.alternate) {
-      return KeyCode.optionLeft
-    }
-    
-    return nil
-  }
 }
 // - MARK: Config
 

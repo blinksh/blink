@@ -345,34 +345,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return;
     }
 
-    // We can present config or stuck view.
     guard spCtrl.presentedViewController == nil else {
       return
     }
 
-    // 3. Stuck Key Check
-
+    // Focus Check
     let input = KBTracker.shared.input
-    if let key = input?.stuckKey() {
-      debugPrint("BK:", "stuck!!!")
-      input?.setTrackingModifierFlags([])
-
-      if input?.isHardwareKB == true && key == .commandLeft {
-        let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
-          spCtrl.onStuckOpCommand()
-        }))
-
-        ctrl.modalPresentationStyle = .formSheet
-        spCtrl.stuckKeyCode = key
-        spCtrl.present(ctrl, animated: false)
-
-        return
-      }
-    }
-
-    spCtrl.stuckKeyCode = nil
-
-    // 4. Focus Check
 
     if input == nil {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
