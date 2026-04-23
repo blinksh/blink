@@ -95,7 +95,7 @@ public class FileProviderReplicatedExtension: NSObject, NSFileProviderReplicated
       guard let self = self else { return }
       self.workingSet.resumeChangesTimerEvery(seconds: 5)
       // Background clean-up
-      self.cancellables.insert(self.cleanUpOldTmpFiles())
+      // self.cancellables.insert(self.cleanUpOldTmpFiles())
     }
   }
 
