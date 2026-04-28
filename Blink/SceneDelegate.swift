@@ -154,17 +154,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
 
-  /**
-   Handles the `ssh://`, `vscode://` and `http(s)://` URL schemes.
-   */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-
-    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
-      _handleSshUrlScheme(with: sshUrlScheme)
-    } else if let codeUrlScheme = URLContexts.first(where: { $0.url.scheme == "vscode" })?.url {
-      _handleCodeUrlScheme(with: codeUrlScheme)
-    } else if let httpScheme = URLContexts.first(where: { $0.url.scheme == "http" || $0.url.scheme == "https"})?.url {
-      _handleCodeUrlScheme(with: httpScheme)
+    for context in URLContexts {
+      if let command = SceneCommands.from(url: context.url) {
+        command.perform(on: _spCtrl)
+        return
+      }
     }
   }
 
@@ -416,114 +411,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
-fileprivate extension URL {
-  func getQueryStringParameter(param: String) -> String? {
-    guard let url = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
-    return url.percentEncodedQueryItems?.first(where: { $0.name == param })?.value
-  }
-}
-
-// MARK: Manage the `scene(_:openURLContexts:)` actions
-extension SceneDelegate {
-
-  /*
-   Handles the `ssh://` URL scheme.
-   */
-  private func _handleSshUrlScheme(with sshUrl: URL) {
-    func buildSSHCommand(from url: URL) -> String? {
-      // Goal is to tokenize a SSH Command. The risk is that the URL may contian injection parameters.
-      // We sanitize the input and make sure the result, specially the user@host part is a valid shell token.
-      // The SSH library takes care of validating the host, user, etc...
-      guard url.scheme == "ssh" else { return nil }
-      guard let host = url.host?.removingPercentEncoding,
-            host.rangeOfCharacter(from: .controlCharacters) == nil,
-            host.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
-            !host.starts(with:"-"),
-            !host.starts(with:".") else {
-        return nil
-      }
-
-      var sshCommand = "ssh "
-
-      if let port = url.port {
-        sshCommand += "-p \(port) "
-      }
-
-      if let userinfo = url.user?.removingPercentEncoding,
-         userinfo.rangeOfCharacter(from: .controlCharacters) == nil {
-        // Extract only the username before the first ";" if conn-params exist
-        let username = userinfo.components(separatedBy: ";").first ?? ""
-        guard username.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
-              !username.starts(with:"-"),
-              !username.starts(with:".") else {
-          return nil
-        }
-
-        if username.count > 0 {
-          sshCommand += "-l \(username) "
-        }
-      }
-
-      sshCommand += "\(host)"
-      return sshCommand
-    }
-
-    guard let sshCommand = buildSSHCommand(from: sshUrl),
-          sshCommand.rangeOfCharacter(from: .controlCharacters) == nil else {
-      return
-    }
-
-    _spCtrl.runShellSessionIntent(command: sshCommand)
-  }
-
-  // vscode://<path_to_file>
-  // vscode://<repository>
-  // vscode://github.codespaces/connect?name=
-  // vscode://file/path/to/file/file.ext:55:20
-  private func _handleCodeUrlScheme(with url: URL) {
-    guard let fileProtocol = url.host else {
-      return
-    }
-
-    var codeCommand = "code "
-    var urlPath = url.path
-    if ["sftp", "local"].contains(fileProtocol) {
-      if fileProtocol == "sftp" {
-        // host/ -> host:/;  host/~ -> host:~/
-        let components = url.pathComponents
-        if components.count < 2 {
-          return
-        }
-        let hostName = components[1]
-        codeCommand += "\(hostName):"
-        urlPath = url.pathComponents[2...].joined(separator: "/")
-        if urlPath.isEmpty {
-          urlPath = "/"
-        }
-      }
-      codeCommand += "\(urlPath)"
-    } else if fileProtocol.lowercased() == "github.codespaces",
-              url.path == "/connect",
-              let codespaceName = url.getQueryStringParameter(param: "name") {
-      codeCommand += "https://\(codespaceName).github.dev"
-    }
-    else {
-      codeCommand += url.absoluteString
-    }
-
-    if codeCommand.rangeOfCharacter(from: .controlCharacters) != nil {
-      return
-    }
-
-    _spCtrl.runShellSessionIntent(command: codeCommand)
-  }
-
-  private func _handleHttpUrlScheme(with url: URL) {
-    let urlCommand = url.absoluteString
-    if urlCommand.rangeOfCharacter(from: .controlCharacters) != nil {
-      return
-    }
-
-    _spCtrl.runShellSessionIntent(command: "code \(urlCommand)")
-  }
-}

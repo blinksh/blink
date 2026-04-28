@@ -94,6 +94,7 @@
 		BD2C754E2D75FA85007BFE77 /* Walkthrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */; };
 		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
 		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
+		BD36631D2FA159730085FD66 /* SceneCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD36631C2FA159730085FD66 /* SceneCommands.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD4DBAFA2CADA82700538194 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = BD4DBAF92CADA82700538194 /* SQLite */; };
 		BD4DBAFC2CADB3AF00538194 /* WorkingSetDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */; };
@@ -865,6 +866,7 @@
 		BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walkthrough.swift; sourceTree = "<group>"; };
 		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
 		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
+		BD36631C2FA159730085FD66 /* SceneCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCommands.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabase.swift; sourceTree = "<group>"; };
 		BD4F79F72CB4975E00FE67EA /* WorkingSetDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabaseTests.swift; sourceTree = "<group>"; };
@@ -1464,6 +1466,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				BD36631C2FA159730085FD66 /* SceneCommands.swift */,
 				D22277F02A26200B00D4C708 /* Snippets */,
 				D25DE9C32939EB63008246EB /* NonStdIO */,
 				D264D2AE28F8457A002B1B14 /* WhatsNew */,
@@ -3651,6 +3654,7 @@
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
+				BD36631D2FA159730085FD66 /* SceneCommands.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */,
 				BD90BE4A2A18466E00DA5686 /* AgentForwardPromptPickerView.swift in Sources */,
