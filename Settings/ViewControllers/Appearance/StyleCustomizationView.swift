@@ -78,7 +78,7 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushStoryboardController("BKThemeCreateViewController")
+            pushAddRemoteResource(.theme)
           } label: {
             HStack {
               Text("Add a new theme")
@@ -110,7 +110,7 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushStoryboardController("BKFontCreateViewController")
+            pushAddRemoteResource(.font)
           } label: {
             HStack {
               Text("Add a new font")
@@ -228,9 +228,9 @@ struct StyleCustomizationView: View {
 
   // MARK: - Navigation
 
-  private func pushStoryboardController(_ identifier: String) {
-    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    let vc = storyboard.instantiateViewController(withIdentifier: identifier)
+  private func pushAddRemoteResource(_ kind: AddRemoteResourceView.Kind) {
+    let view = AddRemoteResourceView(kind: kind).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
     nav.navController.pushViewController(vc, animated: true)
   }
 }

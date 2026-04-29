@@ -101,6 +101,7 @@
 		BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */; };
 		BD55D6A02F8D000100EE80EA /* StyleCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */; };
 		BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */; };
+		BD55D6A32F8D000100EE80EA /* AddRemoteResourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */; };
 		BD55D6DC2F7F2F5A00EE80EA /* DeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6DB2F7F2F5A00EE80EA /* DeviceInfo.m */; };
 		BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D7142F816AFC00EE80EA /* 1860Migration.swift */; };
 		BD5A0E3A2F89545B00AB3734 /* 1870Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A0E392F89545B00AB3734 /* 1870Migration.swift */; };
@@ -867,6 +868,7 @@
 		BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleTests.swift; sourceTree = "<group>"; };
 		BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleCustomizationView.swift; sourceTree = "<group>"; };
 		BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
+		BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRemoteResourceView.swift; sourceTree = "<group>"; };
 		BD55D6DA2F7F2F5A00EE80EA /* DeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		BD55D6DB2F7F2F5A00EE80EA /* DeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfo.m; sourceTree = "<group>"; };
 		BD55D7142F816AFC00EE80EA /* 1860Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1860Migration.swift; sourceTree = "<group>"; };
@@ -1968,6 +1970,7 @@
 				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
 				BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */,
 				BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */,
+				BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */,
 			);
 			name = Appearance;
 			path = Settings/ViewControllers/Appearance;
@@ -3513,6 +3516,7 @@
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				BD55D6A02F8D000100EE80EA /* StyleCustomizationView.swift in Sources */,
 				BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */,
+				BD55D6A32F8D000100EE80EA /* AddRemoteResourceView.swift in Sources */,
 				BD88697B2CF4DDAD00F71119 /* 1810Migration.swift in Sources */,
 				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
 				BDC98B772FD76672002BF2ED /* Machine.swift in Sources */,
