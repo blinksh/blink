@@ -359,13 +359,15 @@ const CGFloat MENU_PADDING = 10.0;
   }
   
   if (elementID == BlinkActionLayoutMenu) {
+    NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
+    [children addObject:[self menuElementForID:BlinkActionLayoutFit appearance:nil]];
+    if ([LayoutConstraintManager supportsLayoutMode:BKLayoutModeFill]) {
+      [children addObject:[self menuElementForID:BlinkActionLayoutFill appearance:nil]];
+    }
+    [children addObject:[self menuElementForID:BlinkActionLayoutCover appearance:nil]];
     return [UIMenu menuWithTitle:noTitle ? @"" : @"Layout"
                            image: [UIImage systemImageNamed:@"squareshape.squareshape.dashed"]
-                      identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:@[
-      [self menuElementForID:BlinkActionLayoutFit appearance:nil],
-      [self menuElementForID:BlinkActionLayoutFill appearance:nil],
-      [self menuElementForID:BlinkActionLayoutCover appearance:nil]
-    ]];
+                      identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:children];
   }
   
   

@@ -63,7 +63,9 @@ struct DisplaySettingsView: View {
           Picker("Mode", selection: $layoutModeIndex) {
             Text("Cover").tag(0)
             Text("Safe Fit").tag(1)
-            Text("Fill").tag(2)
+            if LayoutConstraintManager.supportsLayoutMode(.fill) {
+              Text("Fill").tag(2)
+            }
           }
           .pickerStyle(.segmented)
           .labelsHidden()

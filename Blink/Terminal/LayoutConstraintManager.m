@@ -311,20 +311,26 @@
 }
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
-  DeviceInfo *device = [DeviceInfo shared];
-  if (device.hasNotch) {
-    return BKLayoutModeSafeFit;
-  }
-
-  if (device.hasCorners) {
-    return BKLayoutModeFill;
-  }
-
-  return BKLayoutModeCover;
+  return [self supportsLayoutMode:BKLayoutModeFill]
+    ? BKLayoutModeFill
+    : BKLayoutModeSafeFit;
 }
 
 + (BKLayoutMode)resolve:(BKLayoutMode)mode {
-  return mode == BKLayoutModeDefault ? [self deviceDefaultLayoutMode] : mode;
+  if (mode == BKLayoutModeDefault) {
+    return [self deviceDefaultLayoutMode];
+  }
+  if (![self supportsLayoutMode:mode]) {
+    return BKLayoutModeCover;
+  }
+  return mode;
+}
+
++ (BOOL)supportsLayoutMode:(BKLayoutMode)mode {
+  if (mode == BKLayoutModeFill) {
+    return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+  }
+  return YES;
 }
 
 @end
