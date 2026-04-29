@@ -138,8 +138,6 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.blink.cmdline</string>
-		<string>com.blink.session</string>
-		<string>com.blink.whatsnew</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
