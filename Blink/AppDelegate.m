@@ -38,7 +38,6 @@
 #import <ios_system/ios_system.h>
 #import <UserNotifications/UserNotifications.h>
 #include <libssh/callbacks.h>
-#include "xcall.h"
 #include "Blink-Swift.h"
 
 #ifdef BLINK_BUILD_ENABLED

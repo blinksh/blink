@@ -96,7 +96,6 @@
 				<string>https</string>
 				<string>http</string>
 				<string>ssh</string>
-				<string>blinkshell</string>
 				<string>${BLINK_MIGRATION_SCHEME}</string>
 				<string>vscode</string>
 			</array>
@@ -108,10 +107,6 @@
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>blinkshell</string>
-	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
