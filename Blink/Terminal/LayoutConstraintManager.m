@@ -191,85 +191,38 @@
     BOOL isExternal = (UIScreen.mainScreen != window.screen);
 
     UIEdgeInsets deviceMargins = window.safeAreaInsets;
-    BOOL fullScreen = CGRectEqualToRect(window.screen.bounds, window.bounds);
     UIEdgeInsets result = UIEdgeInsetsZero;
-    
-    switch (mode) {
-        case BKLayoutModeDefault:
-            return [self calculateInsetsForLayoutMode:[LayoutConstraintManager resolve:mode]];
 
+    mode = [LayoutConstraintManager resolve:mode];
+
+    switch (mode) {
         case BKLayoutModeCover:
             // No insets - full screen
             break;
-            
+
         case BKLayoutModeSafeFit:
             result = deviceMargins;
-            if (!isExternal &&
-                DeviceInfo.shared.hasCorners &&
-                UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-                if ([DeviceInfo.shared.marketingName containsString:@"M4"]) {
-                    result.top = 25;
-                    result.bottom = 25;
-                } else {
-                    result.top = 16;
-                    result.bottom = 16;
-                }
-            }
             break;
-            
+
         case BKLayoutModeFill: {
             if (isExternal) {
                 result = deviceMargins;
                 break;
             }
-            DeviceInfo *deviceInfo = DeviceInfo.shared;
-
-            if (!deviceInfo.hasCorners) {
+            if (!DeviceInfo.shared.hasCorners) {
                 break;
             }
-            
-            if (!deviceInfo.hasNotch) {
-                if ([DeviceInfo.shared.marketingName containsString:@"M4"]) {
-                    result.top = 8;
-                    result.left = 8;
-                    result.right = MAX(deviceMargins.right, 8);
-                    result.bottom = fullScreen ? 8 : 10;
-                } else {
-                    result.top = 5;
-                    result.left = 5;
-                    result.right = MAX(deviceMargins.right, 5);
-                    result.bottom = fullScreen ? 5 : 10;
-                }
-                break;
-            }
-            
-            UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
-            
-            if (UIInterfaceOrientationIsPortrait(orientation)) {
-                result.top = deviceMargins.top - 10;
-                result.bottom = deviceMargins.bottom - 10;
-                break;
-            }
-            
-            if (orientation == UIInterfaceOrientationLandscapeRight) {
-                result.left = deviceMargins.left - 4; // notch
-                result.right = 10;
-                result.top = 10;
-                result.bottom = 8;
-                break;
-            }
-            
-            if (orientation == UIInterfaceOrientationLandscapeLeft) {
-                result.right = deviceMargins.right - 4;  // notch
-                result.left = 10;
-                result.top = 10;
-                result.bottom = 8;
-                break;
-            }
-            
-            result = deviceMargins;
+            CGFloat m = deviceMargins.top / 3.0;
+            result.top = m;
+            result.left = m;
+            result.right = MAX(deviceMargins.right, m);
+            result.bottom = m;
             break;
         }
+
+        case BKLayoutModeDefault:
+            NSAssert(NO, @"BKLayoutModeDefault should not reach geometry; +resolve: must convert it to a concrete mode.");
+            break;
     }
     
     return result;
