@@ -196,8 +196,8 @@
     
     switch (mode) {
         case BKLayoutModeDefault:
-            return [self calculateInsetsForLayoutMode:[LayoutConstraintManager deviceDefaultLayoutMode]];
-            
+            return [self calculateInsetsForLayoutMode:[LayoutConstraintManager resolve:mode]];
+
         case BKLayoutModeCover:
             // No insets - full screen
             break;
@@ -315,12 +315,16 @@
   if (device.hasNotch) {
     return BKLayoutModeSafeFit;
   }
-  
+
   if (device.hasCorners) {
     return BKLayoutModeFill;
   }
-  
+
   return BKLayoutModeCover;
+}
+
++ (BKLayoutMode)resolve:(BKLayoutMode)mode {
+  return mode == BKLayoutModeDefault ? [self deviceDefaultLayoutMode] : mode;
 }
 
 @end

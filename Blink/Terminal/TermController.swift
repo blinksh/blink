@@ -37,6 +37,7 @@ import AVFoundation
 @objc protocol TermControlDelegate: NSObjectProtocol {
   func terminalHangup(control: TermController)
   @objc optional func terminalDidResize(control: TermController)
+  @objc optional func terminalLayoutModeChanged(control: TermController)
 }
 
 @objc protocol ControlPanelDelegate: NSObjectProtocol {
@@ -489,6 +490,10 @@ extension TermController: TermDeviceDelegate {
     print("Terminal size changed - rows: \(_termDevice.rows) x cols: \(_termDevice.cols)")
     delegate?.terminalDidResize?(control: self)
     _session?.sigwinch()
+  }
+
+  public func viewLayoutModeChanged(_ mode: BKLayoutMode) {
+    delegate?.terminalLayoutModeChanged?(control: self)
   }
 
   public func viewFontSizeChanged(_ size: Int) {

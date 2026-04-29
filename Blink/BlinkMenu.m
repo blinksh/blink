@@ -33,6 +33,7 @@
 #import <Foundation/Foundation.h>
 #import "BlinkMenu.h"
 #import "BLKDefaults.h"
+#import "LayoutConstraintManager.h"
 #import "Blink-Swift.h"
 #import "GeoManager.h"
 
@@ -282,7 +283,7 @@ const CGFloat MENU_PADDING = 10.0;
         [delegate.currentTerm.termView setLayoutModeFit];
     }
     ];
-    action.state = [delegate.currentTerm.termView currentLayoutMode] == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
+    action.state = [LayoutConstraintManager resolve:[delegate.currentTerm.termView currentLayoutMode]] == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
 
     return action;
   }
@@ -294,7 +295,7 @@ const CGFloat MENU_PADDING = 10.0;
         [delegate.currentTerm.termView setLayoutModeFill];
       }
                         ];
-    action.state = [delegate.currentTerm.termView currentLayoutMode] == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
+    action.state = [LayoutConstraintManager resolve:[delegate.currentTerm.termView currentLayoutMode]] == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
     return action;
   }
 
@@ -306,7 +307,7 @@ const CGFloat MENU_PADDING = 10.0;
         [delegate.currentTerm.termView setLayoutModeCover];
       }
                          ];
-    action.state = [delegate.currentTerm.termView currentLayoutMode] == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
+    action.state = [LayoutConstraintManager resolve:[delegate.currentTerm.termView currentLayoutMode]] == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
     return action;
   }
 

@@ -282,6 +282,7 @@ struct TerminalPreviewCell: UIViewRepresentable {
     func viewAPICall(_ api: String!, andJSONRequest request: String!) {}
     func viewNotify(_ data: [AnyHashable: Any]!) {}
     func viewDidReceiveBellRing() {}
+    func viewLayoutModeChanged(_ mode: BKLayoutMode) {}
 
     private func writeColorShowcase() {
       let fgs = ["    m","   1m","  30m","1;30m","  31m","1;31m","  32m","1;32m",

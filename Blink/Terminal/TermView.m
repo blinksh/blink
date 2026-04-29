@@ -1088,6 +1088,8 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   if (self.constraintManager) {
     [self.constraintManager updateLayoutMode:layoutMode];
   }
+
+  [self.device viewLayoutModeChanged:layoutMode];
 }
 
 -(void)_lockLayout {
@@ -1158,7 +1160,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
     NSMutableArray *layoutActions = [[NSMutableArray alloc] init];
     
     if ([[DeviceInfo shared] hasCorners]) {
-      BKLayoutMode mode = [self currentLayoutMode];
+      BKLayoutMode mode = [LayoutConstraintManager resolve:[self currentLayoutMode]];
       UICommand *fitCmd = [UICommand commandWithTitle:@"Fit" image: nil
                                                action:@selector(setLayoutModeFit) propertyList:nil];
       //      fitCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;

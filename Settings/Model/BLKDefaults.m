@@ -35,7 +35,6 @@
 #import "BlinkPaths.h"
 #import "DeviceInfo.h"
 #import "Blink-Swift.h"
-#import "LayoutConstraintManager.h"
 
 
 BLKDefaults *defaults;
@@ -201,10 +200,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     }
   }
   
-  if (defaults.layoutMode == BKLayoutModeDefault) {
-    defaults.layoutMode = [LayoutConstraintManager deviceDefaultLayoutMode];
-  }
-
   if (!defaults.fontName) {
     if ([BKFont withName:@"Pragmata Pro Mono"] != nil) {
       [defaults setFontName:@"Pragmata Pro Mono"];

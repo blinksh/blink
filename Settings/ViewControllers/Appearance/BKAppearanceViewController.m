@@ -36,6 +36,7 @@
 #import "DeviceInfo.h"
 #import "TermView.h"
 #import "TermDevice.h"
+#import "LayoutConstraintManager.h"
 #import "Blink-Swift.h"
 #import <UserNotifications/UserNotifications.h>
 
@@ -391,7 +392,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 }
 
 - (NSInteger)_layoutModeToIndex:(BKLayoutMode) mode {
-  switch (mode) {
+  switch ([LayoutConstraintManager resolve:mode]) {
     case BKLayoutModeCover:
       return 0;
     case BKLayoutModeSafeFit:
@@ -674,6 +675,9 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 - (BOOL)handleControl:(NSString *)control
 {
   return NO;
+}
+
+- (void)viewLayoutModeChanged:(BKLayoutMode)mode {
 }
 
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message {
