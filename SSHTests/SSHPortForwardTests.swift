@@ -39,10 +39,11 @@ extension SSHTests {
   func testForwardPort() throws {
     let expectConnection = self.expectation(description: "Connected")
     let expectListenerClosed = self.expectation(description: "Listener Closed")
+    self.continueAfterFailure  = false
     
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
-    let urlSession = URLSession(configuration: URLSessionConfiguration.default)
+    let urlSession = URLSession(configuration: URLSessionConfiguration.ephemeral)
     
     SSHClient
       .dialWithTestConfig()
@@ -127,8 +128,9 @@ extension SSHTests {
     
     
     let expectResponse3 = self.expectation(description: "Response received")
-    // Launch a request on the port
-    URLSession.shared
+    
+    let urlSession2 = URLSession(configuration: URLSessionConfiguration.ephemeral)
+    urlSession2
       .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
@@ -228,7 +230,7 @@ extension SSHTests {
         print("Received Connection")
         connection = conn
         
-        client = SSHPortForwardClient(forward: "www.guimp.com", onPort: 80,
+        client = SSHPortForwardClient(forward: "https://www.blink.sh", onPort: 80,
                                       toRemotePort: 8080, using: conn)
         return client!
       }.flatMap { c -> AnyPublisher<Void, Error> in
@@ -252,7 +254,7 @@ extension SSHTests {
     
     var cmd: SSH.Stream?
     // We put a small delay as sometimes if it happens too close, the machine won't be able to resolve it.
-    let curl = "sleep 1 && curl -o /dev/null -H \"Host: www.guimp.com\" -s -w \"%{http_code}\n\" localhost:8080"
+    let curl = "sleep 1 && curl -L -o /dev/null -H \"Host: www.blink.sh\" -s -w \"%{http_code}\n\" localhost:8080"
     let cancelRequest = connection!.requestExec(command: curl)
       .flatMap { stream -> AnyPublisher<DispatchData, Error> in
         cmd = stream

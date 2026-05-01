@@ -28,11 +28,6 @@ var binaryTargets: [PackageDescription.Target] = [
     "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1w/openssl-dynamic.xcframework.zip"
   ),
   (
-    "libssh2",
-    "6a14c161ee389ef64dfd4f13eedbdf8628bbe430d686a08c4bf30a6484f07dcb",
-    "https://github.com/blinksh/libssh2-apple/releases/download/v1.9.0/libssh2-static.xcframework.zip"
-  ),
-  (
     "ios_system",
     "50f1692873e73fd862f45f73f2c08745e822c01ff5e0a0e0aec7fed6bb946e7f",
     "https://github.com/holzschu/ios_system/releases/download/v3.0.3/ios_system.xcframework.zip"
