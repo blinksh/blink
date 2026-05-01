@@ -155,6 +155,7 @@
 		BD9514332B4F661600A7BEBE /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9514322B4F661600A7BEBE /* FileProviderItem.swift */; };
 		BD9514352B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9514342B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift */; };
 		BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */; };
+		BD98AC86260BD8DC00B4E6A1 /* SSHCopyID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */; };
 		BD98AC95260BE20000B4E6A1 /* SSHDefaultAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */; };
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
 		BD9BF7E9262A6B0F00B02074 /* SOCKSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */; };
@@ -905,6 +906,7 @@
 		BD9514322B4F661600A7BEBE /* FileProviderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
 		BD9514342B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderReplicatedEnumerator.swift; sourceTree = "<group>"; };
 		BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentAdd.swift; sourceTree = "<group>"; };
+		BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHCopyID.swift; sourceTree = "<group>"; };
 		BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHDefaultAgent.swift; sourceTree = "<group>"; };
 		BD9BF7E3262A6B0300B02074 /* SOCKS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKS.swift; sourceTree = "<group>"; };
 		BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKSTests.swift; sourceTree = "<group>"; };
@@ -1610,6 +1612,7 @@
 				07FAB8EE25C8E6C500E1CC2C /* SSHCommand.swift */,
 				07FAB8EF25C8E6C500E1CC2C /* SSHConfigProvider.swift */,
 				BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */,
+				BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */,
 				BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */,
 				BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */,
 			);
@@ -3582,6 +3585,7 @@
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
 				07FAB8F225C8E6C500E1CC2C /* ssh.swift in Sources */,
 				BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */,
+				BD98AC86260BD8DC00B4E6A1 /* SSHCopyID.swift in Sources */,
 				BD55D6982F7D743500EE80EA /* TerminalStyle.swift in Sources */,
 				BD55D6992F7D743500EE80EA /* TerminalStyleStore.swift in Sources */,
 				BD55D69A2F7D743500EE80EA /* TerminalStyleBundle.swift in Sources */,

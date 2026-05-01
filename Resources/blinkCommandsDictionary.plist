@@ -58,6 +58,13 @@
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
 		<string>no</string>
 	</array>
+	<key>ssh-copy-id</key>
+	<array>
+		<string>MAIN</string>
+		<string>blink_ssh_copyid</string>
+		<string>v</string>
+		<string>no</string>
+	</array>
 	<key>ssh-agent</key>
 	<array>
 		<string>MAIN</string>
