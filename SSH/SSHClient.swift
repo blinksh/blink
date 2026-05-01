@@ -788,7 +788,6 @@ public class SSHClient {
       .tryOperation { session -> Int32 in
         self.log.message("REVERSE Starting listener to forward on remote", SSH_LOG_INFO)
 
-        // We could pass the callback here, and then have somewhere on the libssh side a way to map
         let rc = ssh_channel_listen_forward(session, address, port, nil)
         if rc != SSH_OK {
           throw SSHError(rc, forSession: session)

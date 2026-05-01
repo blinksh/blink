@@ -354,7 +354,7 @@ extension OutStream: Reader {
         self.complete()
         return
       } else if bytesLeft > 0 {
-        if demand == .unlimited {
+        if rc > 0 && demand == .unlimited {
           RunLoop.current.perform { self.readAsync() }
           return
         } else if callbacks == nil {
