@@ -49,6 +49,7 @@ extension ssh_options_e {
     case SSH_OPTIONS_PROXYJUMP:         return "SSH_OPTIONS_PROXYJUMP"
     case SSH_OPTIONS_PROXYCOMMAND:      return "SSH_OPTIONS_PROXYCOMMAND"
     case SSH_OPTIONS_SSH_DIR:           return "SSH_OPTIONS_SSH_DIR"
+    case SSH_OPTIONS_KNOWNHOSTS:        return "SSH_OPTIONS_KNOWNHOSTS"
     default:                            return "raw: \(rawValue)"
     }
   }

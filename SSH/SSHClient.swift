@@ -168,8 +168,11 @@ public class SSHClient {
     }
     
     /// If `nil` it uses the default `.ssh` directory
-    if options.sshDirectory != nil {
-      try _setSessionOption(SSH_OPTIONS_SSH_DIR, options.sshDirectory)
+    if let sshDirectory = options.sshDirectory {
+      try _setSessionOption(SSH_OPTIONS_SSH_DIR, sshDirectory)
+
+      let knownHostsPath = (sshDirectory as NSString).appendingPathComponent("known_hosts")
+      try _setSessionOption(SSH_OPTIONS_KNOWNHOSTS, knownHostsPath)
     }
 
     if let ciphers = options.ciphers {
