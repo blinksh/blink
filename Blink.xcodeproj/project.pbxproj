@@ -94,6 +94,7 @@
 		BD2C754E2D75FA85007BFE77 /* Walkthrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */; };
 		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
 		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
+		BD36631D2FA159730085FD66 /* SceneCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD36631C2FA159730085FD66 /* SceneCommands.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD4DBAFA2CADA82700538194 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = BD4DBAF92CADA82700538194 /* SQLite */; };
 		BD4DBAFC2CADB3AF00538194 /* WorkingSetDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */; };
@@ -367,7 +368,6 @@
 		D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */; };
 		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
 		D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150C287F0C2200D31F4E /* TokioSignals.m */; };
-		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D27C4DA42987F124008427F2 /* BuildHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C4DA32987F124008427F2 /* BuildHelp.swift */; };
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
@@ -865,6 +865,7 @@
 		BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walkthrough.swift; sourceTree = "<group>"; };
 		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
 		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
+		BD36631C2FA159730085FD66 /* SceneCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCommands.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabase.swift; sourceTree = "<group>"; };
 		BD4F79F72CB4975E00FE67EA /* WorkingSetDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabaseTests.swift; sourceTree = "<group>"; };
@@ -1123,8 +1124,6 @@
 		D277150B287F0C2200D31F4E /* TokioSignals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TokioSignals.h; sourceTree = "<group>"; };
 		D277150C287F0C2200D31F4E /* TokioSignals.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TokioSignals.m; sourceTree = "<group>"; };
 		D2771510287F0EA200D31F4E /* libbuild_cli.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbuild_cli.a; sourceTree = "<group>"; };
-		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
-		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
 		D27C4DA32987F124008427F2 /* BuildHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildHelp.swift; sourceTree = "<group>"; };
@@ -1464,6 +1463,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				BD36631C2FA159730085FD66 /* SceneCommands.swift */,
 				D22277F02A26200B00D4C708 /* Snippets */,
 				D25DE9C32939EB63008246EB /* NonStdIO */,
 				D264D2AE28F8457A002B1B14 /* WhatsNew */,
@@ -2393,8 +2393,6 @@
 				D277150A287F0C2100D31F4E /* build.m */,
 				D277150B287F0C2200D31F4E /* TokioSignals.h */,
 				D277150C287F0C2200D31F4E /* TokioSignals.m */,
-				D27AD9BD222FDD5700379872 /* xcall.h */,
-				D27AD9BB222FDD3D00379872 /* xcall.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
 				D2FBEC0727CF505D00FD974A /* browse.swift */,
 				D26A37EF26A0AB7000534A4D /* facecam.swift */,
@@ -3554,7 +3552,6 @@
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
-				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
 				BDB129FA2D08B4DE006970A1 /* BookmarkedLocationsView.swift in Sources */,
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
 				D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */,
@@ -3651,6 +3648,7 @@
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
+				BD36631D2FA159730085FD66 /* SceneCommands.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */,
 				BD90BE4A2A18466E00DA5686 /* AgentForwardPromptPickerView.swift in Sources */,

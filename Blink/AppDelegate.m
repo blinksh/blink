@@ -38,7 +38,6 @@
 #import <ios_system/ios_system.h>
 #import <UserNotifications/UserNotifications.h>
 #include <libssh/callbacks.h>
-#include "xcall.h"
 #include "Blink-Swift.h"
 
 #ifdef BLINK_BUILD_ENABLED
@@ -196,19 +195,6 @@ void __setupProcessEnv(void) {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
   // TODO: pass completion handler.
 }
-
-// MARK: NSUserActivity
-
-// Deprecated and no-ops.
-// - (BOOL)application:(UIApplication *)application willContinueUserActivityWithType:(NSString *)userActivityType 
-// {
-//   return YES;
-// }
-
-// - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
-// {
-//   return YES;
-// }
 
 - (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
   if ([extensionPointIdentifier isEqualToString: UIApplicationKeyboardExtensionPointIdentifier]) {
