@@ -14,23 +14,23 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "LibSSH",
-    "f03487ca3affb1d79d1bfb42f6406b92f2f406d9f58acd007b56f1a46af2d1f4",
-    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.8/LibSSH-static.xcframework.zip"
+    "6e44c4da3de8268c708c4b111aa1e9043bbd0d6977addd95377289470fd812ab",
+    "https://github.com/blinksh/libssh-apple/releases/download/v0.12.0/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
-    "6f6269790435a33c93abbe5ea4e3fe636c3fad6e176332f6f23d6ac9884fdeef",
-    "https://github.com/blinksh/openssh-apple/releases/download/v8.9.0/OpenSSH-static.xcframework.zip"
+    "ba68c1d2482ae963943d183f21caa5ec578a627d38764c2da65abf70089ec2c6",
+    "https://github.com/blinksh/openssh-apple/releases/download/v8.9.0+blink-18.7.0/OpenSSH-static.xcframework.zip"
   ),
   (
     "openssl",
-    "cba8c2b41ab5dcd780c475466001573cb84e373f71e9c4e1b573717c91549633",
-    "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1w/openssl-dynamic.xcframework.zip"
+    "f2954129976a2d990d20e371d837163f9cc6b7d9191e07380b8690ef7322bf50",
+    "https://github.com/krzyzanowskim/OpenSSL/releases/download/3.6.0001/OpenSSL.xcframework.zip"
   ),
   (
     "ios_system",
-    "50f1692873e73fd862f45f73f2c08745e822c01ff5e0a0e0aec7fed6bb946e7f",
-    "https://github.com/holzschu/ios_system/releases/download/v3.0.3/ios_system.xcframework.zip"
+    "91eee24081c6552b71be06660aed4f0f96b3f1cadfa0673307e73a34ca635141",
+    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-18.7.0/ios_system.xcframework.zip"
   ),
   (
     "awk",
@@ -69,8 +69,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "curl_ios",
-    "2d5431b38dc7b06ffec13bf1dda208c670c6ceaa391220d875f681392655fead",
-    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-17.3.0/curl_ios.xcframework.zip"
+    "46a85d91f5f79a5718ead9240f2a1bc87bde9c54dc2e19628bd9d3aa896d39ae",
+    "https://github.com/blinksh/ios_system/releases/download/v3.0.3+blink-18.7.0/curl_ios.xcframework.zip"
   ),
   (
     "bc",
