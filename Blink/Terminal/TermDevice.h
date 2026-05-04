@@ -60,6 +60,7 @@
 - (void)apiCall:(NSString *)api andRequest:(NSString *)request;
 - (void)viewNotify:(NSDictionary *)data;
 - (void)viewDidReceiveBellRing;
+- (void)viewLayoutModeChanged:(BKLayoutMode)mode;
 - (UIViewController *)viewController;
 
 @end

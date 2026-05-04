@@ -175,7 +175,9 @@ class SpaceController: UIViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
+
+    _refreshChromeForLayoutMode()
+
     #if targetEnvironment(macCatalyst)
     guard let appBundleUrl = Bundle.main.builtInPlugInsURL else {
       return
@@ -423,11 +425,12 @@ Please go to your subscriptions and cancel one of them!
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
+      self._refreshChromeForLayoutMode()
       self._attachInputToCurrentTerm()
       completion?(didComplete)
     }
   }
-  
+
   func _closeCurrentSpace() {
     currentTerm()?.terminate()
     _removeCurrentSpace()
@@ -465,6 +468,7 @@ Please go to your subscriptions and cancel one of them!
     _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
       self._displayHUD()
+      self._refreshChromeForLayoutMode()
       if attachInput {
         self._attachInputToCurrentTerm()
       }
@@ -596,6 +600,7 @@ extension SpaceController: UIPageViewControllerDelegate {
     termController.resumeIfNeeded()
     _currentKey = termController.meta.key
     _displayHUD()
+    _refreshChromeForLayoutMode()
     _attachInputToCurrentTerm()
 
   }
@@ -647,13 +652,33 @@ extension SpaceController: TermControlDelegate {
       _displayHUD()
     }
   }
+
+  func terminalLayoutModeChanged(control: TermController) {
+    if currentTerm() == control {
+      _refreshChromeForLayoutMode()
+    }
+  }
 }
 
 // MARK: General tunning
 
 extension SpaceController {
-  public override var prefersStatusBarHidden: Bool { true }
-  public override var prefersHomeIndicatorAutoHidden: Bool { true }
+  public override var prefersStatusBarHidden: Bool {
+    _resolvedLayoutMode() != .safeFit
+  }
+  public override var prefersHomeIndicatorAutoHidden: Bool {
+    _resolvedLayoutMode() != .safeFit
+  }
+
+  private func _resolvedLayoutMode() -> BKLayoutMode {
+    let raw = currentTerm()?.termDevice.view?.currentLayoutMode() ?? .default
+    return LayoutConstraintManager.resolve(raw)
+  }
+
+  func _refreshChromeForLayoutMode() {
+    setNeedsStatusBarAppearanceUpdate()
+    setNeedsUpdateOfHomeIndicatorAutoHidden()
+  }
 }
 
 
@@ -1164,6 +1189,7 @@ extension SpaceController {
       term.resumeIfNeeded()
       self._currentKey = term.meta.key
       self._displayHUD()
+      self._refreshChromeForLayoutMode()
       self._attachInputToCurrentTerm()
       self._spaceControllerAnimating = false
     }

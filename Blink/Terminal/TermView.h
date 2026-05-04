@@ -57,6 +57,7 @@ extern NSString * TermViewBrowserReadyNotificationKey;
 - (void)viewNotify:(NSDictionary *)data;
 - (void)viewSelectionChanged;
 - (void)viewDidReceiveBellRing;
+- (void)viewLayoutModeChanged:(BKLayoutMode)mode;
 
 @end
 

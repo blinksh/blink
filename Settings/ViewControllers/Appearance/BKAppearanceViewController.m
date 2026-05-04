@@ -676,6 +676,9 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   return NO;
 }
 
+- (void)viewLayoutModeChanged:(BKLayoutMode)mode {
+}
+
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                            message:message

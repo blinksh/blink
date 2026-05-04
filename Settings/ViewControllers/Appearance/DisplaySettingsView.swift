@@ -63,7 +63,9 @@ struct DisplaySettingsView: View {
           Picker("Mode", selection: $layoutModeIndex) {
             Text("Cover").tag(0)
             Text("Safe Fit").tag(1)
-            Text("Fill").tag(2)
+            if LayoutConstraintManager.supportsLayoutMode(.fill) {
+              Text("Fill").tag(2)
+            }
           }
           .pickerStyle(.segmented)
           .labelsHidden()
@@ -152,7 +154,7 @@ struct DisplaySettingsView: View {
 
   // Layout Mode: Cover=0, SafeFit=1, Fill=2
   private static func layoutModeToIndex(_ mode: BKLayoutMode) -> Int {
-    switch mode {
+    switch LayoutConstraintManager.resolve(mode) {
     case .cover:   return 0
     case .safeFit: return 1
     case .fill:    return 2

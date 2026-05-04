@@ -46,6 +46,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BKLayoutMode) deviceDefaultLayoutMode;
 
++ (BKLayoutMode)resolve:(BKLayoutMode)mode;
+
++ (BOOL)supportsLayoutMode:(BKLayoutMode)mode;
+
 // Update layout mode
 - (void)updateLayoutMode:(BKLayoutMode)mode;
 

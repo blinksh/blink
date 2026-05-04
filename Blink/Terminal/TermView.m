@@ -1088,6 +1088,8 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   if (self.constraintManager) {
     [self.constraintManager updateLayoutMode:layoutMode];
   }
+
+  [self.device viewLayoutModeChanged:layoutMode];
 }
 
 -(void)_lockLayout {
@@ -1158,20 +1160,25 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
     NSMutableArray *layoutActions = [[NSMutableArray alloc] init];
     
     if ([[DeviceInfo shared] hasCorners]) {
-      BKLayoutMode mode = [self currentLayoutMode];
+      BKLayoutMode mode = [LayoutConstraintManager resolve:[self currentLayoutMode]];
       UICommand *fitCmd = [UICommand commandWithTitle:@"Fit" image: nil
                                                action:@selector(setLayoutModeFit) propertyList:nil];
       //      fitCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
       fitCmd.state = mode == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
-      UICommand *fillCmd = [UICommand commandWithTitle:@"Fill" image: nil
-                                                action:@selector(setLayoutModeFill) propertyList:nil];
-      //      fillCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
-      fillCmd.state = mode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
       UICommand *coverCmd = [UICommand commandWithTitle:@"Cover" image: nil
                                                  action:@selector(setLayoutModeCover) propertyList:nil];
       coverCmd.state = mode == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
       //      coverCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
-      UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Mode" image:nil identifier:nil options:UIMenuOptionsDisplayInline children: @[ fitCmd, fillCmd, coverCmd ]];
+
+      NSMutableArray<UIMenuElement *> *modeChildren = [NSMutableArray arrayWithObject:fitCmd];
+      if ([LayoutConstraintManager supportsLayoutMode:BKLayoutModeFill]) {
+        UICommand *fillCmd = [UICommand commandWithTitle:@"Fill" image: nil
+                                                  action:@selector(setLayoutModeFill) propertyList:nil];
+        fillCmd.state = mode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
+        [modeChildren addObject:fillCmd];
+      }
+      [modeChildren addObject:coverCmd];
+      UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Mode" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:modeChildren];
       
       [layoutActions addObject:layoutMenu];
     }

@@ -461,6 +461,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [_delegate viewDidReceiveBellRing];
 }
 
+- (void)viewLayoutModeChanged:(BKLayoutMode)mode {
+  [_delegate viewLayoutModeChanged:mode];
+}
+
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request {
   [_delegate apiCall:api andRequest:request];
 }
