@@ -22,10 +22,7 @@
 		07E3AED31D919272007BC086 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
 		07E4C5211C935E28000C571A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
 		07F670721D05EEE200C0A53C /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
-		07F670731D05EEE200C0A53C /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
-		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
-		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FAB8EA25C8E6C500E1CC2C /* Helpers.swift */; };
 		07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FAB8EB25C8E6C500E1CC2C /* CopyFiles.swift */; };
 		07FAB8F225C8E6C500E1CC2C /* ssh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FAB8EC25C8E6C500E1CC2C /* ssh.swift */; };
@@ -50,12 +47,10 @@
 		07FABBE025C9AF5F00E1CC2C /* Streams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD525C9AF5F00E1CC2C /* Streams.swift */; };
 		07FABBE125C9AF5F00E1CC2C /* SFTP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD625C9AF5F00E1CC2C /* SFTP.swift */; };
 		07FABBE225C9AF5F00E1CC2C /* DispatchStreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */; };
-		07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD825C9AF5F00E1CC2C /* SCP.swift */; };
 		07FABBE425C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBD925C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift */; };
 		07FABBE525C9AF5F00E1CC2C /* AuthMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */; };
 		07FABBE625C9AF5F00E1CC2C /* SSHPortForward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBDB25C9AF5F00E1CC2C /* SSHPortForward.swift */; };
 		07FABBF425C9AF7A00E1CC2C /* PublishersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */; };
-		07FABBF525C9AF7A00E1CC2C /* SCPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */; };
 		07FABBF625C9AF7A00E1CC2C /* StreamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEE25C9AF7A00E1CC2C /* StreamsTests.swift */; };
 		07FABBF725C9AF7A00E1CC2C /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */; };
 		07FABBF825C9AF7A00E1CC2C /* SFTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */; };
@@ -161,6 +156,7 @@
 		BD9514332B4F661600A7BEBE /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9514322B4F661600A7BEBE /* FileProviderItem.swift */; };
 		BD9514352B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9514342B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift */; };
 		BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */; };
+		BD98AC86260BD8DC00B4E6A1 /* SSHCopyID.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */; };
 		BD98AC95260BE20000B4E6A1 /* SSHDefaultAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */; };
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
 		BD9BF7E9262A6B0F00B02074 /* SOCKSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */; };
@@ -218,7 +214,6 @@
 		BDF2B8D32BC480CC00B9C7EA /* vim.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDE84C772BB33AD700457391 /* vim.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDF2B8D52BC480D100B9C7EA /* xxd.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDE84C762BB33AB800457391 /* xxd.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDF2B8DD2BC48D2800B9C7EA /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
-		BDF2B8DF2BC48D2D00B9C7EA /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9525CA99AD00F2225D /* libssh2.xcframework */; };
 		BDF40FEB2C14A6CE00DF41C1 /* AgentSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF40FE92C14A6CE00DF41C1 /* AgentSettingsView.swift */; };
 		BDFA97322D7F49EF0020BBF2 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = BDFA97312D7F49EF0020BBF2 /* ConfettiSwiftUI */; };
 		BDFA97352D959BC90020BBF2 /* TypingText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFA97342D959BC90020BBF2 /* TypingText.swift */; };
@@ -779,14 +774,8 @@
 		07E4C5201C935E28000C571A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		07F670651D05EEE200C0A53C /* MCPSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCPSession.h; sourceTree = "<group>"; };
 		07F670661D05EEE200C0A53C /* MCPSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCPSession.m; sourceTree = "<group>"; };
-		07F670671D05EEE200C0A53C /* MoshSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoshSession.h; sourceTree = "<group>"; };
-		07F670681D05EEE200C0A53C /* MoshSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoshSession.m; sourceTree = "<group>"; };
 		07F6706B1D05EEE200C0A53C /* Session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Session.h; sourceTree = "<group>"; };
 		07F6706C1D05EEE200C0A53C /* Session.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Session.m; sourceTree = "<group>"; };
-		07F6706D1D05EEE200C0A53C /* SSHCopyIDSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHCopyIDSession.h; sourceTree = "<group>"; };
-		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
-		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
-		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
 		07FAB8EA25C8E6C500E1CC2C /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		07FAB8EB25C8E6C500E1CC2C /* CopyFiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyFiles.swift; sourceTree = "<group>"; };
 		07FAB8EC25C8E6C500E1CC2C /* ssh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ssh.swift; sourceTree = "<group>"; };
@@ -813,12 +802,10 @@
 		07FABBD525C9AF5F00E1CC2C /* Streams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Streams.swift; sourceTree = "<group>"; };
 		07FABBD625C9AF5F00E1CC2C /* SFTP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFTP.swift; sourceTree = "<group>"; };
 		07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchStreams.swift; sourceTree = "<group>"; };
-		07FABBD825C9AF5F00E1CC2C /* SCP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SCP.swift; sourceTree = "<group>"; };
 		07FABBD925C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSHClient+KnownHostsHelpers.swift"; sourceTree = "<group>"; };
 		07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthMethods.swift; sourceTree = "<group>"; };
 		07FABBDB25C9AF5F00E1CC2C /* SSHPortForward.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHPortForward.swift; sourceTree = "<group>"; };
 		07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishersTests.swift; sourceTree = "<group>"; };
-		07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SCPTests.swift; sourceTree = "<group>"; };
 		07FABBEE25C9AF7A00E1CC2C /* StreamsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsTests.swift; sourceTree = "<group>"; };
 		07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFTPTests.swift; sourceTree = "<group>"; };
@@ -919,6 +906,7 @@
 		BD9514322B4F661600A7BEBE /* FileProviderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
 		BD9514342B4F662100A7BEBE /* FileProviderReplicatedEnumerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderReplicatedEnumerator.swift; sourceTree = "<group>"; };
 		BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentAdd.swift; sourceTree = "<group>"; };
+		BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHCopyID.swift; sourceTree = "<group>"; };
 		BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHDefaultAgent.swift; sourceTree = "<group>"; };
 		BD9BF7E3262A6B0300B02074 /* SOCKS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKS.swift; sourceTree = "<group>"; };
 		BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKSTests.swift; sourceTree = "<group>"; };
@@ -1221,8 +1209,7 @@
 		D2F330D320A6F1DF0074ADD7 /* clear.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = clear.m; sourceTree = "<group>"; };
 		D2F330D520A6F4F50074ADD7 /* history.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = history.m; sourceTree = "<group>"; };
 		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
-		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/openssl.xcframework; sourceTree = SOURCE_ROOT; };
-		D2F64C9525CA99AD00F2225D /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
+		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:67RAULRX93:Marcin Krzyzanowski"; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/openssl.xcframework; sourceTree = SOURCE_ROOT; };
 		D2FBEC0727CF505D00FD974A /* browse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = browse.swift; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1418,7 +1405,6 @@
 			files = (
 				D222780A2A26216900D4C708 /* TreeSitterBashQueries in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
-				BDF2B8DF2BC48D2D00B9C7EA /* libssh2.xcframework in Frameworks */,
 				D2334F0625C1C28F00385378 /* text.xcframework in Frameworks */,
 				BDFA97322D7F49EF0020BBF2 /* ConfettiSwiftUI in Frameworks */,
 				07FABB9925C9AEC100E1CC2C /* SSH.framework in Frameworks */,
@@ -1553,7 +1539,6 @@
 				D2334EC625C1C04700385378 /* network_ios.xcframework */,
 				D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */,
 				D2334EC925C1C04700385378 /* shell.xcframework */,
-				D2F64C9525CA99AD00F2225D /* libssh2.xcframework */,
 				D2F64C9425CA99AD00F2225D /* openssl.xcframework */,
 				D2334ECD25C1C04700385378 /* tar.xcframework */,
 				D2334EC725C1C04700385378 /* text.xcframework */,
@@ -1609,12 +1594,6 @@
 				07F6706C1D05EEE200C0A53C /* Session.m */,
 				07F670651D05EEE200C0A53C /* MCPSession.h */,
 				07F670661D05EEE200C0A53C /* MCPSession.m */,
-				07F670671D05EEE200C0A53C /* MoshSession.h */,
-				07F670681D05EEE200C0A53C /* MoshSession.m */,
-				07F6706D1D05EEE200C0A53C /* SSHCopyIDSession.h */,
-				07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */,
-				07F6706F1D05EEE200C0A53C /* SSHSession.h */,
-				07F670701D05EEE200C0A53C /* SSHSession.m */,
 				D248E67D22DE14100057FE67 /* SessionParams.swift */,
 			);
 			path = Sessions;
@@ -1630,6 +1609,7 @@
 				07FAB8EE25C8E6C500E1CC2C /* SSHCommand.swift */,
 				07FAB8EF25C8E6C500E1CC2C /* SSHConfigProvider.swift */,
 				BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */,
+				BD98AC85260BD8DC00B4E6A1 /* SSHCopyID.swift */,
 				BD98AC94260BE20000B4E6A1 /* SSHDefaultAgent.swift */,
 				BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */,
 			);
@@ -1646,7 +1626,6 @@
 				BD8BBFAF25F947710084705F /* Keys.swift */,
 				BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */,
 				07FABBD425C9AF5F00E1CC2C /* Publishers.swift */,
-				07FABBD825C9AF5F00E1CC2C /* SCP.swift */,
 				07FABBD625C9AF5F00E1CC2C /* SFTP.swift */,
 				BD9BF7E3262A6B0300B02074 /* SOCKS.swift */,
 				07FABBD325C9AF5F00E1CC2C /* SSHClient.swift */,
@@ -1673,7 +1652,6 @@
 				07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */,
 				BD8D893125DC429500E55D9E /* SSHKeysTests.swift */,
 				07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */,
-				07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */,
 				07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */,
 				BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */,
 				07FABBF125C9AF7A00E1CC2C /* SSHErrorTests.swift */,
@@ -3245,7 +3223,6 @@
 				BD8BBFB025F947710084705F /* Keys.swift in Sources */,
 				07FABC2225C9AFC500E1CC2C /* String+Extension.swift in Sources */,
 				BD8D892225DC428300E55D9E /* Agent.swift in Sources */,
-				07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */,
 				BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */,
 				BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */,
 				07FABBDC25C9AF5F00E1CC2C /* SSHUtils.swift in Sources */,
@@ -3267,7 +3244,6 @@
 				07FABBF825C9AF7A00E1CC2C /* SFTPTests.swift in Sources */,
 				07FABBF425C9AF7A00E1CC2C /* PublishersTests.swift in Sources */,
 				07FABBF925C9AF7A00E1CC2C /* SSHErrorTests.swift in Sources */,
-				07FABBF525C9AF7A00E1CC2C /* SCPTests.swift in Sources */,
 				07FABB9425C9AEC100E1CC2C /* SSHTests.swift in Sources */,
 				07FABBFB25C9AF7A00E1CC2C /* SSHPortForwardTests.swift in Sources */,
 				BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */,
@@ -3464,7 +3440,6 @@
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */,
 				D2E5454527C4C83C002635A2 /* FeedbackView.swift in Sources */,
-				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
 				D210769B2A69234500B3D77E /* SnippetsConfigView.swift in Sources */,
@@ -3495,8 +3470,6 @@
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHCommand.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
-				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
-				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
 				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,
 				BD98AC95260BE20000B4E6A1 /* SSHDefaultAgent.swift in Sources */,
@@ -3606,6 +3579,7 @@
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
 				07FAB8F225C8E6C500E1CC2C /* ssh.swift in Sources */,
 				BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */,
+				BD98AC86260BD8DC00B4E6A1 /* SSHCopyID.swift in Sources */,
 				BD55D6982F7D743500EE80EA /* TerminalStyle.swift in Sources */,
 				BD55D6992F7D743500EE80EA /* TerminalStyleStore.swift in Sources */,
 				BD55D69A2F7D743500EE80EA /* TerminalStyleBundle.swift in Sources */,

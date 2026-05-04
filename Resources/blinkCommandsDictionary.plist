@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>mosh1</key>
-	<array>
-		<string>MAIN</string>
-		<string>blink_mosh_main</string>
-		<string></string>
-		<string>no</string>
-	</array>
 	<key>skstore</key>
 	<array>
 		<string>MAIN</string>
@@ -63,6 +56,13 @@
 		<string>MAIN</string>
 		<string>blink_ssh_add</string>
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
+		<string>no</string>
+	</array>
+	<key>ssh-copy-id</key>
+	<array>
+		<string>MAIN</string>
+		<string>blink_ssh_copyid</string>
+		<string>v</string>
 		<string>no</string>
 	</array>
 	<key>ssh-agent</key>

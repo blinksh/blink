@@ -168,8 +168,11 @@ public class SSHClient {
     }
     
     /// If `nil` it uses the default `.ssh` directory
-    if options.sshDirectory != nil {
-      try _setSessionOption(SSH_OPTIONS_SSH_DIR, options.sshDirectory)
+    if let sshDirectory = options.sshDirectory {
+      try _setSessionOption(SSH_OPTIONS_SSH_DIR, sshDirectory)
+
+      let knownHostsPath = (sshDirectory as NSString).appendingPathComponent("known_hosts")
+      try _setSessionOption(SSH_OPTIONS_KNOWNHOSTS, knownHostsPath)
     }
 
     if let ciphers = options.ciphers {
@@ -755,12 +758,12 @@ public class SSHClient {
     
     self.log.message("REVERSE Forward requested to address \(address) on port \(port)", SSH_LOG_INFO)
     
-    let cb: ssh_channel_open_request_forward_callback = { (session, port, userdata) in
+    let cb: ssh_channel_open_request_forwarded_tcpip_callback = { (session, _, destPort, _, _, userdata) in
       let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata!).takeUnretainedValue()
-      
+
       ctxt.log.message("REVERSE Forward callback", SSH_LOG_INFO)
-      
-      let port = Int32(port)
+
+      let port = destPort
 
       // If there is no associated port, check if it may be on 0
       if ctxt.reversePorts[port] == nil {
@@ -768,34 +771,33 @@ public class SSHClient {
           ctxt.reversePorts[port] = ctxt.reversePorts.removeValue(forKey: 0)
         }
       }
-      
+
       guard let pub = ctxt.reversePorts[port] else {
         return nil
       }
-      
+
       guard let channel = ssh_channel_new(ctxt.session) else {
         return nil
       }
       ssh_channel_set_blocking(channel, 0)
-      
+
       let stream = Stream(channel, on: ctxt)
       pub.send(stream)
-      
+
       return channel
     }
-    
+
     return connection()
       .tryOperation { session -> Int32 in
         self.log.message("REVERSE Starting listener to forward on remote", SSH_LOG_INFO)
-        
-        // We could pass the callback here, and then have somewhere on the libssh side a way to map
+
         let rc = ssh_channel_listen_forward(session, address, port, nil)
         if rc != SSH_OK {
           throw SSHError(rc, forSession: session)
         }
-        
-        if self.callbacks.channel_open_request_forward_function == nil {
-          self.callbacks.channel_open_request_forward_function = cb
+
+        if self.callbacks.channel_open_request_forwarded_tcpip_function == nil {
+          self.callbacks.channel_open_request_forwarded_tcpip_function = cb
           ssh_set_callbacks(session, &self.callbacks)
         }
         
