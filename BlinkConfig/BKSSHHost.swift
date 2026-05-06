@@ -73,6 +73,7 @@ public struct BKSSHHost {
   public var remoteForward: [PortForwardInfo]?
   public var requestTty: TTYBool?
   public var sendEnv: [String]?
+  public var setEnv: [String]?
   public var strictHostKeyChecking: Bool?
   public var user: String?
 
@@ -138,6 +139,7 @@ public struct BKSSHHost {
         case "remoteforward":                 self.remoteForward                = try castList(value)
         case "requesttty":                    self.requestTty                   = try castValue(value)
         case "sendenv":                       self.sendEnv                      = try castList(value)
+        case "setenv":                        self.setEnv                       = try castList(value)
         case "stricthostkeychecking":         self.strictHostKeyChecking        = try castValue(value)
         case "user":                          self.user                         = try castValue(value)
 

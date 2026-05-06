@@ -180,12 +180,12 @@ struct SSHCommand: ParsableCommand {
     help: .init(
       "Secondary connection options in config file format.",
       valueName: "option"
-      )
+      ),
+    transform: { try SSHConfigOption(parsing: $0) }
   )
-  var options: [String] = []
+  var options: [SSHConfigOption] = []
 
   // TODO Constraint things like port. Perform some validation
-  // TODO Special -o commands - send env variables, etc...
   // TODO -F customize config file
   // TODO Disable host key check
   @Flag(name: [.customShort("T")],
@@ -329,20 +329,58 @@ extension SSHCommand {
   func sshOptions() throws -> [String: Any] {
     var params: [String: Any] = [:]
 
-    for o in options {
-      var option = o.components(separatedBy: "=")
-      if option.count != 2 {
-        option = o.components(separatedBy: " ")
-        if option.count != 2 {
-          throw ValidationError("\(option[0]) missing value")
-        }
+    for opt in options {
+      if SSHConfigOption.listKeys.contains(opt.key) {
+        var list = (params[opt.key] as? [String]) ?? []
+        list.append(opt.value)
+        params[opt.key] = list
+      } else {
+        // The BKSSHHost will perform further validation when generating the configuration
+        params[opt.key] = opt.value
       }
-
-      // The BKSSHHost will perform further validation when generating the configuration
-      params[option[0]] = option[1]
     }
 
     return params
+  }
+}
+
+struct SSHConfigOption {
+  let key: String
+  let value: String
+
+  // Config keys whose -o form accumulates rather than overwrites.
+  static let listKeys: Set<String> = [
+    "sendenv", "setenv", "identityfile",
+    "localforward", "remoteforward", "dynamicforward",
+    "certificatefile"
+  ]
+
+  init(parsing raw: String) throws {
+    // Split at = or whitespace
+    // (SetEnv=FOO=bar, ProxyCommand=ssh --x=y RemoteCommand=cmd --foo=bar)
+    // and the `KEY VALUE` form is also accepted.
+    guard let sep = raw.firstIndex(where: { $0 == "=" || $0.isWhitespace }) else {
+      throw ValidationError("Invalid -o option '\(raw)': expected KEY=VALUE or 'KEY VALUE'")
+    }
+    let k = Self.unquoteArgument(raw[..<sep])
+    let v = Self.unquoteArgument(
+      raw[raw.index(after: sep)...].drop(while: { $0.isWhitespace })
+    )
+    guard !k.isEmpty, !v.isEmpty else {
+      throw ValidationError("Invalid -o option '\(raw)': missing key or value")
+    }
+    self.key = k.lowercased()
+    self.value = String(v)
+  }
+
+  // ios_system only strips outer quote pairs with the whole token quoted,
+  // so `-o SetEnv="FOO=bar"` arrives with embedded quotes around the value.
+  // Mirros ios_system:unquoteArgument
+  private static func unquoteArgument(_ s: Substring) -> Substring {
+    guard s.count >= 2, let first = s.first, let last = s.last,
+          (first == "\"" || first == "'"), first == last
+    else { return s }
+    return s.dropFirst().dropLast()
   }
 }
 

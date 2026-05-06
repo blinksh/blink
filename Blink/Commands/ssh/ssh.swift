@@ -169,13 +169,23 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         })
     }
     
-    var environment: [String: String] = .init(minimumCapacity: host.sendEnv?.count ?? 0)
-    
+    var environment: [String: String] = .init(
+      minimumCapacity: (host.sendEnv?.count ?? 0) + (host.setEnv?.count ?? 0)
+    )
+
     host.sendEnv?.forEach({ env in
       // SKIP nil values
       if let value = getenv(env) {
         environment[env] = String(cString: value)
       }
+    })
+
+    // SetEnv overrides SendEnv lookup
+    host.setEnv?.forEach({ entry in
+      guard let eq = entry.firstIndex(of: "=") else { return }
+      let key = String(entry[..<eq])
+      guard !key.isEmpty else { return }
+      environment[key] = String(entry[entry.index(after: eq)...])
     })
 
     connectionCancellable = connect.flatMap { conn -> SSHConnection in
