@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Update layout mode
 - (void)updateLayoutMode:(BKLayoutMode)mode;
 
+- (void)updateConstraintsForCurrentState;
+
 // Handle layout lock
 - (void)setLayoutLocked:(BOOL)locked withFrame:(CGRect)frame;
 

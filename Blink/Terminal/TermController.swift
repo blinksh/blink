@@ -237,6 +237,11 @@ class TermController: UIViewController {
     super.viewWillTransition(to: size, with: coordinator)
   }
 
+  public override func viewSafeAreaInsetsDidChange() {
+    super.viewSafeAreaInsetsDidChange()
+    _termView.constraintManager?.updateConstraintsForCurrentState()
+  }
+
   public override func loadView() {
     super.loadView()
     _termDevice.delegate = self

@@ -151,9 +151,9 @@
         [self updateConstraintsForLockedFrame];
         return;
     }
-    
+
     UIEdgeInsets insets = [self calculateInsetsForLayoutMode:self.currentLayoutMode];
-    
+
     self.topConstraint.constant = insets.top;
     self.leadingConstraint.constant = insets.left;
     self.trailingConstraint.constant = -insets.right;
@@ -162,16 +162,16 @@
 
 - (void)updateConstraintsForLockedFrame {
     if (CGRectIsEmpty(self.lockedFrame)) return;
-    
+
     UIView *superview = self.managedView.superview;
     if (!superview) return;
-    
+
     // Calculate insets based on locked frame
     CGFloat top = self.lockedFrame.origin.y;
     CGFloat left = self.lockedFrame.origin.x;
     CGFloat right = superview.bounds.size.width - CGRectGetMaxX(self.lockedFrame);
     CGFloat bottom = superview.bounds.size.height - CGRectGetMaxY(self.lockedFrame);
-    
+
     self.topConstraint.constant = top;
     self.leadingConstraint.constant = left;
     self.trailingConstraint.constant = -right;
