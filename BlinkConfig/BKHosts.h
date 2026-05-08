@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-@import CloudKit;
+#import <CloudKit/CloudKit.h>
 
 
 enum BKMoshPrediction {

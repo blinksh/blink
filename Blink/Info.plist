@@ -4,11 +4,6 @@
 <dict>
 	<key>BLINK_APP_FONT</key>
 	<string>$(BLINK_APP_FONT)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>app-font-regular.ttf</string>
-		<string>app-font-bold.ttf</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -130,7 +125,7 @@
 	<string>storing commands</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.sh.blink.blinkshell</key>
+		<key>iCloud.dev.elevateconsulting.blink</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
@@ -145,6 +140,11 @@
 		<string>com.blink.cmdline</string>
 		<string>com.blink.session</string>
 		<string>com.blink.whatsnew</string>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>app-font-regular.ttf</string>
+		<string>app-font-bold.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
