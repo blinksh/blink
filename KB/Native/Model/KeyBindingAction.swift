@@ -69,6 +69,8 @@ enum Command: String, Codable, CaseIterable {
   case toggleQuickActions
   case toggleGeoTrack
   case hideKeyboard
+  case scrollLineUp
+  case scrollLineDown
 
   var title: String {
     switch self {
@@ -111,6 +113,8 @@ enum Command: String, Codable, CaseIterable {
     case .toggleQuickActions:     return "Toggle Quick Actions"
     case .toggleGeoTrack:         return "Toggle Geo Track"
     case .hideKeyboard:           return "Hide Keyboard"
+    case .scrollLineUp:           return "Scroll Up One Line"
+    case .scrollLineDown:         return "Scroll Down One Line"
     }
   }
 }

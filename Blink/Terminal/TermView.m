@@ -73,6 +73,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSMutableArray *_touchesArray;
   
   id<UIInteraction> _editMenuIteraction;
+  CGFloat _cmdScrollAccumulator;
 }
 
 
@@ -320,6 +321,26 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_pan: (UIPanGestureRecognizer *)rec {
 
+  if (rec.modifierFlags & UIKeyModifierCommand) {
+    if (rec.state == UIGestureRecognizerStateBegan) {
+      _cmdScrollAccumulator = 0;
+    } else if (rec.state == UIGestureRecognizerStateChanged) {
+      CGPoint delta = [rec translationInView:rec.view];
+      _cmdScrollAccumulator += delta.y;
+      [rec setTranslation:CGPointZero inView:rec.view];
+      CGFloat lineThreshold = 20.0;
+      while (_cmdScrollAccumulator < -lineThreshold) {
+        _cmdScrollAccumulator += lineThreshold;
+        [self scrollLineUp];
+      }
+      while (_cmdScrollAccumulator > lineThreshold) {
+        _cmdScrollAccumulator -= lineThreshold;
+        [self scrollLineDown];
+      }
+    }
+    return;
+  }
+
 //  _touchID = 12345;
   if (rec.state == UIGestureRecognizerStateBegan) {
     _touchID = (_touchID + 1 ) % 10000000;
@@ -522,6 +543,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
 
   [_webView evaluateJavaScript:term_setFontSize([BLKDefaults selectedFontSize]) completionHandler:nil];
+}
+
+- (void)scrollLineUp
+{
+  [_webView evaluateJavaScript:@"t.scrollLineUp();" completionHandler:nil];
+}
+
+- (void)scrollLineDown
+{
+  [_webView evaluateJavaScript:@"t.scrollLineDown();" completionHandler:nil];
 }
 
 - (void)setClipboardWrite:(BOOL)state {

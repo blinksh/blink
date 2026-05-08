@@ -62,6 +62,8 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
     case zoomIn
     case zoomOut
     case zoomReset
+    case scrollLineUp
+    case scrollLineDown
   }
   
   enum WindowMenu: String, CaseIterable {
