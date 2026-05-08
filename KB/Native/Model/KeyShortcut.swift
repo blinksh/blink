@@ -215,6 +215,9 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.zoomOut, .command, "-"),
       KeyShortcut(.zoomReset, .command, "="),
 
+      KeyShortcut(.scrollLineUp, .command, UIKeyCommand.inputUpArrow),
+      KeyShortcut(.scrollLineDown, .command, UIKeyCommand.inputDownArrow),
+
       KeyShortcut(.configShow, .command, ","),
       Self.snippetsShowShortcut,
       Self.scratchShowShortcut
