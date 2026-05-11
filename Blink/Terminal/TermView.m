@@ -1070,26 +1070,26 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   }
 }
 
-// Private methods
 -(void)_setLayoutMode:(BKLayoutMode)layoutMode {
   if (self.termUIState) {
     self.termUIState.layoutMode = layoutMode;
   }
-  
-  // If layout is locked, unlock it when changing layout mode
+
   if (self.termUIState.layoutLocked) {
     [self _unlockLayout];
   }
-  
-  // Trigger layout update
-  [self setNeedsLayout];
-  
-  // Update constraints with new layout mode
-  if (self.constraintManager) {
-    [self.constraintManager updateLayoutMode:layoutMode];
-  }
 
+  [self setNeedsLayout];
+
+  // Notify first so SpaceController triggers the status bar / home indicator
+  // appearance update before updateLayoutMode.
   [self.device viewLayoutModeChanged:layoutMode];
+
+  // Deferred as a sync read may be stale.
+  __weak typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.constraintManager updateLayoutMode:layoutMode];
+  });
 }
 
 -(void)_lockLayout {

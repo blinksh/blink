@@ -39,9 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LayoutConstraintManager : NSObject
 
-// Setup constraints for a view with layout mode and keyboard guide
-+ (instancetype)managerForView:(UIView *)view 
-                    layoutMode:(BKLayoutMode)mode 
++ (instancetype)managerForView:(UIView *)view
+                    layoutMode:(BKLayoutMode)mode
                 keyboardGuide:(UIKeyboardLayoutGuide *)keyboardGuide;
 
 + (BKLayoutMode) deviceDefaultLayoutMode;
@@ -50,24 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)supportsLayoutMode:(BKLayoutMode)mode;
 
-// Update layout mode
 - (void)updateLayoutMode:(BKLayoutMode)mode;
 
 - (void)updateConstraintsForCurrentState;
 
-// Handle layout lock
 - (void)setLayoutLocked:(BOOL)locked withFrame:(CGRect)frame;
 
-// Note: Keyboard handling is now automatic via constraint priorities
-
-// Update keyboard layout guide (for window changes)
 - (void)updateKeyboardLayoutGuide:(nullable UIKeyboardLayoutGuide *)keyboardGuide;
 
-// Get current constraint constants for debugging
 - (UIEdgeInsets)currentInsets;
-
-// Debug: log layout state to console
-- (void)debugLayoutState:(NSString *)context;
 
 @end
 
