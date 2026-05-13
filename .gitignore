@@ -54,6 +54,7 @@ main.m
 
 ## Fonts
 Resources/Fonts/Pragmata*
+!Resources/Fonts/Pragmata Pro Mono.css
 .swiftpm
 
 Blink.xcodeproj/project.xcworkspace/xcshareddata
