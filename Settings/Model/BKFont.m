@@ -61,7 +61,12 @@
     map[f.name] = f;
   }
   map[@"Apple Color Emoji"] = @(YES);
-  
+
+  NSString *appFontName = [NSBundle.mainBundle.infoDictionary[@"BLINK_APP_FONT"] isKindOfClass:[NSString class]] ? NSBundle.mainBundle.infoDictionary[@"BLINK_APP_FONT"] : nil;
+  if (appFontName.length) {
+    map[appFontName] = @(YES);
+  }
+
   NSDictionary *traitsAttributes = @{UIFontSymbolicTrait: @(UIFontDescriptorTraitMonoSpace)};
   NSDictionary *fontAttributes = @{UIFontDescriptorTraitsAttribute: traitsAttributes};
   UIFontDescriptor *fontDescriptor = [UIFontDescriptor fontDescriptorWithFontAttributes:fontAttributes];
@@ -71,14 +76,14 @@
     if (map[f.familyName]) {
       continue;
     }
-  
+
     BKFont * font = [[BKFont alloc] init];
     font.name = f.familyName;
     font.systemWide = YES;
     map[font.name] = font;
     [result addObject:font];
   }
-  
+
   return result;
 }
 
