@@ -85,6 +85,7 @@ extension TermUIState {
     fontSize = Int(style.fontSize)
     enableBold = UInt(style.boldMode.rawValue)
     boldAsBright = style.boldAsBright
+    cursorBlink = style.cursorBlink
   }
 }
 

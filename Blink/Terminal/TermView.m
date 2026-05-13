@@ -978,7 +978,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   }
 
   [commands addObject:term_setFontSize(termUIState.fontSize == 0 ? [BLKDefaults selectedFontSize] : @(termUIState.fontSize))];
-  [commands addObject:term_setCursorBlink([BLKDefaults isCursorBlink])];
+  [commands addObject:term_setCursorBlink(termUIState.cursorBlink)];
 
   return commands;
 }

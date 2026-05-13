@@ -590,12 +590,13 @@ extension Notification.Name {
   @objc var layoutMode: Int = 0
   @objc var boldAsBright: Bool = false
   @objc var enableBold: UInt = 0
+  @objc var cursorBlink: Bool = false
   @objc var layoutLocked: Bool = false
   @objc var layoutLockedFrame: CGRect = .zero
 
   private enum Key: CodingKey {
     case viewSize, rows, cols, themeName, fontName, fontSize
-    case layoutMode, boldAsBright, enableBold, layoutLocked, layoutLockedFrame
+    case layoutMode, boldAsBright, enableBold, cursorBlink, layoutLocked, layoutLockedFrame
   }
 
   override init() { super.init() }
@@ -611,6 +612,7 @@ extension Notification.Name {
     self.layoutMode = coder.bk_decode(for: Key.layoutMode)
     self.boldAsBright = coder.bk_decode(for: Key.boldAsBright)
     self.enableBold = coder.bk_decode(for: Key.enableBold)
+    self.cursorBlink = coder.bk_decode(for: Key.cursorBlink)
     self.layoutLocked = coder.bk_decode(for: Key.layoutLocked)
     self.layoutLockedFrame = coder.bk_decode(for: Key.layoutLockedFrame)
   }
@@ -625,6 +627,7 @@ extension Notification.Name {
     coder.bk_encode(layoutMode, for: Key.layoutMode)
     coder.bk_encode(boldAsBright, for: Key.boldAsBright)
     coder.bk_encode(enableBold, for: Key.enableBold)
+    coder.bk_encode(cursorBlink, for: Key.cursorBlink)
     coder.bk_encode(layoutLocked, for: Key.layoutLocked)
     coder.bk_encode(layoutLockedFrame, for: Key.layoutLockedFrame)
   }
@@ -638,6 +641,7 @@ extension Notification.Name {
     state.themeName = BLKDefaults.selectedThemeName()
     state.enableBold = UInt(BLKDefaults.enableBold())
     state.boldAsBright = BLKDefaults.isBoldAsBright()
+    state.cursorBlink = BLKDefaults.isCursorBlink()
     state.layoutMode = BLKDefaults.layoutMode().rawValue
     return state
   }
