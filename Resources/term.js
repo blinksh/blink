@@ -335,7 +335,7 @@ function term_setFontSize(size) {
 
 function term_setFontFamily(name, fontSizeDetectionMethod) {
   window.fontSizeDetectionMethod = fontSizeDetectionMethod;
-  term_set('font-family', name + ', "DejaVu Sans Mono"');
+  term_set('font-family', name + ', "Pragmata Pro Mono"');
 }
 
 function term_setClipboardWrite(state) {

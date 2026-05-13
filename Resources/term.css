@@ -1,3 +1,32 @@
+/* Pragmata Pro Mono. Menlo as fallback as Pragmata is the default font but not shipped. */
+@font-face {
+    font-family: 'Pragmata Pro Mono';
+    src: url('Fonts/PragmataPro_Mono_R_0830.ttf') format('truetype'), local('Menlo');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pragmata Pro Mono';
+    src: url('Fonts/PragmataPro_Mono_I_0830.ttf') format('truetype'), local('Menlo');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Pragmata Pro Mono';
+    src: url('Fonts/PragmataPro_Mono_B_0830.ttf') format('truetype'), local('Menlo');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pragmata Pro Mono';
+    src: url('Fonts/PragmataPro_Mono_Z_0830.ttf') format('truetype'), local('Menlo');
+    font-weight: bold;
+    font-style: italic;
+}
+
 /* DejaVu Sans Mono */
 
 @font-face {
@@ -61,32 +90,33 @@
   font-style: normal;
 }
 
-
-/* Menlo */
+/* Menlo Powerline (renamed from 'Menlo' so that 'Menlo' in font-family
+   falls through to the iOS system Menlo, which has glyphs for codepoints
+   like U+23FA that the Powerline patch is missing). */
 
 @font-face {
-  font-family: 'Menlo';
+  font-family: 'Menlo Powerline';
   src: url('Fonts/Menlo-for-Powerline.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Menlo';
+  font-family: 'Menlo Powerline';
   src: url('Fonts/Menlo-Italic-for-Powerline.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
 }
 
 @font-face {
-  font-family: 'Menlo';
+  font-family: 'Menlo Powerline';
   src: url('Fonts/Menlo-Bold-for-Powerline.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Menlo';
+  font-family: 'Menlo Powerline';
   src: url('Fonts/Menlo-Bold-Italic-for-Powerline.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
@@ -97,7 +127,7 @@
 @font-face {
   font-family: 'Iosevka';
   src: url('Fonts/iosevka-regular.ttf') format('truetype');
-  font-weight: normal;  
+  font-weight: normal;
   font-style: normal;
 }
 
