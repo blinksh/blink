@@ -392,32 +392,16 @@ extension OutStream: Reader {
     
     let hasDataCallback: ssh_channel_data_callback = { (session, channel, buf, length, is_stderr, userdata) -> Int32 in
       let ctxt = Unmanaged<Reading>.fromOpaque(userdata!).takeUnretainedValue()
-      
+
       if is_stderr != ctxt.parent.isStderr {
         return 0
       }
-      
+
       ctxt.log.message("Data callback", SSH_LOG_DEBUG)
-      if length == 0 {
-        return 0
-      }
-      
-      if ctxt.demand == .none {
-        ctxt.log.message("New reading window \(length)", SSH_LOG_DEBUG)
-        return 0
-      }
-      // Fix interface on Swift
-      let buf = buf!
-      
-      let count = min(Int(length), ctxt.bytesLeft)
-      ctxt.log.message("Reading from channel \(count) out of \(length)", SSH_LOG_DEBUG)
-      
-      let ptBuf = UnsafeRawBufferPointer(start: buf, count: count)
-      let data = DispatchData(bytes: ptBuf)
-      
-      ctxt.send(data)
-      
-      return Int32(count)
+      // Schedule a readAsync. Otherwise, if a read completes here, our flow may complete before the ssh_rcv_channel_data completes, 
+      // which can create a race.
+      RunLoop.current.perform { ctxt.readAsync() }
+      return 0
     }
     
     let channelClosingCallback: ssh_channel_close_callback = { (s, chan, userdata) in
