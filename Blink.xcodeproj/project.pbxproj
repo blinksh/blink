@@ -198,6 +198,7 @@
 		BDCB718D268E16CE007D7047 /* BlinkConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB718C268E16CE007D7047 /* BlinkConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
 		BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */ = {isa = PBXBuildFile; productRef = BDCB7193268E175A007D7047 /* SSHConfig */; };
+		BDD1CEB72FB67ACF009BFDF6 /* TerminalEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD1CEB62FB67ACF009BFDF6 /* TerminalEnvironment.swift */; };
 		BDD6D13A27594BF900E76F1F /* BlinkConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD6D13927594BF900E76F1F /* BlinkConfigTests.swift */; };
 		BDD6D13B27594BF900E76F1F /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDD6D14527594E6500E76F1F /* BKSSHHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD6D14427594E6500E76F1F /* BKSSHHost.swift */; };
@@ -948,6 +949,7 @@
 		BDCB7175268E15A2007D7047 /* SEKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SEKey.swift; sourceTree = "<group>"; };
 		BDCB7176268E15A2007D7047 /* BKConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKConfig.swift; sourceTree = "<group>"; };
 		BDCB718C268E16CE007D7047 /* BlinkConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlinkConfig.h; sourceTree = "<group>"; };
+		BDD1CEB62FB67ACF009BFDF6 /* TerminalEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalEnvironment.swift; sourceTree = "<group>"; };
 		BDD6D13727594BF900E76F1F /* BlinkConfigTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkConfigTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDD6D13927594BF900E76F1F /* BlinkConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkConfigTests.swift; sourceTree = "<group>"; };
 		BDD6D14427594E6500E76F1F /* BKSSHHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKSSHHost.swift; sourceTree = "<group>"; };
@@ -1750,6 +1752,7 @@
 				D29D6C3022DB9CA700A84173 /* TermController.swift */,
 				D2D6D78420527651003CBEC4 /* TermDevice.h */,
 				D2D6D78520527651003CBEC4 /* TermDevice.m */,
+				BDD1CEB62FB67ACF009BFDF6 /* TerminalEnvironment.swift */,
 				D215E59B2010C77E00D893EB /* TermJS.h */,
 				BD1FFF6F2E4A10C600DB5AF9 /* TermSessionPayload.swift */,
 				D27BBA1A20529FFF00AEA303 /* TermStream.h */,
@@ -3574,6 +3577,7 @@
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
+				BDD1CEB72FB67ACF009BFDF6 /* TerminalEnvironment.swift in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,

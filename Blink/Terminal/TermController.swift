@@ -522,10 +522,16 @@ extension TermController: SuspendableSession {
 
   private enum ArchiveKey: CodingKey { case termUIState }
 
+  private func _prepareTerminalEnvironment() {
+    TerminalEnvironment.ensureConfigured()
+    TerminalEnvironment.reloadProfileVars()
+  }
+
   func _startSession() {
     guard let payload = _sessionPayload,
           _session == nil else { return }
 
+    _prepareTerminalEnvironment()
     payload.start(in: _termDevice, sessionKey: meta.key.uuidString)
     _session?.delegate = self
 
@@ -555,6 +561,7 @@ extension TermController: SuspendableSession {
       guard let payload = decodePayload(from: unarchiver) else { return }
 
       _sessionPayload = payload
+      _prepareTerminalEnvironment()
       payload.start(in: _termDevice, sessionKey: _meta.key.uuidString)
       _session!.delegate = self
     } else {
