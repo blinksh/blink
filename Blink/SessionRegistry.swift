@@ -248,7 +248,7 @@ protocol SuspendableSession: class {
       let data = try jsonEncoder.encode(_metaIndex)
       let sessionsFolder = try _fsSessionsFolder()
       let indexURL = sessionsFolder.appendingPathComponent("index.json")
-      try data.write(to: indexURL, options: [.atomic])
+      try data.write(to: indexURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     } catch let e {
       debugPrint(e)
     }

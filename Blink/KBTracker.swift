@@ -125,7 +125,7 @@ class KBTracker: NSObject {
         return
     }
 
-    try? data.write(to: url, options: .atomicWrite)
+    try? data.write(to: url, options: [.atomicWrite, .noFileProtection])
     UIMenuSystem.main.setNeedsRebuild()
   }
   
