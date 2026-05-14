@@ -36,131 +36,18 @@ import SwiftUI
 
 import RevenueCat
 
-let Blink15BundleID = "sh.blink.blinkshell"
-
-class ExternalWindow: UIWindow {
-  var shadowWindow: UIWindow? = nil
-}
-
-@objc class ShadowWindow: UIWindow {
-  private var _refWindow: UIWindow
-  private let _spCtrl: SpaceController
-
-  var spaceController: SpaceController { _spCtrl }
-  @objc var refWindow: UIWindow {
-    get {
-      _refWindow
-    }
-    set {
-      _refWindow = newValue
-    }
-  }
-
-  init(windowScene: UIWindowScene, refWindow: UIWindow, spCtrl: SpaceController) {
-    _refWindow = refWindow
-    _spCtrl = spCtrl
-
-    super.init(windowScene: windowScene)
-
-    frame = _refWindow.frame
-    rootViewController = _spCtrl
-    self.clipsToBounds = false
-  }
-
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-
-  override var frame: CGRect {
-    get { _refWindow.frame }
-    set { super.frame = _refWindow.frame }
-  }
-
-
-  @objc static var shared: ShadowWindow? = nil
-}
-
-class DummyVC: UIViewController {
-  override var canBecomeFirstResponder: Bool { true }
-  override var prefersStatusBarHidden: Bool { true }
-  public override var prefersHomeIndicatorAutoHidden: Bool { true }
-}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
+
   private var _ctrl = DummyVC()
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
+  @objc var spaceController: SpaceController { _spCtrl }
   private var paywallWindow: UIWindow? = nil
-
-  public func showingPaywall() -> Bool {
-    self.paywallWindow != nil
-  }
 
   override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
     super.editingInteractionConfiguration
-  }
-
-  @objc private func _showPaywallIfNeeded() {
-    let entitlements = EntitlementsManager.shared
-
-    let doShowPaywall = !entitlements.hasActiveSubscriptions()
-
-    guard doShowPaywall else {
-      return
-    }
-
-    guard let windowScene = self.window?.windowScene else {
-      return
-    }
-
-    _ = KBTracker.shared.input?.resignFirstResponder()
-
-    guard self.paywallWindow == nil else {
-      return
-    }
-
-    let paywallWindow = UIWindow(windowScene: windowScene)
-    paywallWindow.windowLevel = .statusBar + 0.5
-    self.paywallWindow = paywallWindow
-
-    let view = NewIntroPageWindow(urlHandler: blink_openurl,
-                                  dismissHandler: {
-                                    UIView.animate(withDuration: 0.5) {
-                                      paywallWindow.layer.opacity = 0;
-                                    } completion: { _ in
-                                      self.paywallWindow = nil
-                                    }
-                                  })
-    let ctrl = StatusBarLessViewController(rootView: view)
-    ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
-    paywallWindow.rootViewController = ctrl
-    paywallWindow.makeKeyAndVisible()
-    paywallWindow.layer.opacity = 0;
-
-    UIView.animate(withDuration: 0.3) {
-      paywallWindow.layer.opacity = 1;
-    }
-  }
-
-  func sceneDidDisconnect(_ scene: UIScene) {
-    if scene == ShadowWindow.shared?.refWindow.windowScene {
-      ShadowWindow.shared?.layer.removeFromSuperlayer()
-      ShadowWindow.shared?.windowScene = nil
-//      ShadowWindow.shared = nil
-    } else if scene == ShadowWindow.shared?.windowScene {
-      // We need to move it
-      ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
-    }
-  }
-
-  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    for context in URLContexts {
-      if let command = SceneCommands.from(url: context.url) {
-        command.perform(on: _spCtrl)
-        return
-      }
-    }
   }
 
   func scene(
@@ -238,40 +125,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // NOTE We could also store the contexts and use them later.
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       self.scene(scene, openURLContexts: connectionOptions.urlContexts)
-    }
-  }
-
-  private func _lockNonInteractiveScreenIfNeeded() {
-    guard
-      let window = ShadowWindow.shared?.refWindow,
-      let sceneDelegate = window.windowScene?.delegate as? SceneDelegate
-    else {
-      return
-    }
-
-    if LocalAuth.shared.lockRequired {
-      if let lockCtrl = sceneDelegate._lockCtrl {
-        if window.rootViewController != lockCtrl {
-          window.rootViewController = lockCtrl
-        }
-
-        return
-      }
-
-
-      sceneDelegate._lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
-      window.rootViewController = _lockCtrl
-      return
-    }
-
-
-    if window.rootViewController == _lockCtrl {
-      window.rootViewController = UIViewController()
-    }
-    _lockCtrl = nil
-
-    if let shadowWin = ShadowWindow.shared {
-      window.layer.addSublayer(shadowWin.layer)
     }
   }
 
@@ -397,6 +250,60 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     return _spCtrl.stateRestorationActivity()
   }
 
+  func sceneDidDisconnect(_ scene: UIScene) {
+    if scene == ShadowWindow.shared?.refWindow.windowScene {
+      ShadowWindow.shared?.layer.removeFromSuperlayer()
+      ShadowWindow.shared?.windowScene = nil
+//      ShadowWindow.shared = nil
+    } else if scene == ShadowWindow.shared?.windowScene {
+      // We need to move it
+      ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
+    }
+  }
+
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    for context in URLContexts {
+      if let command = SceneCommands.from(url: context.url) {
+        command.perform(on: _spCtrl)
+        return
+      }
+    }
+  }
+
+  private func _lockNonInteractiveScreenIfNeeded() {
+    guard
+      let window = ShadowWindow.shared?.refWindow,
+      let sceneDelegate = window.windowScene?.delegate as? SceneDelegate
+    else {
+      return
+    }
+
+    if LocalAuth.shared.lockRequired {
+      if let lockCtrl = sceneDelegate._lockCtrl {
+        if window.rootViewController != lockCtrl {
+          window.rootViewController = lockCtrl
+        }
+
+        return
+      }
+
+
+      sceneDelegate._lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
+      window.rootViewController = _lockCtrl
+      return
+    }
+
+
+    if window.rootViewController == _lockCtrl {
+      window.rootViewController = UIViewController()
+    }
+    _lockCtrl = nil
+
+    if let shadowWin = ShadowWindow.shared {
+      window.layer.addSublayer(shadowWin.layer)
+    }
+  }
+
   private func _setDummyVC() {
     if let _ = _spCtrl.presentedViewController {
       return
@@ -406,8 +313,100 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window?.rootViewController = _ctrl
     _ctrl.view.addSubview(_spCtrl.view)
   }
-
-  @objc var spaceController: SpaceController { _spCtrl }
-
 }
 
+extension SceneDelegate {
+  public func showingPaywall() -> Bool {
+    self.paywallWindow != nil
+  }
+
+    @objc private func _showPaywallIfNeeded() {
+    let entitlements = EntitlementsManager.shared
+
+    let doShowPaywall = !entitlements.hasActiveSubscriptions()
+
+    guard doShowPaywall else {
+      return
+    }
+
+    guard let windowScene = self.window?.windowScene else {
+      return
+    }
+
+    _ = KBTracker.shared.input?.resignFirstResponder()
+
+    guard self.paywallWindow == nil else {
+      return
+    }
+
+    let paywallWindow = UIWindow(windowScene: windowScene)
+    paywallWindow.windowLevel = .statusBar + 0.5
+    self.paywallWindow = paywallWindow
+
+    let view = NewIntroPageWindow(urlHandler: blink_openurl,
+                                  dismissHandler: {
+                                    UIView.animate(withDuration: 0.5) {
+                                      paywallWindow.layer.opacity = 0;
+                                    } completion: { _ in
+                                      self.paywallWindow = nil
+                                    }
+                                  })
+    let ctrl = StatusBarLessViewController(rootView: view)
+    ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
+    paywallWindow.rootViewController = ctrl
+    paywallWindow.makeKeyAndVisible()
+    paywallWindow.layer.opacity = 0;
+
+    UIView.animate(withDuration: 0.3) {
+      paywallWindow.layer.opacity = 1;
+    }
+  }
+}
+
+class ExternalWindow: UIWindow {
+  var shadowWindow: UIWindow? = nil
+}
+
+@objc class ShadowWindow: UIWindow {
+  private var _refWindow: UIWindow
+  private let _spCtrl: SpaceController
+
+  var spaceController: SpaceController { _spCtrl }
+  @objc var refWindow: UIWindow {
+    get {
+      _refWindow
+    }
+    set {
+      _refWindow = newValue
+    }
+  }
+
+  init(windowScene: UIWindowScene, refWindow: UIWindow, spCtrl: SpaceController) {
+    _refWindow = refWindow
+    _spCtrl = spCtrl
+
+    super.init(windowScene: windowScene)
+
+    frame = _refWindow.frame
+    rootViewController = _spCtrl
+    self.clipsToBounds = false
+  }
+
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override var frame: CGRect {
+    get { _refWindow.frame }
+    set { super.frame = _refWindow.frame }
+  }
+
+
+  @objc static var shared: ShadowWindow? = nil
+}
+
+class DummyVC: UIViewController {
+  override var canBecomeFirstResponder: Bool { true }
+  override var prefersStatusBarHidden: Bool { true }
+  public override var prefersHomeIndicatorAutoHidden: Bool { true }
+}
