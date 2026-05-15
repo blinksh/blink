@@ -117,10 +117,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window.rootViewController = _spCtrl
     // Window stays hidden until _activateFrontWindow reveals the chosen front state.
 
-    // Await until scene and streams are ready
-    // NOTE We could also store the contexts and use them later.
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+    // Parse connection-time URLs into SceneCommands synchronously; SC drains
+    // them when its current TermController fires deviceIsReady.
+    let pendingCommands = connectionOptions.urlContexts.compactMap {
+      SceneCommands.from(url: $0.url)
+    }
+    if !pendingCommands.isEmpty {
+      _spCtrl.enqueueSceneCommands(pendingCommands)
     }
   }
 

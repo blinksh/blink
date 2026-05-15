@@ -38,6 +38,7 @@ import AVFoundation
   func terminalHangup(control: TermController)
   @objc optional func terminalDidResize(control: TermController)
   @objc optional func terminalLayoutModeChanged(control: TermController)
+  @objc optional func terminalDeviceDidBecomeReady(control: TermController)
 }
 
 @objc protocol ControlPanelDelegate: NSObjectProtocol {
@@ -426,6 +427,8 @@ extension TermController: TermDeviceDelegate {
     if isAttached {
       _becomeFirstResponder()
     }
+
+    delegate?.terminalDeviceDidBecomeReady?(control: self)
   }
 
   

@@ -58,7 +58,9 @@ class SpaceController: UIViewController {
   
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
-  
+
+  private var _pendingSceneCommands: [SceneCommand] = []
+
   private var _hud: MBProgressHUD? = nil
   
   private var _overlay = UIView()
@@ -640,13 +642,13 @@ extension SpaceController: UIPageViewControllerDataSource {
 
 // MARK: TermControlDelegate
 extension SpaceController: TermControlDelegate {
-  
+
   func terminalHangup(control: TermController) {
     if currentTerm() == control {
       _closeCurrentSpace()
     }
   }
-  
+
   func terminalDidResize(control: TermController) {
     if currentTerm() == control {
       _displayHUD()
@@ -657,6 +659,13 @@ extension SpaceController: TermControlDelegate {
     if currentTerm() == control {
       _refreshChromeForLayoutMode()
     }
+  }
+
+  func terminalDeviceDidBecomeReady(control: TermController) {
+    guard currentTerm() === control, !_pendingSceneCommands.isEmpty else {
+      return
+    }
+    _drainSceneCommands()
   }
 }
 
@@ -1292,4 +1301,17 @@ extension SpaceController {
     }
   }
 
+  // Buffer commands parsed at scene connect; drained when the current TC
+  // fires terminalDeviceDidBecomeReady.
+  func enqueueSceneCommands(_ commands: [SceneCommand]) {
+    _pendingSceneCommands.append(contentsOf: commands)
+  }
+
+  private func _drainSceneCommands() {
+    let commands = _pendingSceneCommands
+    _pendingSceneCommands = []
+    for command in commands {
+      command.perform(on: self)
+    }
+  }
 }
