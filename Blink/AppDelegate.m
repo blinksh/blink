@@ -83,6 +83,8 @@ extern void rebind_ports(void);
          selector: @selector(_onScreenConnect)
              name:UIScreenDidConnectNotification object:nil];
 
+  [KBTracker shared];
+
   [UNUserNotificationCenter currentNotificationCenter].delegate = self;
 
 //  [nc addObserver:self selector:@selector(_logEvent:) name:nil object:nil];

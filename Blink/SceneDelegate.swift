@@ -55,8 +55,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions)
   {
-    _ = KBTracker.shared
-
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
