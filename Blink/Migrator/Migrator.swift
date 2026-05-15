@@ -31,6 +31,7 @@
 
 
 import Foundation
+import UIKit
 
 
 @objc class Migrator : NSObject {
@@ -49,11 +50,14 @@ import Foundation
     let currentVersionString = try? String(contentsOf: migratorFileURL, encoding: .utf8)
     var currentVersion = Int(currentVersionString ?? "0") ?? 0
 
-    steps.forEach { step in
-      guard step.version > currentVersion else {
-        return
-      }
+    let pendingSteps = steps.filter { $0.version > currentVersion }
+    guard !pendingSteps.isEmpty else { return }
 
+    // Migration is needed but we can't read/write protected files — exit rather
+    // than continue with un-migrated state.
+    guard UIApplication.shared.isProtectedDataAvailable else { exit(0) }
+
+    for step in pendingSteps {
       do {
         try step.execute()
         currentVersion = step.version

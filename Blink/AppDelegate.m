@@ -60,17 +60,14 @@ extern void rebind_ports(void);
 
   [Migrator perform];
 
+  if (application.isProtectedDataAvailable) {
+    [self _runProtectedBootstrap];
+  }
+
   [AppDelegate reloadDefaults];
   [[UIView appearance] setTintColor:[UIColor blinkTint]];
 
   signal(SIGPIPE, __on_pipebroken_signal);
-
-  dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
-  dispatch_async(bgQueue, ^{
-    [BlinkPaths linkDocumentsIfNeeded];
-    [BlinkPaths linkICloudDriveIfNeeded];
-
-  });
 
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
@@ -138,6 +135,18 @@ void __on_pipebroken_signal(int signum){
 }
 
 #pragma mark - State saving and restoring
+
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
+{
+  [self _runProtectedBootstrap];
+}
+
+- (void)_runProtectedBootstrap
+{
+  [BlinkPaths linkDocumentsIfNeeded];
+  [BlinkPaths linkICloudDriveIfNeeded];
+  [[SessionRegistry shared] _cleanLostSessions];
+}
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {

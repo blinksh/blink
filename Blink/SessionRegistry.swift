@@ -54,13 +54,9 @@ protocol SuspendableSession: class {
   override init() {
     super.init()
     _fsReadMetaIndex()
-    
-    DispatchQueue.main.asyncAfter(wallDeadline: DispatchWallTime.now() + TimeInterval(10)) {
-      self._cleanLostSessions()
-    }
   }
-  
-  func _cleanLostSessions() {
+
+  @objc func _cleanLostSessions() {
     guard UIApplication.shared.isProtectedDataAvailable
     else {
       return
