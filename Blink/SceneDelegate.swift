@@ -60,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     defer {
-      self._showPaywallIfNeeded()
+      self._makePaywallWindowIfNeeded()
     }
 
     #if targetEnvironment(macCatalyst)
@@ -101,14 +101,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
       window.shadowWindow = shadowWin
 
-      shadowWin.makeKeyAndVisible()
-
       window.rootViewController = UIViewController()
       window.layer.addSublayer(shadowWin.layer)
 
-//      window.makeKeyAndVisible()
-      window.isHidden = false
       shadowWin.windowLevel = .init(rawValue: UIWindow.Level.normal.rawValue - 1)
+      // External window and shadow window stay hidden until sceneDidBecomeActive
+      // reveals them. Same create-vs-activate rule as the main window.
 
       return
     }
@@ -117,7 +115,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.window = window
 
     window.rootViewController = _spCtrl
-    window.isHidden = false
+    // Window stays hidden until _activateFrontWindow reveals the chosen front state.
 
     // Await until scene and streams are ready
     // NOTE We could also store the contexts and use them later.
@@ -131,116 +129,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
 
-    // 0. Local Auth AutoLock Check on old screens
     _lockNonInteractiveScreenIfNeeded()
 
-
+    // External-display SD: reveal the external window and hand input routing
+    // to the shadow window it hosts on the main scene. The regular scene's
+    // SD drives the rest of activation.
     if window == ShadowWindow.shared?.refWindow {
-      return
-    }
-
-
-    // 1. Local Auth AutoLock Check
-
-    if LocalAuth.shared.lockRequired {
-      if let lockCtrl = _lockCtrl {
-        if window.rootViewController != lockCtrl {
-          window.rootViewController = lockCtrl
-        }
-
-        return
+      window.isHidden = false
+      if let shadowWindow = ShadowWindow.shared {
+        shadowWindow.isHidden = false
+        shadowWindow.makeKey()
       }
-
-      let unlockAction = scene.session.role == .windowApplication ? LocalAuth.shared.unlock : nil
-
-      _lockCtrl = UIHostingController(rootView: LockView(unlockAction: unlockAction))
-      window.rootViewController = _lockCtrl
-
-      unlockAction?()
-
       return
     }
 
-    _lockCtrl = nil
-    LocalAuth.shared.stopTrackTime()
-
+    // If this SD owns the shadow window, forward activation to the refScene
+    // so that the regular scene's own activation logic runs.
     if let shadowWindow = ShadowWindow.shared,
-      shadowWindow.windowScene == scene,
-      let refScene = shadowWindow.refWindow.windowScene {
+       shadowWindow.windowScene == scene,
+       let refScene = shadowWindow.refWindow.windowScene {
       ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
     }
 
-    // 2. Set space controller back and refresh layout
-
-    let spCtrl = _spCtrl
-
-    if window.rootViewController != spCtrl {
-      window.rootViewController = spCtrl
+    // TODO Next step, this should go to the SC itself, on an event fired when its window gets activated, and not in the background.
+    if let term = _spCtrl.currentTerm() {
+      term.resumeIfNeeded()
+      term.view?.setNeedsLayout()
     }
 
-    guard let term = spCtrl.currentTerm() else {
-      return
-    }
-
-    term.resumeIfNeeded()
-    term.view?.setNeedsLayout()
-
-    if let paywallWindow = paywallWindow {
-      _ = KBTracker.shared.input?.resignFirstResponder()
-      paywallWindow.makeKeyAndVisible()
-      return;
-    }
-
-    guard spCtrl.presentedViewController == nil else {
-      return
-    }
-
-    // Focus Check
-    let input = KBTracker.shared.input
-
-    if input == nil {
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if self.paywallWindow != nil {
-          _ = KBTracker.shared.input?.resignFirstResponder()
-        } else if KBTracker.shared.input == nil {
-          window.makeKey()
-          spCtrl.focusOnShellAction()
-        }
-      }
-      return
-    }
-
-    if term.termDevice.view?.isFocused() == false,
-      input?.isRealFirstResponder == false,
-      input?.window === window {
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if self.paywallWindow != nil {
-          _ = KBTracker.shared.input?.resignFirstResponder()
-        }
-        if scene.activationState == .foregroundActive,
-          input?.isRealFirstResponder == false {
-          spCtrl.focusOnShellAction()
-        }
-      }
-
-      return
-    }
-
-    if input?.window === window {
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if self.paywallWindow != nil {
-          _ = KBTracker.shared.input?.resignFirstResponder()
-        }
-        if scene.activationState == .foregroundActive,
-          term.termDevice.view?.isFocused() == false {
-          spCtrl.focusOnShellAction()
-        }
-      }
-
-      return
-    }
-
-    input?.reportStateReset()
+    _activateFrontWindow()
   }
 
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
@@ -314,49 +231,98 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate {
-  public func showingPaywall() -> Bool {
-    self.paywallWindow != nil
-  }
-
-    @objc private func _showPaywallIfNeeded() {
-    let entitlements = EntitlementsManager.shared
-
-    let doShowPaywall = !entitlements.hasActiveSubscriptions()
-
-    guard doShowPaywall else {
-      return
-    }
-
-    guard let windowScene = self.window?.windowScene else {
-      return
-    }
-
-    _ = KBTracker.shared.input?.resignFirstResponder()
-
-    guard self.paywallWindow == nil else {
+  // Creates the paywall window when entitlements require it. Create-only —
+  // does not make the window key or animate it in. That belongs to
+  // _activateFrontWindow, which is called at activation.
+  private func _makePaywallWindowIfNeeded() {
+    guard !EntitlementsManager.shared.hasActiveSubscriptions(),
+          let windowScene = self.window?.windowScene,
+          self.paywallWindow == nil
+    else {
       return
     }
 
     let paywallWindow = UIWindow(windowScene: windowScene)
     paywallWindow.windowLevel = .statusBar + 0.5
+    paywallWindow.layer.opacity = 0
     self.paywallWindow = paywallWindow
 
     let view = NewIntroPageWindow(urlHandler: blink_openurl,
-                                  dismissHandler: {
+                                  dismissHandler: { [weak self] in
                                     UIView.animate(withDuration: 0.5) {
-                                      paywallWindow.layer.opacity = 0;
+                                      self?.paywallWindow?.layer.opacity = 0
                                     } completion: { _ in
-                                      self.paywallWindow = nil
+                                      self?.paywallWindow = nil
+                                      self?._activateFrontWindow()
                                     }
                                   })
     let ctrl = StatusBarLessViewController(rootView: view)
     ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
     paywallWindow.rootViewController = ctrl
-    paywallWindow.makeKeyAndVisible()
-    paywallWindow.layer.opacity = 0;
+  }
 
-    UIView.animate(withDuration: 0.3) {
-      paywallWindow.layer.opacity = 1;
+  // Single decision point for which window is the key window for this scene.
+  // Paywall takes precedence, then LocalAuth lock, then Space (SC).
+  private func _activateFrontWindow() {
+    guard let window = window, let windowScene = window.windowScene else {
+      return
+    }
+
+    if let paywallWindow = paywallWindow {
+      _ = KBTracker.shared.input?.resignFirstResponder()
+      paywallWindow.makeKeyAndVisible()
+      if paywallWindow.layer.opacity < 1 {
+        UIView.animate(withDuration: 0.3) {
+          paywallWindow.layer.opacity = 1
+        }
+      }
+      return
+    }
+
+    if LocalAuth.shared.lockRequired {
+      if let lockCtrl = _lockCtrl {
+        if window.rootViewController !== lockCtrl {
+          window.rootViewController = lockCtrl
+        }
+        window.isHidden = false
+        return
+      }
+      let unlockAction = windowScene.session.role == .windowApplication ? LocalAuth.shared.unlock : nil
+      let lockCtrl = UIHostingController(rootView: LockView(unlockAction: unlockAction))
+      _lockCtrl = lockCtrl
+      window.rootViewController = lockCtrl
+      window.isHidden = false
+      // The LocalAuth overlay steals the foreground-active state, and on dismiss the sceneActivate is called again,
+      // and the _activateFrontWindow called again, so the flow progresses.
+      unlockAction?()
+      return
+    }
+
+    _lockCtrl = nil
+    LocalAuth.shared.stopTrackTime()
+
+    if window.rootViewController !== _spCtrl {
+      window.rootViewController = _spCtrl
+    }
+    window.isHidden = false
+
+    guard _spCtrl.presentedViewController == nil else {
+      return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak windowScene] in
+      guard let self = self,
+            let windowScene = windowScene,
+            self.paywallWindow == nil,
+            windowScene.activationState == .foregroundActive,
+            // Don't steal key from a shadow window hosted on this scene.
+            ShadowWindow.shared?.windowScene !== windowScene,
+            self._spCtrl.currentTerm()?.termDevice.view?.isFocused() != true
+      else {
+        return
+      }
+      window.makeKey()
+      self._spCtrl.focusOnShellAction()
     }
   }
 }
