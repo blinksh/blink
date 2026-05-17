@@ -560,7 +560,12 @@ extension TermController: SuspendableSession {
   }
 
   // Cold path: rebuilds the payload from the archive. Warm resume is in `resumeIfNeeded`.
-  func resume(with unarchiver: NSKeyedUnarchiver) {
+  func resume(with unarchiver: NSKeyedUnarchiver?) {
+    guard let unarchiver = unarchiver else {
+      _showRestoreFailure()
+      return
+    }
+
     guard let termUIState: TermUIState = unarchiver.bk_decode(of: [TermUIState.self], for: ArchiveKey.termUIState)
     else {
       _showRestoreFailure()

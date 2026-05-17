@@ -296,7 +296,7 @@ class SessionMeta: Codable {
 protocol SuspendableSession: class {
   var meta: SessionMeta { get }
   init(meta: SessionMeta?)
-  func resume(with unarchiver: NSKeyedUnarchiver)
+  func resume(with unarchiver: NSKeyedUnarchiver?)
   func suspendSession(with archiver: NSKeyedArchiver)
   // Tears the live session down; persistence is handled separately on suspend
   func stopSession()
@@ -381,20 +381,10 @@ final class SessionStore {
       return
     }
 
+    // A read failure past the lock guard is permanent; pass nil so the session
+    // runs its failure path rather than being left unresolved.
     log.info("resume session \(session.meta.key.short)")
-    _resume(forKey: session.meta.key)
-  }
-
-  private func _resume(forKey key: UUID) {
-    guard
-      let session = _sessionsIndex[key],
-      let data = _fsRead(forKey: key),
-      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else {
-      log.warn("resume \(key.short) — no live session or archive")
-      return
-    }
-
+    let unarchiver = _fsRead(forKey: session.meta.key).flatMap { try? NSKeyedUnarchiver(forReadingFrom: $0) }
     session.resume(with: unarchiver)
   }
 
