@@ -563,12 +563,16 @@ extension TermController: SuspendableSession {
   func resume(with unarchiver: NSKeyedUnarchiver) {
     guard let termUIState: TermUIState = unarchiver.bk_decode(of: [TermUIState.self], for: ArchiveKey.termUIState)
     else {
+      _showRestoreFailure()
       return
     }
 
     _termView.applyTermUIState(termUIState)
 
-    guard let payload = decodePayload(from: unarchiver) else { return }
+    guard let payload = decodePayload(from: unarchiver) else {
+      _showRestoreFailure()
+      return
+    }
 
     _sessionPayload = payload
     _prepareTerminalEnvironment()
@@ -576,6 +580,15 @@ extension TermController: SuspendableSession {
     _session?.delegate = self
 
     _postResume()
+  }
+
+  // The archive exists but can't be decoded (corruption, version skew). Leave the
+  // slot live but empty so it stops retrying, and tell the user how to recover.
+  private func _showRestoreFailure() {
+    // ANSI: clear screen, home cursor, bold red "Oops", reset, prompt.
+    let msg = "\u{001B}[2J\u{001B}[H\u{001B}[1;31mOops\u{001B}[0m — couldn't restore this terminal.\r\nClose this tab and open a new one to start fresh.\r\n"
+    _termView.write(msg)
+    _meta.isSuspended = false
   }
 
   // Shared tail of warm and cold resume.
