@@ -145,9 +145,16 @@ void __on_pipebroken_signal(int signum){
 
 - (void)_runProtectedBootstrap
 {
-  [BlinkPaths linkDocumentsIfNeeded];
-  [BlinkPaths linkICloudDriveIfNeeded];
-  [[SessionRegistry shared] _cleanLostSessions];
+  // Filesystem and iCloud work runs off-main; iCloud metadata can block.
+  // _cleanLostSessions hops back to main, where SessionRegistry is touched
+  // by the rest of the codebase.
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    [BlinkPaths linkDocumentsIfNeeded];
+    [BlinkPaths linkICloudDriveIfNeeded];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[SessionRegistry shared] _cleanLostSessions];
+    });
+  });
 }
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
