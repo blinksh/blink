@@ -156,12 +156,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
     }
 
-    // TODO Next step, this should go to the SC itself, on an event fired when its window gets activated, and not in the background.
-    if let term = _spCtrl.currentTerm() {
-      term.resumeIfNeeded()
-      term.view?.setNeedsLayout()
-    }
-
+    _spCtrl.machine.resume()
     _activateFrontWindow()
   }
 

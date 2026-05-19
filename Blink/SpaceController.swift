@@ -367,14 +367,6 @@ Please go to your subscriptions and cancel one of them!
     
     #endif
     
-    if scene.session.role == .windowExternalDisplayNonInteractive,
-      let sharedWindow = ShadowWindow.shared,
-       sharedWindow === view.window,
-       let ctrl = sharedWindow.spaceController.currentTerm() {
-      
-      ctrl.resumeIfNeeded()
-    }
-    
     guard view.window?.windowScene === scene
     else {
       return
@@ -385,9 +377,7 @@ Please go to your subscriptions and cancel one of them!
         ctrl.placeToContainer()
       }
     }
-   
-    currentTerm()?.resumeIfNeeded()
-   
+
     #if targetEnvironment(macCatalyst)
     #else
     if view.window === KBTracker.shared.input?.window {
@@ -620,7 +610,6 @@ extension SpaceController: UIPageViewControllerDelegate {
     else {
       return
     }
-    termController.resumeIfNeeded()
     machine.currentSessionKey = termController.meta.key
     _displayHUD()
     _refreshChromeForLayoutMode()
@@ -1206,7 +1195,6 @@ extension SpaceController {
 
     _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: animated) { (didComplete) in
-      term.resumeIfNeeded()
       self.machine.currentSessionKey = term.meta.key
       self._displayHUD()
       self._refreshChromeForLayoutMode()

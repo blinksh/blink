@@ -218,6 +218,14 @@ final class Machine {
     }
     persistStructure()
   }
+
+  /// Wake this Machine's live sessions; each decides whether it actually resumes.
+  func resume() {
+    log.info("resume \(name) slots=\(slots.count)")
+    for key in sessionKeys {
+      session(for: key)?.resumeIfNeeded()
+    }
+  }
 }
 
 /// Persists a `MachineState` to disk, one file per Machine.
@@ -296,6 +304,8 @@ class SessionMeta: Codable {
 protocol SuspendableSession: class {
   var meta: SessionMeta { get }
   init(meta: SessionMeta?)
+  // Wake if appropriate; the session decides whether it actually resumes.
+  func resumeIfNeeded()
   func resume(with unarchiver: NSKeyedUnarchiver?)
   func suspendSession(with archiver: NSKeyedArchiver)
   // Tears the live session down; persistence is handled separately on suspend
