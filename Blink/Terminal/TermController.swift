@@ -549,14 +549,13 @@ extension TermController: SuspendableSession {
   func resumeIfNeeded() {
     guard _termDevice.isReady, _meta.isSuspended else { return }
 
-    // Warm path: payload still live in memory, no archive read needed.
+    // Warm: payload still live in memory, no archive read needed.
     if let payload = _sessionPayload {
       payload.resumeFromSuspended()
       _postResume()
-      return
+    } else {
+      SessionStore.shared.resumeIfNeeded(session: self)
     }
-
-    SessionStore.shared.resumeIfNeeded(session: self)
   }
 
   // Cold path: rebuilds the payload from the archive. Warm resume is in `resumeIfNeeded`.
