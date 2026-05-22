@@ -765,27 +765,20 @@ extension SpaceController {
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
     case .windowNew: _newWindowAction()
-    case .clipboardCopy: KBTracker.shared.input?.copy(self)
-    case .clipboardCopyRaw: KBTracker.shared.input?.copyRaw(self)
-    case .clipboardPaste: KBTracker.shared.input?.paste(self)
+    case .clipboardCopy: currentTerm()?.termView.copy(self)
+    case .clipboardCopyRaw: currentTerm()?.termView.copyRaw(self)
+    case .clipboardPaste: currentTerm()?.termView.paste(self)
     case .selectionGoogle: KBTracker.shared.input?.googleSelection(self)
     case .selectionStackOverflow: KBTracker.shared.input?.soSelection(self)
     case .selectionShare: KBTracker.shared.input?.shareSelection(self)
     case .zoomIn: currentTerm()?.termView.increaseFontSize()
     case .zoomOut: currentTerm()?.termView.decreaseFontSize()
     case .zoomReset: currentTerm()?.termView.resetFontSize()
-    case .hideKeyboard:
-      KBTracker.shared.input?.resignFirstResponder()
-      // DEBUG: Log layout state after keyboard dismiss animation completes
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-        self?.currentTerm()?.termView.constraintManager.debugLayoutState("hideKeyboard (programmatic)")
-      }
-
+    case .hideKeyboard: currentTerm()?.resignInput()
     }
   }
   
   @objc func focusOnShellAction() {
-    KBTracker.shared.input?.reset()
     _focusOnShell()
   }
   

@@ -430,6 +430,8 @@ extension TermController: TermDeviceDelegate {
       return
     }
 
+    KBTracker.shared.input?.reset()
+
     if !isAttached {
       _attachInput()
     }
