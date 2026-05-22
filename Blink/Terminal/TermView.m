@@ -972,7 +972,9 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   [commands addObject:term_setBoldEnabled(termUIState.enableBold)];
   [commands addObject:term_setBoldAsBright(termUIState.boldAsBright)];
 
-  NSString *themeContent = [[BKTheme withName: termUIState.themeName ?: [BLKDefaults selectedThemeName]] content];
+  BKTheme *selectedTheme = [BKTheme withName: termUIState.themeName ?: [BLKDefaults selectedThemeName]];
+  BKTheme *theme = (lockdownMode && !selectedTheme.isAvailableInLockdownMode) ? nil : selectedTheme;
+  NSString *themeContent = theme.content;
   if (themeContent) {
     [commands addObject:themeContent];
   }
