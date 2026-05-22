@@ -120,7 +120,7 @@ NSString *_encodeString(NSString *str);
     } else {
       ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, arg1, arg2, arg3, arg4);
     }
-    
+
   });
   method_setImplementation(method, override);
 }
@@ -312,7 +312,7 @@ NSString *_encodeString(NSString *str);
 - (BOOL)becomeFirstResponder {
   BOOL wasFocused = _focused;
   [self _reportFocus:YES];
-  
+
   BOOL res = [super becomeFirstResponder];
 
   if (res) {
@@ -331,7 +331,7 @@ NSString *_encodeString(NSString *str);
 - (BOOL)resignFirstResponder {
   BOOL wasFocused = _focused;
   [self _reportFocus:NO];
-  
+
   BOOL res = [super resignFirstResponder];
   if (res) {
     [self resetTrackingModifierFlags];

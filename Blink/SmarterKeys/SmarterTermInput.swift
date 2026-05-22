@@ -186,23 +186,32 @@ import Combine
   }
   
   
-  override func resignFirstResponder() -> Bool {
-    // Remove accessory view BEFORE resigning so the keyboard layout guide
-    // doesn't retain its height. Otherwise, this creates a gap when dismissing keyboard.
-    let savedAccessoryView = _inputAccessoryView
+  /// Explicit dismissal: clears the accessory view and reloads input views
+  /// before resigning, so the keyboard layout guide collapses to zero height
+  /// (otherwise it may retains its height and leave a visible gap).
+  ///
+  /// The accessory teardown stays out of `resignFirstResponder()` on purpose:
+  /// reloading input views while still first responder makes the system
+  /// rebuild the input session and re-promote this view, so it would not lose
+  /// keyboard focus until another text box steals it
+  func dismissKeyboard() {
     _inputAccessoryView = nil
     kbView.isHidden = true
-    self.contentView()?.reloadInputViews()
+    contentView()?.reloadInputViews()
+    _ = resignFirstResponder()
+  }
 
+  /// Plain resign. Does not tear down the accessory view, so the keyboard
+  /// layout guide may retain its height until another responder takes over.
+  /// For explicit dismissals with no handoff, use `dismissKeyboard()`.
+  override func resignFirstResponder() -> Bool {
     kbView.reset()
     let res = super.resignFirstResponder()
     if res {
       device?.blur()
+      kbView.isHidden = true
+      _inputAccessoryView?.isHidden = true
     }
-
-    // Restore for next becomeFirstResponder
-    _inputAccessoryView = savedAccessoryView
-    _inputAccessoryView?.isHidden = true
     return res
   }
 
