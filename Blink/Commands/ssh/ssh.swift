@@ -165,7 +165,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
             return
           }
           self._mcp.setActiveSession()
-          Self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
+          Self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2, errFd: self.errstream)
         })
     }
     
@@ -273,19 +273,19 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     return exitCode
   }
 
-  static func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
-    /* Prepare /dev/null socket for the stderr redirection */
-    let devnull = open("/dev/null", O_WRONLY);
-    if devnull == -1 {
-      ios_exit(1)
-    }
-
-    /* redirect in and out to stdin, stdout */
+  // Redirect in and out to stdin, stdout, errFd will come from thread.
+  // errFd should be quiet on -W after connection.
+  static func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32, errFd: Int32) {
     ios_dup2(sockIn,  STDIN_FILENO)
     ios_dup2(sockOut, STDOUT_FILENO)
-    ios_dup2(devnull, STDERR_FILENO)
+    ios_dup2(errFd,   STDERR_FILENO)
 
-    ios_system(command);
+    // libssh prefixes ProxyCommand with "exec ", which we won't support
+    var cmd = command
+    if cmd.hasPrefix("exec ") {
+      cmd = String(cmd.dropFirst(5)).trimmingCharacters(in: .whitespaces)
+    }
+    ios_system(cmd)
   }
 
   private func startInteractiveSessions(_ conn: SSH.SSHClient,

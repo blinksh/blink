@@ -88,6 +88,16 @@ struct CommandError: Error {
   let message: String
 }
 
+// Splits a shell-style command line into argv using the C `makeargs` helper.
+func shellTokenize(_ command: String) -> [String] {
+  guard let buf = strdup(command) else { return [] }
+  defer { free(buf) }
+  var argv: UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>? = nil
+  let argc = makeargs(buf, &argv)
+  defer { if argv != nil { free(argv) } }
+  return argv.args(count: argc)
+}
+
 func tty() -> TermDevice {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   return session.device

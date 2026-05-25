@@ -35,6 +35,11 @@
 
 #import "TermDevice.h"
 
+/// Splits a shell-style command line into argv, honoring single/double quotes
+/// and backslash escapes. The caller owns the returned argv (free it) and must
+/// keep `command` alive while the argv is used — argv entries point into it.
+extern int makeargs(const char *command, char ***aa);
+
 /// Minimal snapshot contract used by Session.
 /// - hasEncodedState: quick guard
 /// - takeEncodedState: returns bytes and CLEARS them (consume-on-read)

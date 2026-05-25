@@ -447,7 +447,11 @@ enum MoshError: Error, LocalizedError {
     let stdioHostAndPort: BindAddressInfo
     let proxyCommand: SSHCommand
     do {
-      var argv = command.components(separatedBy: " ")
+      var argv = shellTokenize(command)
+      // libssh prefixes ProxyCommand with "exec ", skip it.
+      if argv.first == "exec" {
+        argv.removeFirst()
+      }
       if self.isVerbose {
         argv.append("-vv")
       }
