@@ -52,12 +52,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return self;
   }
   
-  // For Stage Manager compatibility, set default overscan mode with Apple Silicon.
-  if ([[DeviceInfo shared] hasAppleSilicon]) {
-    _overscanCompensation = BKBKOverscanCompensationMirror;
-  } else {
-    _overscanCompensation = 0;
-  }
+  // Display Projection is opt-in (A-series only); Mirror means no projection.
+  _overscanCompensation = BKBKOverscanCompensationMirror;
 
   return self;
 }
@@ -220,6 +216,16 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   if (!defaults.externalDisplayFontSize) {
     [defaults setExternalDisplayFontSize:[NSNumber numberWithInt:24]];
+  }
+
+  // v18.7 - Display Projection is A-series only and on/off only.
+  // M-series: always Mirror (Stage Manager handles external displays).
+  // A-series: collapse legacy Scale/Inset to None; Mirror/None unchanged.
+  if ([[DeviceInfo shared] hasAppleSilicon]) {
+    defaults.overscanCompensation = BKBKOverscanCompensationMirror;
+  } else if (defaults.overscanCompensation == BKBKOverscanCompensationScale ||
+             defaults.overscanCompensation == BKBKOverscanCompensationInsetBounds) {
+    defaults.overscanCompensation = BKBKOverscanCompensationNone;
   }
   
   if(!defaults.defaultUser || ![[defaults.defaultUser stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]){

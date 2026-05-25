@@ -34,7 +34,7 @@ import SwiftUI
 struct DisplaySettingsView: View {
   @State private var externalDisplayFontSize: CGFloat
   @State private var layoutModeIndex: Int
-  @State private var overscanIndex: Int
+  @State private var projectionEnabled: Bool
   @State private var keyboardStyleIndex: Int
   @State private var keycasts: Bool
   @State private var alternateAppIcon: Bool
@@ -47,7 +47,7 @@ struct DisplaySettingsView: View {
     _externalDisplayFontSize = State(initialValue: CGFloat(BLKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24))
     let lm = BLKDefaults.layoutMode()
     _layoutModeIndex = State(initialValue: Self.layoutModeToIndex(lm))
-    _overscanIndex = State(initialValue: Int(BLKDefaults.overscanCompensation().rawValue))
+    _projectionEnabled = State(initialValue: BLKDefaults.overscanCompensation() != .BKBKOverscanCompensationMirror)
     _keyboardStyleIndex = State(initialValue: Self.keyboardStyleToIndex(BLKDefaults.keyboardStyle()))
     _keycasts = State(initialValue: BLKDefaults.isKeyCastsOn())
     _alternateAppIcon = State(initialValue: BLKDefaults.isAlternateAppIcon())
@@ -81,32 +81,6 @@ struct DisplaySettingsView: View {
         }
       }
 
-      // -- External Display --
-      Section("External Display") {
-        HStack {
-          Text("Font Size")
-          Spacer()
-          Text("\(Int(externalDisplayFontSize)) px")
-            .foregroundColor(.secondary)
-          Stepper("", value: $externalDisplayFontSize, in: 1...100, step: 1)
-            .labelsHidden()
-        }
-
-        HStack {
-          Text("Overscan")
-          Spacer()
-          Picker("Overscan", selection: $overscanIndex) {
-            Text("Scale").tag(0)
-            Text("Inset").tag(1)
-            Text("None").tag(2)
-            Text(hasAppleSilicon ? "Stage" : "Mirror").tag(3)
-          }
-          .pickerStyle(.segmented)
-          .labelsHidden()
-          .fixedSize()
-        }
-      }
-
       // -- Keyboard --
       Section("Keyboard") {
         HStack {
@@ -123,6 +97,26 @@ struct DisplaySettingsView: View {
         }
 
         Toggle("Keycasts", isOn: $keycasts)
+      }
+
+      if !hasAppleSilicon {
+        Section {
+          Toggle("Air Terminals", isOn: $projectionEnabled)
+
+          if projectionEnabled {
+            HStack {
+              Text("Font Size")
+              Spacer()
+              Text("\(Int(externalDisplayFontSize)) px")
+                .foregroundColor(.secondary)
+              Stepper("", value: $externalDisplayFontSize, in: 1...100, step: 1)
+                .labelsHidden()
+            }
+          }
+        } header: { Text("External Display") }
+        footer: {
+          Text("Projects a terminal to an external display that can be controlled from the main device. When disabled, the external display mirrors the device.")
+        }
       }
 
       // -- App Icon --
@@ -144,7 +138,9 @@ struct DisplaySettingsView: View {
   private func saveChanges() {
     BLKDefaults.setExternalDisplayFontSize(NSNumber(value: Int(externalDisplayFontSize)))
     BLKDefaults.setLayoutMode(Self.layoutModeFromIndex(layoutModeIndex))
-    BLKDefaults.setOversanCompensation(BKOverscanCompensation(rawValue: overscanIndex) ?? .BKBKOverscanCompensationScale)
+    if !hasAppleSilicon {
+      BLKDefaults.setOversanCompensation(projectionEnabled ? .BKBKOverscanCompensationNone : .BKBKOverscanCompensationMirror)
+    }
     BLKDefaults.setKeyboardStyle(Self.keyboardStyleFromIndex(keyboardStyleIndex))
     BLKDefaults.setKeycasts(keycasts)
     BLKDefaults.setAlternateAppIcon(alternateAppIcon)
