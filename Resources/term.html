@@ -19,8 +19,12 @@
         /* this removes blink on single tap */
         -webkit-tap-highlight-color:  transparent;
 
-        /* Menlo font fix. See #511 */
-        font-feature-settings: "liga" 0;
+        /* Disable ligatures (Menlo font fix, see #511) and Contextual
+           Alternates (see #705). */
+        font-feature-settings: "liga" 0, "calt" 0;
+
+        /* Force text (not emoji) presentation */
+        font-variant-emoji: text;
       }
 
       ime {

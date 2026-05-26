@@ -201,11 +201,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   if (!defaults.fontName) {
-    if ([BKFont withName:@"Pragmata Pro Mono"] != nil) {
-      [defaults setFontName:@"Pragmata Pro Mono"];
-    } else {
-      [defaults setFontName:@"Source Code Pro"];
-    }
+    [defaults setFontName:@"Pragmata Pro Mono"];
   }
   if (!defaults.themeName) {
     [defaults setThemeName:@"Default"];
