@@ -765,9 +765,9 @@ extension SpaceController {
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
     case .windowNew: _newWindowAction()
-    case .clipboardCopy: KBTracker.shared.input?.copy(self)
-    case .clipboardCopyRaw: KBTracker.shared.input?.copyRaw(self)
-    case .clipboardPaste: KBTracker.shared.input?.paste(self)
+    case .clipboardCopy: currentTerm()?.termView.copy(self)
+    case .clipboardCopyRaw: currentTerm()?.termView.copyRaw(self)
+    case .clipboardPaste: currentTerm()?.termView.paste(self)
     case .selectionGoogle: KBTracker.shared.input?.googleSelection(self)
     case .selectionStackOverflow: KBTracker.shared.input?.soSelection(self)
     case .selectionShare: KBTracker.shared.input?.shareSelection(self)
@@ -779,7 +779,6 @@ extension SpaceController {
   }
   
   @objc func focusOnShellAction() {
-    KBTracker.shared.input?.reset()
     _focusOnShell()
   }
   
