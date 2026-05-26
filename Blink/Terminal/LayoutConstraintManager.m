@@ -66,69 +66,55 @@
     [manager setupConstraints];
     [manager updateConstraintsForCurrentState];
 
-    // DEBUG: observe keyboard hide to log state
-    [[NSNotificationCenter defaultCenter] addObserver:manager
-                                             selector:@selector(_debugKeyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:manager
-                                             selector:@selector(_debugKeyboardDidShow:)
-                                                 name:UIKeyboardDidShowNotification
-                                               object:nil];
-
     return manager;
 }
 
 - (void)setupConstraints {
     if (!self.managedView) return;
-    
+
     UIView *view = self.managedView;
     UIView *superview = view.superview;
     if (!superview) return;
-    
-    // Set up autoresizing mask
+
     view.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    // Create constraints
+
     self.topConstraint = [view.topAnchor constraintEqualToAnchor:superview.topAnchor];
     self.leadingConstraint = [view.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor];
     self.trailingConstraint = [view.trailingAnchor constraintEqualToAnchor:superview.trailingAnchor];
-    
+
   self.bottomConstraint =
     [view.bottomAnchor constraintLessThanOrEqualToAnchor:superview.bottomAnchor constant:0];
-  self.bottomConstraint.priority = UILayoutPriorityRequired; // 1000
+  self.bottomConstraint.priority = UILayoutPriorityRequired;
 
-  // Keyboard constraint
   if (self.keyboardGuide) {
       self.bottomToKeyboardConstraint =
         [view.bottomAnchor constraintEqualToAnchor:self.keyboardGuide.topAnchor];
-      self.bottomToKeyboardConstraint.priority = UILayoutPriorityDefaultHigh; // 750 or 999
+      self.bottomToKeyboardConstraint.priority = UILayoutPriorityDefaultHigh;
 
-      // Optional: minimum height to avoid collapse
+      // Prevents the view from collapsing when the keyboard takes most of the height.
       self.minHeightConstraint =
         [view.heightAnchor constraintGreaterThanOrEqualToConstant:50];
       self.minHeightConstraint.priority = UILayoutPriorityRequired;
   }
-    
-    // Activate all constraints
+
     NSMutableArray *constraintsToActivate = [NSMutableArray arrayWithObjects:
         self.topConstraint,
         self.leadingConstraint,
         self.trailingConstraint,
         self.bottomConstraint,
         nil];
-    
+
     if (self.bottomToKeyboardConstraint) {
         [constraintsToActivate addObject:self.bottomToKeyboardConstraint];
       [constraintsToActivate addObject: self.minHeightConstraint];
     }
-    
+
     [NSLayoutConstraint activateConstraints:constraintsToActivate];
 }
 
 - (void)updateLayoutMode:(BKLayoutMode)mode {
-    if (self.isLayoutLocked) return; // Don't update if locked
-    
+    if (self.isLayoutLocked) return;
+
     self.currentLayoutMode = mode;
     [self updateConstraintsForCurrentState];
 }
@@ -136,12 +122,10 @@
 - (void)setLayoutLocked:(BOOL)locked withFrame:(CGRect)frame {
     self.isLayoutLocked = locked;
     self.lockedFrame = frame;
-    
+
     if (locked) {
-        // Store current constraint values as locked frame
         [self updateConstraintsForLockedFrame];
     } else {
-        // Restore to normal layout mode behavior
         [self updateConstraintsForCurrentState];
     }
 }
@@ -151,9 +135,9 @@
         [self updateConstraintsForLockedFrame];
         return;
     }
-    
+
     UIEdgeInsets insets = [self calculateInsetsForLayoutMode:self.currentLayoutMode];
-    
+
     self.topConstraint.constant = insets.top;
     self.leadingConstraint.constant = insets.left;
     self.trailingConstraint.constant = -insets.right;
@@ -162,16 +146,15 @@
 
 - (void)updateConstraintsForLockedFrame {
     if (CGRectIsEmpty(self.lockedFrame)) return;
-    
+
     UIView *superview = self.managedView.superview;
     if (!superview) return;
-    
-    // Calculate insets based on locked frame
+
     CGFloat top = self.lockedFrame.origin.y;
     CGFloat left = self.lockedFrame.origin.x;
     CGFloat right = superview.bounds.size.width - CGRectGetMaxX(self.lockedFrame);
     CGFloat bottom = superview.bounds.size.height - CGRectGetMaxY(self.lockedFrame);
-    
+
     self.topConstraint.constant = top;
     self.leadingConstraint.constant = left;
     self.trailingConstraint.constant = -right;
@@ -182,12 +165,15 @@
     UIView *view = self.managedView;
     UIWindow *window = view.window;
     if (!window) return UIEdgeInsetsZero;
-    
-    // Handle projection
+
+    // Flush pending layout so safeAreaInsets reflect the current state, not
+    // a transient value from a window move or status-bar appearance change.
+    [window layoutIfNeeded];
+
     if (window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive) {
         return ShadowWindow.shared.refWindow.safeAreaInsets;
     }
-    
+
     BOOL isExternal = (UIScreen.mainScreen != window.screen);
 
     UIEdgeInsets deviceMargins = window.safeAreaInsets;
@@ -197,12 +183,18 @@
 
     switch (mode) {
         case BKLayoutModeCover:
-            // No insets - full screen
             break;
 
-        case BKLayoutModeSafeFit:
+        case BKLayoutModeSafeFit: {
             result = deviceMargins;
+            // We use the statusBar calculation instead of safe area because the goal of Fit
+            // is to be visible at all times, and the safeArea also has not been reliable sometimes.
+            UIStatusBarManager *sbm = window.windowScene.statusBarManager;
+            if (sbm) {
+                result.top = MAX(result.top, sbm.statusBarFrame.size.height);
+            }
             break;
+        }
 
         case BKLayoutModeFill: {
             if (isExternal) {
@@ -212,7 +204,9 @@
             if (!DeviceInfo.shared.hasCorners) {
                 break;
             }
-            CGFloat m = deviceMargins.top / 3.0;
+            // Floor so Fill stays within the view and consistent, also when safeArea may misreport 0.
+            static const CGFloat kFillMinMargin = 8.0;
+            CGFloat m = MAX(deviceMargins.top / 3.0, kFillMinMargin);
             result.top = m;
             result.left = m;
             result.right = MAX(deviceMargins.right, m);
@@ -224,7 +218,7 @@
             NSAssert(NO, @"BKLayoutModeDefault should not reach geometry; +resolve: must convert it to a concrete mode.");
             break;
     }
-    
+
     return result;
 }
 
@@ -235,32 +229,6 @@
         -self.trailingConstraint.constant,
         -self.bottomConstraint.constant
     );
-}
-
-- (void)debugLayoutState:(NSString *)context {
-    UIView *view = self.managedView;
-    UIView *superview = view.superview;
-
-    NSLog(@"[LayoutDebug] === %@ ===", context);
-    NSLog(@"[LayoutDebug] managedView frame: %@", NSStringFromCGRect(view.frame));
-    NSLog(@"[LayoutDebug] superview frame: %@", NSStringFromCGRect(superview.frame));
-    NSLog(@"[LayoutDebug] superview safeAreaInsets: %@", NSStringFromUIEdgeInsets(superview.safeAreaInsets));
-    NSLog(@"[LayoutDebug] window safeAreaInsets: %@", NSStringFromUIEdgeInsets(view.window.safeAreaInsets));
-    NSLog(@"[LayoutDebug] keyboardGuide layoutFrame: %@", NSStringFromCGRect(self.keyboardGuide.layoutFrame));
-    NSLog(@"[LayoutDebug] bottomConstraint: constant=%.1f active=%d", self.bottomConstraint.constant, self.bottomConstraint.active);
-    NSLog(@"[LayoutDebug] kbConstraint: constant=%.1f active=%d priority=%f",
-          self.bottomToKeyboardConstraint.constant, self.bottomToKeyboardConstraint.active,
-          (float)self.bottomToKeyboardConstraint.priority);
-    NSLog(@"[LayoutDebug] layoutMode: %ld", (long)self.currentLayoutMode);
-    NSLog(@"[LayoutDebug] screen height: %.1f", UIScreen.mainScreen.bounds.size.height);
-}
-
-- (void)_debugKeyboardDidHide:(NSNotification *)notification {
-    [self debugLayoutState:@"keyboardDidHide notification"];
-}
-
-- (void)_debugKeyboardDidShow:(NSNotification *)notification {
-    [self debugLayoutState:@"keyboardDidShow notification"];
 }
 
 + (BKLayoutMode) deviceDefaultLayoutMode {

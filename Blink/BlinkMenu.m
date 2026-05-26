@@ -359,15 +359,24 @@ const CGFloat MENU_PADDING = 10.0;
   }
   
   if (elementID == BlinkActionLayoutMenu) {
-    NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
-    [children addObject:[self menuElementForID:BlinkActionLayoutFit appearance:nil]];
-    if ([LayoutConstraintManager supportsLayoutMode:BKLayoutModeFill]) {
-      [children addObject:[self menuElementForID:BlinkActionLayoutFill appearance:nil]];
-    }
-    [children addObject:[self menuElementForID:BlinkActionLayoutCover appearance:nil]];
+    __weak typeof(self) weakSelf = self;
+    UIDeferredMenuElement *deferred = [UIDeferredMenuElement elementWithUncachedProvider:^(void (^completion)(NSArray<UIMenuElement *> *)) {
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+      if (!strongSelf) {
+        completion(@[]);
+        return;
+      }
+      NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
+      [children addObject:[strongSelf menuElementForID:BlinkActionLayoutFit appearance:nil]];
+      if ([LayoutConstraintManager supportsLayoutMode:BKLayoutModeFill]) {
+        [children addObject:[strongSelf menuElementForID:BlinkActionLayoutFill appearance:nil]];
+      }
+      [children addObject:[strongSelf menuElementForID:BlinkActionLayoutCover appearance:nil]];
+      completion(children);
+    }];
     return [UIMenu menuWithTitle:noTitle ? @"" : @"Layout"
                            image: [UIImage systemImageNamed:@"squareshape.squareshape.dashed"]
-                      identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:children];
+                      identifier:BlinkActionLayoutMenu options:UIMenuOptionsDisplayInline children:@[deferred]];
   }
   
   
