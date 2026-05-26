@@ -957,10 +957,10 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   NSMutableArray *commands = [[NSMutableArray alloc] init];
   BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
   BKFont *selectedFont = [BKFont withName: termUIState.fontName ?: [BLKDefaults selectedFontName]];
-  BKFont *font = (lockdownMode && selectedFont.isCustom) ? nil : selectedFont;
+  BKFont *font = (lockdownMode && !selectedFont.isAvailableInLockdownMode) ? nil : selectedFont;
   NSString *fontFamily = font.name ?: (lockdownMode ? @"monospace" : nil);
   NSString *content = font.content;
-  if (font && font.isCustom && content) {
+  if (font && !font.isBundled && content) {
     [commands addObject:term_appendUserCss(content)];
     fontFamily = [self _detectFontFamilyFromContent:content] ?: font.name;
   }
@@ -972,7 +972,9 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   [commands addObject:term_setBoldEnabled(termUIState.enableBold)];
   [commands addObject:term_setBoldAsBright(termUIState.boldAsBright)];
 
-  NSString *themeContent = [[BKTheme withName: termUIState.themeName ?: [BLKDefaults selectedThemeName]] content];
+  BKTheme *selectedTheme = [BKTheme withName: termUIState.themeName ?: [BLKDefaults selectedThemeName]];
+  BKTheme *theme = (lockdownMode && !selectedTheme.isAvailableInLockdownMode) ? nil : selectedTheme;
+  NSString *themeContent = theme.content;
   if (themeContent) {
     [commands addObject:themeContent];
   }

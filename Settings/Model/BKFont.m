@@ -128,26 +128,30 @@
   return [css stringByReplacingOccurrencesOfString:@"[[family]]" withString:self.name];
 }
 
--(BOOL)isCustom
+- (BOOL)isAvailableInLockdownMode
 {
+  // System-wide fonts are already installed on the device and load no
+  // untrusted file, so they are safe even though they are not bundled.
   if (_systemWide) {
     return YES;
   }
-  return [super isCustom];
+  return [super isAvailableInLockdownMode];
 }
 
 - (BOOL)isEqual:(id)object {
   if ([super isEqual:object]) {
     return YES;
   }
-  
+
   if (![object isKindOfClass:[BKFont class]]) {
     return NO;
   }
-  
+
   BKFont *other = (BKFont *)object;
-  
-  return [self isCustom] == [other isCustom] && [self.name isEqualToString:other.name];
+
+  return self.systemWide == other.systemWide
+      && self.isBundled == other.isBundled
+      && [self.name isEqualToString:other.name];
 }
 
 

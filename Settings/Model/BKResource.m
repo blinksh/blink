@@ -71,13 +71,14 @@ static char customKey;
   [encoder encodeObject:_filename forKey:@"filename"];
 }
 
-- (BOOL)isCustom
+- (BOOL)isBundled
 {
-  if (_fileURL) {
-    return YES;
-  }
+  return _fileURL && [_fileURL isEqual:[[self class] defaultResourcesLocation]];
+}
 
-  return NO;
+- (BOOL)isAvailableInLockdownMode
+{
+  return self.isBundled;
 }
 
 - (NSString *)content
