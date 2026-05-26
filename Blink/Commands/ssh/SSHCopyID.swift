@@ -159,7 +159,7 @@ public func blink_ssh_copyid(argc: Int32, argv: Argv) -> Int32 {
       withProxy: { [weak self] in
         guard let self = self else { return }
         self._mcp.setActiveSession()
-        BlinkSSH.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
+        BlinkSSH.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2, errFd: self.errstream)
       }
     )
 

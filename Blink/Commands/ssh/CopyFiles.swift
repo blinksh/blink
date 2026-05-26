@@ -357,7 +357,10 @@ public class BlinkCopy: NSObject {
       return .fail(error: CommandError(message: message))
     }
 
-    return SSHClient.dial(hostNameResolved, with: config, withProxy: BlinkSSH.executeProxyCommand)
+    let errFd = fileno(thread_stderr)
+    return SSHClient.dial(hostNameResolved, with: config, withProxy: { cmd, sin, sout in
+      BlinkSSH.executeProxyCommand(command: cmd, sockIn: sin, sockOut: sout, errFd: errFd)
+    })
       .flatMap { $0.requestSFTP() }
       .tryMap  { try SFTPTranslator(on: $0) }
       .eraseToAnyPublisher()

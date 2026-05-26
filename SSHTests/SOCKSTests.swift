@@ -100,7 +100,7 @@ class SOCKSTests: XCTestCase {
       }
       expectHandshake.fulfill()
     }
-    wait(for: [expectHandshake], timeout: 5000)
+    wait(for: [expectHandshake], timeout: 5)
     
     // Request
     let expectBinding = self.expectation(description: "Binding")
@@ -118,10 +118,12 @@ class SOCKSTests: XCTestCase {
       }
     }))
     
-    conn.receive(minimumIncompleteLength: request.count, maximumLength: request.count) { (data, ctxt, complete, error) in
+    // SOCKS5 reply for IPv4: VER+REP+RSV+ATYP (4) + BND.ADDR (4) + BND.PORT (2) = 10
+    let replySize = 10
+    conn.receive(minimumIncompleteLength: replySize, maximumLength: replySize) { (data, ctxt, complete, error) in
       expectBinding.fulfill()
     }
-    wait(for: [expectBinding], timeout: 5000)
+    wait(for: [expectBinding], timeout: 5)
     
     let expectResponse = self.expectation(description: "Web Response")
     conn.send(content: "GET / HTTP/1.0\r\n\r\n".data(using: .utf8)!, completion: NWConnection.SendCompletion.contentProcessed({ error in
@@ -144,6 +146,6 @@ class SOCKSTests: XCTestCase {
       expectResponse.fulfill()
       // TODO complete is never true. Even after the channel has been closed.
     }
-    wait(for: [expectResponse], timeout: 1000)
+    wait(for: [expectResponse], timeout: 5)
   }
 }

@@ -287,6 +287,12 @@ fileprivate struct ProxyCommand {
   private let pattern =
     #"ssh (-J (?<JumpHost>.*) )?(-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
   init(_ command: String) throws {
+    // libssh prefixes ProxyCommand with "exec "; the regex expects to start at "ssh ".
+    var command = command
+    if command.hasPrefix("exec ") {
+      command = String(command.dropFirst(5)).trimmingCharacters(in: .whitespaces)
+    }
+
     let regex = try NSRegularExpression(pattern: pattern)
     let matchRange = NSRange(command.startIndex..., in: command)
 
@@ -298,22 +304,30 @@ fileprivate struct ProxyCommand {
     }
 
     if let r = Range(match.range(withName: "JumpHost"), in: command) {
-      self.jumpHost = String(command[r])
+      self.jumpHost = Self.stripOuterQuotes(String(command[r]))
     } else {
       self.jumpHost = nil
     }
 
     if let r = Range(match.range(withName: "StdioForward"), in: command) {
-      self.stdioForward = try BindAddressInfo(String(command[r]))
+      self.stdioForward = try BindAddressInfo(Self.stripOuterQuotes(String(command[r])))
     } else {
       throw Error(description: "Missing forward. \(command)")
     }
 
     if let r = Range(match.range(withName: "HostAlias"), in: command) {
-      self.hostAlias = String(command[r])
+      self.hostAlias = Self.stripOuterQuotes(String(command[r]))
     } else {
       throw Error(description: "Missing forward. \(command)")
     }
+  }
+
+  // libssh may shell-quote tokens like `'[host]:port'`.
+  private static func stripOuterQuotes(_ s: String) -> String {
+    guard s.count >= 2, let first = s.first, let last = s.last,
+          (first == "'" || first == "\""), first == last
+    else { return s }
+    return String(s.dropFirst().dropLast())
   }
 }
 
