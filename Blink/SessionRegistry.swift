@@ -86,10 +86,10 @@ protocol SuspendableSession: class {
     _sessionsIndex[key] = session
   }
   
-  func sessionFromIndexWith<T: SuspendableSession>(key: UUID) -> T? {
-    _sessionsIndex[key] as? T
+  func session(forKey key: UUID) -> SuspendableSession? {
+    _sessionsIndex[key]
   }
-  
+
   subscript<T: SuspendableSession>(key: UUID) -> T {
     // 1. we already have it (same type)
     if let session = _sessionsIndex[key] as? T {

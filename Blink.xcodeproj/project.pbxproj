@@ -183,6 +183,7 @@
 		BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */; };
 		BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C512FE1D8AC002BF2ED /* Zuse.swift */; };
 		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
+		BDC98B772FD76672002BF2ED /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98B762FD76672002BF2ED /* Machine.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -938,6 +939,7 @@
 		BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsLocations.swift; sourceTree = "<group>"; };
 		BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogFile.swift; sourceTree = "<group>"; };
 		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
+		BDC98B762FD76672002BF2ED /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1493,6 +1495,7 @@
 				D2CF27282428A791009885ED /* KBTracker.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */,
+				BDC98B762FD76672002BF2ED /* Machine.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 				D2ECBF4829645814004E95C4 /* BuildApi.swift */,
@@ -3511,6 +3514,7 @@
 				BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */,
 				BD88697B2CF4DDAD00F71119 /* 1810Migration.swift in Sources */,
 				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
+				BDC98B772FD76672002BF2ED /* Machine.swift in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,

@@ -56,10 +56,12 @@ class SpaceController: UIViewController {
   
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
   
-  private var _viewportsKeys = [UUID]()
-  private var _currentKey: UUID? = nil
-
+  private let machine = Machine()
   private var _pendingSceneCommands: [SceneCommand] = []
+
+  private func term(for sessionKey: UUID) -> TermController? {
+    machine.session(for: sessionKey) as? TermController
+  }
 
   private var _hud: MBProgressHUD? = nil
   
@@ -168,8 +170,8 @@ class SpaceController: UIViewController {
   }
   
   private func forEachActive(block:(TermController) -> ()) {
-    for key in _viewportsKeys {
-      if let ctrl: TermController = SessionRegistry.shared.sessionFromIndexWith(key: key) {
+    for key in machine.sessionKeys {
+      if let ctrl = term(for: key) {
         block(ctrl)
       }
     }
@@ -262,10 +264,9 @@ class SpaceController: UIViewController {
     
     setupOverlayConstraints()
     
-    if _viewportsKeys.isEmpty {
+    if machine.isEmpty {
       _newShellAction(animated: false)
-    } else if let key = _currentKey {
-      let term: TermController = SessionRegistry.shared[key]
+    } else if let key = machine.currentSessionKey, let term = term(for: key) {
       term.delegate = self
       // term.layoutProvider = self
       term.bgColor = view.backgroundColor ?? .black
@@ -414,16 +415,11 @@ Please go to your subscriptions and cancel one of them!
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black
     
-    if let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
-      _viewportsKeys.insert(term.meta.key, at: idx)
-    } else {
-      _viewportsKeys.insert(term.meta.key, at: _viewportsKeys.count)
-    }
-    
-    SessionRegistry.shared.track(session: term)
-    
-    _currentKey = term.meta.key
+    machine.insertAfterCurrent(sessionKey: term.meta.key)
+
+    machine.track(term)
+
+    machine.currentSessionKey = term.meta.key
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
@@ -440,32 +436,35 @@ Please go to your subscriptions and cancel one of them!
   
   private func _removeCurrentSpace(attachInput: Bool = true) {
     guard
-      let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)
+      let currentKey = machine.currentSessionKey,
+      let idx = machine.index(ofSession: currentKey)
     else {
       return
     }
     currentTerm()?.delegate = nil
-    SessionRegistry.shared.remove(forKey: currentKey)
-    _viewportsKeys.remove(at: idx)
-    if _viewportsKeys.isEmpty {
+    machine.removeSession(for: currentKey)
+    machine.removeSlot(at: idx)
+    if machine.isEmpty {
       _newShellAction(animated: false)
       return
     }
 
     let direction: UIPageViewController.NavigationDirection
     let term: TermController
-    
-    if idx < _viewportsKeys.endIndex {
+
+    if let nextKey = machine.sessionKey(at: idx), let next = term(for: nextKey) {
       direction = .forward
-      term = SessionRegistry.shared[_viewportsKeys[idx]]
-    } else {
+      term = next
+    } else if let prevKey = machine.sessionKey(at: idx - 1), let prev = term(for: prevKey) {
       direction = .reverse
-      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
+      term = prev
+    } else {
+      _newShellAction(animated: false)
+      return
     }
     term.bgColor = view.backgroundColor ?? .black
-    
-    self._currentKey = term.meta.key
+
+    self.machine.currentSessionKey = term.meta.key
     
     _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
@@ -523,15 +522,15 @@ Please go to your subscriptions and cancel one of them!
     
     let pages = UIPageControl()
     pages.currentPageIndicatorTintColor = .blinkHudDot
-    pages.numberOfPages = _viewportsKeys.count
-    let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
+    pages.numberOfPages = machine.count
+    let pageNum = machine.index(ofSession: term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound
     
     hud.customView = pages
     
     let title = term.title?.isEmpty == true ? nil : term.title
     
-    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_viewportsKeys.count)] \(title ?? "blink")"
+    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(machine.count)] \(title ?? "blink")"
     
     if term.termView.rows == 0 && term.termView.cols == 0 {
       hud.label.numberOfLines = 1
@@ -556,16 +555,18 @@ Please go to your subscriptions and cancel one of them!
 // MARK: UIStateRestorable
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
-    _viewportsKeys = state.keys
-    _currentKey = state.currentKey
+    // The Machine owns the workspace structure; restoration into it is left
+    // disconnected, so each launch starts a fresh Machine.
+//    machine.sessionKeys = state.keys
+//    machine.currentSessionKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
   }
   
   func dumpUIState() -> UIState {
-    return UIState(keys: _viewportsKeys,
-            currentKey: _currentKey,
+    return UIState(keys: machine.sessionKeys,
+            currentKey: machine.currentSessionKey,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
   }
@@ -600,7 +601,7 @@ extension SpaceController: UIPageViewControllerDelegate {
       return
     }
     termController.resumeIfNeeded()
-    _currentKey = termController.meta.key
+    machine.currentSessionKey = termController.meta.key
     _displayHUD()
     _refreshChromeForLayoutMode()
     _attachInputToCurrentTerm()
@@ -616,14 +617,13 @@ extension SpaceController: UIPageViewControllerDataSource {
     }
     let key = ctrl.meta.key
     guard
-      let idx = _viewportsKeys.firstIndex(of: key)?.advanced(by: advancedBy),
-      _viewportsKeys.indices.contains(idx)
+      let curIdx = machine.index(ofSession: key),
+      let newKey = machine.sessionKey(at: curIdx + advancedBy),
+      let newCtrl = term(for: newKey)
     else {
       return nil
     }
-    
-    let newKey = _viewportsKeys[idx]
-    let newCtrl: TermController = SessionRegistry.shared[newKey]
+
     newCtrl.delegate = self
     //newCtrl.layoutProvider = self
     newCtrl.bgColor = view.backgroundColor ?? .black
@@ -1144,24 +1144,22 @@ extension SpaceController {
   }
   
   private func _addTerm(term: TermController, animated: Bool = true) {
-    SessionRegistry.shared.track(session: term)
+    machine.track(term)
     term.delegate = self
-    _viewportsKeys.append(term.meta.key)
+    machine.append(sessionKey: term.meta.key)
     _moveToShell(key: term.meta.key, animated: animated)
   }
   
   private func _moveToShell(idx: Int, animated: Bool = true) {
-    guard _viewportsKeys.indices.contains(idx) else {
+    guard let key = machine.sessionKey(at: idx) else {
       return
     }
 
-    let key = _viewportsKeys[idx]
-    
     _moveToShell(key: key, animated: animated)
   }
-  
+
   private func _moveToLastShell(animated: Bool = true) {
-    _moveToShell(idx: _viewportsKeys.count - 1)
+    _moveToShell(idx: machine.count - 1)
   }
   
   @objc func moveToShell(key: String?) {
@@ -1176,20 +1174,20 @@ extension SpaceController {
   
   private func _moveToShell(key: UUID, animated: Bool = true) {
     guard
-      let currentKey = _currentKey,
-      let currentIdx = _viewportsKeys.firstIndex(of: currentKey),
-      let idx = _viewportsKeys.firstIndex(of: key)
+      let currentKey = machine.currentSessionKey,
+      let currentIdx = machine.index(ofSession: currentKey),
+      let idx = machine.index(ofSession: key),
+      let term = term(for: key)
     else {
       return
     }
-    
-    let term: TermController = SessionRegistry.shared[key]
+
     let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
 
     _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: animated) { (didComplete) in
       term.resumeIfNeeded()
-      self._currentKey = term.meta.key
+      self.machine.currentSessionKey = term.meta.key
       self._displayHUD()
       self._refreshChromeForLayoutMode()
       self._attachInputToCurrentTerm()
@@ -1199,8 +1197,8 @@ extension SpaceController {
   
   private func _advanceShell(by: Int, animated: Bool = true) {
     guard
-      let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
+      let currentKey = machine.currentSessionKey,
+      let idx = machine.index(ofSession: currentKey)?.advanced(by: by)
     else {
       return
     }
@@ -1210,19 +1208,19 @@ extension SpaceController {
   
   private func _advanceShellCycling(by: Int, animated: Bool = true) {
     guard
-      let currentKey = _currentKey,
-      _viewportsKeys.count > 1
+      let currentKey = machine.currentSessionKey,
+      machine.count > 1
     else {
       return
     }
-    
-    if let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by),
-      idx >= 0 && idx < _viewportsKeys.count {
+
+    if let idx = machine.index(ofSession: currentKey)?.advanced(by: by),
+      idx >= 0 && idx < machine.count {
       _moveToShell(idx: idx, animated: animated)
       return
     }
-    
-    _moveToShell(idx: by > 0 ? 0 : _viewportsKeys.count - 1, animated: animated)
+
+    _moveToShell(idx: by > 0 ? 0 : machine.count - 1, animated: animated)
   }
   
 }
@@ -1230,8 +1228,8 @@ extension SpaceController {
 // MARK: CommandsHUDDelegate
 extension SpaceController: CommandsHUDDelegate {
   @objc func currentTerm() -> TermController? {
-    if let currentKey = _currentKey {
-      return SessionRegistry.shared[currentKey]
+    if let currentKey = machine.currentSessionKey {
+      return term(for: currentKey)
     }
     return nil
   }
