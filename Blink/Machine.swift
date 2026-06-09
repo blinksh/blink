@@ -43,6 +43,20 @@ final class Slot {
   }
 }
 
+struct SlotState: Codable {
+  var id: UUID
+  var sessionKey: UUID
+}
+
+/// Serializable projection of a `Machine`: identity and structure, independent
+/// of any live instance.
+struct MachineState: Codable {
+  var id: UUID
+  var name: String
+  var slots: [SlotState]
+  var currentSlotID: UUID?
+}
+
 /// A stable, self-contained workspace: an ordered set of `Slot`s plus the
 /// currently displayed one.
 final class Machine {
@@ -55,6 +69,29 @@ final class Machine {
   init(id: UUID = UUID(), name: String = "default") {
     self.id = id
     self.name = name
+  }
+
+  init(state: MachineState) {
+    self.id = state.id
+    self.name = state.name
+    self.slots = state.slots.map { Slot(id: $0.id, sessionKey: $0.sessionKey) }
+    self.currentSlotID = state.currentSlotID
+  }
+
+  /// A Machine the user has not saved yet, marked by a `DEF`-prefixed id; its
+  /// name is the id's first segment.
+  static func makeDefault() -> Machine {
+    let id = UUID(uuidString: "DEF" + UUID().uuidString.dropFirst(3))!
+    return Machine(id: id, name: String(id.uuidString.prefix(8)))
+  }
+
+  var state: MachineState {
+    MachineState(
+      id: id,
+      name: name,
+      slots: slots.map { SlotState(id: $0.id, sessionKey: $0.sessionKey) },
+      currentSlotID: currentSlotID
+    )
   }
 
   /// Session keys in slot order. Assigning reconciles slots against the new
@@ -125,9 +162,14 @@ final class Machine {
 
   // MARK: Sessions
 
-  /// The session backing a slot.
+  /// The session backing a slot, if it is already materialized.
   func session(for sessionKey: UUID) -> SuspendableSession? {
     SessionRegistry.shared.session(forKey: sessionKey)
+  }
+
+  /// The meta a slot's session is built from when it must be re-created.
+  func meta(for sessionKey: UUID) -> SessionMeta {
+    SessionRegistry.shared.meta(forKey: sessionKey)
   }
 
   func track(_ session: SuspendableSession) {
@@ -136,5 +178,55 @@ final class Machine {
 
   func removeSession(for sessionKey: UUID) {
     SessionRegistry.shared.remove(forKey: sessionKey)
+  }
+
+  // MARK: Lifecycle
+
+  /// Archive every live session this Machine holds.
+  func suspend() {
+    for key in sessionKeys {
+      if let session = session(for: key) {
+        SessionRegistry.shared.suspendIfNeeded(session: session)
+      }
+    }
+  }
+}
+
+/// Persists a `MachineState` to disk, one file per Machine.
+final class MachineStore {
+  static let shared = MachineStore(directoryURL: MachineStore.defaultDirectoryURL())
+
+  private let directoryURL: URL
+
+  init(directoryURL: URL) {
+    self.directoryURL = directoryURL
+  }
+
+  private static func defaultDirectoryURL() -> URL {
+    let base = (try? FileManager.default.url(for: .applicationSupportDirectory,
+                                             in: .userDomainMask,
+                                             appropriateFor: nil,
+                                             create: true)) ?? FileManager.default.temporaryDirectory
+    return base.appendingPathComponent("machines")
+  }
+
+  func save(_ state: MachineState) throws {
+    try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+    let data = try JSONEncoder().encode(state)
+    try data.write(to: url(forID: state.id),
+                   options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+  }
+
+  func machineState(id: UUID) -> MachineState? {
+    guard let data = try? Data(contentsOf: url(forID: id)) else { return nil }
+    return try? JSONDecoder().decode(MachineState.self, from: data)
+  }
+
+  func remove(id: UUID) {
+    try? FileManager.default.removeItem(at: url(forID: id))
+  }
+
+  private func url(forID id: UUID) -> URL {
+    directoryURL.appendingPathComponent("\(id.uuidString).json")
   }
 }

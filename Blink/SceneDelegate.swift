@@ -231,6 +231,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window?.rootViewController = _ctrl
     _ctrl.view.addSubview(_spCtrl.view)
   }
+
+  /// Suspend every live Machine, reached through the active scenes. The same
+  /// Machine can back more than one scene (external display), so it is suspended
+  /// once.
+  @objc static func suspendActiveMachines() {
+    var seen = Set<ObjectIdentifier>()
+    for scene in UIApplication.shared.connectedScenes {
+      guard let machine = (scene.delegate as? SceneDelegate)?.spaceController.machine else {
+        continue
+      }
+      if seen.insert(ObjectIdentifier(machine)).inserted {
+        machine.suspend()
+        try? MachineStore.shared.save(machine.state)
+      }
+    }
+    SessionRegistry.shared.saveMetaIndex()
+  }
 }
 
 extension SceneDelegate {

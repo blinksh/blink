@@ -90,6 +90,18 @@ protocol SuspendableSession: class {
     _sessionsIndex[key]
   }
 
+  /// The meta for a key — the existing one, or a fresh suspended meta for a
+  /// session that is only on disk.
+  func meta(forKey key: UUID) -> SessionMeta {
+    if let meta = _metaIndex[key] {
+      return meta
+    }
+    let meta = SessionMeta()
+    meta.key = key
+    meta.isSuspended = true
+    return meta
+  }
+
   subscript<T: SuspendableSession>(key: UUID) -> T {
     // 1. we already have it (same type)
     if let session = _sessionsIndex[key] as? T {
@@ -129,7 +141,11 @@ protocol SuspendableSession: class {
     _sessionsIndex.forEach { self.suspendIfNeeded(session: $1) }
     _fsWriteMetaIndex()
   }
-  
+
+  func saveMetaIndex() {
+    _fsWriteMetaIndex()
+  }
+
   func suspendIfNeeded(session: SuspendableSession) {
     guard !session.meta.isSuspended else {
       return

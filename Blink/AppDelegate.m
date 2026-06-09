@@ -250,8 +250,8 @@ void __on_pipebroken_signal(int signum){
   if (_suspendedMode) {
     return;
   }
-
-  [[SessionRegistry shared] suspend];
+  
+  [SceneDelegate suspendActiveMachines];
   _suspendedMode = YES;
   [self _cancelApplicationSuspendTask];
 }

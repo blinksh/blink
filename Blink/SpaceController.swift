@@ -42,11 +42,10 @@ import SwiftUI
 class SpaceController: UIViewController {
   
   struct UIState: UserActivityCodable {
-    var keys: [UUID] = []
-    var currentKey: UUID? = nil
+    var machineID: UUID? = nil
     var bgColor: CodableColor? = nil
-    
-    static var activityType: String { "space.ctrl.ui.state.v18.7" }
+
+    static var activityType: String { "space.ctrl.ui.state.v19" }
   }
 
   final private lazy var _viewportsController = UIPageViewController(
@@ -56,10 +55,14 @@ class SpaceController: UIViewController {
   
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
   
-  private let machine = Machine()
+  private(set) var machine = Machine.makeDefault()
   private var _pendingSceneCommands: [SceneCommand] = []
 
   private func term(for sessionKey: UUID) -> TermController? {
+    liveTerm(for: sessionKey) ?? _resumeTerminal(for: sessionKey)
+  }
+
+  private func liveTerm(for sessionKey: UUID) -> TermController? {
     machine.session(for: sessionKey) as? TermController
   }
 
@@ -171,7 +174,7 @@ class SpaceController: UIViewController {
   
   private func forEachActive(block:(TermController) -> ()) {
     for key in machine.sessionKeys {
-      if let ctrl = term(for: key) {
+      if let ctrl = liveTerm(for: key) {
         block(ctrl)
       }
     }
@@ -236,7 +239,7 @@ class SpaceController: UIViewController {
   
   public override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     _setupAppearance()
     
     view.isOpaque = true
@@ -429,6 +432,16 @@ Please go to your subscriptions and cancel one of them!
     }
   }
 
+  // Re-create the component for a slot whose session is only on disk. Unlike
+  // _createTerminal there is no payload and no new slot — the session resumes
+  // from its archive into the slot that already exists.
+  private func _resumeTerminal(for sessionKey: UUID) -> TermController {
+    let term = TermController(meta: machine.meta(for: sessionKey))
+    term.delegate = self
+    machine.track(term)
+    return term
+  }
+
   func _closeCurrentSpace() {
     currentTerm()?.terminate()
     _removeCurrentSpace()
@@ -555,32 +568,34 @@ Please go to your subscriptions and cancel one of them!
 // MARK: UIStateRestorable
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
-    // The Machine owns the workspace structure; restoration into it is left
-    // disconnected, so each launch starts a fresh Machine.
-//    machine.sessionKeys = state.keys
-//    machine.currentSessionKey = state.currentKey
+    if let id = state.machineID,
+       let machineState = MachineStore.shared.machineState(id: id) {
+      machine = Machine(state: machineState)
+    }
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
   }
-  
+
   func dumpUIState() -> UIState {
-    return UIState(keys: machine.sessionKeys,
-            currentKey: machine.currentSessionKey,
+    return UIState(machineID: machine.id,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
   }
-  
+
   @objc static func onDidDiscardSceneSessions(_ sessions: Set<UISceneSession>) {
-    let registry = SessionRegistry.shared
     sessions.forEach { session in
       guard
-        let uiState = UIState(userActivity: session.stateRestorationActivity)
+        let uiState = UIState(userActivity: session.stateRestorationActivity),
+        let machineID = uiState.machineID
       else {
         return
       }
-      
-      uiState.keys.forEach { registry.remove(forKey: $0) }
+
+      if let machineState = MachineStore.shared.machineState(id: machineID) {
+        machineState.slots.forEach { SessionRegistry.shared.remove(forKey: $0.sessionKey) }
+      }
+      MachineStore.shared.remove(id: machineID)
     }
   }
 }
