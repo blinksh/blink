@@ -246,7 +246,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         try? MachineStore.shared.save(machine.state)
       }
     }
-    SessionRegistry.shared.saveMetaIndex()
   }
 }
 

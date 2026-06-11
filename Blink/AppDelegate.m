@@ -153,9 +153,6 @@ void __on_pipebroken_signal(int signum){
   dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
     [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[SessionRegistry shared] _cleanLostSessions];
-    });
   });
 }
 

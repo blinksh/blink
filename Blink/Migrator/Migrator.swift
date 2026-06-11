@@ -40,7 +40,7 @@ import UIKit
                          MigrationAddSnippetsShortcut(),
                          MigrationFileProviderReplicatedExtension(),
                          MigrationStyleFromDefaults(),
-                         MigrationWipeSessionRegistry()
+                         MigrationWipeSessionStore()
                         ])
   }
 

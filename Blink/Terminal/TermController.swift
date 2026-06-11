@@ -549,7 +549,7 @@ extension TermController: SuspendableSession {
 
   func resumeIfNeeded() {
     guard _termDevice.isReady else { return }
-    SessionRegistry.shared.resumeIfNeeded(session: self)
+    SessionStore.shared.resumeIfNeeded(session: self)
   }
 
   func resume(with unarchiver: NSKeyedUnarchiver) {

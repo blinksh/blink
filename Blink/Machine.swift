@@ -164,20 +164,20 @@ final class Machine {
 
   /// The session backing a slot, if it is already materialized.
   func session(for sessionKey: UUID) -> SuspendableSession? {
-    SessionRegistry.shared.session(forKey: sessionKey)
+    SessionStore.shared.session(forKey: sessionKey)
   }
 
   /// The meta a slot's session is built from when it must be re-created.
   func meta(for sessionKey: UUID) -> SessionMeta {
-    SessionRegistry.shared.meta(forKey: sessionKey)
+    SessionStore.shared.meta(forKey: sessionKey)
   }
 
   func track(_ session: SuspendableSession) {
-    SessionRegistry.shared.track(session: session)
+    SessionStore.shared.track(session: session)
   }
 
   func removeSession(for sessionKey: UUID) {
-    SessionRegistry.shared.remove(forKey: sessionKey)
+    SessionStore.shared.remove(forKey: sessionKey)
   }
 
   // MARK: Lifecycle
@@ -186,7 +186,7 @@ final class Machine {
   func suspend() {
     for key in sessionKeys {
       if let session = session(for: key) {
-        SessionRegistry.shared.suspendIfNeeded(session: session)
+        SessionStore.shared.suspendIfNeeded(session: session)
       }
     }
   }
@@ -222,11 +222,153 @@ final class MachineStore {
     return try? JSONDecoder().decode(MachineState.self, from: data)
   }
 
-  func remove(id: UUID) {
+  /// Destroy a Machine entirely: its sessions' archives and its stored state.
+  func destroy(id: UUID) {
+    machineState(id: id)?.slots.forEach { SessionStore.shared.remove(forKey: $0.sessionKey) }
     try? FileManager.default.removeItem(at: url(forID: id))
   }
 
   private func url(forID id: UUID) -> URL {
     directoryURL.appendingPathComponent("\(id.uuidString).json")
+  }
+}
+
+// MARK: - Session layer
+
+class SessionMeta: Codable {
+  fileprivate(set) var key: UUID = UUID()
+  fileprivate(set) var isSuspended: Bool = false
+}
+
+protocol SuspendableSession: class {
+  var meta: SessionMeta { get }
+  init(meta: SessionMeta?)
+  func resume(with unarchiver: NSKeyedUnarchiver)
+  func suspendSession(with archiver: NSKeyedArchiver)
+}
+
+/// Holds live sessions and their on-disk archives, keyed by session id. The
+/// session layer the Machine builds on.
+final class SessionStore {
+  static let shared = SessionStore()
+
+  private var _sessionsIndex: [UUID: SuspendableSession] = [:]
+
+  fileprivate func track(session: SuspendableSession) {
+    _sessionsIndex[session.meta.key] = session
+  }
+
+  fileprivate func session(forKey key: UUID) -> SuspendableSession? {
+    _sessionsIndex[key]
+  }
+
+  /// A fresh suspended meta for re-creating a session that exists only on disk.
+  fileprivate func meta(forKey key: UUID) -> SessionMeta {
+    let meta = SessionMeta()
+    meta.key = key
+    meta.isSuspended = true
+    return meta
+  }
+
+  fileprivate func remove(forKey key: UUID) {
+    _fsRemove(forKey: key)
+    _sessionsIndex.removeValue(forKey: key)
+  }
+
+  fileprivate func suspendIfNeeded(session: SuspendableSession) {
+    guard !session.meta.isSuspended else {
+      return
+    }
+
+    let archiver = NSKeyedArchiver(requiringSecureCoding: true)
+    session.suspendSession(with: archiver)
+    _fsWrite(archiver.encodedData, forKey: session.meta.key)
+    session.meta.isSuspended = true
+  }
+
+  func resumeIfNeeded(session: SuspendableSession) {
+    guard session.meta.isSuspended else {
+      return
+    }
+
+    _resume(forKey: session.meta.key)
+    session.meta.isSuspended = false
+  }
+
+  private func _resume(forKey key: UUID) {
+    guard
+      let session = _sessionsIndex[key],
+      let data = _fsRead(forKey: key),
+      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+    else {
+      return
+    }
+
+    session.resume(with: unarchiver)
+    session.meta.isSuspended = false
+  }
+
+  private var _fsSessionsFolderURL: URL? = nil
+
+  private func _fsSessionsFolder() throws -> URL {
+    if let fsSessionFolderURL = _fsSessionsFolderURL {
+      return fsSessionFolderURL
+    }
+
+    let fm = FileManager.default
+    var supporDirUrl = try fm.url(
+        for: .applicationSupportDirectory,
+        in: .userDomainMask,
+        appropriateFor: nil,
+        create: true
+    )
+
+    supporDirUrl.appendPathComponent("sessions")
+    var isDir:ObjCBool = false
+    if !fm.fileExists(atPath: supporDirUrl.path, isDirectory: &isDir) {
+      try fm.createDirectory(at: supporDirUrl, withIntermediateDirectories: true, attributes: nil)
+    }
+
+    _fsSessionsFolderURL = supporDirUrl
+
+    return supporDirUrl
+  }
+
+  private func _fsSessionURL(_ key: UUID) throws -> URL {
+    let sessionsFolderURL = try _fsSessionsFolder()
+    var fileURL = sessionsFolderURL
+    fileURL.appendPathComponent(key.uuidString)
+    return fileURL
+  }
+
+  private func _fsRemove(forKey key: UUID) {
+    let fm = FileManager.default
+    do {
+      let sessionURL = try _fsSessionURL(key)
+      if fm.fileExists(atPath: sessionURL.path) {
+        try fm.removeItem(at: sessionURL)
+      }
+    } catch let e {
+      debugPrint(e)
+    }
+  }
+
+  private func _fsWrite(_ data: Data, forKey key: UUID) {
+    do {
+      let sessionURL = try _fsSessionURL(key)
+      try data.write(to: sessionURL, options: [.atomic, .completeFileProtection])
+    } catch let e {
+      debugPrint(e)
+    }
+  }
+
+  private func _fsRead(forKey key: UUID) -> Data? {
+   do {
+      let sessionURL = try _fsSessionURL(key)
+      let data = try Data(contentsOf: sessionURL)
+      return data
+    } catch {
+      return nil
+    }
   }
 }

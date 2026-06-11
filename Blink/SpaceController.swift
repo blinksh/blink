@@ -465,10 +465,10 @@ Please go to your subscriptions and cancel one of them!
     let direction: UIPageViewController.NavigationDirection
     let term: TermController
 
-    if let nextKey = machine.sessionKey(at: idx), let next = term(for: nextKey) {
+    if let nextKey = machine.sessionKey(at: idx), let next = self.term(for: nextKey) {
       direction = .forward
       term = next
-    } else if let prevKey = machine.sessionKey(at: idx - 1), let prev = term(for: prevKey) {
+    } else if let prevKey = machine.sessionKey(at: idx - 1), let prev = self.term(for: prevKey) {
       direction = .reverse
       term = prev
     } else {
@@ -592,10 +592,7 @@ extension SpaceController: UIStateRestorable {
         return
       }
 
-      if let machineState = MachineStore.shared.machineState(id: machineID) {
-        machineState.slots.forEach { SessionRegistry.shared.remove(forKey: $0.sessionKey) }
-      }
-      MachineStore.shared.remove(id: machineID)
+      MachineStore.shared.destroy(id: machineID)
     }
   }
 }
