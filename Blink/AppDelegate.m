@@ -58,6 +58,8 @@ extern void rebind_ports(void);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
+  [[ZuseLog app] info:@"Hello, Blink"];
+
   [Migrator perform];
 
   if (application.isProtectedDataAvailable) {
@@ -174,6 +176,7 @@ void __on_pipebroken_signal(int signum){
 - (void)applicationWillTerminate:(UIApplication *)application
 {
   [self _suspendApplicationOnWillTerminate];
+  [ZuseLog shutdown];
 }
 
 - (void)_startMonitoringForSuspending
