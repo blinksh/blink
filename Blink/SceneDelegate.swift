@@ -246,6 +246,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         try? MachineStore.shared.save(machine.state)
       }
     }
+    Zuse.logger(.machine, "Scene").info("suspend \(seen.count) active machine(s)")
   }
 }
 

@@ -42,6 +42,7 @@ final class Zuse {
   // label that appears in output and in Settings.
   enum Component: String, CaseIterable {
     case app      = "App"
+    case machine  = "Machine"
     case terminal = "Terminal"
     case input    = "Input"
     case config   = "Config"

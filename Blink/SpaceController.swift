@@ -58,6 +58,8 @@ class SpaceController: UIViewController {
   private(set) var machine = Machine.makeDefault()
   private var _pendingSceneCommands: [SceneCommand] = []
 
+  private let log = Zuse.logger(.machine, "SpaceController")
+
   private func term(for sessionKey: UUID) -> TermController? {
     liveTerm(for: sessionKey) ?? _resumeTerminal(for: sessionKey)
   }
@@ -267,6 +269,7 @@ class SpaceController: UIViewController {
     
     setupOverlayConstraints()
     
+    log.info("load \(machine.name) slots=\(machine.count)")
     if machine.isEmpty {
       _newShellAction(animated: false)
     } else if let key = machine.currentSessionKey, let term = term(for: key) {
@@ -417,7 +420,8 @@ Please go to your subscriptions and cancel one of them!
     //term.layoutProvider = self
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black
-    
+
+    log.info("new terminal \(term.meta.key.short)")
     machine.insertAfterCurrent(sessionKey: term.meta.key)
 
     machine.track(term)
@@ -436,6 +440,7 @@ Please go to your subscriptions and cancel one of them!
   // _createTerminal there is no payload and no new slot — the session resumes
   // from its archive into the slot that already exists.
   private func _resumeTerminal(for sessionKey: UUID) -> TermController {
+    log.info("cold-restore terminal \(sessionKey.short)")
     let term = TermController(meta: machine.meta(for: sessionKey))
     term.delegate = self
     machine.track(term)
@@ -568,6 +573,7 @@ Please go to your subscriptions and cancel one of them!
 // MARK: UIStateRestorable
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
+    log.info("restore \(state.machineID?.short ?? "nil")")
     if let id = state.machineID,
        let machineState = MachineStore.shared.machineState(id: id) {
       machine = Machine(state: machineState)

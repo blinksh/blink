@@ -31,6 +31,11 @@
 
 import Foundation
 
+extension UUID {
+  /// First segment of the UUID — a short, greppable token for logs.
+  var short: String { String(uuidString.prefix(8)) }
+}
+
 /// A stable position inside a `Machine` that holds one session. A Slot's `id` is
 /// independent of the `sessionKey` it holds: a session may move between Slots.
 final class Slot {
@@ -66,6 +71,8 @@ final class Machine {
   private(set) var slots: [Slot] = []
   private var currentSlotID: UUID? = nil
 
+  private let log = Zuse.logger(.machine, "Machine")
+
   init(id: UUID = UUID(), name: String = "default") {
     self.id = id
     self.name = name
@@ -76,6 +83,7 @@ final class Machine {
     self.name = state.name
     self.slots = state.slots.map { Slot(id: $0.id, sessionKey: $0.sessionKey) }
     self.currentSlotID = state.currentSlotID
+    log.info("restored \(name) slots=\(slots.count)")
   }
 
   /// A Machine the user has not saved yet, marked by a `DEF`-prefixed id; its
@@ -184,6 +192,7 @@ final class Machine {
 
   /// Archive every live session this Machine holds.
   func suspend() {
+    log.info("suspend \(name) slots=\(slots.count)")
     for key in sessionKeys {
       if let session = session(for: key) {
         SessionStore.shared.suspendIfNeeded(session: session)
@@ -197,6 +206,7 @@ final class MachineStore {
   static let shared = MachineStore(directoryURL: MachineStore.defaultDirectoryURL())
 
   private let directoryURL: URL
+  private let log = Zuse.logger(.machine, "MachineStore")
 
   init(directoryURL: URL) {
     self.directoryURL = directoryURL
@@ -215,15 +225,20 @@ final class MachineStore {
     let data = try JSONEncoder().encode(state)
     try data.write(to: url(forID: state.id),
                    options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    log.info("saved \(state.name) slots=\(state.slots.count)")
   }
 
   func machineState(id: UUID) -> MachineState? {
-    guard let data = try? Data(contentsOf: url(forID: id)) else { return nil }
+    guard let data = try? Data(contentsOf: url(forID: id)) else {
+      log.debug("no state for \(id.short)")
+      return nil
+    }
     return try? JSONDecoder().decode(MachineState.self, from: data)
   }
 
   /// Destroy a Machine entirely: its sessions' archives and its stored state.
   func destroy(id: UUID) {
+    log.info("destroy \(id.short)")
     machineState(id: id)?.slots.forEach { SessionStore.shared.remove(forKey: $0.sessionKey) }
     try? FileManager.default.removeItem(at: url(forID: id))
   }
@@ -253,9 +268,11 @@ final class SessionStore {
   static let shared = SessionStore()
 
   private var _sessionsIndex: [UUID: SuspendableSession] = [:]
+  private let log = Zuse.logger(.machine, "SessionStore")
 
   fileprivate func track(session: SuspendableSession) {
     _sessionsIndex[session.meta.key] = session
+    log.debug("track \(session.meta.key.short)")
   }
 
   fileprivate func session(forKey key: UUID) -> SuspendableSession? {
@@ -273,6 +290,7 @@ final class SessionStore {
   fileprivate func remove(forKey key: UUID) {
     _fsRemove(forKey: key)
     _sessionsIndex.removeValue(forKey: key)
+    log.debug("remove \(key.short)")
   }
 
   fileprivate func suspendIfNeeded(session: SuspendableSession) {
@@ -284,6 +302,7 @@ final class SessionStore {
     session.suspendSession(with: archiver)
     _fsWrite(archiver.encodedData, forKey: session.meta.key)
     session.meta.isSuspended = true
+    log.info("suspended session \(session.meta.key.short)")
   }
 
   func resumeIfNeeded(session: SuspendableSession) {
@@ -291,6 +310,7 @@ final class SessionStore {
       return
     }
 
+    log.info("resume session \(session.meta.key.short)")
     _resume(forKey: session.meta.key)
     session.meta.isSuspended = false
   }
@@ -301,6 +321,7 @@ final class SessionStore {
       let data = _fsRead(forKey: key),
       let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
     else {
+      log.warn("resume \(key.short) — no live session or archive")
       return
     }
 
