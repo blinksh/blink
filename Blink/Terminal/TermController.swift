@@ -589,6 +589,10 @@ extension TermController: SuspendableSession {
     archiver.bk_encode(_termView.termUIState, for: ArchiveKey.termUIState)
     sessionPayload.encode(with: archiver)
   }
+
+  func stopSession() {
+    terminate()
+  }
 }
 
 extension Notification.Name {

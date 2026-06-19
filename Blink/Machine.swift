@@ -260,6 +260,8 @@ protocol SuspendableSession: class {
   init(meta: SessionMeta?)
   func resume(with unarchiver: NSKeyedUnarchiver)
   func suspendSession(with archiver: NSKeyedArchiver)
+  // Tears the live session down; persistence is handled separately on suspend
+  func stopSession()
 }
 
 /// Holds live sessions and their on-disk archives, keyed by session id. The
