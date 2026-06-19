@@ -153,11 +153,12 @@ extension BlinkLogKeys {
 final class ZuseLog: NSObject {
   private let log: BlinkLogger
 
-  private init(_ component: Zuse.Component) {
-    self.log = Zuse.logger(component)
+  private init(_ component: Zuse.Component, _ subcomponent: String? = nil) {
+    self.log = Zuse.logger(component, subcomponent)
   }
 
   @objc static func app() -> ZuseLog { ZuseLog(.app) }
+  @objc static func machine(_ subcomponent: String) -> ZuseLog { ZuseLog(.machine, subcomponent) }
 
   @objc static func shutdown() { Zuse.shared.shutdown() }
 

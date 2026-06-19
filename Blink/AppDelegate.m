@@ -40,7 +40,6 @@
 
 #ifdef BLINK_BUILD_ENABLED
 extern void build_auto_start_wg_ports(void);
-extern void rebind_ports(void);
 #endif
 
 
@@ -50,10 +49,9 @@ extern void rebind_ports(void);
 @end
 
 @implementation AppDelegate {
-  NSTimer *_suspendTimer;
-  UIBackgroundTaskIdentifier _suspendTaskId;
-  BOOL _suspendedMode;
-  BOOL _enforceSuspension;
+  NSTimer *_backgroundExtensionTimer;
+  UIBackgroundTaskIdentifier _backgroundExtensionTask;
+  BOOL _skipBackgroundExtension;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -158,99 +156,72 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
+  // Archives use complete file protection; a write after the device locks fails.
+  // Snapshot now — even foreground — while the write still succeeds.
+  [SceneDelegate suspendActiveMachines];
+
   // If a scene is not yet in the background, then await for it to suspend
   NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
   for (UIScene *scene in scenes) {
     if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
-      _enforceSuspension = true;
+      _skipBackgroundExtension = true;
       return;
     }
   }
 
-  [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
+  [self _endBackgroundExtension];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-  [self _suspendApplicationOnWillTerminate];
+  [self _suspendAndEndBackgroundExtension];
   [ZuseLog shutdown];
 }
 
-- (void)_startMonitoringForSuspending
+// Keep the process alive briefly after backgrounding so sessions stay live.
+- (void)_beginBackgroundExtension
 {
-  if (_suspendedMode) {
-    return;
-  }
-
   UIApplication *application = [UIApplication sharedApplication];
 
-  [self _cancelApplicationSuspendTask];
+  [self _endBackgroundExtension];
 
-  _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
-    [self _suspendApplicationWithExpirationHandler];
+  _backgroundExtensionTask = [application beginBackgroundTaskWithName:@"BackgroundExtension" expirationHandler:^{
+    [self _onBackgroundExtensionExpiration];
   }];
 
   NSTimeInterval time = MIN(application.backgroundTimeRemaining * 0.9, 5 * 60);
-  [_suspendTimer invalidate];
-  _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time
-                                                   target:self
-                                                 selector:@selector(_suspendApplicationWithSuspendTimer)
-                                                 userInfo:nil
-                                                  repeats:NO];
+  [[ZuseLog machine:@"BackgroundExtension"] info:[NSString stringWithFormat:@"begin — grace %.0fs", time]];
+  _backgroundExtensionTimer = [NSTimer scheduledTimerWithTimeInterval:time
+                                                               target:self
+                                                             selector:@selector(_onBackgroundExtensionTimer)
+                                                             userInfo:nil
+                                                                repeats:NO];
 }
 
-- (void)_cancelApplicationSuspendTask {
-  [_suspendTimer invalidate];
-  if (_suspendTaskId != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
+- (void)_endBackgroundExtension {
+  [_backgroundExtensionTimer invalidate];
+  if (_backgroundExtensionTask != UIBackgroundTaskInvalid) {
+    [[ZuseLog machine:@"BackgroundExtension"] info:@"end"];
+    [[UIApplication sharedApplication] endBackgroundTask:_backgroundExtensionTask];
   }
-  _suspendTaskId = UIBackgroundTaskInvalid;
+  _backgroundExtensionTask = UIBackgroundTaskInvalid;
+  _skipBackgroundExtension = NO;
 }
 
-- (void)_cancelApplicationSuspend {
-  [self _cancelApplicationSuspendTask];
-
-  // We can't resume if we don't have access to protected data
-  if (UIApplication.sharedApplication.isProtectedDataAvailable) {
-    if (_suspendedMode) {
-#ifdef BLINK_BUILD_ENABLED
-      rebind_ports();
-#endif
-    }
-
-    _suspendedMode = NO;
-  }
-}
-
-// Simple wrappers to get the reason of failure from call stack
-- (void)_suspendApplicationWithSuspendTimer {
-  [self _suspendApplication];
-}
-
-- (void)_suspendApplicationWithExpirationHandler {
-  [self _suspendApplication];
-}
-
-- (void)_suspendApplicationOnWillTerminate {
-  [self _suspendApplication];
-}
-
-- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable {
-  [self _suspendApplication];
-}
-
-- (void)_suspendApplication {
-  [_suspendTimer invalidate];
-
-  _enforceSuspension = false;
-
-  if (_suspendedMode) {
-    return;
-  }
-  
+// Grace expired (all scenes backgrounded): suspend their Machines, then end.
+- (void)_suspendAndEndBackgroundExtension {
   [SceneDelegate suspendActiveMachines];
-  _suspendedMode = YES;
-  [self _cancelApplicationSuspendTask];
+  [self _endBackgroundExtension];
+}
+
+// Wrappers so a crash stack shows which trigger fired.
+- (void)_onBackgroundExtensionTimer {
+  [[ZuseLog machine:@"BackgroundExtension"] info:@"grace timer fired — suspend"];
+  [self _suspendAndEndBackgroundExtension];
+}
+- (void)_onBackgroundExtensionExpiration {
+  [[ZuseLog machine:@"BackgroundExtension"] info:@"background time expired — suspend"];
+  [self _suspendAndEndBackgroundExtension];
 }
 
 #pragma mark - Scenes
@@ -276,19 +247,19 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
       return;
     }
   }
-  if (_enforceSuspension) {
-    [self _suspendApplication];
+  if (_skipBackgroundExtension) {
+    [self _suspendAndEndBackgroundExtension];
   } else {
-    [self _startMonitoringForSuspending];
+    [self _beginBackgroundExtension];
   }
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
-  [self _cancelApplicationSuspend];
+  [self _endBackgroundExtension];
 }
 
 - (void)_onSceneDidActiveNotification:(NSNotification *)notification {
-  [self _cancelApplicationSuspend];
+  [self _endBackgroundExtension];
 }
 
 - (void)_onScreenConnect {
