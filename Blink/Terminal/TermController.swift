@@ -418,9 +418,10 @@ extension TermController: TermDeviceDelegate {
       resumeIfNeeded()
     }
 
-    guard _sessionPayload != nil else {
-      print("Session Payload is nil")
-      return
+    if _sessionPayload == nil {
+      // Nothing to restore — start a default session.
+      _sessionPayload = MCPSessionPayload(params: MCPParams())
+      _startSession()
     }
 
     // Input progression. When device becomes ready, check if we need to become first responder

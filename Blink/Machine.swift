@@ -140,13 +140,12 @@ final class Machine {
       return slots.first { $0.id == id }?.sessionKey
     }
     set {
-      guard let key = newValue,
-            let slot = slots.first(where: { $0.sessionKey == key })
-      else {
+      if let key = newValue, let slot = slots.first(where: { $0.sessionKey == key }) {
+        currentSlotID = slot.id
+      } else {
         currentSlotID = nil
-        return
       }
-      currentSlotID = slot.id
+      persistStructure()
     }
   }
 
@@ -159,10 +158,12 @@ final class Machine {
     } else {
       slots.append(slot)
     }
+    persistStructure()
   }
 
   func append(sessionKey: UUID) {
     slots.append(Slot(sessionKey: sessionKey))
+    persistStructure()
   }
 
   func removeSlot(at index: Int) {
@@ -171,6 +172,12 @@ final class Machine {
     if removed.id == currentSlotID {
       currentSlotID = nil
     }
+    persistStructure()
+  }
+
+  /// Persist this Machine's structure to its store.
+  private func persistStructure() {
+    try? MachineStore.shared.save(state)
   }
 
   // MARK: Sessions
@@ -193,6 +200,11 @@ final class Machine {
     SessionStore.shared.remove(forKey: sessionKey)
   }
 
+  /// Stop a session's runtime; its archive is removed separately.
+  func stopSession(for sessionKey: UUID) {
+    session(for: sessionKey)?.stopSession()
+  }
+
   // MARK: Lifecycle
 
   /// Suspend this Machine: archive its live sessions and persist its structure.
@@ -203,7 +215,7 @@ final class Machine {
         SessionStore.shared.suspendIfNeeded(session: session)
       }
     }
-    try? MachineStore.shared.save(state)
+    persistStructure()
   }
 }
 
@@ -287,12 +299,18 @@ final class SessionStore {
     _sessionsIndex[key]
   }
 
-  /// A fresh suspended meta for re-creating a session that exists only on disk.
+  /// A meta for re-creating a slot's session; suspended only if an archive
+  /// exists to restore from, otherwise fresh (started from a default payload).
   fileprivate func meta(forKey key: UUID) -> SessionMeta {
     let meta = SessionMeta()
     meta.key = key
-    meta.isSuspended = true
+    meta.isSuspended = hasArchive(forKey: key)
     return meta
+  }
+
+  fileprivate func hasArchive(forKey key: UUID) -> Bool {
+    guard let url = try? _fsSessionURL(key) else { return false }
+    return FileManager.default.fileExists(atPath: url.path)
   }
 
   fileprivate func remove(forKey key: UUID) {

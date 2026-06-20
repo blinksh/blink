@@ -447,12 +447,14 @@ Please go to your subscriptions and cancel one of them!
     return term
   }
 
-  func _closeCurrentSpace() {
-    currentTerm()?.terminate()
-    _removeCurrentSpace()
+  func _closeCurrentTerm() {
+    if let key = machine.currentSessionKey {
+      machine.stopSession(for: key)
+    }
+    _popCurrentTerm()
   }
-  
-  private func _removeCurrentSpace(attachInput: Bool = true) {
+
+  private func _popCurrentTerm(attachInput: Bool = true) {
     guard
       let currentKey = machine.currentSessionKey,
       let idx = machine.index(ofSession: currentKey)
@@ -662,7 +664,7 @@ extension SpaceController: TermControlDelegate {
 
   func terminalHangup(control: TermController) {
     if currentTerm() == control {
-      _closeCurrentSpace()
+      _closeCurrentTerm()
     }
   }
 
@@ -779,7 +781,7 @@ extension SpaceController {
     case .tab10: _moveToShell(idx: 9)
     case .tab11: _moveToShell(idx: 10)
     case .tab12: _moveToShell(idx: 11)
-    case .tabClose: _closeCurrentSpace()
+    case .tabClose: _closeCurrentTerm()
     case .tabMoveToOtherWindow: _moveToOtherWindowAction()
     case .toggleKeyCast: _toggleKeyCast()
     case .tabNew: _newShellAction()
@@ -826,7 +828,7 @@ extension SpaceController {
   }
 
   @objc func closeShellAction() {
-    _closeCurrentSpace()
+    _closeCurrentTerm()
   }
 
   private func _focusOtherWindowAction() {
@@ -903,7 +905,7 @@ extension SpaceController {
       shadowWindow !== window {
 
       term.prepareForWindowMove()
-      _removeCurrentSpace(attachInput: false)
+      _popCurrentTerm(attachInput: false)
       shadowWindow.makeKey()
       shadowWindow.spaceController._addTerm(term: term)
       return
@@ -930,7 +932,7 @@ extension SpaceController {
 
 
     term.prepareForWindowMove()
-    _removeCurrentSpace(attachInput: false)
+    _popCurrentTerm(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
     nextWindow.makeKey()
   }
