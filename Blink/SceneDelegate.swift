@@ -183,7 +183,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       let machine = _spCtrl.machine
       log.info("suspend on disconnect \(machine.name)")
       machine.suspend()
-      try? MachineStore.shared.save(machine.state)
     }
   }
 
@@ -252,7 +251,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       }
       if seen.insert(ObjectIdentifier(machine)).inserted {
         machine.suspend()
-        try? MachineStore.shared.save(machine.state)
       }
     }
     Zuse.logger(.machine, "Scene").info("suspend \(seen.count) active machine(s)")

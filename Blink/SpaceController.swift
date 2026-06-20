@@ -574,9 +574,8 @@ Please go to your subscriptions and cancel one of them!
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
     log.info("restore \(state.machineID?.short ?? "nil")")
-    if let id = state.machineID,
-       let machineState = MachineStore.shared.machineState(id: id) {
-      machine = Machine(state: machineState)
+    if let id = state.machineID, let restored = Machine.restore(id: id) {
+      machine = restored
     }
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor

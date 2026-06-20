@@ -93,6 +93,11 @@ final class Machine {
     return Machine(id: id, name: String(id.uuidString.prefix(8)))
   }
 
+  /// Restore a Machine from its persisted structure, or nil if none on disk.
+  static func restore(id: UUID) -> Machine? {
+    MachineStore.shared.machineState(id: id).map { Machine(state: $0) }
+  }
+
   var state: MachineState {
     MachineState(
       id: id,
@@ -190,7 +195,7 @@ final class Machine {
 
   // MARK: Lifecycle
 
-  /// Archive every live session this Machine holds.
+  /// Suspend this Machine: archive its live sessions and persist its structure.
   func suspend() {
     log.info("suspend \(name) slots=\(slots.count)")
     for key in sessionKeys {
@@ -198,6 +203,7 @@ final class Machine {
         SessionStore.shared.suspendIfNeeded(session: session)
       }
     }
+    try? MachineStore.shared.save(state)
   }
 }
 
