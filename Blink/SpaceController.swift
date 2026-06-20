@@ -601,6 +601,7 @@ extension SpaceController: UIStateRestorable {
 
       MachineStore.shared.destroy(id: machineID)
     }
+    MachineStore.shared.removeOrphanSessions()
   }
 }
 

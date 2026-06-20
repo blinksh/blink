@@ -261,6 +261,24 @@ final class MachineStore {
     try? FileManager.default.removeItem(at: url(forID: id))
   }
 
+  /// Remove session archives no machine references.
+  func removeOrphanSessions() {
+    SessionStore.shared.removeArchives(keeping: referencedSessionKeys())
+  }
+
+  private func referencedSessionKeys() -> Set<UUID> {
+    guard let files = try? FileManager.default.contentsOfDirectory(
+      at: directoryURL, includingPropertiesForKeys: nil) else { return [] }
+    var keys = Set<UUID>()
+    for file in files where file.pathExtension == "json" {
+      if let data = try? Data(contentsOf: file),
+         let state = try? JSONDecoder().decode(MachineState.self, from: data) {
+        keys.formUnion(state.slots.map { $0.sessionKey })
+      }
+    }
+    return keys
+  }
+
   private func url(forID id: UUID) -> URL {
     directoryURL.appendingPathComponent("\(id.uuidString).json")
   }
@@ -317,6 +335,18 @@ final class SessionStore {
     _fsRemove(forKey: key)
     _sessionsIndex.removeValue(forKey: key)
     log.debug("remove \(key.short)")
+  }
+
+  fileprivate func removeArchives(keeping keep: Set<UUID>) {
+    let keep = keep.union(_sessionsIndex.keys)
+    guard let folder = try? _fsSessionsFolder(),
+          let files = try? FileManager.default.contentsOfDirectory(
+            at: folder, includingPropertiesForKeys: nil) else { return }
+    for file in files {
+      guard let key = UUID(uuidString: file.lastPathComponent), !keep.contains(key) else { continue }
+      _fsRemove(forKey: key)
+      log.info("swept orphan session \(key.short)")
+    }
   }
 
   fileprivate func suspendIfNeeded(session: SuspendableSession) {
