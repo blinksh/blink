@@ -51,7 +51,6 @@ extern void build_auto_start_wg_ports(void);
 @implementation AppDelegate {
   NSTimer *_backgroundExtensionTimer;
   UIBackgroundTaskIdentifier _backgroundExtensionTask;
-  BOOL _skipBackgroundExtension;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -159,16 +158,6 @@ void __on_pipebroken_signal(int signum){
   // Archives use complete file protection; a write after the device locks fails.
   // Snapshot now — even foreground — while the write still succeeds.
   [SceneDelegate suspendActiveMachines];
-
-  // If a scene is not yet in the background, then await for it to suspend
-  NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
-  for (UIScene *scene in scenes) {
-    if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
-      _skipBackgroundExtension = true;
-      return;
-    }
-  }
-
   [self _endBackgroundExtension];
 }
 
@@ -182,6 +171,11 @@ void __on_pipebroken_signal(int signum){
 - (void)_beginBackgroundExtension
 {
   UIApplication *application = [UIApplication sharedApplication];
+
+  // No point keeping the process alive while the device is locked.
+  if (!application.isProtectedDataAvailable) {
+    return;
+  }
 
   [self _endBackgroundExtension];
 
@@ -205,7 +199,6 @@ void __on_pipebroken_signal(int signum){
     [[UIApplication sharedApplication] endBackgroundTask:_backgroundExtensionTask];
   }
   _backgroundExtensionTask = UIBackgroundTaskInvalid;
-  _skipBackgroundExtension = NO;
 }
 
 // Grace expired (all scenes backgrounded): suspend their Machines, then end.
@@ -247,11 +240,7 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
       return;
     }
   }
-  if (_skipBackgroundExtension) {
-    [self _suspendAndEndBackgroundExtension];
-  } else {
-    [self _beginBackgroundExtension];
-  }
+  [self _beginBackgroundExtension];
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
