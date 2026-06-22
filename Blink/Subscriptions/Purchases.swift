@@ -78,7 +78,7 @@ fileprivate extension EntitlementPeriodType {
 }
 
 func configureRevCat() {
-  Purchases.logLevel = .debug
+  Purchases.logLevel = .error
   let cfg = Configuration
     .builder(withAPIKey: XCConfig.infoPlistRevCatPubliKey())
     .with(appUserID: nil)
