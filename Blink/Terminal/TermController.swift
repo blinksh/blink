@@ -418,9 +418,10 @@ extension TermController: TermDeviceDelegate {
       resumeIfNeeded()
     }
 
-    guard _sessionPayload != nil else {
-      print("Session Payload is nil")
-      return
+    if _sessionPayload == nil {
+      // Nothing to restore — start a default session.
+      _sessionPayload = MCPSessionPayload(params: MCPParams())
+      _startSession()
     }
 
     // Input progression. When device becomes ready, check if we need to become first responder
@@ -549,7 +550,7 @@ extension TermController: SuspendableSession {
 
   func resumeIfNeeded() {
     guard _termDevice.isReady else { return }
-    SessionRegistry.shared.resumeIfNeeded(session: self)
+    SessionStore.shared.resumeIfNeeded(session: self)
   }
 
   func resume(with unarchiver: NSKeyedUnarchiver) {
@@ -588,6 +589,10 @@ extension TermController: SuspendableSession {
 
     archiver.bk_encode(_termView.termUIState, for: ArchiveKey.termUIState)
     sessionPayload.encode(with: archiver)
+  }
+
+  func stopSession() {
+    terminate()
   }
 }
 

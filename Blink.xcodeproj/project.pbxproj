@@ -181,6 +181,10 @@
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */; };
+		BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C512FE1D8AC002BF2ED /* Zuse.swift */; };
+		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
+		BDC98B772FD76672002BF2ED /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98B762FD76672002BF2ED /* Machine.swift */; };
+		BDC98B8A2FD8441C002BF2ED /* MachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98B892FD8441C002BF2ED /* MachineTests.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -399,7 +403,6 @@
 		D2AD8E7527A2BAFA00DED28D /* PurchasesUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */; };
 		D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6727A2BAFA00DED28D /* Purchases.swift */; };
 		D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8327A2C80C00DED28D /* SettingsView.swift */; };
-		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
 		D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */; };
 		D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2AE682928D06076003E4338 /* SwiftCBOR */; };
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
@@ -934,6 +937,10 @@
 		BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServerTests.swift; sourceTree = "<group>"; };
 		BDBFA31F2728925C00C77798 /* WebSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
 		BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsLocations.swift; sourceTree = "<group>"; };
+		BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogFile.swift; sourceTree = "<group>"; };
+		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
+		BDC98B762FD76672002BF2ED /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
+		BDC98B892FD8441C002BF2ED /* MachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineTests.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1147,7 +1154,6 @@
 		D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasesUserModel.swift; sourceTree = "<group>"; };
 		D2AD8E6727A2BAFA00DED28D /* Purchases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
 		D2AD8E8327A2C80C00DED28D /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
 		D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnKey.swift; sourceTree = "<group>"; };
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1DEB42A669342001C6D3B /* 1620Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1620Migration.swift; sourceTree = "<group>"; };
@@ -1464,6 +1470,7 @@
 				BD1FFF752E4B466500DB5AF9 /* Terminal */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D2F330C520A6C8E20074ADD7 /* Commands */,
+				BDC98C522FE1D8AC002BF2ED /* Logging */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
 				D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */,
@@ -1476,7 +1483,6 @@
 				D29568B721BE629100480A83 /* bk_getopts.h */,
 				D29568B821BE629100480A83 /* bk_getopts.c */,
 				D235579622CE07D20094AADB /* Blink-bridge.h */,
-				D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */,
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
@@ -1488,6 +1494,7 @@
 				D2CF27282428A791009885ED /* KBTracker.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */,
+				BDC98B762FD76672002BF2ED /* Machine.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 				D2ECBF4829645814004E95C4 /* BuildApi.swift */,
@@ -1887,6 +1894,15 @@
 			path = BlinkCodeTests;
 			sourceTree = "<group>";
 		};
+		BDC98C522FE1D8AC002BF2ED /* Logging */ = {
+			isa = PBXGroup;
+			children = (
+				BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */,
+				BDC98C512FE1D8AC002BF2ED /* Zuse.swift */,
+			);
+			path = Logging;
+			sourceTree = "<group>";
+		};
 		BDCB715F268E1577007D7047 /* BlinkConfig */ = {
 			isa = PBXGroup;
 			children = (
@@ -2213,6 +2229,7 @@
 				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
 				BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */,
 				BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */,
+				BDC98B892FD8441C002BF2ED /* MachineTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -3409,6 +3426,7 @@
 				BDE7C45C29DCAEFA005E033E /* FileLocationPathTests.swift in Sources */,
 				BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
+				BDC98B8A2FD8441C002BF2ED /* MachineTests.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
 				D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
@@ -3497,6 +3515,7 @@
 				BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */,
 				BD88697B2CF4DDAD00F71119 /* 1810Migration.swift in Sources */,
 				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
+				BDC98B772FD76672002BF2ED /* Machine.swift in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
@@ -3574,6 +3593,8 @@
 				BD818A132AB3865F00956488 /* MoshCommand.swift in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
+				BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */,
+				BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
@@ -3601,7 +3622,6 @@
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2C24420238E44AB0082C69C /* Chevron.swift in Sources */,
 				D2AD8E7427A2BAFA00DED28D /* EntitlementsManager.swift in Sources */,
-				D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */,
 				D22277FA2A26204900D4C708 /* SearchModel.swift in Sources */,
 				D2C24416238E44AB0082C69C /* KBConfig.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,

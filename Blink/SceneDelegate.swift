@@ -46,6 +46,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   @objc var spaceController: SpaceController { _spCtrl }
   private var paywallWindow: UIWindow? = nil
 
+  private let log = Zuse.logger(.machine, "Scene")
+
   override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
     super.editingInteractionConfiguration
   }
@@ -176,6 +178,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     } else if scene == ShadowWindow.shared?.windowScene {
       // We need to move it
       ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
+    } else {
+      // iOS reclaimed this scene; preserve its Machine while still reachable.
+      let machine = _spCtrl.machine
+      log.info("suspend on disconnect \(machine.name)")
+      machine.suspend()
     }
   }
 
@@ -230,6 +237,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _ctrl.view.frame = _spCtrl.view.frame
     window?.rootViewController = _ctrl
     _ctrl.view.addSubview(_spCtrl.view)
+  }
+
+  /// Suspend every active scene's Machine directly — the path for when the
+  /// per-scene background suspend won't fire (foreground terminate, or the
+  /// protected-data lock deadline). Idempotent; the same Machine can back more
+  /// than one scene (external display), so it is suspended once.
+  @objc static func suspendActiveMachines() {
+    var seen = Set<ObjectIdentifier>()
+    for scene in UIApplication.shared.connectedScenes {
+      guard let machine = (scene.delegate as? SceneDelegate)?.spaceController.machine else {
+        continue
+      }
+      if seen.insert(ObjectIdentifier(machine)).inserted {
+        machine.suspend()
+      }
+    }
+    Zuse.logger(.machine, "Scene").info("suspend \(seen.count) active machine(s)")
   }
 }
 

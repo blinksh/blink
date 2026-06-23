@@ -33,10 +33,10 @@
 import Foundation
 
 
-// Wipes the SessionRegistry on-disk state. The TermSessionPayload / SessionParams
+// Wipes the session store's on-disk state. The TermSessionPayload / SessionParams
 // data types changed in a way that is incompatible with previously suspended
 // sessions, and migrating the old archives is not worth the effort.
-class MigrationWipeSessionRegistry: MigrationStep {
+class MigrationWipeSessionStore: MigrationStep {
   var version: Int { get { 1870 } }
 
   func execute() throws {
