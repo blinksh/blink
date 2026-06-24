@@ -956,7 +956,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 {
   NSMutableArray *commands = [[NSMutableArray alloc] init];
   BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
-  BKFont *selectedFont = [BKFont withName: termUIState.fontName ?: [BLKDefaults selectedFontName]];
+  BKFont *selectedFont = [BKFont fontNamed: termUIState.fontName ?: [BLKDefaults selectedFontName]];
   BKFont *font = (lockdownMode && !selectedFont.isAvailableInLockdownMode) ? nil : selectedFont;
   NSString *fontFamily = font.name ?: (lockdownMode ? @"monospace" : nil);
   NSString *content = font.content;

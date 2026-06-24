@@ -187,6 +187,7 @@
 		BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C512FE1D8AC002BF2ED /* Zuse.swift */; };
 		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
 		BDC98E0F2FEC1F01002BF2ED /* AddResourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */; };
+		BDC98E242FEC5E03002BF2ED /* SystemFontPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E232FEC5E03002BF2ED /* SystemFontPickerView.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -945,6 +946,7 @@
 		BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogFile.swift; sourceTree = "<group>"; };
 		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
 		BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddResourceView.swift; sourceTree = "<group>"; };
+		BDC98E232FEC5E03002BF2ED /* SystemFontPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFontPickerView.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1974,6 +1976,7 @@
 				BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */,
 				BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */,
 				BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */,
+				BDC98E232FEC5E03002BF2ED /* SystemFontPickerView.swift */,
 			);
 			name = Appearance;
 			path = Settings/ViewControllers/Appearance;
@@ -3460,6 +3463,7 @@
 				803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */,
 				BD8152542743FF84002BB169 /* skstore.swift in Sources */,
 				BD818A052AAFC18400956488 /* mosh.swift in Sources */,
+				BDC98E242FEC5E03002BF2ED /* SystemFontPickerView.swift in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */,
 				803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */,

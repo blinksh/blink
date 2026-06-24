@@ -110,6 +110,20 @@ struct StyleCustomizationView: View {
           }
 
           Button {
+            pushSystemFontPicker()
+          } label: {
+            HStack {
+              Text("System Font").foregroundColor(.primary)
+              Spacer()
+              if let systemName = selectedSystemFontName {
+                Text(systemName).foregroundColor(.secondary)
+                Image(systemName: "checkmark").foregroundColor(.accentColor)
+              }
+              Chevron()
+            }
+          }
+
+          Button {
             pushAddResource(.font)
           } label: {
             HStack {
@@ -230,6 +244,25 @@ struct StyleCustomizationView: View {
 
   private func pushAddResource(_ resourceType: AddResourceView.ResourceType) {
     let view = AddResourceView(resourceType: resourceType).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
+    nav.navController.pushViewController(vc, animated: true)
+  }
+
+  /// Non-nil when the current font is an installed system family rather than a resource.
+  private var selectedSystemFontName: String? {
+    let name = editingStyle.fontName
+    if fonts.contains(where: { $0.name == name }) { return nil }
+    return SystemFonts.contains(name) ? name : nil
+  }
+
+  private func pushSystemFontPicker() {
+    let view = SystemFontPickerView(
+      initialSelection: editingStyle.fontName,
+      onSelect: { name in
+        editingStyle.fontName = name
+        applyToPreview()
+      }
+    ).environmentObject(nav)
     let vc = UIHostingController(rootView: view)
     nav.navController.pushViewController(vc, animated: true)
   }

@@ -44,47 +44,27 @@
   return @"css";
 }
 
-+ (NSArray *)all
++ (instancetype)fontNamed:(NSString *)name
 {
-  return [[
-          self.defaultResources
-          arrayByAddingObjectsFromArray: [self _systemWideFonts]]
-          arrayByAddingObjectsFromArray: self.customResources];
+  if (name.length == 0) {
+    return nil;
+  }
+  BKFont *resource = [self withName:name];
+  if (resource) {
+    return resource;
+  }
+  if ([[UIFont familyNames] containsObject:name]) {
+    return [self systemFontNamed:name];
+  }
+  return nil;
 }
 
-
-+ (NSArray<BKFont *> *)_systemWideFonts
++ (instancetype)systemFontNamed:(NSString *)name
 {
-  NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-  NSMutableArray *result = [[NSMutableArray alloc] init];
-  for (BKFont *f in self.defaultResources) {
-    map[f.name] = f;
-  }
-  map[@"Apple Color Emoji"] = @(YES);
-
-  NSString *appFontName = [NSBundle.mainBundle.infoDictionary[@"BLINK_APP_FONT"] isKindOfClass:[NSString class]] ? NSBundle.mainBundle.infoDictionary[@"BLINK_APP_FONT"] : nil;
-  if (appFontName.length) {
-    map[appFontName] = @(YES);
-  }
-
-  NSDictionary *traitsAttributes = @{UIFontSymbolicTrait: @(UIFontDescriptorTraitMonoSpace)};
-  NSDictionary *fontAttributes = @{UIFontDescriptorTraitsAttribute: traitsAttributes};
-  UIFontDescriptor *fontDescriptor = [UIFontDescriptor fontDescriptorWithFontAttributes:fontAttributes];
-  NSArray *array = [fontDescriptor matchingFontDescriptorsWithMandatoryKeys:nil];
-  for (UIFontDescriptor *descriptor in array) {
-    UIFont *f = [UIFont fontWithDescriptor:descriptor size:10];
-    if (map[f.familyName]) {
-      continue;
-    }
-
-    BKFont * font = [[BKFont alloc] init];
-    font.name = f.familyName;
-    font.systemWide = YES;
-    map[font.name] = font;
-    [result addObject:font];
-  }
-
-  return result;
+  BKFont *font = [[self alloc] init];
+  font.name = name;
+  font.systemWide = YES;
+  return font;
 }
 
 - (NSString *)content

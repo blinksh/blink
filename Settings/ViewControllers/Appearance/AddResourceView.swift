@@ -32,9 +32,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// Top of the import hierarchy. Hosts the Local/Remote switch and routes to the
-/// matching child. Theme and font local imports are separate self-contained
-/// views; the remote import is the shared `AddRemoteResourceView`.
+/// Hosts the Local/Remote switch and routes to the matching import view.
 struct AddResourceView: View {
   enum ResourceType {
     case theme
@@ -83,9 +81,7 @@ struct AddResourceView: View {
 
 // MARK: - Local Theme Import
 
-/// Imports a theme from a local `.js` color-scheme file. On save the file's
-/// content is copied into Blink's custom resources, so it lives outside the
-/// user's control and cannot be lost.
+/// Imports a theme from a local color-scheme file into the custom resources.
 struct AddLocalThemeView: View {
   @EnvironmentObject private var nav: Nav
 
@@ -171,10 +167,8 @@ struct AddLocalThemeView: View {
 
 // MARK: - Local Font Import
 
-/// Imports a font from local files. The user picks up to four variants
-/// (only Regular is required); on save an embedded `@font-face` stylesheet is
-/// generated with each variant's bytes inlined as base64 and stored as the
-/// font's `.css` content. The name is used as the CSS `font-family`.
+/// Imports up to four font variants (Regular required) as an embedded
+/// `@font-face` stylesheet with each file inlined as base64.
 struct AddLocalFontView: View {
   @EnvironmentObject private var nav: Nav
 
@@ -290,9 +284,8 @@ struct AddLocalFontView: View {
     nav.navController.popViewController(animated: true)
   }
 
-  /// Builds an embedded `@font-face` stylesheet. The first `font-family`
-  /// declaration is what the terminal detects, so every variant declares the
-  /// same family — the resource name.
+  /// The terminal detects the family from the first `font-family` declaration,
+  /// so every variant declares the same one.
   private func makeFontFaceCSS(family: String) -> Data? {
     let blocks: [String] = FontVariant.allCases.compactMap { variant in
       guard let file = files[variant], let format = file.fontFormat else { return nil }
@@ -313,9 +306,7 @@ struct AddLocalFontView: View {
 
 // MARK: - Supporting types
 
-/// The four font variants the importer accepts, in the order they appear both
-/// in the UI and in the generated stylesheet (Regular first so it is the
-/// detected family).
+/// UI and stylesheet order; Regular first so it is the detected family.
 private enum FontVariant: CaseIterable, Identifiable {
   case regular
   case italic
@@ -350,7 +341,6 @@ private enum FontVariant: CaseIterable, Identifiable {
   }
 }
 
-/// A supported font container format and how to reference it from CSS.
 private struct FontFormat {
   let mimeType: String
   let cssFormat: String
@@ -366,8 +356,7 @@ private struct FontFormat {
   }
 }
 
-/// A file the user picked from disk, read into memory at selection time so the
-/// security-scoped URL does not have to outlive the picker.
+/// Read into memory at selection time, so the security-scoped URL need not outlive the picker.
 private struct ImportedFile {
   let filename: String
   let ext: String

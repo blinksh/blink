@@ -61,7 +61,7 @@ extension TerminalStyleBundle {
     // - Built-in defaults (ship with Blink) → don't embed
     // - System-wide monospace fonts (exist on device, BKFont.systemWide) → don't embed
     // - User-added custom fonts → embed
-    let fontResource = BKFont.withName(style.fontName) as? BKFont
+    let fontResource = BKFont(named: style.fontName)
     let embedFont = fontResource != nil
       && !isDefaultResource(fontResource, of: BKFont.self)
       && !(fontResource?.systemWide ?? true)
