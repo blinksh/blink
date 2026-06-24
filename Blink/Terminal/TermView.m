@@ -446,10 +446,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:@"_colorComponents(t.scrollPort_.screen_.style.backgroundColor)"
              completionHandler:^(NSArray *bgColor, NSError *error) {
     if (bgColor && [bgColor count] == 3) {
-      self.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
-                                             green:[bgColor[1] floatValue] / 255.0f
-                                              blue:[bgColor[2] floatValue] / 255.0f
-                                             alpha:1];
+      UIColor *color = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
+                                       green:[bgColor[1] floatValue] / 255.0f
+                                        blue:[bgColor[2] floatValue] / 255.0f
+                                       alpha:1];
+      self.backgroundColor = color;
+      [self.termController applyTerminalBackgroundColor:color];
     }
   }];
 }
@@ -972,7 +974,9 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   [commands addObject:term_setBoldEnabled(termUIState.enableBold)];
   [commands addObject:term_setBoldAsBright(termUIState.boldAsBright)];
 
-  BKTheme *selectedTheme = [BKTheme withName: termUIState.themeName ?: [BLKDefaults selectedThemeName]];
+  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  NSString *effectiveThemeName = [termUIState effectiveThemeNameForDarkMode:isDark];
+  BKTheme *selectedTheme = [BKTheme withName: effectiveThemeName ?: [BLKDefaults selectedThemeName]];
   BKTheme *theme = (lockdownMode && !selectedTheme.isAvailableInLockdownMode) ? nil : selectedTheme;
   NSString *themeContent = theme.content;
   if (themeContent) {
@@ -1006,7 +1010,28 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   NSString *themeContent = [[BKTheme withName: themeName ?: [BLKDefaults selectedThemeName]] content];
   if (themeContent) {
     NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
-    [_webView evaluateJavaScript:script completionHandler:nil];
+    [_webView evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
+      [self _syncTerminalState];
+    }];
+  }
+}
+
+- (void)_applyEffectiveTheme {
+  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  [self applyTheme:[self.termUIState effectiveThemeNameForDarkMode:isDark]];
+}
+
+- (void)toggleAlternativeTheme {
+  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  [self.termUIState toggleThemeModeForDarkMode:isDark];
+  [self _applyEffectiveTheme];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle &&
+      self.termUIState.themeMode == TermThemeModeAutomatic) {
+    [self _applyEffectiveTheme];
   }
 }
 

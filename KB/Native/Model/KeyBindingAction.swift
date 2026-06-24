@@ -57,6 +57,7 @@ enum Command: String, Codable, CaseIterable {
   case zoomIn
   case zoomOut
   case zoomReset
+  case switchTheme
   case clipboardCopy
   case clipboardCopyRaw
   case clipboardPaste
@@ -99,6 +100,7 @@ enum Command: String, Codable, CaseIterable {
     case .zoomIn:                 return "Zoom In"
     case .zoomOut:                return "Zoom Out"
     case .zoomReset:              return "Zoom Reset"
+    case .switchTheme:            return "Switch Theme"
     case .clipboardCopy:          return "Copy"
     case .clipboardCopyRaw:       return "Copy Raw"
     case .clipboardPaste:         return "Paste"

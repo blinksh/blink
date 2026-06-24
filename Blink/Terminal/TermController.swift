@@ -179,6 +179,13 @@ class TermController: UIViewController {
     get { _bgColor }
     set { _bgColor = newValue }
   }
+
+  /// Captures the terminal background at the controller so the area around the
+  /// constrained terminal view matches the active theme (e.g. after a live switch).
+  @objc func applyTerminalBackgroundColor(_ color: UIColor) {
+    _bgColor = color
+    view.backgroundColor = color
+  }
   
   // State Properties for Input Management
   var isReady: Bool {
@@ -602,11 +609,22 @@ extension Notification.Name {
 
 // MARK: - TermUIState
 
+/// Which theme a terminal currently shows. `.automatic` follows the device
+/// appearance (dark → alternative when one is configured); the explicit cases
+/// are set by the user's switch shortcut and stick until switched again.
+@objc enum TermThemeMode: Int {
+  case automatic
+  case primary
+  case alternative
+}
+
 @objc class TermUIState: NSObject, NSSecureCoding {
   @objc var viewSize: CGSize = .zero
   @objc var rows: Int = 0
   @objc var cols: Int = 0
   @objc var themeName: String? = nil
+  @objc var alternativeThemeName: String? = nil
+  @objc var themeMode: TermThemeMode = .automatic
   @objc var fontName: String? = nil
   @objc var fontSize: Int = 16
   @objc var layoutMode: Int = 0
@@ -617,7 +635,7 @@ extension Notification.Name {
   @objc var layoutLockedFrame: CGRect = .zero
 
   private enum Key: CodingKey {
-    case viewSize, rows, cols, themeName, fontName, fontSize
+    case viewSize, rows, cols, themeName, alternativeThemeName, themeMode, fontName, fontSize
     case layoutMode, boldAsBright, enableBold, cursorBlink, layoutLocked, layoutLockedFrame
   }
 
@@ -629,6 +647,9 @@ extension Notification.Name {
     self.rows = coder.bk_decode(for: Key.rows)
     self.cols = coder.bk_decode(for: Key.cols)
     self.themeName = coder.bk_decode(for: Key.themeName)
+    self.alternativeThemeName = coder.bk_decode(for: Key.alternativeThemeName)
+    let themeModeRaw: Int = coder.bk_decode(for: Key.themeMode)
+    self.themeMode = TermThemeMode(rawValue: themeModeRaw) ?? .automatic
     self.fontName = coder.bk_decode(for: Key.fontName)
     self.fontSize = coder.bk_decode(for: Key.fontSize)
     self.layoutMode = coder.bk_decode(for: Key.layoutMode)
@@ -644,6 +665,8 @@ extension Notification.Name {
     coder.bk_encode(rows, for: Key.rows)
     coder.bk_encode(cols, for: Key.cols)
     coder.bk_encode(themeName, for: Key.themeName)
+    coder.bk_encode(alternativeThemeName, for: Key.alternativeThemeName)
+    coder.bk_encode(themeMode.rawValue, for: Key.themeMode)
     coder.bk_encode(fontName, for: Key.fontName)
     coder.bk_encode(fontSize, for: Key.fontSize)
     coder.bk_encode(layoutMode, for: Key.layoutMode)
@@ -656,11 +679,40 @@ extension Notification.Name {
 
   static var supportsSecureCoding: Bool { true }
 
+  /// The theme name to render given the device appearance. `.automatic` resolves
+  /// to the alternative when dark and one is configured; otherwise the primary.
+  @objc(effectiveThemeNameForDarkMode:)
+  func effectiveThemeName(isDark: Bool) -> String? {
+    switch themeMode {
+    case .primary:
+      return themeName
+    case .alternative:
+      return alternativeThemeName ?? themeName
+    case .automatic:
+      return (isDark && alternativeThemeName != nil) ? alternativeThemeName : themeName
+    }
+  }
+
+  /// Flips to the explicit theme opposite the one currently shown, where it
+  /// sticks (no-op when there is no alternative configured).
+  @objc(toggleThemeModeForDarkMode:)
+  func toggleThemeMode(isDark: Bool) {
+    guard alternativeThemeName != nil else { return }
+    let showingAlternative: Bool
+    switch themeMode {
+    case .automatic: showingAlternative = isDark
+    case .primary: showingAlternative = false
+    case .alternative: showingAlternative = true
+    }
+    themeMode = showingAlternative ? .primary : .alternative
+  }
+
   @objc static func withDefaults() -> TermUIState {
     let state = TermUIState()
     state.fontSize = BLKDefaults.selectedFontSize()?.intValue ?? 16
     state.fontName = BLKDefaults.selectedFontName()
     state.themeName = BLKDefaults.selectedThemeName()
+    state.alternativeThemeName = BLKDefaults.selectedAlternativeThemeName()
     state.enableBold = UInt(BLKDefaults.enableBold())
     state.boldAsBright = BLKDefaults.isBoldAsBright()
     state.cursorBlink = BLKDefaults.isCursorBlink()

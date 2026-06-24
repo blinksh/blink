@@ -223,6 +223,7 @@ private struct StoreData: Codable {
   // MARK: - ObjC Bridge
 
   @objc var bridgedThemeName: String { selectedStyle.themeName }
+  @objc var bridgedAlternativeThemeName: String? { selectedStyle.alternativeThemeName }
   @objc var bridgedFontName: String { selectedStyle.fontName }
   @objc var bridgedFontSize: NSNumber { NSNumber(value: Int(selectedStyle.fontSize)) }
   @objc var bridgedCursorBlink: Bool { selectedStyle.cursorBlink }
