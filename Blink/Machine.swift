@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
+import UIKit
 
 extension UUID {
   /// First segment of the UUID — a short, greppable token for logs.
@@ -288,7 +289,8 @@ final class MachineStore {
 
 class SessionMeta: Codable {
   fileprivate(set) var key: UUID = UUID()
-  fileprivate(set) var isSuspended: Bool = false
+  // Used by the session to flag its status after SS operations
+  var isSuspended: Bool = false
 }
 
 protocol SuspendableSession: class {
@@ -356,8 +358,11 @@ final class SessionStore {
 
     let archiver = NSKeyedArchiver(requiringSecureCoding: true)
     session.suspendSession(with: archiver)
+
+    // No live payload to snapshot — nothing to persist.
+    guard session.meta.isSuspended else { return }
+
     _fsWrite(archiver.encodedData, forKey: session.meta.key)
-    session.meta.isSuspended = true
     log.info("suspended session \(session.meta.key.short)")
   }
 
@@ -366,9 +371,18 @@ final class SessionStore {
       return
     }
 
+    // The archive is behind complete file protection; reading it while the
+    // device is locked fails. Retry until protected data is available.
+    guard UIApplication.shared.isProtectedDataAvailable else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak session] in
+        guard let session = session else { return }
+        SessionStore.shared.resumeIfNeeded(session: session)
+      }
+      return
+    }
+
     log.info("resume session \(session.meta.key.short)")
     _resume(forKey: session.meta.key)
-    session.meta.isSuspended = false
   }
 
   private func _resume(forKey key: UUID) {
@@ -382,7 +396,6 @@ final class SessionStore {
     }
 
     session.resume(with: unarchiver)
-    session.meta.isSuspended = false
   }
 
   private var _fsSessionsFolderURL: URL? = nil

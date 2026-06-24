@@ -414,12 +414,10 @@ extension TermController: TermDeviceDelegate {
   public func deviceIsReady() {
     if _sessionPayload != nil {
       _startSession()
-    } else {
+    } else if _meta.isSuspended {
       resumeIfNeeded()
-    }
-
-    if _sessionPayload == nil {
-      // Nothing to restore — start a default session.
+    } else {
+      // Never archived — nothing to restore, start a default session.
       _sessionPayload = MCPSessionPayload(params: MCPParams())
       _startSession()
     }
@@ -549,10 +547,19 @@ extension TermController: SuspendableSession {
   }
 
   func resumeIfNeeded() {
-    guard _termDevice.isReady else { return }
+    guard _termDevice.isReady, _meta.isSuspended else { return }
+
+    // Warm path: payload still live in memory, no archive read needed.
+    if let payload = _sessionPayload {
+      payload.resumeFromSuspended()
+      _postResume()
+      return
+    }
+
     SessionStore.shared.resumeIfNeeded(session: self)
   }
 
+  // Cold path: rebuilds the payload from the archive. Warm resume is in `resumeIfNeeded`.
   func resume(with unarchiver: NSKeyedUnarchiver) {
     guard let termUIState: TermUIState = unarchiver.bk_decode(of: [TermUIState.self], for: ArchiveKey.termUIState)
     else {
@@ -561,19 +568,22 @@ extension TermController: SuspendableSession {
 
     _termView.applyTermUIState(termUIState)
 
-    if _sessionPayload == nil {
-      guard let payload = decodePayload(from: unarchiver) else { return }
+    guard let payload = decodePayload(from: unarchiver) else { return }
 
-      _sessionPayload = payload
-      _prepareTerminalEnvironment()
-      payload.start(in: _termDevice, sessionKey: _meta.key.uuidString)
-      _session!.delegate = self
-    } else {
-      _sessionPayload!.resumeFromSuspended()
-    }
+    _sessionPayload = payload
+    _prepareTerminalEnvironment()
+    payload.start(in: _termDevice, sessionKey: _meta.key.uuidString)
+    _session?.delegate = self
+
+    _postResume()
+  }
+
+  // Shared tail of warm and cold resume.
+  private func _postResume() {
+    _meta.isSuspended = false
 
     if view.bounds.size != _termView.termUIState.viewSize {
-      _session!.sigwinch()
+      _session?.sigwinch()
     }
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -589,6 +599,7 @@ extension TermController: SuspendableSession {
 
     archiver.bk_encode(_termView.termUIState, for: ArchiveKey.termUIState)
     sessionPayload.encode(with: archiver)
+    _meta.isSuspended = true
   }
 
   func stopSession() {
