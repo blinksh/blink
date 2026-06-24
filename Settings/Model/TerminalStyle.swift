@@ -43,6 +43,7 @@ struct TerminalStyle: Codable, Identifiable, Equatable {
   let id: UUID
   var name: String
   var themeName: String
+  var alternativeThemeName: String? = nil
   var fontName: String
   var fontSize: CGFloat
   var cursorBlink: Bool

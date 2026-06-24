@@ -188,6 +188,7 @@
 		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
 		BDC98E0F2FEC1F01002BF2ED /* AddResourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */; };
 		BDC98E242FEC5E03002BF2ED /* SystemFontPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E232FEC5E03002BF2ED /* SystemFontPickerView.swift */; };
+		BDC98E262FEC6814002BF2ED /* AlternativeThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E252FEC6814002BF2ED /* AlternativeThemePickerView.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -947,6 +948,7 @@
 		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
 		BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddResourceView.swift; sourceTree = "<group>"; };
 		BDC98E232FEC5E03002BF2ED /* SystemFontPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemFontPickerView.swift; sourceTree = "<group>"; };
+		BDC98E252FEC6814002BF2ED /* AlternativeThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlternativeThemePickerView.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1973,6 +1975,7 @@
 				C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */,
 				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
 				BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */,
+				BDC98E252FEC6814002BF2ED /* AlternativeThemePickerView.swift */,
 				BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */,
 				BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */,
 				BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */,
@@ -3625,6 +3628,7 @@
 				D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				D2C24413238E44AB0082C69C /* KeyConfigPair.swift in Sources */,
+				BDC98E262FEC6814002BF2ED /* AlternativeThemePickerView.swift in Sources */,
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
 				D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */,
 				D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */,

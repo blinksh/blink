@@ -88,6 +88,20 @@ struct StyleCustomizationView: View {
           }
         }
 
+        // -- Alternative Theme --
+        Section {
+          Button {
+            pushAlternativeThemePicker()
+          } label: {
+            HStack {
+              Text("Alternative Theme").foregroundColor(.primary)
+              Spacer()
+              Text(editingStyle.alternativeThemeName ?? "None").foregroundColor(.secondary)
+              Chevron()
+            }
+          }
+        }
+
         // -- Fonts --
         Section("Fonts") {
           ForEach(fonts, id: \.name) { font in
@@ -260,6 +274,19 @@ struct StyleCustomizationView: View {
       initialSelection: editingStyle.fontName,
       onSelect: { name in
         editingStyle.fontName = name
+        applyToPreview()
+      }
+    ).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
+    nav.navController.pushViewController(vc, animated: true)
+  }
+
+  private func pushAlternativeThemePicker() {
+    let view = AlternativeThemePickerView(
+      baseStyle: editingStyle,
+      initialSelection: editingStyle.alternativeThemeName,
+      onSelect: { name in
+        editingStyle.alternativeThemeName = name
         applyToPreview()
       }
     ).environmentObject(nav)
