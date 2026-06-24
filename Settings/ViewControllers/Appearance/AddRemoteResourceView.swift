@@ -49,9 +49,7 @@ struct AddRemoteResourceView: View {
       galleryTopic: "themes",
       exists: { BKTheme.withName($0) != nil },
       save: { name, data in
-        var nserr: NSError?
-        _ = BKTheme.saveResource(name, withContent: data, error: &nserr)
-        if let nserr { throw nserr }
+        _ = try BKTheme.save(name, withContent: data)
       }
     )
 
@@ -63,9 +61,7 @@ struct AddRemoteResourceView: View {
       galleryTopic: "fonts",
       exists: { BKFont.withName($0) != nil },
       save: { name, data in
-        var nserr: NSError?
-        _ = BKFont.saveResource(name, withContent: data, error: &nserr)
-        if let nserr { throw nserr }
+        _ = try BKFont.save(name, withContent: data)
       }
     )
   }
@@ -120,7 +116,7 @@ struct AddRemoteResourceView: View {
 
       Section {
         Button {
-          BKLinkActions.sendToGitHub(kind.galleryTopic)
+          BKLinkActions.send(toGitHub: kind.galleryTopic)
         } label: {
           HStack {
             Text("Open Gallery on GitHub")
@@ -132,8 +128,6 @@ struct AddRemoteResourceView: View {
         }
       }
     }
-    .navigationTitle(kind.title)
-    .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         Button("Save") { save() }.disabled(!canSave)

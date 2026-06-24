@@ -182,10 +182,11 @@
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */; };
-		BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C512FE1D8AC002BF2ED /* Zuse.swift */; };
-		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
 		BDC98B772FD76672002BF2ED /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98B762FD76672002BF2ED /* Machine.swift */; };
 		BDC98B8A2FD8441C002BF2ED /* MachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98B892FD8441C002BF2ED /* MachineTests.swift */; };
+		BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C512FE1D8AC002BF2ED /* Zuse.swift */; };
+		BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */; };
+		BDC98E0F2FEC1F01002BF2ED /* AddResourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -939,10 +940,11 @@
 		BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServerTests.swift; sourceTree = "<group>"; };
 		BDBFA31F2728925C00C77798 /* WebSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
 		BDC400E82A41EE0B00238F88 /* SnippetsLocations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnippetsLocations.swift; sourceTree = "<group>"; };
-		BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogFile.swift; sourceTree = "<group>"; };
-		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
 		BDC98B762FD76672002BF2ED /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		BDC98B892FD8441C002BF2ED /* MachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineTests.swift; sourceTree = "<group>"; };
+		BDC98C502FE1D8AC002BF2ED /* SessionLogFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogFile.swift; sourceTree = "<group>"; };
+		BDC98C512FE1D8AC002BF2ED /* Zuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Zuse.swift; sourceTree = "<group>"; };
+		BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddResourceView.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1968,6 +1970,7 @@
 				C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */,
 				C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */,
 				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
+				BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */,
 				BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */,
 				BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */,
 				BD55D6A22F8D000100EE80EA /* AddRemoteResourceView.swift */,
@@ -3532,6 +3535,7 @@
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
+				BDC98E0F2FEC1F01002BF2ED /* AddResourceView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,

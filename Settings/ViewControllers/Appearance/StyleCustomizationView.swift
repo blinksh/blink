@@ -78,7 +78,7 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushAddRemoteResource(.theme)
+            pushAddResource(.theme)
           } label: {
             HStack {
               Text("Add a new theme")
@@ -110,7 +110,7 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushAddRemoteResource(.font)
+            pushAddResource(.font)
           } label: {
             HStack {
               Text("Add a new font")
@@ -228,8 +228,8 @@ struct StyleCustomizationView: View {
 
   // MARK: - Navigation
 
-  private func pushAddRemoteResource(_ kind: AddRemoteResourceView.Kind) {
-    let view = AddRemoteResourceView(kind: kind).environmentObject(nav)
+  private func pushAddResource(_ resourceType: AddResourceView.ResourceType) {
+    let view = AddResourceView(resourceType: resourceType).environmentObject(nav)
     let vc = UIHostingController(rootView: view)
     nav.navController.pushViewController(vc, animated: true)
   }
