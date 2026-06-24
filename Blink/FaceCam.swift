@@ -190,17 +190,7 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
     layer.cornerRadius = bounds.width * 0.5
     
     _placeholder.center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
-   
-    #if targetEnvironment(macCatalyst)
-    if _flipped {
-      _ctrl.view.transform = CGAffineTransform(scaleX: -1, y: 1);
-    } else {
-      _ctrl.view.transform = CGAffineTransform(scaleX: 1, y: 1);
-    }
-    let width = bounds.width * 16.0/9.0
-    _ctrl.view.frame = CGRect(x: (bounds.width - width) * 0.5, y: 0, width: width, height: bounds.height)
-    #else
-    
+
     let isPortait = (window?.windowScene?.interfaceOrientation ?? .landscapeLeft).isPortrait
     
     if traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
@@ -233,8 +223,7 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
       let height = bounds.width * 4.0/3.0
       _ctrl.view.frame = CGRect(x: 0, y: (bounds.height - height) * 0.5, width: bounds.width, height: height)
     }
-    #endif
-    
+
     
   }
   

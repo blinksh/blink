@@ -65,13 +65,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       self._makePaywallWindowIfNeeded()
     }
 
-    #if targetEnvironment(macCatalyst)
-      if let titlebar = windowScene.titlebar {
-        titlebar.titleVisibility = .hidden
-        titlebar.autoHidesToolbarInFullScreen = true
-      }
-    #endif
-
     let conditions = scene.activationConditions
 
     conditions.canActivateForTargetContentIdentifierPredicate = NSPredicate(value: true)

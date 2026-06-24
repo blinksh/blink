@@ -186,27 +186,6 @@ class SpaceController: UIViewController {
     super.viewDidAppear(animated)
 
     _refreshChromeForLayoutMode()
-
-    #if targetEnvironment(macCatalyst)
-    guard let appBundleUrl = Bundle.main.builtInPlugInsURL else {
-      return
-    }
-    
-    let helperBundleUrl = appBundleUrl.appendingPathComponent("AppKitBridge.bundle")
-    
-    guard let bundle = Bundle(url: helperBundleUrl) else {
-      return
-    }
-    
-    bundle.load()
-    
-    guard let object = NSClassFromString("AppBridge") as? NSObjectProtocol else {
-      return
-    }
-    
-    let selector = NSSelectorFromString("tuneStyle")
-    object.perform(selector)
-    #endif
   }
   
   private func setupOverlayConstraints() {
@@ -357,33 +336,21 @@ Please go to your subscriptions and cancel one of them!
     else {
       return
     }
-    
-    #if targetEnvironment(macCatalyst)
-    
-    if scene.session.persistentIdentifier.hasPrefix("NSMenuBarScene") {
-      KBTracker.shared.input?.reportStateWithSelection()
-      return
-    }
-    
-    #endif
-    
+
     guard view.window?.windowScene === scene
     else {
       return
     }
-    
+
     forEachActive { ctrl in
       if ctrl.viewIsLoaded {
         ctrl.placeToContainer()
       }
     }
 
-    #if targetEnvironment(macCatalyst)
-    #else
     if view.window === KBTracker.shared.input?.window {
       KBTracker.shared.input?.reportStateWithSelection()
     }
-    #endif
   }
     
   @objc func _didBecomeKeyWindow() {
