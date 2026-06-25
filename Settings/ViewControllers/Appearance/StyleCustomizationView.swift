@@ -35,7 +35,7 @@ struct StyleCustomizationView: View {
   @EnvironmentObject private var nav: Nav
   @ObservedObject private var store = TerminalStyleStore.shared
 
-  @State private var editingStyle: TerminalStyle = TerminalStyle.makeBuiltInDefault()
+  @State private var editingStyle: TerminalStyle = TerminalStyleStore.shared.selectedStyle
   @State private var isLoaded = false
   @State private var themes: [BKTheme] = []
   @State private var fonts: [BKFont] = []
@@ -212,6 +212,7 @@ struct StyleCustomizationView: View {
       store.setSelected(custom.id)
     }
     editingStyle = store.selectedStyle
+    previewRevision += 1
   }
 
   /// Persist current editing state to the store so the BLKDefaults bridge
