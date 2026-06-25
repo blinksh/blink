@@ -60,6 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
+    log.info("willConnect role=\(session.role.rawValue)")
 
     defer {
       self._makePaywallWindowIfNeeded()
@@ -123,6 +124,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
+    log.info("sceneDidBecomeActive protectedData=\(UIApplication.shared.isProtectedDataAvailable)")
     guard let window = window else {
       return
     }
@@ -149,8 +151,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
     }
 
-    _spCtrl.machine.resume()
     _activateFrontWindow()
+  }
+
+  func sceneWillEnterForeground(_ scene: UIScene) {
+    log.info("sceneWillEnterForeground protectedData=\(UIApplication.shared.isProtectedDataAvailable)")
+    // Resume on the real return-from-background; unlike didBecomeActive this does
+    // not fire on the transient activation during a device lock.
+    if UIApplication.shared.isProtectedDataAvailable {
+      _spCtrl.machine.resume()
+    }
   }
 
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
@@ -159,6 +169,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {
+    log.info("sceneDidDisconnect")
     if scene == ShadowWindow.shared?.refWindow.windowScene {
       ShadowWindow.shared?.layer.removeFromSuperlayer()
       ShadowWindow.shared?.windowScene = nil
@@ -242,6 +253,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       }
     }
     Zuse.logger(.machine, "Scene").info("suspend \(seen.count) active machine(s)")
+  }
+
+  @objc static func resumeActiveMachines() {
+    var seen = Set<ObjectIdentifier>()
+    for scene in UIApplication.shared.connectedScenes {
+      guard let machine = (scene.delegate as? SceneDelegate)?.spaceController.machine else {
+        continue
+      }
+      if seen.insert(ObjectIdentifier(machine)).inserted {
+        machine.resume()
+      }
+    }
+    Zuse.logger(.machine, "Scene").info("resume \(seen.count) active machine(s)")
   }
 }
 

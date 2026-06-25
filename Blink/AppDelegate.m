@@ -139,7 +139,9 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"protectedDataDidBecomeAvailable"];
   [self _runProtectedBootstrap];
+  // [SceneDelegate resumeActiveMachines];
 }
 
 - (void)_runProtectedBootstrap
@@ -155,6 +157,7 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"protectedDataWillBecomeUnavailable"];
   // Archives use complete file protection; a write after the device locks fails.
   // Snapshot now — even foreground — while the write still succeeds.
   [SceneDelegate suspendActiveMachines];
@@ -163,6 +166,7 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"willTerminate"];
   [self _suspendAndEndBackgroundExtension];
   [ZuseLog shutdown];
 }
@@ -230,10 +234,12 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+  [[ZuseLog machine:@"App"] info:[NSString stringWithFormat:@"didDiscardSceneSessions count=%lu", (unsigned long)sceneSessions.count]];
   [SpaceController onDidDiscardSceneSessions: sceneSessions];
 }
 
 - (void)_onSceneDidEnterBackground:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneDidEnterBackground"];
   NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
   for (UIScene *scene in scenes) {
     if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
@@ -244,10 +250,12 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneWillEnterForeground"];
   [self _endBackgroundExtension];
 }
 
 - (void)_onSceneDidActiveNotification:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneDidActivate (notification)"];
   [self _endBackgroundExtension];
 }
 
