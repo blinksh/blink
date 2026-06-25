@@ -44,10 +44,45 @@ enum TerminalEnvironment {
     _initIOSSystem()
     _registerCommands()
     _setupProcessEnv()
+    refreshAllowedPaths()
   }()
 
   static func ensureConfigured() {
     _ = _configured
+  }
+
+  /// Restrict ios_system file operations to Blink's document hierarchies plus the
+  /// user's bookmarked locations. Bookmarks are dynamic -- call this again whenever the bookmark
+  /// set changes.
+  static func refreshAllowedPaths() {
+    let fm = FileManager.default
+    var paths: [String] = []
+
+    if let documentsPath = BlinkPaths.documentsPath() {
+      paths.append(documentsPath)
+      if let resolved = try? fm.destinationOfSymbolicLink(atPath: documentsPath) {
+        paths.append(resolved)
+      }
+    }
+
+    if let iCloudDocuments = BlinkPaths.iCloudDriveDocuments() {
+      paths.append(iCloudDocuments)
+      if let resolved = try? fm.destinationOfSymbolicLink(atPath: iCloudDocuments) {
+        paths.append(resolved)
+      }
+    }
+
+    for path in BookmarkedLocationsManager.default.getLocationPaths() {
+      var buffer = [CChar](repeating: 0, count: Int(PATH_MAX))
+      if realpath(path, &buffer) != nil {
+        paths.append(String(cString: buffer))
+      } else {
+        paths.append(path)
+      }
+    }
+
+    // `ios_setAllowedPaths` is a single process-wide, so this is done here rather than set per session.
+    ios_setAllowedPaths(paths)
   }
 
   static func reloadProfileVars() {

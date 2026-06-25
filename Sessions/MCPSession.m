@@ -85,7 +85,6 @@
 
     NSString *homePath = [BlinkPaths homePath];
     ios_setMiniRoot(homePath);
-    [self updateAllowedPaths];
 
     // We are restoring mosh session if possible first.
     if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
@@ -187,7 +186,6 @@
       self.device.autoCR = TRUE;
     }
     [self setActiveSession];
-    [self updateAllowedPaths];
 
     _currentCmd = cmdline;
 
@@ -248,43 +246,6 @@
   return _childSession != nil || _currentCmd != nil || _currentCmdLine != nil;
 }
 
-
-- (void)updateAllowedPaths
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSMutableArray<NSString *> *allowedPaths = [[NSMutableArray alloc] init];
-  NSString *documentsPath = [BlinkPaths documentsPath];
-  NSString *iCloudDriveDocumentsPath = [BlinkPaths iCloudDriveDocuments];
-
-  if (documentsPath != NULL) {
-    [allowedPaths addObject: documentsPath];
-    NSString *resolvedPath = [fm destinationOfSymbolicLinkAtPath:[BlinkPaths documentsPath] error:nil];
-    if (resolvedPath != NULL) {
-      [allowedPaths addObject: resolvedPath];
-    }
-  }
-
-  if (iCloudDriveDocumentsPath != NULL) {
-    [allowedPaths addObject: iCloudDriveDocumentsPath];
-    NSString *resolvedPath = [fm destinationOfSymbolicLinkAtPath:[BlinkPaths iCloudDriveDocuments] error:nil];
-    if (resolvedPath != NULL) {
-      [allowedPaths addObject: iCloudDriveDocumentsPath];
-    }
-  }
-
-  NSArray<NSString *> *allowedLocations = [[BookmarkedLocationsManager default] getLocationPaths];
-  for (NSString *path in allowedLocations) {
-    char resolvedPath[PATH_MAX];
-    if (realpath([path fileSystemRepresentation], resolvedPath)) {
-      NSString *stringResolvingPath = [NSString stringWithUTF8String:resolvedPath];
-      [allowedPaths addObject: stringResolvingPath];
-    } else {
-      [allowedPaths addObject:path];
-    }
-  }
-  
-  ios_setAllowedPaths(allowedPaths);
-}
 
 - (void)_runMoshWithArgs:(NSString *)args
 {
