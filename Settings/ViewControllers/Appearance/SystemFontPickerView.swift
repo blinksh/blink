@@ -110,12 +110,17 @@ struct SystemFontPickerView: View {
 /// The device's installed font catalog that feeds the picker.
 enum SystemFonts {
   static var monospaced: [String] {
+    // Descriptor matching can surface not selectable faces, so we filter only usable ones.
+    let installed = Set(UIFont.familyNames)
     let traits: [UIFontDescriptor.TraitKey: Any] = [.symbolic: UIFontDescriptor.SymbolicTraits.traitMonoSpace.rawValue]
     let descriptor = UIFontDescriptor(fontAttributes: [.traits: traits])
     let matches = descriptor.matchingFontDescriptors(withMandatoryKeys: nil)
     var families = Set<String>()
     for match in matches {
-      families.insert(UIFont(descriptor: match, size: 10).familyName)
+      let family = UIFont(descriptor: match, size: 10).familyName
+      if installed.contains(family) {
+        families.insert(family)
+      }
     }
     return families.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
   }
