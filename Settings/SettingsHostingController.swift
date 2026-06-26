@@ -52,6 +52,17 @@ class SettingsHostingController: UIHostingController<NavView<SettingsView>>, UIA
     fatalError("init(coder:) has not been implemented")
   }
 
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    navigationItem.rightBarButtonItem = UIBarButtonItem(
+      barButtonSystemItem: .close, target: self, action: #selector(_close))
+  }
+
+  @objc private func _close() {
+    dismiss(animated: true) { [onDismiss] in onDismiss?() }
+  }
+
   // Delegate method called when the modal is dismissed
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
     onDismiss?()
