@@ -52,7 +52,6 @@
 - (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord;
 - (bool)isRunningCmd;
 
-- (void)updateAllowedPaths;
 - (void)setActiveSession;
 
 @end

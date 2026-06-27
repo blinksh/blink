@@ -127,6 +127,7 @@ struct BookmarkedLocation: Codable, Identifiable {
       throw error
     }
 
+    TerminalEnvironment.refreshAllowedPaths()
     return bookmarkedLocation
   }
 
@@ -143,6 +144,7 @@ struct BookmarkedLocation: Codable, Identifiable {
       location.url?.stopAccessingSecurityScopedResource()
       locations.remove(at: index)
       try writeLocations(locations)
+      TerminalEnvironment.refreshAllowedPaths()
     }
   }
 

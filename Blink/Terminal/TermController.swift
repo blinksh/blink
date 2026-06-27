@@ -414,12 +414,10 @@ extension TermController: TermDeviceDelegate {
   public func deviceIsReady() {
     if _sessionPayload != nil {
       _startSession()
-    } else {
+    } else if _meta.isSuspended {
       resumeIfNeeded()
-    }
-
-    if _sessionPayload == nil {
-      // Nothing to restore — start a default session.
+    } else {
+      // Never archived — nothing to restore, start a default session.
       _sessionPayload = MCPSessionPayload(params: MCPParams())
       _startSession()
     }
@@ -549,31 +547,60 @@ extension TermController: SuspendableSession {
   }
 
   func resumeIfNeeded() {
-    guard _termDevice.isReady else { return }
-    SessionStore.shared.resumeIfNeeded(session: self)
+    guard _termDevice.isReady, _meta.isSuspended else { return }
+
+    // Warm: payload still live in memory, no archive read needed.
+    if let payload = _sessionPayload {
+      payload.resumeFromSuspended()
+      _postResume()
+    } else {
+      SessionStore.shared.resumeIfNeeded(session: self)
+    }
   }
 
-  func resume(with unarchiver: NSKeyedUnarchiver) {
+  // Cold path: rebuilds the payload from the archive. Warm resume is in `resumeIfNeeded`.
+  func resume(with unarchiver: NSKeyedUnarchiver?) {
+    guard let unarchiver = unarchiver else {
+      _showRestoreFailure()
+      return
+    }
+
     guard let termUIState: TermUIState = unarchiver.bk_decode(of: [TermUIState.self], for: ArchiveKey.termUIState)
     else {
+      _showRestoreFailure()
       return
     }
 
     _termView.applyTermUIState(termUIState)
 
-    if _sessionPayload == nil {
-      guard let payload = decodePayload(from: unarchiver) else { return }
-
-      _sessionPayload = payload
-      _prepareTerminalEnvironment()
-      payload.start(in: _termDevice, sessionKey: _meta.key.uuidString)
-      _session!.delegate = self
-    } else {
-      _sessionPayload!.resumeFromSuspended()
+    guard let payload = decodePayload(from: unarchiver) else {
+      _showRestoreFailure()
+      return
     }
 
+    _sessionPayload = payload
+    _prepareTerminalEnvironment()
+    payload.start(in: _termDevice, sessionKey: _meta.key.uuidString)
+    _session?.delegate = self
+
+    _postResume()
+  }
+
+  // The archive exists but can't be decoded (corruption, version skew). Leave the
+  // slot live but empty so it stops retrying, and tell the user how to recover.
+  private func _showRestoreFailure() {
+    // ANSI: clear screen, home cursor, bold red "Oops", reset, prompt.
+    let msg = "\u{001B}[2J\u{001B}[H\u{001B}[1;31mOops\u{001B}[0m — couldn't restore this terminal.\r\nClose this tab and open a new one to start fresh.\r\n"
+    _termView.write(msg)
+    _meta.isSuspended = false
+  }
+
+  // Shared tail of warm and cold resume.
+  private func _postResume() {
+    _meta.isSuspended = false
+
     if view.bounds.size != _termView.termUIState.viewSize {
-      _session!.sigwinch()
+      _session?.sigwinch()
     }
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -589,6 +616,7 @@ extension TermController: SuspendableSession {
 
     archiver.bk_encode(_termView.termUIState, for: ArchiveKey.termUIState)
     sessionPayload.encode(with: archiver)
+    _meta.isSuspended = true
   }
 
   func stopSession() {

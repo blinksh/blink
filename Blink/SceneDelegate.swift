@@ -40,7 +40,6 @@ import RevenueCat
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
 
-  private var _ctrl = DummyVC()
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
   @objc var spaceController: SpaceController { _spCtrl }
@@ -60,17 +59,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
+    log.info("willConnect role=\(session.role.rawValue)")
 
     defer {
       self._makePaywallWindowIfNeeded()
     }
-
-    #if targetEnvironment(macCatalyst)
-      if let titlebar = windowScene.titlebar {
-        titlebar.titleVisibility = .hidden
-        titlebar.autoHidesToolbarInFullScreen = true
-      }
-    #endif
 
     let conditions = scene.activationConditions
 
@@ -130,6 +123,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func sceneDidBecomeActive(_ scene: UIScene) {
+    log.info("sceneDidBecomeActive protectedData=\(UIApplication.shared.isProtectedDataAvailable)")
     guard let window = window else {
       return
     }
@@ -156,21 +150,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
     }
 
-    // TODO Next step, this should go to the SC itself, on an event fired when its window gets activated, and not in the background.
-    if let term = _spCtrl.currentTerm() {
-      term.resumeIfNeeded()
-      term.view?.setNeedsLayout()
-    }
-
     _activateFrontWindow()
   }
 
+  func sceneWillEnterForeground(_ scene: UIScene) {
+    log.info("sceneWillEnterForeground protectedData=\(UIApplication.shared.isProtectedDataAvailable)")
+    // Resume on the real return-from-background; unlike didBecomeActive this does
+    // not fire on the transient activation during a device lock.
+    if UIApplication.shared.isProtectedDataAvailable {
+      _spCtrl.machine.resume()
+    }
+  }
+
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    _setDummyVC()
     return _spCtrl.stateRestorationActivity()
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {
+    log.info("sceneDidDisconnect")
     if scene == ShadowWindow.shared?.refWindow.windowScene {
       ShadowWindow.shared?.layer.removeFromSuperlayer()
       ShadowWindow.shared?.windowScene = nil
@@ -229,16 +226,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
 
-  private func _setDummyVC() {
-    if let _ = _spCtrl.presentedViewController {
-      return
-    }
-    // Trick to reset stick cmd key.
-    _ctrl.view.frame = _spCtrl.view.frame
-    window?.rootViewController = _ctrl
-    _ctrl.view.addSubview(_spCtrl.view)
-  }
-
   /// Suspend every active scene's Machine directly — the path for when the
   /// per-scene background suspend won't fire (foreground terminate, or the
   /// protected-data lock deadline). Idempotent; the same Machine can back more
@@ -254,6 +241,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       }
     }
     Zuse.logger(.machine, "Scene").info("suspend \(seen.count) active machine(s)")
+  }
+
+  @objc static func resumeActiveMachines() {
+    var seen = Set<ObjectIdentifier>()
+    for scene in UIApplication.shared.connectedScenes {
+      guard let machine = (scene.delegate as? SceneDelegate)?.spaceController.machine else {
+        continue
+      }
+      if seen.insert(ObjectIdentifier(machine)).inserted {
+        machine.resume()
+      }
+    }
+    Zuse.logger(.machine, "Scene").info("resume \(seen.count) active machine(s)")
   }
 }
 
@@ -396,8 +396,3 @@ class ExternalWindow: UIWindow {
   @objc static var shared: ShadowWindow? = nil
 }
 
-class DummyVC: UIViewController {
-  override var canBecomeFirstResponder: Bool { true }
-  override var prefersStatusBarHidden: Bool { true }
-  public override var prefersHomeIndicatorAutoHidden: Bool { true }
-}

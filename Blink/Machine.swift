@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
+import UIKit
 
 extension UUID {
   /// First segment of the UUID — a short, greppable token for logs.
@@ -217,6 +218,14 @@ final class Machine {
     }
     persistStructure()
   }
+
+  /// Wake this Machine's live sessions; each decides whether it actually resumes.
+  func resume() {
+    log.info("resume \(name) slots=\(slots.count)")
+    for key in sessionKeys {
+      session(for: key)?.resumeIfNeeded()
+    }
+  }
 }
 
 /// Persists a `MachineState` to disk, one file per Machine.
@@ -288,13 +297,16 @@ final class MachineStore {
 
 class SessionMeta: Codable {
   fileprivate(set) var key: UUID = UUID()
-  fileprivate(set) var isSuspended: Bool = false
+  // Used by the session to flag its status after SS operations
+  var isSuspended: Bool = false
 }
 
 protocol SuspendableSession: class {
   var meta: SessionMeta { get }
   init(meta: SessionMeta?)
-  func resume(with unarchiver: NSKeyedUnarchiver)
+  // Wake if appropriate; the session decides whether it actually resumes.
+  func resumeIfNeeded()
+  func resume(with unarchiver: NSKeyedUnarchiver?)
   func suspendSession(with archiver: NSKeyedArchiver)
   // Tears the live session down; persistence is handled separately on suspend
   func stopSession()
@@ -356,8 +368,11 @@ final class SessionStore {
 
     let archiver = NSKeyedArchiver(requiringSecureCoding: true)
     session.suspendSession(with: archiver)
+
+    // No live payload to snapshot — nothing to persist.
+    guard session.meta.isSuspended else { return }
+
     _fsWrite(archiver.encodedData, forKey: session.meta.key)
-    session.meta.isSuspended = true
     log.info("suspended session \(session.meta.key.short)")
   }
 
@@ -366,23 +381,21 @@ final class SessionStore {
       return
     }
 
-    log.info("resume session \(session.meta.key.short)")
-    _resume(forKey: session.meta.key)
-    session.meta.isSuspended = false
-  }
-
-  private func _resume(forKey key: UUID) {
-    guard
-      let session = _sessionsIndex[key],
-      let data = _fsRead(forKey: key),
-      let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
-    else {
-      log.warn("resume \(key.short) — no live session or archive")
+    // The archive is behind complete file protection; reading it while the
+    // device is locked fails. Retry until protected data is available.
+    guard UIApplication.shared.isProtectedDataAvailable else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak session] in
+        guard let session = session else { return }
+        SessionStore.shared.resumeIfNeeded(session: session)
+      }
       return
     }
 
+    // A read failure past the lock guard is permanent; pass nil so the session
+    // runs its failure path rather than being left unresolved.
+    log.info("resume session \(session.meta.key.short)")
+    let unarchiver = _fsRead(forKey: session.meta.key).flatMap { try? NSKeyedUnarchiver(forReadingFrom: $0) }
     session.resume(with: unarchiver)
-    session.meta.isSuspended = false
   }
 
   private var _fsSessionsFolderURL: URL? = nil

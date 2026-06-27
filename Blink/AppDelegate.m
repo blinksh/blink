@@ -51,6 +51,7 @@ extern void build_auto_start_wg_ports(void);
 @implementation AppDelegate {
   NSTimer *_backgroundExtensionTimer;
   UIBackgroundTaskIdentifier _backgroundExtensionTask;
+  BOOL _deviceMayBeLocked;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -139,7 +140,10 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"protectedDataDidBecomeAvailable"];
+  _deviceMayBeLocked = NO;
   [self _runProtectedBootstrap];
+  // [SceneDelegate resumeActiveMachines];
 }
 
 - (void)_runProtectedBootstrap
@@ -155,14 +159,17 @@ void __on_pipebroken_signal(int signum){
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"protectedDataWillBecomeUnavailable"];
   // Archives use complete file protection; a write after the device locks fails.
   // Snapshot now — even foreground — while the write still succeeds.
   [SceneDelegate suspendActiveMachines];
   [self _endBackgroundExtension];
+  _deviceMayBeLocked = YES;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+  [[ZuseLog machine:@"App"] info:@"willTerminate"];
   [self _suspendAndEndBackgroundExtension];
   [ZuseLog shutdown];
 }
@@ -172,8 +179,9 @@ void __on_pipebroken_signal(int signum){
 {
   UIApplication *application = [UIApplication sharedApplication];
 
-  // No point keeping the process alive while the device is locked.
-  if (!application.isProtectedDataAvailable) {
+  // No point keeping the process alive while the device is locked; the flag also
+  // covers the lock window before isProtectedDataAvailable flips.
+  if (_deviceMayBeLocked || !application.isProtectedDataAvailable) {
     return;
   }
 
@@ -230,10 +238,12 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+  [[ZuseLog machine:@"App"] info:[NSString stringWithFormat:@"didDiscardSceneSessions count=%lu", (unsigned long)sceneSessions.count]];
   [SpaceController onDidDiscardSceneSessions: sceneSessions];
 }
 
 - (void)_onSceneDidEnterBackground:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneDidEnterBackground"];
   NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
   for (UIScene *scene in scenes) {
     if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
@@ -244,10 +254,12 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneWillEnterForeground"];
   [self _endBackgroundExtension];
 }
 
 - (void)_onSceneDidActiveNotification:(NSNotification *)notification {
+  [[ZuseLog machine:@"App"] info:@"sceneDidActivate (notification)"];
   [self _endBackgroundExtension];
 }
 
