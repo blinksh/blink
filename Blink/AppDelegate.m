@@ -51,6 +51,7 @@ extern void build_auto_start_wg_ports(void);
 @implementation AppDelegate {
   NSTimer *_backgroundExtensionTimer;
   UIBackgroundTaskIdentifier _backgroundExtensionTask;
+  BOOL _deviceMayBeLocked;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -140,6 +141,7 @@ void __on_pipebroken_signal(int signum){
 - (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
 {
   [[ZuseLog machine:@"App"] info:@"protectedDataDidBecomeAvailable"];
+  _deviceMayBeLocked = NO;
   [self _runProtectedBootstrap];
   // [SceneDelegate resumeActiveMachines];
 }
@@ -162,6 +164,7 @@ void __on_pipebroken_signal(int signum){
   // Snapshot now — even foreground — while the write still succeeds.
   [SceneDelegate suspendActiveMachines];
   [self _endBackgroundExtension];
+  _deviceMayBeLocked = YES;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -176,8 +179,9 @@ void __on_pipebroken_signal(int signum){
 {
   UIApplication *application = [UIApplication sharedApplication];
 
-  // No point keeping the process alive while the device is locked.
-  if (!application.isProtectedDataAvailable) {
+  // No point keeping the process alive while the device is locked; the flag also
+  // covers the lock window before isProtectedDataAvailable flips.
+  if (_deviceMayBeLocked || !application.isProtectedDataAvailable) {
     return;
   }
 
