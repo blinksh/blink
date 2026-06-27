@@ -73,6 +73,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSMutableArray *_touchesArray;
   
   id<UIInteraction> _editMenuIteraction;
+
+  CGSize _lockedSuperviewSize;
 }
 
 
@@ -117,6 +119,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _coverView.frame = self.bounds;
   [self bringSubviewToFront:_coverView];
+
+  // Lock freezes the working surface. If the user changes that surface
+  // (window resize, rotation), release the lock and fall back to the
+  // current layout mode. Keyboard appearance does not change our bounds,
+  // so it does not trigger this.
+  if (_layoutLocked && !CGSizeEqualToSize(_lockedSuperviewSize, self.bounds.size)) {
+    [self _unlockLayout];
+  }
 }
 
 
@@ -428,6 +438,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   if (termUIState.layoutLocked && !self.layoutLocked) {
     self.layoutLockedFrame = termUIState.layoutLockedFrame;
+    _lockedSuperviewSize = self.bounds.size;
     if (self.constraintManager) {
       [self.constraintManager setLayoutLocked:YES withFrame:termUIState.layoutLockedFrame];
     }
@@ -1095,19 +1106,20 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 }
 
 -(void)_lockLayout {
+  CGRect frame = [self webViewFrame];
+
   if (self.termUIState) {
     self.termUIState.layoutLocked = true;
-    self.termUIState.layoutLockedFrame = [self webViewFrame];
+    self.termUIState.layoutLockedFrame = frame;
   }
-  
-  // Update local state
-  self.layoutLockedFrame = [self webViewFrame];
-  
-  // Update constraint manager
+
+  self.layoutLockedFrame = frame;
+  _lockedSuperviewSize = self.bounds.size;
+
   if (self.constraintManager) {
-    [self.constraintManager setLayoutLocked:YES withFrame:[self webViewFrame]];
+    [self.constraintManager setLayoutLocked:YES withFrame:frame];
   }
-  
+
   self.layoutLocked = true;
 }
 
