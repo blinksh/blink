@@ -230,9 +230,6 @@
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		C94437651D838ABF0096F84E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
 		C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
-		C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
-		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
-		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
 		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
 		C9B2E0311D6B612400B89F69 /* BLKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BLKDefaults.m */; };
 		C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
@@ -987,12 +984,6 @@
 		C94437641D838ABF0096F84E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DismissSegue.h; path = ViewControllers/DismissSegue.h; sourceTree = "<group>"; };
 		C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DismissSegue.m; path = ViewControllers/DismissSegue.m; sourceTree = "<group>"; };
-		C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAppearanceViewController.h; sourceTree = "<group>"; };
-		C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAppearanceViewController.m; sourceTree = "<group>"; };
-		C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFontCreateViewController.h; sourceTree = "<group>"; };
-		C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFontCreateViewController.m; sourceTree = "<group>"; };
-		C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKThemeCreateViewController.h; sourceTree = "<group>"; };
-		C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKThemeCreateViewController.m; sourceTree = "<group>"; };
 		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		C9B2E0091D6B612300B89F69 /* BLKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLKDefaults.h; sourceTree = "<group>"; };
 		C9B2E00A1D6B612300B89F69 /* BLKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLKDefaults.m; sourceTree = "<group>"; };
@@ -1968,12 +1959,6 @@
 		C989E54F1D6CC4A1003E0079 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
-				C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */,
-				C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */,
-				C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */,
-				C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */,
-				C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */,
-				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
 				BDC98E0E2FEC1F01002BF2ED /* AddResourceView.swift */,
 				BDC98E252FEC6814002BF2ED /* AlternativeThemePickerView.swift */,
 				BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */,
@@ -3523,7 +3508,6 @@
 				D259479C269C671F008B5305 /* MoshCustomOptionsPickerView.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshCustomOptionsPickerView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
-				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				BD55D6A02F8D000100EE80EA /* StyleCustomizationView.swift in Sources */,
 				BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */,
 				BD55D6A32F8D000100EE80EA /* AddRemoteResourceView.swift in Sources */,
@@ -3589,7 +3573,6 @@
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
 				07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
-				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				BDC400E92A41EE0B00238F88 /* SnippetsLocations.swift in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
@@ -3632,7 +3615,6 @@
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
 				D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */,
 				D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */,
-				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
 				D2CC13B729C05EE7008C71FA /* Intro.swift in Sources */,
 				D2ECBF4929645814004E95C4 /* BuildApi.swift in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
