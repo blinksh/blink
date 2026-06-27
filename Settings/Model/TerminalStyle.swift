@@ -43,6 +43,7 @@ struct TerminalStyle: Codable, Identifiable, Equatable {
   let id: UUID
   var name: String
   var themeName: String
+  var alternativeThemeName: String? = nil
   var fontName: String
   var fontSize: CGFloat
   var cursorBlink: Bool
@@ -120,12 +121,12 @@ extension TerminalStyle {
     let themeContent = effectiveTheme?.content()
 
     // Font resolution
-    let fontResource = BKFont.withName(fontName) as? BKFont
+    let fontResource = BKFont(named: fontName)
     if fontResource == nil {
       warnings.append(.fontNotFound(name: fontName))
     }
 
-    let fallbackFont = BKFont.withName(Self.defaultFontName) as? BKFont
+    let fallbackFont = BKFont(named: Self.defaultFontName)
     let effectiveFont = fontResource ?? fallbackFont
     let fontContent = effectiveFont?.content()
     let fontFamily = effectiveFont?.name ?? Self.defaultFontName

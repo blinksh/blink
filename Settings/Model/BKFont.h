@@ -37,4 +37,10 @@
 
 @property BOOL systemWide;
 
+// A matching resource, else an on-demand system font for any installed family, else nil.
++ (instancetype)fontNamed:(NSString *)name NS_SWIFT_NAME(init(named:));
+
+// An already-installed family used by name: @font-face local('family-name')
++ (instancetype)systemFontNamed:(NSString *)name;
+
 @end

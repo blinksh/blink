@@ -35,7 +35,7 @@ struct StyleCustomizationView: View {
   @EnvironmentObject private var nav: Nav
   @ObservedObject private var store = TerminalStyleStore.shared
 
-  @State private var editingStyle: TerminalStyle = TerminalStyle.makeBuiltInDefault()
+  @State private var editingStyle: TerminalStyle = TerminalStyleStore.shared.selectedStyle
   @State private var isLoaded = false
   @State private var themes: [BKTheme] = []
   @State private var fonts: [BKFont] = []
@@ -78,11 +78,25 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushStoryboardController("BKThemeCreateViewController")
+            pushAddResource(.theme)
           } label: {
             HStack {
               Text("Add a new theme")
               Spacer()
+              Chevron()
+            }
+          }
+        }
+
+        // -- Alternative Theme --
+        Section {
+          Button {
+            pushAlternativeThemePicker()
+          } label: {
+            HStack {
+              Text("Alternative Theme").foregroundColor(.primary)
+              Spacer()
+              Text(editingStyle.alternativeThemeName ?? "None").foregroundColor(.secondary)
               Chevron()
             }
           }
@@ -110,7 +124,21 @@ struct StyleCustomizationView: View {
           }
 
           Button {
-            pushStoryboardController("BKFontCreateViewController")
+            pushSystemFontPicker()
+          } label: {
+            HStack {
+              Text("System Font").foregroundColor(.primary)
+              Spacer()
+              if let systemName = selectedSystemFontName {
+                Text(systemName).foregroundColor(.secondary)
+                Image(systemName: "checkmark").foregroundColor(.accentColor)
+              }
+              Chevron()
+            }
+          }
+
+          Button {
+            pushAddResource(.font)
           } label: {
             HStack {
               Text("Add a new font")
@@ -184,6 +212,7 @@ struct StyleCustomizationView: View {
       store.setSelected(custom.id)
     }
     editingStyle = store.selectedStyle
+    previewRevision += 1
   }
 
   /// Persist current editing state to the store so the BLKDefaults bridge
@@ -228,9 +257,41 @@ struct StyleCustomizationView: View {
 
   // MARK: - Navigation
 
-  private func pushStoryboardController(_ identifier: String) {
-    let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-    let vc = storyboard.instantiateViewController(withIdentifier: identifier)
+  private func pushAddResource(_ resourceType: AddResourceView.ResourceType) {
+    let view = AddResourceView(resourceType: resourceType).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
+    nav.navController.pushViewController(vc, animated: true)
+  }
+
+  /// Non-nil when the current font is an installed system family rather than a resource.
+  private var selectedSystemFontName: String? {
+    let name = editingStyle.fontName
+    if fonts.contains(where: { $0.name == name }) { return nil }
+    return SystemFonts.contains(name) ? name : nil
+  }
+
+  private func pushSystemFontPicker() {
+    let view = SystemFontPickerView(
+      initialSelection: editingStyle.fontName,
+      onSelect: { name in
+        editingStyle.fontName = name
+        applyToPreview()
+      }
+    ).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
+    nav.navController.pushViewController(vc, animated: true)
+  }
+
+  private func pushAlternativeThemePicker() {
+    let view = AlternativeThemePickerView(
+      baseStyle: editingStyle,
+      initialSelection: editingStyle.alternativeThemeName,
+      onSelect: { name in
+        editingStyle.alternativeThemeName = name
+        applyToPreview()
+      }
+    ).environmentObject(nav)
+    let vc = UIHostingController(rootView: view)
     nav.navController.pushViewController(vc, animated: true)
   }
 }

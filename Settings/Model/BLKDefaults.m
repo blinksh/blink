@@ -349,6 +349,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   return TerminalStyleStore.shared.bridgedThemeName;
 }
++ (NSString *)selectedAlternativeThemeName
+{
+  return TerminalStyleStore.shared.bridgedAlternativeThemeName;
+}
 
 + (NSNumber *)selectedFontSize
 {

@@ -110,6 +110,7 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 + (void)setSnippetsDefaultLocation:(BKSnippetDefaultLocation) value;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
++ (nullable NSString *)selectedAlternativeThemeName;
 + (NSNumber *)selectedFontSize;
 + (NSNumber *)selectedExternalDisplayFontSize;
 + (BOOL)isCursorBlink;
