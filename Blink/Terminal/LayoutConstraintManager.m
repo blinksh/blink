@@ -48,6 +48,8 @@
 @property (nonatomic, strong) NSLayoutConstraint *bottomConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *bottomToKeyboardConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *minHeightConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *widthConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 
 
 @end
@@ -97,6 +99,12 @@
       self.minHeightConstraint.priority = UILayoutPriorityRequired;
   }
 
+  // Absolute size constraints used while locked. Inactive until lock engages.
+  self.widthConstraint = [view.widthAnchor constraintEqualToConstant:0];
+  self.heightConstraint = [view.heightAnchor constraintEqualToConstant:0];
+  self.widthConstraint.priority = UILayoutPriorityRequired;
+  self.heightConstraint.priority = UILayoutPriorityRequired;
+
     NSMutableArray *constraintsToActivate = [NSMutableArray arrayWithObjects:
         self.topConstraint,
         self.leadingConstraint,
@@ -124,17 +132,15 @@
     self.lockedFrame = frame;
 
     if (locked) {
-        [self updateConstraintsForLockedFrame];
+        [self applyLockedFrameConstraints:frame];
     } else {
+        [self releaseLockedFrameConstraints];
         [self updateConstraintsForCurrentState];
     }
 }
 
 - (void)updateConstraintsForCurrentState {
-    if (self.isLayoutLocked) {
-        [self updateConstraintsForLockedFrame];
-        return;
-    }
+    if (self.isLayoutLocked) return;
 
     UIEdgeInsets insets = [self calculateInsetsForLayoutMode:self.currentLayoutMode];
 
@@ -144,21 +150,28 @@
     self.bottomConstraint.constant = -insets.bottom;
 }
 
-- (void)updateConstraintsForLockedFrame {
-    if (CGRectIsEmpty(self.lockedFrame)) return;
+// Freeze the view to an absolute frame, with no kbd pull
+- (void)applyLockedFrameConstraints:(CGRect)frame {
+    self.trailingConstraint.active = NO;
+    self.bottomConstraint.active = NO;
+    self.bottomToKeyboardConstraint.active = NO;
 
-    UIView *superview = self.managedView.superview;
-    if (!superview) return;
+    self.topConstraint.constant = frame.origin.y;
+    self.leadingConstraint.constant = frame.origin.x;
+    self.widthConstraint.constant = frame.size.width;
+    self.heightConstraint.constant = frame.size.height;
 
-    CGFloat top = self.lockedFrame.origin.y;
-    CGFloat left = self.lockedFrame.origin.x;
-    CGFloat right = superview.bounds.size.width - CGRectGetMaxX(self.lockedFrame);
-    CGFloat bottom = superview.bounds.size.height - CGRectGetMaxY(self.lockedFrame);
+    self.widthConstraint.active = YES;
+    self.heightConstraint.active = YES;
+}
 
-    self.topConstraint.constant = top;
-    self.leadingConstraint.constant = left;
-    self.trailingConstraint.constant = -right;
-    self.bottomConstraint.constant = -bottom;
+- (void)releaseLockedFrameConstraints {
+    self.widthConstraint.active = NO;
+    self.heightConstraint.active = NO;
+
+    self.trailingConstraint.active = YES;
+    self.bottomConstraint.active = YES;
+    self.bottomToKeyboardConstraint.active = YES;
 }
 
 - (UIEdgeInsets)calculateInsetsForLayoutMode:(BKLayoutMode)mode {
