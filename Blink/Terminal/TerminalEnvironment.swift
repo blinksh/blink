@@ -53,8 +53,7 @@ enum TerminalEnvironment {
   }
 
   /// Restrict ios_system file operations to Blink's document hierarchies plus the
-  /// user's bookmarked locations. Bookmarks are dynamic -- call this again whenever the bookmark
-  /// set changes.
+  /// user's bookmarked locations.
   static func refreshAllowedPaths() {
     let fm = FileManager.default
     var paths: [String] = []
@@ -73,6 +72,8 @@ enum TerminalEnvironment {
       }
     }
 
+    BookmarkedLocationsManager.default.activateAccess()
+
     for path in BookmarkedLocationsManager.default.getLocationPaths() {
       var buffer = [CChar](repeating: 0, count: Int(PATH_MAX))
       if realpath(path, &buffer) != nil {
@@ -82,7 +83,6 @@ enum TerminalEnvironment {
       }
     }
 
-    // `ios_setAllowedPaths` is a single process-wide, so this is done here rather than set per session.
     ios_setAllowedPaths(paths)
   }
 

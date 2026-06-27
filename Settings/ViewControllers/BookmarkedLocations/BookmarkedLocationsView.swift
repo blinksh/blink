@@ -64,7 +64,16 @@ struct BookmarkedLocationsView: View {
         List {
           Section(footer: Text("Bookmarked locations are symlinked to your shell's Home directory and accessible via the CLI. [Learn More](https://docs.blink.sh/advanced/bookmarks)")) {
             ForEach(locations) { location in
-              Text(location.name)
+              if location.isAvailable {
+                Text(location.name)
+              } else {
+                HStack {
+                  Text(location.name)
+                  Spacer()
+                  Text("Unavailable").font(.caption)
+                }
+                .foregroundColor(.secondary)
+              }
             }
               .onDelete(perform: deleteLocation)
 
@@ -124,6 +133,7 @@ struct BookmarkedLocationsView: View {
       let addedLocation = try locationsManager.addLocation(name: name, location: location)
       resetNewLocation()
       locations.append(addedLocation)
+      TerminalEnvironment.refreshAllowedPaths()
     } catch {
       if let error = error as? BookmarkedLocationsManager.Error {
         switch error {
@@ -164,6 +174,7 @@ struct BookmarkedLocationsView: View {
       let location = locations[index]
       try? locationsManager.removeLocation(name: location.name)
     }
+    TerminalEnvironment.refreshAllowedPaths()
     fetchLocations()
   }
 

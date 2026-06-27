@@ -40,6 +40,8 @@ struct BookmarkedLocation: Codable, Identifiable {
   private let bookmarkData: Data
   let url: URL?
   let isStale: Bool
+  // Whether the bookmark is currently reachable. Not persisted.
+  var isAvailable: Bool = true
 
   fileprivate init(name: String, location: URL) throws {
     self.name = name
@@ -127,16 +129,14 @@ struct BookmarkedLocation: Codable, Identifiable {
       throw error
     }
 
-    TerminalEnvironment.refreshAllowedPaths()
     return bookmarkedLocation
   }
 
   func removeLocation(name: String) throws {
     let symlinkURL = symlinkBaseDirectory.appendingPathComponent(name)
 
-    if fm.fileExists(atPath: symlinkURL.path) {
-      try? FileManager.default.removeItem(at: symlinkURL)
-    }
+    // removeItem targets the symlink itself, so a dangling link is cleared too.
+    try? fm.removeItem(at: symlinkURL)
 
     var locations = try readLocations()
     if let index = locations.firstIndex(where: { $0.name == name }) {
@@ -144,17 +144,44 @@ struct BookmarkedLocation: Codable, Identifiable {
       location.url?.stopAccessingSecurityScopedResource()
       locations.remove(at: index)
       try writeLocations(locations)
-      TerminalEnvironment.refreshAllowedPaths()
     }
   }
 
+  /// The stored bookmarks with their current availability.
   func getLocations() throws -> [BookmarkedLocation] {
-    let storedLocations = try readLocations()
-    let validLocations = _syncWithStoredLocations(storedLocations)
-    if storedLocations.count != validLocations.count {
-      try writeLocations(validLocations)
+    _activate(try readLocations())
+  }
+
+  /// Makes every stored bookmark usable this session, flagging the unreachable ones.
+  @discardableResult
+  private func _activate(_ storedLocations: [BookmarkedLocation]) -> [BookmarkedLocation] {
+    storedLocations.map { stored in
+      var location = stored
+      if location.isStale,
+         let refreshed = try? location.refresh(), !refreshed.isStale {
+        location = refreshed
+      }
+      if let url = location.url, url.startAccessingSecurityScopedResource() {
+        _ensureSymlink(name: location.name, target: url)
+        location.isAvailable = true
+      } else {
+        location.isAvailable = false
+      }
+      return location
     }
-    return validLocations
+  }
+
+  private func _ensureSymlink(name: String, target: URL) {
+    let symlinkURL = symlinkBaseDirectory.appendingPathComponent(name)
+    let symlinkPath = symlinkURL.path()
+    if (try? fm.attributesOfItem(atPath: symlinkPath)) != nil {
+      if let destPath = try? fm.destinationOfSymbolicLink(atPath: symlinkPath),
+         fm.isReadableFile(atPath: destPath) {
+        return
+      }
+      try? fm.removeItem(at: symlinkURL)
+    }
+    try? fm.createSymbolicLink(at: symlinkURL, withDestinationURL: target)
   }
 
   private func readLocations() throws -> [BookmarkedLocation] {
@@ -171,48 +198,6 @@ struct BookmarkedLocation: Codable, Identifiable {
     }
   }
 
-  private func _syncWithStoredLocations(_ storedLocations: [BookmarkedLocation]) -> [BookmarkedLocation] {
-    var validLocations: [BookmarkedLocation] = []
-
-    for location in storedLocations {
-      var location = location
-      if location.isStale {
-        guard let newLocation = try? location.refresh() else { continue }
-        if newLocation.isStale {
-          continue
-        }
-        location = newLocation
-      }
-
-      guard let url = location.url,
-            url.startAccessingSecurityScopedResource() else { continue }
-      let symlinkURL = symlinkBaseDirectory.appendingPathComponent(location.name)
-      let symlinkPath = symlinkURL.path()
-
-      if (try? fm.attributesOfItem(atPath: symlinkPath)) != nil {
-        // If we don't have a symlink anymore, skip to remove the location.
-        guard let destPath = try? fm.destinationOfSymbolicLink(atPath: symlinkPath) else {
-          continue
-        }
-
-        if fm.isReadableFile(atPath: destPath) {
-          validLocations.append(location)
-          continue
-        } else {
-          try? fm.removeItem(at: symlinkURL)
-        }
-      }
-
-      guard (try? fm.createSymbolicLink(at: symlinkURL, withDestinationURL: url)) != nil else {
-        continue
-      }
-
-      validLocations.append(location)
-    }
-
-    return validLocations
-  }
-
   private func writeLocations(_ locations: [BookmarkedLocation]) throws {
     do {
       let data = try JSONEncoder().encode(locations)
@@ -222,12 +207,16 @@ struct BookmarkedLocation: Codable, Identifiable {
     }
   }
 
+  /// Re-acquire the security scope for every bookmark.
+  @objc func activateAccess() {
+    _ = try? getLocations()
+  }
+
   @objc func getLocationURLs() -> [URL] {
-    // After syncing the locations, all of them should have a valid URL.
-    (try? self.getLocations().map { $0.url! }) ?? []
+    ((try? readLocations()) ?? []).compactMap { $0.url }
   }
 
   @objc func getLocationPaths() -> [String] {
-    (try? self.getLocations().map { $0.url!.path }) ?? []
+    ((try? readLocations()) ?? []).compactMap { $0.url?.path }
   }
 }

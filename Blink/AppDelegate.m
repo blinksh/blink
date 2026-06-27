@@ -154,6 +154,7 @@ void __on_pipebroken_signal(int signum){
   dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
     [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
+    [[BookmarkedLocationsManager default] activateAccess];
   });
 }
 
@@ -256,6 +257,10 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
   [[ZuseLog machine:@"App"] info:@"sceneWillEnterForeground"];
   [self _endBackgroundExtension];
+  // Foreground can precede unlock; only re-acquire when data is actually available.
+  if (UIApplication.sharedApplication.isProtectedDataAvailable) {
+    [[BookmarkedLocationsManager default] activateAccess];
+  }
 }
 
 - (void)_onSceneDidActiveNotification:(NSNotification *)notification {
