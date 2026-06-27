@@ -45,7 +45,7 @@ class SpaceController: UIViewController {
     var machineID: UUID? = nil
     var bgColor: CodableColor? = nil
 
-    static var activityType: String { "space.ctrl.ui.state.v19" }
+    static var activityType: String { "space.ctrl.ui.state.v18.7.0.2029" }
   }
 
   final private lazy var _viewportsController = UIPageViewController(
