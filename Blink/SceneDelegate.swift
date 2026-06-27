@@ -40,7 +40,6 @@ import RevenueCat
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
 
-  private var _ctrl = DummyVC()
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
   @objc var spaceController: SpaceController { _spCtrl }
@@ -164,7 +163,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    _setDummyVC()
     return _spCtrl.stateRestorationActivity()
   }
 
@@ -226,16 +224,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if let shadowWin = ShadowWindow.shared {
       window.layer.addSublayer(shadowWin.layer)
     }
-  }
-
-  private func _setDummyVC() {
-    if let _ = _spCtrl.presentedViewController {
-      return
-    }
-    // Trick to reset stick cmd key.
-    _ctrl.view.frame = _spCtrl.view.frame
-    window?.rootViewController = _ctrl
-    _ctrl.view.addSubview(_spCtrl.view)
   }
 
   /// Suspend every active scene's Machine directly — the path for when the
@@ -408,8 +396,3 @@ class ExternalWindow: UIWindow {
   @objc static var shared: ShadowWindow? = nil
 }
 
-class DummyVC: UIViewController {
-  override var canBecomeFirstResponder: Bool { true }
-  override var prefersStatusBarHidden: Bool { true }
-  public override var prefersHomeIndicatorAutoHidden: Bool { true }
-}
