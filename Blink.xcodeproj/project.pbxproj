@@ -408,7 +408,6 @@
 		D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2AE682928D06076003E4338 /* SwiftCBOR */; };
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1DEB52A669342001C6D3B /* 1620Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1DEB42A669342001C6D3B /* 1620Migration.swift */; };
-		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2B788852949C53100F19E4F /* BuildView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788842949C53100F19E4F /* BuildView.swift */; };
 		D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788872949E8CA00F19E4F /* BuildRegion.swift */; };
@@ -1163,7 +1162,6 @@
 		D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnKey.swift; sourceTree = "<group>"; };
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1DEB42A669342001C6D3B /* 1620Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1620Migration.swift; sourceTree = "<group>"; };
-		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
 		D2B788842949C53100F19E4F /* BuildView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildView.swift; sourceTree = "<group>"; };
 		D2B788872949E8CA00F19E4F /* BuildRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildRegion.swift; sourceTree = "<group>"; };
@@ -2185,7 +2183,6 @@
 				D241CBC823040733003D64A5 /* KBTraits.swift */,
 				D241CBC223040733003D64A5 /* KBView.swift */,
 				D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */,
-				D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */,
 				D2B1F8DE23265A4700634D67 /* CommandControl.swift */,
 			);
 			path = SmarterKeys;
@@ -3485,7 +3482,6 @@
 				D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
-				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				BD5A0E3A2F89545B00AB3734 /* 1870Migration.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,

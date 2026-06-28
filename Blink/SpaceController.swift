@@ -28,11 +28,6 @@
 // <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
-@objc protocol CommandsHUDViewDelegate: NSObjectProtocol {
-  func currentTerm() -> TermController?
-  func spaceController() -> SpaceController?
-}
-
 
 import MBProgressHUD
 import SwiftUI
