@@ -57,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateKeyboardLayoutGuide:(nullable UIKeyboardLayoutGuide *)keyboardGuide;
 
+- (void)setupKeyboardGuides;
+
 - (UIEdgeInsets)currentInsets;
 
 @end

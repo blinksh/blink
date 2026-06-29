@@ -46,10 +46,12 @@
 @property (nonatomic, strong) NSLayoutConstraint *leadingConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *trailingConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *bottomConstraint;
+@property (nonatomic, strong) NSLayoutConstraint *bottomFallbackConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *bottomToKeyboardConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *minHeightConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *widthConstraint;
 @property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
+@property (nonatomic, assign) BOOL keyboardGuidesInstalled;
 
 
 @end
@@ -65,13 +67,13 @@
     manager.currentLayoutMode = mode;
     manager.isLayoutLocked = NO;
     
-    [manager setupConstraints];
+    [manager setupLayoutConstraints];
     [manager updateConstraintsForCurrentState];
 
     return manager;
 }
 
-- (void)setupConstraints {
+- (void)setupLayoutConstraints {
     if (!self.managedView) return;
 
     UIView *view = self.managedView;
@@ -84,40 +86,65 @@
     self.leadingConstraint = [view.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor];
     self.trailingConstraint = [view.trailingAnchor constraintEqualToAnchor:superview.trailingAnchor];
 
-  self.bottomConstraint =
-    [view.bottomAnchor constraintLessThanOrEqualToAnchor:superview.bottomAnchor constant:0];
-  self.bottomConstraint.priority = UILayoutPriorityRequired;
+    self.bottomConstraint =
+      [view.bottomAnchor constraintLessThanOrEqualToAnchor:superview.bottomAnchor constant:0];
+    self.bottomConstraint.priority = UILayoutPriorityRequired;
 
-  if (self.keyboardGuide) {
-      self.bottomToKeyboardConstraint =
-        [view.bottomAnchor constraintEqualToAnchor:self.keyboardGuide.topAnchor];
-      self.bottomToKeyboardConstraint.priority = UILayoutPriorityDefaultHigh;
+    // Holds the bottom until the keyboard guide takes over.
+    self.bottomFallbackConstraint =
+      [view.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor];
+    self.bottomFallbackConstraint.priority = UILayoutPriorityDefaultHigh;
 
-      // Prevents the view from collapsing when the keyboard takes most of the height.
-      self.minHeightConstraint =
-        [view.heightAnchor constraintGreaterThanOrEqualToConstant:50];
-      self.minHeightConstraint.priority = UILayoutPriorityRequired;
-  }
+    // Absolute size, active only while locked.
+    self.widthConstraint = [view.widthAnchor constraintEqualToConstant:0];
+    self.heightConstraint = [view.heightAnchor constraintEqualToConstant:0];
+    self.widthConstraint.priority = UILayoutPriorityRequired;
+    self.heightConstraint.priority = UILayoutPriorityRequired;
 
-  // Absolute size constraints used while locked. Inactive until lock engages.
-  self.widthConstraint = [view.widthAnchor constraintEqualToConstant:0];
-  self.heightConstraint = [view.heightAnchor constraintEqualToConstant:0];
-  self.widthConstraint.priority = UILayoutPriorityRequired;
-  self.heightConstraint.priority = UILayoutPriorityRequired;
-
-    NSMutableArray *constraintsToActivate = [NSMutableArray arrayWithObjects:
+    [NSLayoutConstraint activateConstraints:@[
         self.topConstraint,
         self.leadingConstraint,
         self.trailingConstraint,
         self.bottomConstraint,
-        nil];
+        self.bottomFallbackConstraint,
+    ]];
 
-    if (self.bottomToKeyboardConstraint) {
-        [constraintsToActivate addObject:self.bottomToKeyboardConstraint];
-      [constraintsToActivate addObject: self.minHeightConstraint];
+    [self setupKeyboardGuides];
+}
+
+- (BOOL)isSceneForegroundActive {
+    UIWindowScene *scene = self.managedView.window.windowScene;
+    return scene != nil && scene.activationState == UISceneActivationStateForegroundActive;
+}
+
+// Must be foreground-active for the keyboard guide to latch. Idempotent.
+- (void)setupKeyboardGuides {
+    if (self.keyboardGuidesInstalled) return;
+    if (!self.keyboardGuide) return;
+    if (![self isSceneForegroundActive]) return;
+
+    UIView *view = self.managedView;
+
+    self.bottomToKeyboardConstraint =
+      [view.bottomAnchor constraintEqualToAnchor:self.keyboardGuide.topAnchor];
+    self.bottomToKeyboardConstraint.priority = UILayoutPriorityDefaultHigh;
+
+    // Prevents the view from collapsing when the keyboard takes most of the height.
+    self.minHeightConstraint =
+      [view.heightAnchor constraintGreaterThanOrEqualToConstant:50];
+    self.minHeightConstraint.priority = UILayoutPriorityRequired;
+
+    self.keyboardGuidesInstalled = YES;
+
+    if (!self.isLayoutLocked) {
+        [self activateKeyboardPin];
     }
+}
 
-    [NSLayoutConstraint activateConstraints:constraintsToActivate];
+- (void)activateKeyboardPin {
+    self.bottomFallbackConstraint.active = NO;
+    self.bottomToKeyboardConstraint.active = YES;
+    self.minHeightConstraint.active = YES;
 }
 
 - (void)updateLayoutMode:(BKLayoutMode)mode {
@@ -148,13 +175,16 @@
     self.leadingConstraint.constant = insets.left;
     self.trailingConstraint.constant = -insets.right;
     self.bottomConstraint.constant = -insets.bottom;
+    self.bottomFallbackConstraint.constant = -insets.bottom;
 }
 
-// Freeze the view to an absolute frame, with no kbd pull
+// Freeze the view to an absolute frame, with no kbd pull.
 - (void)applyLockedFrameConstraints:(CGRect)frame {
     self.trailingConstraint.active = NO;
     self.bottomConstraint.active = NO;
+    self.bottomFallbackConstraint.active = NO;
     self.bottomToKeyboardConstraint.active = NO;
+    self.minHeightConstraint.active = NO;
 
     self.topConstraint.constant = frame.origin.y;
     self.leadingConstraint.constant = frame.origin.x;
@@ -171,7 +201,12 @@
 
     self.trailingConstraint.active = YES;
     self.bottomConstraint.active = YES;
-    self.bottomToKeyboardConstraint.active = YES;
+
+    if (self.keyboardGuidesInstalled) {
+        [self activateKeyboardPin];
+    } else {
+        self.bottomFallbackConstraint.active = YES;
+    }
 }
 
 - (UIEdgeInsets)calculateInsetsForLayoutMode:(BKLayoutMode)mode {

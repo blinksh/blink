@@ -280,6 +280,8 @@ class TermController: UIViewController {
     else {
       return
     }
+
+    _termView.constraintManager?.setupKeyboardGuides()
   }
 
   public override func viewDidLayoutSubviews() {
