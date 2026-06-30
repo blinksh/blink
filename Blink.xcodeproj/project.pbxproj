@@ -81,7 +81,7 @@
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		BD028AF32A8EC509002F5F54 /* TrialSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD028AF22A8EC509002F5F54 /* TrialSupportView.swift */; };
-		BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
+		BD11E9E6270CD0FD003EA5AE /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */; };
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
 		BD19DB412B056E9C003A4367 /* SSHCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD19DB402B056E9C003A4367 /* SSHCommandTest.swift */; };
 		BD1FFF702E4A10C600DB5AF9 /* TermSessionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1FFF6F2E4A10C600DB5AF9 /* TermSessionPayload.swift */; };
@@ -108,7 +108,7 @@
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
 		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
-		BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
+		BD67FC89272E401000C1EE75 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */; };
 		BD67FC9B2732D4D300C1EE75 /* BackgroundTaskMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */; };
 		BD74A7A7290061DE00ED01CF /* WhatsNewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7A6290061DE00ED01CF /* WhatsNewInfo.swift */; };
 		BD74A7C22905BD5800ED01CF /* WhatsNewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */; };
@@ -251,7 +251,7 @@
 		D218069525CC27AC00B98902 /* AppBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = D218069425CC27AC00B98902 /* AppBridge.m */; };
 		D218069C25CC27C100B98902 /* AppKitBridge.bundle in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = D218068725CC277900B98902 /* AppKitBridge.bundle */; platformFilter = maccatalyst; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
-		D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
+		D218073825CD4AF400B98902 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */; };
 		D21A3FD721943BE200269705 /* dark-settings-ipad-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC621943BE200269705 /* dark-settings-ipad-29pt.png */; };
 		D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC721943BE200269705 /* dark-notification-ipad-20pt.png */; };
 		D21A3FD921943BE200269705 /* dark-settings-iphone-29pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC821943BE200269705 /* dark-settings-iphone-29pt@3x.png */; };
@@ -441,8 +441,8 @@
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
 		D2C3AB792A498CEB003A1BFA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		D2C3AB7A2A498CEB003A1BFA /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
-		D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
-		D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2C7710726EA49AA001B5659 /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */; };
+		D2C7710826EA49AA001B5659 /* OpenSSL.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
@@ -717,7 +717,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				D2A9B2F8272E6F26009FCBDE /* BlinkCode.framework in Embed Frameworks */,
-				D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */,
+				D2C7710826EA49AA001B5659 /* OpenSSL.xcframework in Embed Frameworks */,
 				BDF2B8D32BC480CC00B9C7EA /* vim.xcframework in Embed Frameworks */,
 				BDF2B8D52BC480D100B9C7EA /* xxd.xcframework in Embed Frameworks */,
 				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
@@ -1216,7 +1216,7 @@
 		D2F330D320A6F1DF0074ADD7 /* clear.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = clear.m; sourceTree = "<group>"; };
 		D2F330D520A6F4F50074ADD7 /* history.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = history.m; sourceTree = "<group>"; };
 		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
-		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:67RAULRX93:Marcin Krzyzanowski"; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/OpenSSL.xcframework; sourceTree = SOURCE_ROOT; };
+		D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:67RAULRX93:Marcin Krzyzanowski"; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/OpenSSL.xcframework; sourceTree = SOURCE_ROOT; };
 		D2FBEC0727CF505D00FD974A /* browse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = browse.swift; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1273,7 +1273,7 @@
 				D2C3AB792A498CEB003A1BFA /* libz.tbd in Frameworks */,
 				07FABC4825C9B08100E1CC2C /* BlinkFiles.framework in Frameworks */,
 				BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */,
-				D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */,
+				D218073825CD4AF400B98902 /* OpenSSL.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1281,7 +1281,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */,
+				BD11E9E6270CD0FD003EA5AE /* OpenSSL.xcframework in Frameworks */,
 				07FDDC5625C9B28200A40529 /* LibSSH.xcframework in Frameworks */,
 				07FABB8D25C9AEC100E1CC2C /* SSH.framework in Frameworks */,
 				D2C3AB7A2A498CEB003A1BFA /* libz.tbd in Frameworks */,
@@ -1344,7 +1344,7 @@
 				BD7AFC4328E8E9A9004BCDA4 /* Base32Kit in Frameworks */,
 				BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */,
 				BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */,
-				BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */,
+				BD67FC89272E401000C1EE75 /* OpenSSL.xcframework in Frameworks */,
 				BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1422,7 +1422,7 @@
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
 				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
-				D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */,
+				D2C7710726EA49AA001B5659 /* OpenSSL.xcframework in Frameworks */,
 				D222780C2A26216900D4C708 /* TreeSitterBashRunestone in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				07FABBC425C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
@@ -1547,7 +1547,7 @@
 				D2334EC625C1C04700385378 /* network_ios.xcframework */,
 				D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */,
 				D2334EC925C1C04700385378 /* shell.xcframework */,
-				D2F64C9425CA99AD00F2225D /* openssl.xcframework */,
+				D2F64C9425CA99AD00F2225D /* OpenSSL.xcframework */,
 				D2334ECD25C1C04700385378 /* tar.xcframework */,
 				D2334EC725C1C04700385378 /* text.xcframework */,
 				D28DB3AB210B110B008A1139 /* libcompression.tbd */,
@@ -5293,7 +5293,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2029;
+				CURRENT_PROJECT_VERSION = 2031;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -5347,7 +5347,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2029;
+				CURRENT_PROJECT_VERSION = 2031;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = A2H2CL32AG;
