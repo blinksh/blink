@@ -1216,7 +1216,7 @@
 		D2F330D320A6F1DF0074ADD7 /* clear.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = clear.m; sourceTree = "<group>"; };
 		D2F330D520A6F4F50074ADD7 /* history.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = history.m; sourceTree = "<group>"; };
 		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
-		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:67RAULRX93:Marcin Krzyzanowski"; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/openssl.xcframework; sourceTree = SOURCE_ROOT; };
+		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:67RAULRX93:Marcin Krzyzanowski"; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = xcfs/.build/artifacts/xcfs/openssl/OpenSSL.xcframework; sourceTree = SOURCE_ROOT; };
 		D2FBEC0727CF505D00FD974A /* browse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = browse.swift; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
