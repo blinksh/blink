@@ -438,7 +438,7 @@ extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
 }
 
 extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
-  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {    
     let offset = scrollView.contentOffset
     
     if scrollView === _scrollView {
@@ -527,9 +527,20 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
     case "resize":
       let contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
       let characterSize = NSCoder.cgSize(for: msg["characterSize"] as? String ?? "")
+      let viewSize = NSCoder.cgSize(for: msg["viewSize"] as? String ?? "")
       let isPrimary = msg["isPrimary"] as? Bool ?? true
-      
+
       _characterSize = characterSize
+
+      // The scroller mirrors the JS scrollPort, so its viewport height must
+      // come from the same resize the DOM observed.
+      if viewSize.height > 0 {
+        _scrollView.autoresizingMask = [.flexibleWidth]
+        var frame = _scrollView.frame
+        frame.size.height = viewSize.height
+        _scrollView.frame = frame
+      }
+
       _scrollView.contentSize = contentSize
       let offset = CGPoint(x: 0, y: max(contentSize.height - _scrollView.bounds.height, 0));
       _scrollView.contentOffset = offset
