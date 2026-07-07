@@ -108,7 +108,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _mouseDragMode: Bool = false
   private var _mouseDragStartPoint: CGPoint? = nil
   private var _cmdKeyPressed: Bool = false
-  private var _lastScrollViewBoundsSize: CGSize = .zero
 
   @objc var focused: Bool = false;
   @objc var hasSelection: Bool = false {
@@ -443,14 +442,6 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
     let offset = scrollView.contentOffset
     
     if scrollView === _scrollView {
-      // A viewport resize clamps the autoresized scroller's offset and fires this
-      // callback with no user interaction; forward only user scrolls.
-      if scrollView.bounds.size != _lastScrollViewBoundsSize {
-        _lastScrollViewBoundsSize = scrollView.bounds.size
-        if !scrollView.isDragging && !scrollView.isTracking && !scrollView.isDecelerating {
-          return
-        }
-      }
       _wkWebView?.evaluateJavaScript("\(_jsScrollerPath).reportScroll(\(offset.x), \(offset.y));", completionHandler: nil)
       return
     }
@@ -541,8 +532,6 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
       _characterSize = characterSize
       _scrollView.contentSize = contentSize
       let offset = CGPoint(x: 0, y: max(contentSize.height - _scrollView.bounds.height, 0));
-      // Record bounds so this pin is forwarded, not skipped as a resize clamp.
-      _lastScrollViewBoundsSize = _scrollView.bounds.size
       _scrollView.contentOffset = offset
       
       _scrollView.panGestureRecognizer.isEnabled = isPrimary
@@ -563,8 +552,7 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
       if (offset == _scrollView.contentOffset) {
         return
       }
-
-      _lastScrollViewBoundsSize = _scrollView.bounds.size
+      // TODO: debounce?
       _scrollView.setContentOffset(offset, animated: animated)
       
       
