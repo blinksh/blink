@@ -208,6 +208,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 {
   NSString *ctrlC = @"\x03";
   NSString *ctrlD = @"\x04";
+  NSString *ctrlL = @"\x0c";
 
   if (_rawMode) {
     [self writeInDirectly: input];
@@ -231,7 +232,13 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [self.readlineListener handleControl: input];
     return;
   }
-  
+
+  // Unlike ctrl-c/d, must not touch the stdin pipe.
+  if ([input isEqualToString:ctrlL]) {
+    [self.readlineListener handleControl: input];
+    return;
+  }
+
   // Ignore some C0 Control codes - https://wezfurlong.org/wezterm/escape-sequences.html#c0-control-codes
   NSArray *ignoredSequences = [NSArray arrayWithObjects:@"\x1c", @"\x1d", @"\x1e", @"\x1f", nil];
   if ([ignoredSequences containsObject:input]) {
@@ -338,17 +345,17 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [self closeReadline];
 
   _rawMode = NO;
-  
-  
+
+
   NSDictionary *dict = @{
     @"prompt": prompt ?: @"",
     @"secure": @(secure),
     @"shell": @(shell)
   };
-  
+
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:nil];
   NSString *cmd = [NSString stringWithFormat: @"\x1b]1337;BlinkPrompt=%@\x07", [data base64EncodedStringWithOptions:kNilOptions]];
-  
+
   fprintf(_stream.out, "%s", cmd.UTF8String);
 }
 

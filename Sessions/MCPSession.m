@@ -309,7 +309,18 @@
 {
   NSString *ctrlC = @"\x03";
   NSString *ctrlD = @"\x04";
-  
+  NSString *ctrlL = @"\x0c";
+
+  // Only an unarmed prompt lets ctrl-l through (armed ones handle C-l in the
+  // line editor). Must run before the branches below — they kill children or
+  // reset stdin on any control.
+  if ([control isEqualToString:ctrlL]) {
+    if (![self isRunningCmd]) {
+      [self enqueueCommand:@"clear" skipHistoryRecord:YES];
+    }
+    return;
+  }
+
   if (_childSession) {
     if (_sshClients.count > 0) {
       dispatch_sync(_sshQueue, ^{

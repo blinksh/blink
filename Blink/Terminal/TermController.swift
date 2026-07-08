@@ -162,6 +162,7 @@ class TermController: UIViewController {
   private var _sceneRole: UISceneSession.Role? = nil
   private var _bgColor: UIColor? = nil
   private var _fontSizeBeforeScaling: Int? = nil
+  private var _sizeNudgeRestoreCols: UInt16? = nil
 
   @objc public var viewIsLoaded: Bool = false
 
@@ -439,7 +440,49 @@ extension TermController: TermDeviceDelegate {
     delegate?.terminalDeviceDidBecomeReady?(control: self)
   }
 
-  
+  @objc public func viewIsReadyAgain() {
+    if _meta.isSuspended {
+      resumeIfNeeded()
+    }
+
+    if isAttached {
+      _becomeFirstResponder()
+    }
+
+    _nudgeSessionRedraw()
+
+    // Prompts don't answer sigwinch; raw mode would take Ctrl-L as literal input.
+    if !_termDevice.rawMode {
+      _termDevice.write("\u{0C}")
+    }
+  }
+
+  // Kernel and mosh drop same-size SIGWINCH, so the change must be real.
+  // Straight to the session to keep the resize HUD out.
+  private func _nudgeSessionRedraw() {
+    guard _session != nil, _sizeNudgeRestoreCols == nil else { return }
+    guard let win = _termDevice.window() else { return }
+    let cols = win.pointee.ws_col
+    guard cols > 1 else { return }
+
+    _sizeNudgeRestoreCols = cols
+    win.pointee.ws_col = cols - 1
+    _session?.sigwinch()
+
+    // Sessions read the size asynchronously when handling the signal;
+    // restoring immediately would make the change invisible to them.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+      guard let self = self, let restoreCols = self._sizeNudgeRestoreCols else { return }
+      self._sizeNudgeRestoreCols = nil
+      guard let win = self._termDevice.window() else { return }
+      // A real resize may have landed meanwhile; its own sigwinch already ran.
+      if win.pointee.ws_col == restoreCols - 1 {
+        win.pointee.ws_col = restoreCols
+        self._session?.sigwinch()
+      }
+    }
+  }
+
   func activateInput() {
     // Don't activate input if blocked (e.g., during Snips Input Mode)
     guard !shouldBlockFirstResponder else {

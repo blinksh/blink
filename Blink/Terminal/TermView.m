@@ -167,6 +167,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _webView = [[SmarterTermInput alloc] initWithFrame:CGRectZero configuration:configuration];
   _webView.UIDelegate = self;
+  _webView.navigationDelegate = self;
   
   if (@available(iOS 16.0, *)) {
     _editMenuIteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
@@ -300,6 +301,22 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)webView:(WKWebView *)webView authenticationChallenge:(NSURLAuthenticationChallenge *)challenge shouldAllowDeprecatedTLS:(void (^)(BOOL))decisionHandler {
   decisionHandler(YES);
+}
+
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+  // Without the reload the view stays blank.
+  [webView reload];
+}
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+  if (webView != _webView) {
+    return;
+  }
+  // Writes buffered for the previous page may be torn mid-sequence; drop them.
+  dispatch_async(_jsQueue, ^{
+    _jsIsBusy = NO;
+    _jsBuffer = [[NSMutableString alloc] init];
+  });
 }
 
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
@@ -664,6 +681,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_onTerminalReady:(NSDictionary *)data
 {
+  // A second terminalReady means the page was rebuilt under a live session.
+  BOOL isReReady = _isReady;
+
   [_webView ready];
   NSArray *bgColor = data[@"bgColor"];
   if (bgColor && bgColor.count == 3) {
@@ -676,23 +696,31 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else {
     _gestureInteraction.indicatorStyle = UIScrollViewIndicatorStyleDefault;
   }
-  
+
   [_device viewWinSizeChanged:__winSizeFromJSON(data[@"size"])];
 
-  _isReady = YES;
-  [_device viewIsReady];
-  [[NSNotificationCenter defaultCenter] postNotificationName:TermViewReadyNotificationKey object:self];
+  if (isReReady) {
+    // The init user script re-ran with load-time state; re-apply the live one.
+    [self applyTermUIState:self.termUIState];
+    [self.termController viewIsReadyAgain];
+  } else {
+    _isReady = YES;
+    [_device viewIsReady];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TermViewReadyNotificationKey object:self];
+  }
 
 //  if (_gestureInteraction.focused) {
 //    [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 //  } else {
 //    [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 //  }
-  
-  [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
-    [_coverView removeFromSuperview];
-    _coverView = nil;
-  }];
+
+  if (_coverView) {
+    [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
+      [_coverView removeFromSuperview];
+      _coverView = nil;
+    }];
+  }
 }
 
 - (BOOL)isFocused {
