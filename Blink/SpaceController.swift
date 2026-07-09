@@ -656,13 +656,20 @@ extension SpaceController {
   }
 
   private func _resolvedLayoutMode() -> BKLayoutMode {
-    let raw = currentTerm()?.termDevice.view?.currentLayoutMode() ?? .default
+    var raw = BKLayoutMode.default
+    // Appearance getters must stay side-effect free, we call liveTerm so we don't cold-restore a session.
+    if let key = machine.currentSessionKey, let term = liveTerm(for: key) {
+      raw = term.termDevice.view?.currentLayoutMode() ?? .default
+    }
     return LayoutConstraintManager.resolve(raw)
   }
 
   func _refreshChromeForLayoutMode() {
-    setNeedsStatusBarAppearanceUpdate()
-    setNeedsUpdateOfHomeIndicatorAutoHidden()
+    // Fixes "collection updated while enumerated" on UIKit side.
+    DispatchQueue.main.async { [weak self] in
+      self?.setNeedsStatusBarAppearanceUpdate()
+      self?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+    }
   }
 }
 
