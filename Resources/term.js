@@ -378,10 +378,17 @@ function term_getCurrentSelection() {
 
   const rect = `{{${r.x}, ${r.y}},{${r.width},${r.height}}}`;
 
+  let text;
+  try {
+    text = t.getSelectionText();
+  } catch (e) {
+    text = null;
+  }
+
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
-    text: selection.toString() || "",
+    text: text || selection.toString(),
     rect,
   };
 }

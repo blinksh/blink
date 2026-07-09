@@ -55,6 +55,78 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
   }
 };
 
+// hterm's getSelectionText mixes DOM selection offsets (UTF-16 code units)
+// with column widths. When a selection boundary falls inside a wide-char node
+// (e.g. a single CJK character at end of line, where WebKit cannot normalize
+// the boundary to the next text node), the wide char is cut in half and the
+// extracted text comes back empty. Convert DOM offsets to columns first.
+hterm.Terminal.prototype.getSelectionText = function() {
+  var selection = this.scrollPort_.selection;
+  selection.sync();
+
+  if (selection.isCollapsed) return null;
+
+  // Start offset measures from the beginning of the line.
+  var startOffset = selection.startOffset;
+  var node = selection.startNode;
+
+  // If an x-row isn't selected, |node| will be null.
+  if (!node) return null;
+
+  if (node.nodeName != 'X-ROW') {
+    // If the selection doesn't start on an x-row node, then it must be
+    // somewhere inside the x-row.  Add any characters from previous siblings
+    // into the start offset.
+
+    if (node.nodeName == '#text') {
+      startOffset = lib.wc.strWidth(
+        node.textContent.substring(0, selection.startOffset));
+
+      if (node.parentNode.nodeName == 'SPAN') {
+        // If node is the text node in a styled span, move up to the span node.
+        node = node.parentNode;
+      }
+    }
+
+    while (node.previousSibling) {
+      node = node.previousSibling;
+      startOffset += hterm.TextAttributes.nodeWidth(node);
+    }
+  }
+
+  // End offset measures from the end of the line.
+  var endOffset =
+    hterm.TextAttributes.nodeWidth(selection.endNode) - selection.endOffset;
+  node = selection.endNode;
+
+  if (node.nodeName != 'X-ROW') {
+    // If the selection doesn't end on an x-row node, then it must be
+    // somewhere inside the x-row.  Add any characters from following siblings
+    // into the end offset.
+
+    if (node.nodeName == '#text') {
+      endOffset = hterm.TextAttributes.nodeWidth(node) -
+        lib.wc.strWidth(node.textContent.substring(0, selection.endOffset));
+
+      if (node.parentNode.nodeName == 'SPAN') {
+        // If node is the text node in a styled span, move up to the span node.
+        node = node.parentNode;
+      }
+    }
+
+    while (node.nextSibling) {
+      node = node.nextSibling;
+      endOffset += hterm.TextAttributes.nodeWidth(node);
+    }
+  }
+
+  var rv = this.getRowsText(
+    selection.startRow.rowIndex,
+    selection.endRow.rowIndex + 1
+  );
+  return lib.wc.substring(rv, startOffset, lib.wc.strWidth(rv) - endOffset);
+};
+
 // NOTE(@nanzhong) hterm does not support DEC mode 1003 (any mouse event reporting mode).
 // DEC mode 1003 and DEC mode 1002 (which hterm does support) are almost identical. The only difference is that mode 1003 includes mouse movement tracking events which are rarely used.
 // This patches hterm to treat DEC mode 1003 the same as DEC mode 1002.
