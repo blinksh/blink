@@ -202,7 +202,7 @@ struct Complete {
   private static func _completionKind(_ cmd: String, query: String = "") -> Kind {
     switch cmd {
     case "": return .command
-    case "ssh", "ssh2", "mosh", "mosh1": return .blinkHost
+    case "ssh", "mosh": return .blinkHost
     case "ping": return .host
     case "sftp", "scp": return _scpCompletionKind(query)
     case "ls": return .directory

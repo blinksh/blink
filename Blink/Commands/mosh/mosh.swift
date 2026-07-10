@@ -546,7 +546,6 @@ enum MoshError: Error, LocalizedError {
 
   func die(message: String) -> Int32 {
     print(message, to: &stderr)
-    print("Use mosh1 for the deprecated (previous) mosh version.", to: &stderr)
     return -1
   }
 
