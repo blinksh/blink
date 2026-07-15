@@ -133,6 +133,7 @@ private struct StoreData: Codable {
       name: uniqueName(for: "\(original.name) Copy"),
       themeName: original.themeName,
       alternativeThemeName: original.alternativeThemeName,
+      appearance: original.appearance,
       fontName: original.fontName,
       fontSize: original.fontSize,
       cursorBlink: original.cursorBlink,
@@ -152,6 +153,7 @@ private struct StoreData: Codable {
       name: uniqueName(for: style.name),
       themeName: style.themeName,
       alternativeThemeName: style.alternativeThemeName,
+      appearance: style.appearance,
       fontName: style.fontName,
       fontSize: style.fontSize,
       cursorBlink: style.cursorBlink,
@@ -224,6 +226,7 @@ private struct StoreData: Codable {
 
   @objc var bridgedThemeName: String { selectedStyle.themeName }
   @objc var bridgedAlternativeThemeName: String? { selectedStyle.alternativeThemeName }
+  @objc var bridgedAppearance: TermAppearance { selectedStyle.appearance }
   @objc var bridgedFontName: String { selectedStyle.fontName }
   @objc var bridgedFontSize: NSNumber { NSNumber(value: Int(selectedStyle.fontSize)) }
   @objc var bridgedCursorBlink: Bool { selectedStyle.cursorBlink }
@@ -231,6 +234,7 @@ private struct StoreData: Codable {
   @objc var bridgedBoldAsBright: Bool { selectedStyle.boldAsBright }
 
   @objc func setStyleThemeName(_ name: String) { updateSelectedStyle { $0.themeName = name } }
+  @objc func setStyleAppearance(_ value: TermAppearance) { updateSelectedStyle { $0.appearance = value } }
   @objc func setStyleFontName(_ name: String)  { updateSelectedStyle { $0.fontName = name } }
   @objc func setStyleFontSize(_ size: NSNumber) { updateSelectedStyle { $0.fontSize = CGFloat(size.intValue) } }
   @objc func setStyleCursorBlink(_ value: Bool) { updateSelectedStyle { $0.cursorBlink = value } }

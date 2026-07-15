@@ -56,6 +56,25 @@ struct StyleCustomizationView: View {
 
       // -- Scrollable Settings --
       List {
+        // -- Appearance --
+        Section {
+          Picker("Appearance", selection: $editingStyle.appearance) {
+            Text("System").tag(TermAppearance.system)
+            Text("Light").tag(TermAppearance.light)
+            Text("Dark").tag(TermAppearance.dark)
+          }
+          .pickerStyle(.segmented)
+          .onChange(of: editingStyle.appearance) { _ in
+            // The alternative theme only applies in System; drop a stale pick.
+            if editingStyle.appearance != .system {
+              editingStyle.alternativeThemeName = nil
+            }
+            applyToPreview()
+          }
+        } header: {
+          Text("Appearance")
+        }
+
         // -- Themes --
         Section("Themes") {
           ForEach(themes, id: \.name) { theme in
@@ -88,16 +107,18 @@ struct StyleCustomizationView: View {
           }
         }
 
-        // -- Alternative Theme --
-        Section {
-          Button {
-            pushAlternativeThemePicker()
-          } label: {
-            HStack {
-              Text("Alternative Theme").foregroundColor(.primary)
-              Spacer()
-              Text(editingStyle.alternativeThemeName ?? "None").foregroundColor(.secondary)
-              Chevron()
+        // -- Alternative Theme (System only) --
+        if editingStyle.appearance == .system {
+          Section {
+            Button {
+              pushAlternativeThemePicker()
+            } label: {
+              HStack {
+                Text("Alternative Theme").foregroundColor(.primary)
+                Spacer()
+                Text(editingStyle.alternativeThemeName ?? "None").foregroundColor(.secondary)
+                Chevron()
+              }
             }
           }
         }
@@ -225,7 +246,6 @@ struct StyleCustomizationView: View {
   private func saveChanges() {
     store.updateStyle(editingStyle)
     BLKDefaults.save()
-    NotificationCenter.default.post(name: NSNotification.Name(BKAppearanceChanged), object: nil)
   }
 
   // MARK: - Resources

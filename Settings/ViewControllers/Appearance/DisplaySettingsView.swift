@@ -35,7 +35,6 @@ struct DisplaySettingsView: View {
   @State private var externalDisplayFontSize: CGFloat
   @State private var layoutModeIndex: Int
   @State private var projectionEnabled: Bool
-  @State private var keyboardStyleIndex: Int
   @State private var keycasts: Bool
   @State private var alternateAppIcon: Bool
 
@@ -48,7 +47,6 @@ struct DisplaySettingsView: View {
     let lm = BLKDefaults.layoutMode()
     _layoutModeIndex = State(initialValue: Self.layoutModeToIndex(lm))
     _projectionEnabled = State(initialValue: BLKDefaults.overscanCompensation() != .BKBKOverscanCompensationMirror)
-    _keyboardStyleIndex = State(initialValue: Self.keyboardStyleToIndex(BLKDefaults.keyboardStyle()))
     _keycasts = State(initialValue: BLKDefaults.isKeyCastsOn())
     _alternateAppIcon = State(initialValue: BLKDefaults.isAlternateAppIcon())
   }
@@ -83,19 +81,6 @@ struct DisplaySettingsView: View {
 
       // -- Keyboard --
       Section("Keyboard") {
-        HStack {
-          Text("Style")
-          Spacer()
-          Picker("Style", selection: $keyboardStyleIndex) {
-            Text("System").tag(0)
-            Text("Light").tag(1)
-            Text("Dark").tag(2)
-          }
-          .pickerStyle(.segmented)
-          .labelsHidden()
-          .fixedSize()
-        }
-
         Toggle("Keycasts", isOn: $keycasts)
       }
 
@@ -141,11 +126,9 @@ struct DisplaySettingsView: View {
     if !hasAppleSilicon {
       BLKDefaults.setOversanCompensation(projectionEnabled ? .BKBKOverscanCompensationNone : .BKBKOverscanCompensationMirror)
     }
-    BLKDefaults.setKeyboardStyle(Self.keyboardStyleFromIndex(keyboardStyleIndex))
     BLKDefaults.setKeycasts(keycasts)
     BLKDefaults.setAlternateAppIcon(alternateAppIcon)
     BLKDefaults.save()
-    NotificationCenter.default.post(name: NSNotification.Name(BKAppearanceChanged), object: nil)
   }
 
   // Layout Mode: Cover=0, SafeFit=1, Fill=2
@@ -167,22 +150,4 @@ struct DisplaySettingsView: View {
     }
   }
 
-  // Keyboard Style: System=0, Light=1, Dark=2
-  private static func keyboardStyleToIndex(_ style: BKKeyboardStyle) -> Int {
-    switch style {
-    case .system: return 0
-    case .light:  return 1
-    case .dark:   return 2
-    default:      return 0
-    }
-  }
-
-  private static func keyboardStyleFromIndex(_ index: Int) -> BKKeyboardStyle {
-    switch index {
-    case 0: return .system
-    case 1: return .light
-    case 2: return .dark
-    default: return .system
-    }
-  }
 }

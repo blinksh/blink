@@ -682,22 +682,13 @@ extension Notification.Name {
 
 // MARK: - TermUIState
 
-/// Which theme a terminal currently shows. `.automatic` follows the device
-/// appearance (dark → alternative when one is configured); the explicit cases
-/// are set by the user's switch shortcut and stick until switched again.
-@objc enum TermThemeMode: Int {
-  case automatic
-  case primary
-  case alternative
-}
-
 @objc class TermUIState: NSObject, NSSecureCoding {
   @objc var viewSize: CGSize = .zero
   @objc var rows: Int = 0
   @objc var cols: Int = 0
   @objc var themeName: String? = nil
   @objc var alternativeThemeName: String? = nil
-  @objc var themeMode: TermThemeMode = .automatic
+  @objc var appearance: TermAppearance = .system
   @objc var fontName: String? = nil
   @objc var fontSize: Int = 16
   @objc var layoutMode: Int = 0
@@ -708,7 +699,7 @@ extension Notification.Name {
   @objc var layoutLockedFrame: CGRect = .zero
 
   private enum Key: CodingKey {
-    case viewSize, rows, cols, themeName, alternativeThemeName, themeMode, fontName, fontSize
+    case viewSize, rows, cols, themeName, alternativeThemeName, appearance, fontName, fontSize
     case layoutMode, boldAsBright, enableBold, cursorBlink, layoutLocked, layoutLockedFrame
   }
 
@@ -721,8 +712,8 @@ extension Notification.Name {
     self.cols = coder.bk_decode(for: Key.cols)
     self.themeName = coder.bk_decode(for: Key.themeName)
     self.alternativeThemeName = coder.bk_decode(for: Key.alternativeThemeName)
-    let themeModeRaw: Int = coder.bk_decode(for: Key.themeMode)
-    self.themeMode = TermThemeMode(rawValue: themeModeRaw) ?? .automatic
+    let appearanceRaw: Int = coder.bk_decode(for: Key.appearance)
+    self.appearance = TermAppearance(rawValue: appearanceRaw) ?? .system
     self.fontName = coder.bk_decode(for: Key.fontName)
     self.fontSize = coder.bk_decode(for: Key.fontSize)
     self.layoutMode = coder.bk_decode(for: Key.layoutMode)
@@ -739,7 +730,7 @@ extension Notification.Name {
     coder.bk_encode(cols, for: Key.cols)
     coder.bk_encode(themeName, for: Key.themeName)
     coder.bk_encode(alternativeThemeName, for: Key.alternativeThemeName)
-    coder.bk_encode(themeMode.rawValue, for: Key.themeMode)
+    coder.bk_encode(appearance.rawValue, for: Key.appearance)
     coder.bk_encode(fontName, for: Key.fontName)
     coder.bk_encode(fontSize, for: Key.fontSize)
     coder.bk_encode(layoutMode, for: Key.layoutMode)
@@ -752,32 +743,31 @@ extension Notification.Name {
 
   static var supportsSecureCoding: Bool { true }
 
-  /// The theme name to render given the device appearance. `.automatic` resolves
-  /// to the alternative when dark and one is configured; otherwise the primary.
-  @objc(effectiveThemeNameForDarkMode:)
-  func effectiveThemeName(isDark: Bool) -> String? {
-    switch themeMode {
-    case .primary:
-      return themeName
-    case .alternative:
-      return alternativeThemeName ?? themeName
-    case .automatic:
-      return (isDark && alternativeThemeName != nil) ? alternativeThemeName : themeName
+  // MARK: Appearance resolution
+
+  /// Chrome light/dark. System defers to the OS so the terminal keeps tracking
+  /// the device; Light/Dark pin it.
+  @objc var interfaceStyle: UIUserInterfaceStyle {
+    switch appearance {
+    case .light:  return .light
+    case .dark:   return .dark
+    case .system: return .unspecified
     }
   }
 
-  /// Flips to the explicit theme opposite the one currently shown, where it
-  /// sticks (no-op when there is no alternative configured).
-  @objc(toggleThemeModeForDarkMode:)
-  func toggleThemeMode(isDark: Bool) {
-    guard alternativeThemeName != nil else { return }
-    let showingAlternative: Bool
-    switch themeMode {
-    case .automatic: showingAlternative = isDark
-    case .primary: showingAlternative = false
-    case .alternative: showingAlternative = true
-    }
-    themeMode = showingAlternative ? .primary : .alternative
+  /// The theme to show for the current device style. Only System swaps in the
+  /// alternative, and only when the device is dark and one is configured;
+  /// Light/Dark always use the primary theme.
+  @objc(effectiveThemeForStyle:)
+  func effectiveTheme(for deviceStyle: UIUserInterfaceStyle) -> String? {
+    guard appearance == .system else { return themeName }
+    return (deviceStyle == .dark && alternativeThemeName != nil) ? alternativeThemeName : themeName
+  }
+
+  /// True only in System, where a device light/dark flip should re-theme the
+  /// terminal.
+  @objc var followsDevice: Bool {
+    appearance == .system
   }
 
   @objc static func withDefaults() -> TermUIState {
@@ -786,6 +776,7 @@ extension Notification.Name {
     state.fontName = BLKDefaults.selectedFontName()
     state.themeName = BLKDefaults.selectedThemeName()
     state.alternativeThemeName = BLKDefaults.selectedAlternativeThemeName()
+    state.appearance = TerminalStyleStore.shared.selectedStyle.appearance
     state.enableBold = UInt(BLKDefaults.enableBold())
     state.boldAsBright = BLKDefaults.isBoldAsBright()
     state.cursorBlink = BLKDefaults.isCursorBlink()

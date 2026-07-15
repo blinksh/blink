@@ -32,6 +32,14 @@
 import Foundation
 import UIKit
 
+/// A style's interface appearance. Controls the chrome (light/dark) and, in
+/// `.system`, lets the alternative theme follow the device.
+@objc enum TermAppearance: Int, Codable {
+  case system = 0
+  case light  = 1
+  case dark   = 2
+}
+
 struct TerminalStyle: Codable, Identifiable, Equatable {
 
   enum BoldMode: Int, Codable, CaseIterable {
@@ -44,6 +52,7 @@ struct TerminalStyle: Codable, Identifiable, Equatable {
   var name: String
   var themeName: String
   var alternativeThemeName: String? = nil
+  var appearance: TermAppearance = .system
   var fontName: String
   var fontSize: CGFloat
   var cursorBlink: Bool
@@ -76,12 +85,34 @@ struct TerminalStyle: Codable, Identifiable, Equatable {
   }
 }
 
+// MARK: - Codable
+
+extension TerminalStyle {
+  // Custom decode so styles persisted before `appearance` existed still load
+  // (a missing key would otherwise throw and drop every saved style).
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    self.id = try c.decode(UUID.self, forKey: .id)
+    self.name = try c.decode(String.self, forKey: .name)
+    self.themeName = try c.decode(String.self, forKey: .themeName)
+    self.alternativeThemeName = try c.decodeIfPresent(String.self, forKey: .alternativeThemeName)
+    self.appearance = try c.decodeIfPresent(TermAppearance.self, forKey: .appearance) ?? .system
+    self.fontName = try c.decode(String.self, forKey: .fontName)
+    self.fontSize = try c.decode(CGFloat.self, forKey: .fontSize)
+    self.cursorBlink = try c.decode(Bool.self, forKey: .cursorBlink)
+    self.boldMode = try c.decode(BoldMode.self, forKey: .boldMode)
+    self.boldAsBright = try c.decode(Bool.self, forKey: .boldAsBright)
+  }
+}
+
 // MARK: - TermUIState
 
 extension TermUIState {
   convenience init(style: TerminalStyle) {
     self.init()
     themeName = style.themeName
+    alternativeThemeName = style.alternativeThemeName
+    appearance = style.appearance
     fontName = style.fontName
     fontSize = Int(style.fontSize)
     enableBold = UInt(style.boldMode.rawValue)

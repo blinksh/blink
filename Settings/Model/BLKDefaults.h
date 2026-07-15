@@ -34,8 +34,6 @@
 #import <BlinkConfig/BlinkConfig-Swift.h>
 
 
-extern NSString *const BKAppearanceChanged;
-
 typedef NS_ENUM(NSInteger, BKLayoutMode) {
   BKLayoutModeDefault = 0,
   BKLayoutModeFill, // Fit screen
@@ -48,12 +46,6 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
   BKBKOverscanCompensationInsetBounds,
   BKBKOverscanCompensationNone,
   BKBKOverscanCompensationMirror,
-};
-
-typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
-  BKKeyboardStyleDark = 0,
-  BKKeyboardStyleLight,
-  BKKeyboardStyleSystem,
 };
 
 typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
@@ -72,7 +64,6 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 @property (nonatomic) BOOL cursorBlink;
 @property (nonatomic) NSUInteger enableBold;
 @property (nonatomic) BOOL boldAsBright;
-@property (nonatomic) BKKeyboardStyle keyboardStyle;
 @property (nonatomic) BOOL alternateAppIcon;
 @property (nonatomic) BOOL keycasts;
 @property (nonatomic) BKLayoutMode layoutMode;
@@ -124,10 +115,8 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 + (NSString*)defaultUserName;
 + (BKLayoutMode)layoutMode;
 + (BKOverscanCompensation)overscanCompensation;
-+ (BKKeyboardStyle)keyboardStyle;
 + (void)setLayoutMode:(BKLayoutMode)mode;
 + (void)setOversanCompensation:(BKOverscanCompensation)value;
-+ (void)setKeyboardStyle:(BKKeyboardStyle)value;
 + (BOOL)isPlaySoundOnBellOn;
 + (BOOL)isNotificationOnBellUnfocusedOn;
 + (BOOL)hapticFeedbackOnBellOff;

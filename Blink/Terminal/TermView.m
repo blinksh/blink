@@ -75,6 +75,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   id<UIInteraction> _editMenuIteraction;
 
   CGSize _lockedSuperviewSize;
+
+  // The interface style the terminal theme was last rendered for. Keep to guard re-theming on layout passes.
+  UIUserInterfaceStyle _appliedInterfaceStyle;
 }
 
 
@@ -126,6 +129,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   // so it does not trigger this.
   if (_layoutLocked && !CGSizeEqualToSize(_lockedSuperviewSize, self.bounds.size)) {
     [self _unlockLayout];
+  }
+
+  // A device light/dark flip re-themes the terminal, but only while it follows
+  // the device (forced Light/Dark ignore it).
+  UIUserInterfaceStyle style = self.traitCollection.userInterfaceStyle;
+  if (style != _appliedInterfaceStyle) {
+    _appliedInterfaceStyle = style;
+    if (self.termUIState.followsDevice) {
+      [self _applyEffectiveTheme];
+    }
   }
 }
 
@@ -189,7 +202,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)didMoveToWindow {
   [super didMoveToWindow];
-  
+
   [self setupWebViewConstraints];
 }
 
@@ -1013,8 +1026,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   [commands addObject:term_setBoldEnabled(termUIState.enableBold)];
   [commands addObject:term_setBoldAsBright(termUIState.boldAsBright)];
 
-  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  NSString *effectiveThemeName = [termUIState effectiveThemeNameForDarkMode:isDark];
+  NSString *effectiveThemeName = [termUIState effectiveThemeForStyle:self.traitCollection.userInterfaceStyle];
   BKTheme *selectedTheme = [BKTheme withName: effectiveThemeName ?: [BLKDefaults selectedThemeName]];
   BKTheme *theme = (lockdownMode && !selectedTheme.isAvailableInLockdownMode) ? nil : selectedTheme;
   NSString *themeContent = theme.content;
@@ -1056,22 +1068,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 }
 
 - (void)_applyEffectiveTheme {
-  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  [self applyTheme:[self.termUIState effectiveThemeNameForDarkMode:isDark]];
-}
-
-- (void)toggleAlternativeTheme {
-  BOOL isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  [self.termUIState toggleThemeModeForDarkMode:isDark];
-  [self _applyEffectiveTheme];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle &&
-      self.termUIState.themeMode == TermThemeModeAutomatic) {
-    [self _applyEffectiveTheme];
-  }
+  [self applyTheme:[self.termUIState effectiveThemeForStyle:self.traitCollection.userInterfaceStyle]];
 }
 
 - (void)terminate

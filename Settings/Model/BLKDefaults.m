@@ -39,8 +39,6 @@
 
 BLKDefaults *defaults;
 
-NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
-
 @implementation BLKDefaults
 
 #pragma mark - NSCoding
@@ -77,7 +75,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
-  _keyboardStyle = (BKKeyboardStyle)[coder decodeIntegerForKey:@"keyboardStyle"];
   _keycasts = [coder decodeBoolForKey:@"keycasts"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
@@ -110,7 +107,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
-  [encoder encodeInteger: _keyboardStyle forKey:@"keyboardStyle"];
   [encoder encodeBool: _keycasts forKey:@"keycasts"];
   [encoder encodeBool:_alternateAppIcon forKey:@"alternateAppIcon"];
   [encoder encodeInteger:_layoutMode forKey:@"layoutMode"];
@@ -300,10 +296,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.overscanCompensation = value;
 }
 
-+ (void)setKeyboardStyle:(BKKeyboardStyle)value {
-  defaults.keyboardStyle = value;
-}
-
 + (void)setDisableCustomKeyboards:(BOOL)state {
   defaults.disableCustomKeyboards = state;
 }
@@ -402,10 +394,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 + (BKOverscanCompensation)overscanCompensation
 {
   return defaults.overscanCompensation;
-}
-
-+ (BKKeyboardStyle)keyboardStyle {
-  return defaults.keyboardStyle;
 }
 
 + (BOOL)disableCustomKeyboards {

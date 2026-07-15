@@ -335,3 +335,38 @@ class TerminalStyleBundleTests: XCTestCase {
     }
   }
 }
+
+// MARK: - Appearance
+
+// Persistence of the `appearance` field, added after the initial style format.
+final class TerminalStyleAppearanceTests: XCTestCase {
+
+  func testDecodeMissingAppearanceDefaultsToSystem() throws {
+    // A style persisted before `appearance` existed must still decode — a missing
+    // key would otherwise throw and drop every saved style.
+    let legacy = """
+    {"id":"00000000-0000-0000-0000-0000000000AB","name":"Legacy","themeName":"Default",\
+    "fontName":"Menlo","fontSize":12,"cursorBlink":false,"boldMode":0,"boldAsBright":false}
+    """
+    let style = try JSONDecoder().decode(TerminalStyle.self, from: Data(legacy.utf8))
+    XCTAssertEqual(style.appearance, .system)
+    XCTAssertNil(style.alternativeThemeName)
+  }
+
+  func testAppearanceRoundTrips() throws {
+    let style = TerminalStyle(
+      id: UUID(),
+      name: "X",
+      themeName: "T",
+      appearance: .dark,
+      fontName: "F",
+      fontSize: 12,
+      cursorBlink: false,
+      boldMode: .auto,
+      boldAsBright: false
+    )
+    let data = try PropertyListEncoder().encode(style)
+    let decoded = try PropertyListDecoder().decode(TerminalStyle.self, from: data)
+    XCTAssertEqual(decoded.appearance, .dark)
+  }
+}

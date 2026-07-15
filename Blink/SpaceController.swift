@@ -28,11 +28,6 @@
 // <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
-@objc protocol CommandsHUDViewDelegate: NSObjectProtocol {
-  func currentTerm() -> TermController?
-  func spaceController() -> SpaceController?
-}
-
 
 import MBProgressHUD
 import SwiftUI
@@ -185,7 +180,7 @@ class SpaceController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
-    _refreshChromeForLayoutMode()
+    _refreshChromeForCurrentTerm()
   }
   
   private func setupOverlayConstraints() {
@@ -206,23 +201,18 @@ class SpaceController: UIViewController {
     NotificationCenter.default.removeObserver(self)
   }
 
-  @objc private func _setupAppearance() {
-    self.view.tintColor = .cyan
-    switch BLKDefaults.keyboardStyle() {
-    case .light:
-      overrideUserInterfaceStyle = .light
-    case .dark:
-      overrideUserInterfaceStyle = .dark
-    default:
-      overrideUserInterfaceStyle = .unspecified
-    }
+  /// Drive the chrome light/dark from the terminal on screen. `.unspecified`
+  /// (System + automatic) lets the terminal keep following the device.
+  private func _syncAppearanceToCurrentTerm() {
+    overrideUserInterfaceStyle =
+      currentTerm()?.termView.termUIState.interfaceStyle ?? .unspecified
   }
   
   public override func viewDidLoad() {
     super.viewDidLoad()
 
-    _setupAppearance()
-    
+    view.tintColor = .cyan
+
     view.isOpaque = true
     
     _viewportsController.view.isOpaque = true
@@ -302,11 +292,7 @@ Please go to your subscriptions and cancel one of them!
                    object: nil)
     
     nc.addObserver(self, selector:#selector(_didBecomeKeyWindow), name: UIApplication.didBecomeActiveNotification, object: nil)
-    
-    nc.addObserver(self, selector: #selector(_setupAppearance),
-                   name: NSNotification.Name(rawValue: BKAppearanceChanged),
-                   object: nil)
-    
+
     nc.addObserver(self, selector: #selector(_UISceneDidEnterBackgroundNotification(_:)),
                    name: UIScene.didEnterBackgroundNotification, object: nil)
     
@@ -384,10 +370,10 @@ Please go to your subscriptions and cancel one of them!
     machine.track(term)
 
     machine.currentSessionKey = term.meta.key
-    
+
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
-      self._refreshChromeForLayoutMode()
+      self._refreshChromeForCurrentTerm()
       self._attachInputToCurrentTerm()
       completion?(didComplete)
     }
@@ -442,11 +428,11 @@ Please go to your subscriptions and cancel one of them!
     term.bgColor = view.backgroundColor ?? .black
 
     self.machine.currentSessionKey = term.meta.key
-    
+
     _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
       self._displayHUD()
-      self._refreshChromeForLayoutMode()
+      self._refreshChromeForCurrentTerm()
       if attachInput {
         self._attachInputToCurrentTerm()
       }
@@ -579,7 +565,7 @@ extension SpaceController: UIPageViewControllerDelegate {
     }
     machine.currentSessionKey = termController.meta.key
     _displayHUD()
-    _refreshChromeForLayoutMode()
+    _refreshChromeForCurrentTerm()
     _attachInputToCurrentTerm()
 
   }
@@ -633,7 +619,7 @@ extension SpaceController: TermControlDelegate {
 
   func terminalLayoutModeChanged(control: TermController) {
     if currentTerm() == control {
-      _refreshChromeForLayoutMode()
+      _refreshChromeForCurrentTerm()
     }
   }
 
@@ -664,7 +650,8 @@ extension SpaceController {
     return LayoutConstraintManager.resolve(raw)
   }
 
-  func _refreshChromeForLayoutMode() {
+  func _refreshChromeForCurrentTerm() {
+    _syncAppearanceToCurrentTerm()
     // Fixes "collection updated while enumerated" on UIKit side.
     DispatchQueue.main.async { [weak self] in
       self?.setNeedsStatusBarAppearanceUpdate()
@@ -766,7 +753,6 @@ extension SpaceController {
     case .zoomIn: currentTerm()?.termView.increaseFontSize()
     case .zoomOut: currentTerm()?.termView.decreaseFontSize()
     case .zoomReset: currentTerm()?.termView.resetFontSize()
-    case .switchTheme: currentTerm()?.termView.toggleAlternativeTheme()
     case .hideKeyboard: KBTracker.shared.input?.dismissKeyboard()
     }
   }
@@ -1172,7 +1158,7 @@ extension SpaceController {
     _viewportsController.setViewControllers([term], direction: direction, animated: animated) { (didComplete) in
       self.machine.currentSessionKey = term.meta.key
       self._displayHUD()
-      self._refreshChromeForLayoutMode()
+      self._refreshChromeForCurrentTerm()
       self._attachInputToCurrentTerm()
       self._spaceControllerAnimating = false
     }

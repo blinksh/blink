@@ -85,35 +85,6 @@ class KBAccessoryView: UIInputView {
     return glassEffect
   }
   
-//  Commented because I think we can go with a general system setting for now.
-//  Update effect based on keyboard settings.
-//  @available(iOS 26.0, *)
-//  private func _setupKeyboardStyle() {
-//    guard let glassEffectView = _glassEffectView else { return }
-//    
-//    let glassEffect = _createGlassEffect()
-//    
-//
-//    UIView.animate {
-//      glassEffectView.effect = glassEffect
-//    }
-//  }
-//  
-//  private func _setupNotificationObserver() {
-//    NotificationCenter.default.addObserver(
-//      self,
-//      selector: #selector(_keyboardStyleDidChange),
-//      name: NSNotification.Name(rawValue: BKAppearanceChanged),
-//      object: nil
-//    )
-//  }
-//  
-//  @objc private func _keyboardStyleDidChange() {
-//    if #available(iOS 26.0, *) {
-//      _setupKeyboardStyle()
-//    }
-//  }
-  
   @available(iOS 26.0, *)
   private func _setupGlassMaterialEffect() {
     let glassEffectView = UIVisualEffectView()
