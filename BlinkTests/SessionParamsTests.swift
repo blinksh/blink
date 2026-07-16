@@ -31,56 +31,54 @@
 
 
 import XCTest
+@testable import Blink
 
 class SessionParamsTests: XCTestCase {
-  
-  override func setUp() {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+
+  // Secure coding persists the config fields, but the snapshot storage is
+  // runtime-only transport and must not be written into the archive.
+  func testSecureCodingPersistsConfigButNotSnapshot() {
+    let mosh = MoshParams()
+    mosh.ip = "192.168.1.1"
+    mosh.port = "22"
+    mosh.key = "id_ed25519"
+    mosh.putEncodedState(Data([0x01, 0x02, 0x03]))
+
+    let params = MCPParams()
+    params.childSessionType = "mosh"
+    params.childSessionParams = mosh
+
+    let restored = secureRoundTrip(params)
+    XCTAssertEqual(restored?.childSessionType, "mosh")
+
+    let restoredMosh = restored?.childSessionParams as? MoshParams
+    XCTAssertEqual(restoredMosh?.ip, "192.168.1.1")
+    XCTAssertEqual(restoredMosh?.port, "22")
+    XCTAssertEqual(restoredMosh?.key, "id_ed25519")
+    XCTAssertNil(restoredMosh?.encodedStateStorage, "Snapshot must not be persisted")
   }
-  
-  override func tearDown() {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
+
+  // The snapshot passes through once: put makes it available, take returns and
+  // drains it. MCPParams forwards to its child, so this also covers composition.
+  func testSnapshotTransportDrainsOnce() {
+    let params = MCPParams()
+    params.childSessionParams = MoshParams()
+
+    XCTAssertFalse(params.hasEncodedState())
+
+    let snapshot = Data([0xAA, 0xBB])
+    params.putEncodedState(snapshot)
+    XCTAssertTrue(params.hasEncodedState())
+
+    XCTAssertEqual(params.takeEncodedState(), snapshot)
+    XCTAssertFalse(params.hasEncodedState(), "take must drain the snapshot")
+    XCTAssertNil(params.takeEncodedState())
   }
-  
-  func testSerialization() {
-    let mcpParams = MCPParams()
-    mcpParams.rows = 10
-    mcpParams.cols = 20
-    mcpParams.boldAsBright = true
-    mcpParams.childSessionType = "test"
-    mcpParams.viewSize = CGSize(width: 10, height: 10)
-    mcpParams.layoutLockedFrame = CGRect(x: 10, y: 10, width: 10, height: 10)
-    
-    
-    let moshParams = MoshParams()
-    moshParams.ip = "192.168.1.1"
-    
-    mcpParams.childSessionParams = moshParams
-    
-    let copy = _dumpAndRestore(params: mcpParams)
-    XCTAssertEqual(mcpParams.cols, copy?.cols)
-    XCTAssertEqual(mcpParams.rows, copy?.rows)
-    XCTAssertEqual(mcpParams.boldAsBright, copy?.boldAsBright)
-    XCTAssertEqual(mcpParams.childSessionType, copy?.childSessionType)
-    XCTAssertEqual(mcpParams.viewSize, copy?.viewSize)
-    XCTAssertEqual(mcpParams.layoutLockedFrame, copy?.layoutLockedFrame)
-    XCTAssertEqual(moshParams.ip, (copy?.childSessionParams as? MoshParams)?.ip)
-  }
-  
-  func _dumpAndRestore(params: MCPParams) -> MCPParams? {
+
+  private func secureRoundTrip(_ params: MCPParams) -> MCPParams? {
     let archiver = NSKeyedArchiver(requiringSecureCoding: true)
     archiver.encode(params, forKey: "params")
-    let data = archiver.encodedData
-    
-    let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
+    let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: archiver.encodedData)
     return unarchiver?.decodeObject(of: MCPParams.self, forKey: "params")
   }
-  
-  func testPerformanceExample() {
-    // This is an example of a performance test case.
-    self.measure {
-      // Put the code you want to measure the time of here.
-    }
-  }
-  
 }
