@@ -37,6 +37,27 @@ import BlinkConfig
 private struct StoreData: Codable {
   var styles: [TerminalStyle]
   var selectedStyleID: UUID?
+
+  init(styles: [TerminalStyle], selectedStyleID: UUID?) {
+    self.styles = styles
+    self.selectedStyleID = selectedStyleID
+  }
+
+  private enum CodingKeys: String, CodingKey { case styles, selectedStyleID }
+
+  init(from decoder: Decoder) throws {
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    // Decode styles one at a time so a single bad entry is skipped, not fatal
+    // to the whole library.
+    self.styles = try c.decode([Lossy<TerminalStyle>].self, forKey: .styles).compactMap(\.value)
+    self.selectedStyleID = try c.decodeIfPresent(UUID.self, forKey: .selectedStyleID)
+  }
+
+  // Decodes to nil instead of throwing, so it never aborts the enclosing array.
+  private struct Lossy<T: Decodable>: Decodable {
+    let value: T?
+    init(from decoder: Decoder) throws { value = try? T(from: decoder) }
+  }
 }
 
 @objc class TerminalStyleStore: NSObject, ObservableObject {

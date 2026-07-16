@@ -71,7 +71,7 @@ class TerminalStyleResolutionTests: XCTestCase {
   func testResolveMissingThemeFallsBack() {
     let style = TerminalStyle(
       id: UUID(), name: "Broken", themeName: "NonexistentTheme123",
-      fontName: "Source Code Pro", fontSize: 14, externalDisplayFontSize: 24,
+      fontName: "Source Code Pro", fontSize: 14,
       cursorBlink: false, boldMode: .auto, boldAsBright: false
     )
     let r = style.resolved()
@@ -83,7 +83,7 @@ class TerminalStyleResolutionTests: XCTestCase {
   func testResolveMissingFontFallsBack() {
     let style = TerminalStyle(
       id: UUID(), name: "Broken", themeName: "Default",
-      fontName: "TotallyFakeFont999", fontSize: 14, externalDisplayFontSize: 24,
+      fontName: "TotallyFakeFont999", fontSize: 14,
       cursorBlink: false, boldMode: .auto, boldAsBright: false
     )
     let r = style.resolved()
@@ -255,6 +255,31 @@ class TerminalStyleStoreTests: XCTestCase {
     XCTAssertEqual(store.styles.count, 1)
     XCTAssertNil(store.selectedStyleID, "Invalid selectedStyleID should reset to nil")
   }
+
+  func testLossyDecodeSkipsBadStyleKeepsOthers() throws {
+    // A valid style as a plist dictionary.
+    let good = TerminalStyle(
+      id: UUID(), name: "Good", themeName: "Default", fontName: "Menlo",
+      fontSize: 12, cursorBlink: false, boldMode: .auto, boldAsBright: false
+    )
+    let goodData = try PropertyListEncoder().encode(good)
+    let goodDict = try XCTUnwrap(
+      PropertyListSerialization.propertyList(from: goodData, options: [], format: nil) as? [String: Any]
+    )
+
+    // A broken entry: same shape, but missing the required `name`.
+    var badDict = goodDict
+    badDict["id"] = UUID().uuidString
+    badDict.removeValue(forKey: "name")
+
+    let storeDict: [String: Any] = ["styles": [goodDict, badDict]]
+    let data = try PropertyListSerialization.data(fromPropertyList: storeDict, format: .binary, options: 0)
+    try data.write(to: tempDir.appendingPathComponent("styles"))
+
+    let store = TerminalStyleStore.makeForTesting(directory: tempDir)
+    XCTAssertEqual(store.styles.count, 1, "The bad entry is dropped, the good one kept")
+    XCTAssertEqual(store.styles.first?.name, "Good")
+  }
 }
 
 // MARK: - TerminalStyleBundle Tests
@@ -336,37 +361,52 @@ class TerminalStyleBundleTests: XCTestCase {
   }
 }
 
-// MARK: - Appearance
+// MARK: - Migration / forward-compatible decode
 
-// Persistence of the `appearance` field, added after the initial style format.
-final class TerminalStyleAppearanceTests: XCTestCase {
+// Guards that data written by an older schema still decodes. As fields are
+// added, extend `dropping:` with the new keys and assert their defaults — old
+// on-disk data lacks them, so decode must recover rather than throw (a throw
+// here is what makes the store drop saved styles on load).
+final class TerminalStyleMigrationTests: XCTestCase {
 
-  func testDecodeMissingAppearanceDefaultsToSystem() throws {
-    // A style persisted before `appearance` existed must still decode — a missing
-    // key would otherwise throw and drop every saved style.
-    let legacy = """
-    {"id":"00000000-0000-0000-0000-0000000000AB","name":"Legacy","themeName":"Default",\
-    "fontName":"Menlo","fontSize":12,"cursorBlink":false,"boldMode":0,"boldAsBright":false}
-    """
-    let style = try JSONDecoder().decode(TerminalStyle.self, from: Data(legacy.utf8))
-    XCTAssertEqual(style.appearance, .system)
-    XCTAssertNil(style.alternativeThemeName)
+  // A fully-populated current style, used as the base to strip fields from.
+  private let base = TerminalStyle(
+    id: UUID(),
+    name: "Base",
+    themeName: "Theme",
+    alternativeThemeName: "Alt",
+    appearance: .dark,
+    fontName: "Font",
+    fontSize: 12,
+    cursorBlink: true,
+    boldMode: .on,
+    boldAsBright: true
+  )
+
+  /// Encodes `style`, drops `keys` from the serialized plist to mimic an older
+  /// on-disk schema, then decodes back through the real decoder.
+  private func decode(_ style: TerminalStyle, dropping keys: [String]) throws -> TerminalStyle {
+    let data = try PropertyListEncoder().encode(style)
+    var plist = try XCTUnwrap(
+      PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any]
+    )
+    keys.forEach { plist.removeValue(forKey: $0) }
+    let stripped = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
+    return try PropertyListDecoder().decode(TerminalStyle.self, from: stripped)
   }
 
-  func testAppearanceRoundTrips() throws {
-    let style = TerminalStyle(
-      id: UUID(),
-      name: "X",
-      themeName: "T",
-      appearance: .dark,
-      fontName: "F",
-      fontSize: 12,
-      cursorBlink: false,
-      boldMode: .auto,
-      boldAsBright: false
-    )
-    let data = try PropertyListEncoder().encode(style)
+  func testDecodesWhenAppearanceFieldsAreAbsent() throws {
+    let recovered = try decode(base, dropping: ["appearance", "alternativeThemeName"])
+    XCTAssertEqual(recovered.appearance, .system)   // default for a missing field
+    XCTAssertNil(recovered.alternativeThemeName)     // default for a missing field
+    XCTAssertEqual(recovered.themeName, "Theme")     // pre-existing fields survive
+    XCTAssertEqual(recovered.fontName, "Font")
+  }
+
+  func testFullStyleRoundTrips() throws {
+    let data = try PropertyListEncoder().encode(base)
     let decoded = try PropertyListDecoder().decode(TerminalStyle.self, from: data)
     XCTAssertEqual(decoded.appearance, .dark)
+    XCTAssertEqual(decoded.alternativeThemeName, "Alt")
   }
 }
