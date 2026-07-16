@@ -84,7 +84,9 @@
     ios_setStreams(_stream.in, _stream.out, _stream.out);
 
     NSString *homePath = [BlinkPaths homePath];
-    ios_setMiniRoot(homePath);
+    if (homePath) {
+      ios_setDirectoryURL([NSURL fileURLWithPath:homePath]);
+    }
 
     // We are restoring mosh session if possible first.
     if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {

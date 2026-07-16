@@ -44,6 +44,7 @@ enum TerminalEnvironment {
     _initIOSSystem()
     _registerCommands()
     _setupProcessEnv()
+    _setSandboxRoot()
     refreshAllowedPaths()
   }()
 
@@ -122,6 +123,12 @@ enum TerminalEnvironment {
   private static func _initIOSSystem() {
     sideLoading = false  // disables ios_system's extra (non-blink) commands
     initializeEnvironment()
+  }
+
+  private static func _setSandboxRoot() {
+    guard let home = BlinkPaths.homePath() else { return }
+    FileManager.default.changeCurrentDirectoryPath(home)
+    ios_setMiniRoot(home)
   }
 
   private static func _registerCommands() {
