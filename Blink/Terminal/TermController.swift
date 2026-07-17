@@ -38,6 +38,7 @@ import AVFoundation
   func terminalHangup(control: TermController)
   @objc optional func terminalDidResize(control: TermController)
   @objc optional func terminalLayoutModeChanged(control: TermController)
+  @objc optional func terminalBackgroundColorChanged(control: TermController)
   @objc optional func terminalDeviceDidBecomeReady(control: TermController)
 }
 
@@ -186,6 +187,7 @@ class TermController: UIViewController {
   @objc func applyTerminalBackgroundColor(_ color: UIColor) {
     _bgColor = color
     view.backgroundColor = color
+    delegate?.terminalBackgroundColorChanged?(control: self)
   }
   
   // State Properties for Input Management

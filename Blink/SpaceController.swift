@@ -207,6 +207,16 @@ class SpaceController: UIViewController {
     overrideUserInterfaceStyle =
       currentTerm()?.termView.termUIState.interfaceStyle ?? .unspecified
   }
+
+  /// Paint the container chrome with the terminal background
+  private func _syncBackgroundToCurrentTerm() {
+    guard let bgColor = currentTerm()?.view.backgroundColor, bgColor != .clear else {
+      return
+    }
+    view.backgroundColor = bgColor
+    _viewportsController.view.backgroundColor = bgColor
+    view.window?.backgroundColor = bgColor
+  }
   
   public override func viewDidLoad() {
     super.viewDidLoad()
@@ -468,13 +478,7 @@ Please go to your subscriptions and cancel one of them!
     guard let term = currentTerm() else {
       return
     }
-    
-    if let bgColor = term.view.backgroundColor, bgColor != .clear {
-      view.backgroundColor = bgColor
-      _viewportsController.view.backgroundColor = bgColor
-      view.window?.backgroundColor = bgColor
-    }
-    
+
     let hud = MBProgressHUD.showAdded(to: _overlay, animated: _hud == nil)
     
     hud.mode = .customView
@@ -623,6 +627,12 @@ extension SpaceController: TermControlDelegate {
     }
   }
 
+  func terminalBackgroundColorChanged(control: TermController) {
+    if currentTerm() == control {
+      _refreshChromeForCurrentTerm()
+    }
+  }
+
   func terminalDeviceDidBecomeReady(control: TermController) {
     guard currentTerm() === control, !_pendingSceneCommands.isEmpty else {
       return
@@ -652,6 +662,7 @@ extension SpaceController {
 
   func _refreshChromeForCurrentTerm() {
     _syncAppearanceToCurrentTerm()
+    _syncBackgroundToCurrentTerm()
     // Fixes "collection updated while enumerated" on UIKit side.
     DispatchQueue.main.async { [weak self] in
       self?.setNeedsStatusBarAppearanceUpdate()
