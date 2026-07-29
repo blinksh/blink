@@ -79,6 +79,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   }
 }
 
+fileprivate struct TermCell: Equatable {
+  let col: Int
+  let row: Int
+}
+
 /**
  Gestures:
 
@@ -95,6 +100,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _jsScrollerPath: String
   private let _handlerName: String
   private let _1fTapRecognizer = UITapGestureRecognizer()
+  private let _2ndClickRecognizer = UITapGestureRecognizer()
   private let _1fPanRecognizer = UIPanGestureRecognizer()
   private let _2fTapRecognizer = UITapGestureRecognizer()
   private let _pinchRecognizer = UIPinchGestureRecognizer()
@@ -107,9 +113,18 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _scrollPointTrackpad: CGPoint? = nil
   private var _mouseDragMode: Bool = false
   private var _mouseDragStartPoint: CGPoint? = nil
-  private var _cmdKeyPressed: Bool = false
+  private var _lastDragPoint: CGPoint? = nil
+  private var _lastDragCell: TermCell? = nil
+  private var _isPrimaryScreen: Bool = true
 
-  @objc var focused: Bool = false;
+  @objc var focused: Bool = false {
+    didSet {
+      guard !focused else {
+        return
+      }
+      _endMouseDrag(at: nil)
+    }
+  }
   @objc var hasSelection: Bool = false {
     didSet {
       _pinchRecognizer.isEnabled = !hasSelection
@@ -132,6 +147,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   var allRecognizers:[UIGestureRecognizer] {
     let recognizers = [
       _1fTapRecognizer,
+      _2ndClickRecognizer,
       _1fPanRecognizer,
       _2fTapRecognizer,
       _3fTapRecognizer,
@@ -167,12 +183,14 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 
       _wkWebView = webView
     } else {
+      _endMouseDrag(at: nil)
+
       _scrollView.removeFromSuperview()
       _termScrollView.removeFromSuperview()
       _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: _handlerName)
 
       for r in allRecognizers {
-        _wkWebView?.addGestureRecognizer(r)
+        _wkWebView?.removeGestureRecognizer(r)
       }
 
       if let interaction = _pointerInteraction as? UIPointerInteraction {
@@ -234,6 +252,13 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _1fTapRecognizer.require(toFail: _longPressRecognizer)
     _1fTapRecognizer.require(toFail: _1fPanRecognizer)
 
+    _2ndClickRecognizer.numberOfTapsRequired = 1
+    _2ndClickRecognizer.numberOfTouchesRequired = 1
+    _2ndClickRecognizer.buttonMaskRequired = .secondary
+    _2ndClickRecognizer.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.indirectPointer.rawValue)]
+    _2ndClickRecognizer.delegate = self
+    _2ndClickRecognizer.addTarget(self, action: #selector(_onSecondaryClick(_:)))
+
     _1fPanRecognizer.minimumNumberOfTouches = 1
     _1fPanRecognizer.maximumNumberOfTouches = 1
     _1fPanRecognizer.delegate = self
@@ -256,36 +281,125 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   }
   
   private var _reportedY:CGFloat = 0
-  
+
+  // A hold arms the drag and the press follows on lift, once WebKit has placed
+  // the caret. Cmd+click does both at once.
+  private func _armMouseDrag() {
+    _mouseDragMode = true
+    _mouseDragStartPoint = nil
+    _lastDragPoint = nil
+    _lastDragCell = nil
+    _1fPanRecognizer.isEnabled = true
+    _applyPanEnablement()
+  }
+
+  private func _pressMouseDrag(at point: CGPoint) {
+    _mouseDragStartPoint = point
+    _lastDragPoint = point
+    _lastDragCell = _cell(for: point)
+    _reportMouse("mousedown", at: point, buttons: 1)
+  }
+
+  private func _moveMouseDrag(to point: CGPoint) {
+    guard _mouseDragMode, _mouseDragStartPoint != nil else {
+      return
+    }
+    _lastDragPoint = point
+
+    let cell = _cell(for: point)
+    if let cell = cell, cell == _lastDragCell {
+      return
+    }
+    _lastDragCell = cell
+    _reportMouse("mousemove", at: point, buttons: 1)
+  }
+
+  private func _endMouseDrag(at point: CGPoint?) {
+    guard _mouseDragMode else {
+      return
+    }
+
+    if let anchor = _mouseDragStartPoint {
+      _reportMouse("mouseup", at: point ?? _lastDragPoint ?? anchor, buttons: 0)
+    }
+
+    _mouseDragMode = false
+    _mouseDragStartPoint = nil
+    _lastDragPoint = nil
+    _lastDragCell = nil
+    _1fPanRecognizer.isEnabled = false
+    _applyPanEnablement()
+  }
+
+  private func _applyPanEnablement() {
+    _scrollView.panGestureRecognizer.isEnabled = !_mouseDragMode && _isPrimaryScreen
+    _termScrollView.panGestureRecognizer.isEnabled = !_mouseDragMode && !_isPrimaryScreen
+  }
+
+  private func _reportMouse(_ name: String, at point: CGPoint, buttons: Int, button: Int = 0) {
+    let p = _clampToView(point)
+    _wkWebView?.evaluateJavaScript(
+      "term_reportMouseEvent(\"\(name)\", \(p.x), \(p.y), \(buttons), \(button));",
+      completionHandler: nil
+    )
+  }
+
+  // A recognized gesture keeps reporting locations off-view, and hterm does not
+  // clamp the cell it derives from them.
+  private func _clampToView(_ point: CGPoint) -> CGPoint {
+    guard let bounds = _wkWebView?.bounds, bounds.width > 0, bounds.height > 0 else {
+      return point
+    }
+    return CGPoint(
+      x: min(max(point.x, 0), bounds.width - 1),
+      y: min(max(point.y, 0), bounds.height - 1)
+    )
+  }
+
+  private func _cell(for point: CGPoint) -> TermCell? {
+    guard let size = _characterSize, size.width > 0, size.height > 0 else {
+      return nil
+    }
+    return TermCell(col: Int(point.x / size.width), row: Int(point.y / size.height))
+  }
+
+  // WebKit's caret sits on the character the hold landed on, which is closer to
+  // what was meant than the raw touch point.
+  private func _caretPoint(fallback point: CGPoint) -> CGPoint {
+    guard
+      let contentView = _wkWebView?.scrollView.subviews.first(where: { view in
+        String(describing: type(of: view)).contains("WKContent")
+      }),
+      let textInput = contentView as? UITextInput,
+      let selectedRange = textInput.selectedTextRange,
+      let rect = _wkWebView?.convert(textInput.caretRect(for: selectedRange.start), from: contentView)
+    else {
+      return point
+    }
+    return CGPoint(x: rect.midX, y: rect.midY)
+  }
+
   @objc func _on1fTap(_ recognizer: UITapGestureRecognizer) {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
       let wasInDragMode = _mouseDragMode
+      let cmdPressed = recognizer.modifierFlags.contains(.command)
 
       if focused {
-        if _cmdKeyPressed {
+        if cmdPressed {
           if _mouseDragMode {
-            _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
-            _mouseDragMode = false
-            _mouseDragStartPoint = nil
-            _1fPanRecognizer.isEnabled = false
-            _scrollView.panGestureRecognizer.isEnabled = true
-            _termScrollView.panGestureRecognizer.isEnabled = true
+            _endMouseDrag(at: point)
           } else {
-            _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y), 1);", completionHandler: nil)
-            _mouseDragMode = true
-            _mouseDragStartPoint = point
-            _1fPanRecognizer.isEnabled = true
-            _scrollView.panGestureRecognizer.isEnabled = false
-            _termScrollView.panGestureRecognizer.isEnabled = false
+            _armMouseDrag()
+            _pressMouseDrag(at: point)
           }
         } else {
           _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BLKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
         }
       }
 
-      if !_cmdKeyPressed && !wasInDragMode {
+      if !cmdPressed && !wasInDragMode {
         if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
           target.perform(#selector(focusOnShellAction), with: self)
         }
@@ -294,6 +408,21 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
   }
   
+  @objc func _onSecondaryClick(_ recognizer: UITapGestureRecognizer) {
+    guard
+      recognizer.state == .recognized,
+      focused,
+      recognizer.modifierFlags.contains(.command)
+    else {
+      // Without cmd the click is left to the terminal menu.
+      return
+    }
+
+    let point = recognizer.location(in: recognizer.view)
+    _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y), 2, 2);", completionHandler: nil)
+    _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 0, 2);", completionHandler: nil)
+  }
+
   @objc func _on2fTap(_ recognizer: UITapGestureRecognizer) {
     switch recognizer.state {
     case .recognized:
@@ -305,44 +434,33 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   }
 
   @objc func _onLongPress(_ recognizer: UILongPressGestureRecognizer) {
-    guard focused else {
-      return
-    }
-
     let point = recognizer.location(in: recognizer.view)
 
     switch recognizer.state {
     case .began:
-      if !_mouseDragMode {
-        _mouseDragMode = true
-        _mouseDragStartPoint = nil
-        _1fPanRecognizer.isEnabled = true
-        _scrollView.panGestureRecognizer.isEnabled = false
-        _termScrollView.panGestureRecognizer.isEnabled = false
+      guard focused, !_mouseDragMode else {
+        return
       }
+      _armMouseDrag()
+
     case .ended:
-      if _mouseDragMode && _mouseDragStartPoint == nil {
-        var cursorPoint = point
-
-        if let contentView = _wkWebView?.scrollView.subviews.first(where: { view in
-          String(describing: type(of: view)).contains("WKContent")
-        }),
-           let textInput = contentView as? UITextInput,
-           let selectedRange = textInput.selectedTextRange,
-           let convertedRect = _wkWebView?.convert(textInput.caretRect(for: selectedRange.start), from: contentView) {
-          cursorPoint = CGPoint(x: convertedRect.midX, y: convertedRect.midY)
-        }
-
-        _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(cursorPoint.x), \(cursorPoint.y), 1);", completionHandler: nil)
-        _mouseDragStartPoint = cursorPoint
+      guard _mouseDragMode, _mouseDragStartPoint == nil else {
+        return
       }
+      _pressMouseDrag(at: _caretPoint(fallback: point))
+
+    case .cancelled, .failed:
+      if _mouseDragStartPoint == nil {
+        _endMouseDrag(at: nil)
+      }
+
     default:
       break
     }
   }
 
   @objc func _on1fPan(_ recognizer: UIPanGestureRecognizer) {
-    guard focused && _mouseDragMode else {
+    guard _mouseDragMode else {
       return
     }
 
@@ -353,16 +471,10 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       recognizer.view?.superview?.dropSuperViewTouches()
 
     case .changed:
-      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousemove\", \(point.x), \(point.y), 1);", completionHandler: nil)
+      _moveMouseDrag(to: point)
 
-    case .ended: fallthrough
-    case .cancelled:
-      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
-      _mouseDragMode = false
-      _mouseDragStartPoint = nil
-      _1fPanRecognizer.isEnabled = false
-      _scrollView.panGestureRecognizer.isEnabled = true
-      _termScrollView.panGestureRecognizer.isEnabled = true
+    case .ended, .cancelled, .failed:
+      _endMouseDrag(at: point)
 
     default: break
     }
@@ -392,9 +504,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     switch recognizer.state {
     case .began, .changed:
       _scrollPointTrackpad = point
-      if _mouseDragMode {
-        _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousemove\", \(point.x), \(point.y), 1);", completionHandler: nil)
-      }
+      _moveMouseDrag(to: point)
     default: break
     }
   }
@@ -411,17 +521,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 
   }
 
+  // Clicks read cmd off their own event, so only the release matters here: it is
+  // what ends a latched drag.
   @objc func setCmdKeyPressed(_ pressed: Bool) {
-    _cmdKeyPressed = pressed
-    if !pressed && _mouseDragMode {
-      if let point = _mouseDragStartPoint {
-        _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
-      }
-      _mouseDragMode = false
-      _mouseDragStartPoint = nil
-      _1fPanRecognizer.isEnabled = false
-      _scrollView.panGestureRecognizer.isEnabled = true
-      _termScrollView.panGestureRecognizer.isEnabled = true
+    if !pressed {
+      _endMouseDrag(at: nil)
     }
   }
 
@@ -544,11 +648,11 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
       _scrollView.contentSize = contentSize
       let offset = CGPoint(x: 0, y: max(contentSize.height - _scrollView.bounds.height, 0));
       _scrollView.contentOffset = offset
-      
-      _scrollView.panGestureRecognizer.isEnabled = isPrimary
-      _termScrollView.panGestureRecognizer.isEnabled = !isPrimary
-      
-      
+
+      _isPrimaryScreen = isPrimary
+      _applyPanEnablement()
+
+
     case "scrollTo":
       let animated = msg["animated"] as? Bool == true
       let isPrimary = msg["isPrimary"] as? Bool ?? true
@@ -556,10 +660,10 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
       let x: CGFloat = msg["x"] as? CGFloat ?? 0
       let y: CGFloat = msg["y"] as? CGFloat ?? 0
       let offset = CGPoint(x: x, y: y)
-      
-      _scrollView.panGestureRecognizer.isEnabled = isPrimary
-      _termScrollView.panGestureRecognizer.isEnabled = !isPrimary
-      
+
+      _isPrimaryScreen = isPrimary
+      _applyPanEnablement()
+
       if (offset == _scrollView.contentOffset) {
         return
       }

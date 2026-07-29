@@ -253,13 +253,21 @@ function term_blur() {
   t.onFocusChange__(false);
 }
 
+// Cmd + secondary click is reported to the terminal instead.
+document.addEventListener('contextmenu', function(e) {
+  if (e.metaKey) {
+    e.preventDefault();
+  }
+}, true);
+
 function _setTermCoordinates(event, x, y) {
   // One based row/column stored on the mouse event.
   var ty = (y / t.scrollPort_.characterSize.height | 0) + 1;
   var tx = (x / t.scrollPort_.characterSize.width | 0) + 1;
 //  console.log(`x:${x},y: ${y}, col:${tx}, row:${ty}`);
-  event.terminalRow = ty;
-  event.terminalColumn = tx;
+  var size = t.screenSize;
+  event.terminalRow = Math.min(Math.max(ty, 1), size.height);
+  event.terminalColumn = Math.min(Math.max(tx, 1), size.width);
 }
 
 function term_reportMouseClick(x, y, buttons, display) {
@@ -267,11 +275,11 @@ function term_reportMouseClick(x, y, buttons, display) {
     return;
   }
 
-  var event = new MouseEvent(name, {buttons});
+  var event = new MouseEvent('mousedown', {buttons});
   _setTermCoordinates(event, x, y);
   if (!t.prompt.processMouseClick(event)) {
     term_reportMouseEvent('mousedown', x, y, 1);
-    term_reportMouseEvent('mouseup', x, y, 1);
+    term_reportMouseEvent('mouseup', x, y, 0);
   }
                                   
   if (display) {
@@ -279,12 +287,12 @@ function term_reportMouseClick(x, y, buttons, display) {
   }
 }
 
-function term_reportMouseEvent(name, x, y, buttons) {
+function term_reportMouseEvent(name, x, y, buttons, button) {
   if (!t.prompt) {
     return;
   }
 
-  var event = new MouseEvent(name, {buttons});
+  var event = new MouseEvent(name, {buttons, button: button || 0});
   _setTermCoordinates(event, x, y);
   t.onMouse(event);
 }

@@ -182,11 +182,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.UIDelegate = self;
   _webView.navigationDelegate = self;
   
-  if (@available(iOS 16.0, *)) {
-    _editMenuIteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-    [_webView addInteraction:_editMenuIteraction];
-  }
-  
+  _editMenuIteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+  [_webView addInteraction:_editMenuIteraction];
+
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
   
@@ -578,7 +576,34 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)blur {
   _gestureInteraction.focused = NO;
+  // Cmd can no longer come up here.
+  [self _setEditMenuInteractionInstalled:YES];
 //  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
+}
+
+- (void)setCmdKeyPressed:(BOOL)pressed {
+  [_gestureInteraction setCmdKeyPressed:pressed];
+
+  // The edit menu presents itself on secondary click, so it steps aside while
+  // that click belongs to the terminal.
+  [self _setEditMenuInteractionInstalled:!pressed];
+}
+
+- (void)_setEditMenuInteractionInstalled:(BOOL)shouldInstall {
+  if (!_editMenuIteraction) {
+    return;
+  }
+
+  BOOL isInstalled = [_webView.interactions containsObject:_editMenuIteraction];
+  if (shouldInstall == isInstalled) {
+    return;
+  }
+
+  if (shouldInstall) {
+    [_webView addInteraction:_editMenuIteraction];
+  } else {
+    [_webView removeInteraction:_editMenuIteraction];
+  }
 }
 
 - (void)reportTouchInPoint:(CGPoint)point
@@ -1196,7 +1221,7 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 
 @implementation TermView (UIEditMenuInteractionDelegate)
 
-- (UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction menuForConfiguration:(UIEditMenuConfiguration *)configuration suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions  API_AVAILABLE(ios(16.0)){
+- (UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction menuForConfiguration:(UIEditMenuConfiguration *)configuration suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions {
   
   NSMutableArray *actions = [[NSMutableArray alloc] init];
   
@@ -1300,10 +1325,6 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
 
 - (bool)_isLayoutLocked {
   return self.layoutLocked;
-}
-
-- (void)setCmdKeyPressed:(BOOL)pressed {
-  [_gestureInteraction setCmdKeyPressed:pressed];
 }
 
 @end
