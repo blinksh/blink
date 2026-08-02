@@ -138,3 +138,18 @@ hterm.VT.prototype.setDECMode = function(code, state) {
   }
   hterm.VT.prototype.setDECMode_original.call(this, code, state);
 };
+
+// Normalize before changing alpha.
+// Upstream has fixed other paths like b7e97ea1, but it won't hit this one
+// when injeting themes, which is why we are patching here.
+(function() {
+  var originalSetAlpha = lib.colors.setAlpha;
+  lib.colors.setAlpha = function(color, alpha) {
+    if (typeof color === 'string') {
+      const normalized = lib.colors.normalizeCSS(color);
+      if (!normalized) return color; // Unnormalizable - drop alpha
+      color = normalized;
+    }
+    return originalSetAlpha.call(this, color, alpha);
+  };
+})();
