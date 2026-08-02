@@ -66,3 +66,15 @@ hterm.VT.prototype.setDECMode = function(code, state) {
   }
   hterm.VT.prototype.setDECMode_original.call(this, code, state);
 };
+
+// Normalize custom theme colors before changing IME alpha.
+(function() {
+  var originalSetAlpha = lib.colors.setAlpha;
+  lib.colors.setAlpha = function(color, alpha) {
+    if (typeof color === 'string') {
+      var normalized = lib.colors.normalizeCSS(color);
+      if (normalized) color = normalized;
+    }
+    return originalSetAlpha.call(this, color, alpha);
+  };
+})();
