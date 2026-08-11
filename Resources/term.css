@@ -303,7 +303,22 @@
   font-style: italic;
 }
 
+/* Emoji fall back to Apple Color Emoji, whose advance is wider than the two
+   cells hterm reserves for them (about 2.26 cells at typical monospace
+   metrics). Rows then overrun the grid and trailing text wraps, which corrupts
+   full width status lines such as tmux's.
+
+   -webkit-text-size-adjust has no effect on iOS here, so scale the glyph by a
+   factor measured at runtime against the real cell width. See
+   _blinkEmojiScale in hterm_all.patches.js. */
 span.emoji {
-  -webkit-text-size-adjust: 90%;
+  /* Pin the box to the two cells hterm reserved. WebKit quantises the emoji
+     advance, so scaling the font alone lands short or long; this guarantees
+     the grid regardless. The scale below then sizes the glyph to sit inside
+     the box so it is not clipped. */
+  display: inline-block;
+  width: calc(var(--hterm-charsize-width) * 2);
+  overflow: hidden;
+  font-size: calc(1em * var(--blink-emoji-scale, 1));
   vertical-align: top;
 }

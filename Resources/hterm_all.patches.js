@@ -181,9 +181,57 @@ function _blinkForceTextPresentation(str) {
   return changed ? out : str;
 }
 
+// Companion to the span.emoji rule in term.css. Double width emoji render
+// through Apple Color Emoji, whose advance is wider than the two cells hterm
+// reserves, so rows overrun the grid and trailing text wraps. Measure a
+// reference emoji against the real cell width and publish the correction as a
+// custom property.
+var _blinkEmojiScale = {
+  el: null,
+  font: null,
+
+  update: function() {
+    var screen = document.querySelector('x-screen');
+    if (!screen) {
+      return;
+    }
+
+    var font = getComputedStyle(screen).font;
+    if (!font || this.font === font) {
+      return;
+    }
+    this.font = font;
+
+    if (!this.el) {
+      this.el = document.createElement('span');
+      this.el.style.cssText =
+        'position:absolute;top:-9999px;left:-9999px;visibility:hidden;' +
+        'white-space:pre;padding:0;margin:0;border:0;';
+      document.body.appendChild(this.el);
+    }
+    this.el.style.font = font;
+
+    this.el.textContent = 'M';
+    var cell = this.el.getBoundingClientRect().width;
+    // U+1F600 is Emoji_Presentation=Yes, so it always takes the colour font.
+    this.el.textContent = '😀';
+    var emoji = this.el.getBoundingClientRect().width;
+
+    if (!cell || !emoji) {
+      return;
+    }
+
+    // Only correct an overflow; never enlarge a glyph that already fits.
+    var scale = Math.min(1, (cell * 2) / emoji);
+    document.documentElement.style.setProperty(
+      '--blink-emoji-scale', String(Math.round(scale * 1000) / 1000));
+  },
+};
+
 hterm.Terminal.prototype.print_original = hterm.Terminal.prototype.print;
 
 hterm.Terminal.prototype.print = function(str) {
+  _blinkEmojiScale.update();
   hterm.Terminal.prototype.print_original.call(
     this, _blinkForceTextPresentation(str));
 };
