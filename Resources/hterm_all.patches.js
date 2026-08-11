@@ -228,6 +228,145 @@ var _blinkEmojiScale = {
   },
 };
 
+// hterm measures width one codepoint at a time, so an emoji ZWJ sequence such
+// as U+1F9D1 ZWJ U+1F373 counts as four columns. tmux and other modern
+// terminals treat it as one two column grapheme, so a status line they budget
+// to fit renders too wide here and the tail wraps onto the next row.
+//
+// Count by grapheme cluster instead. Only strings that actually contain a
+// joiner take this path; everything else keeps hterm's original arithmetic.
+// Falls back entirely when Intl.Segmenter is unavailable.
+var _BLINK_JOINERS =
+  /[‍️\u{1F3FB}-\u{1F3FF}\u{1F1E6}-\u{1F1FF}\u{E0020}-\u{E007F}]/u;
+
+var _blinkGrapheme = {
+  seg: (typeof Intl !== 'undefined' && Intl.Segmenter)
+    ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+    : null,
+
+  needed: function(str) {
+    return !!this.seg && _BLINK_JOINERS.test(str);
+  },
+
+  // A cluster holding any double width codepoint occupies two cells, matching
+  // tmux. Otherwise sum the parts, which keeps combining marks at zero.
+  clusterWidth: function(cluster) {
+    var width = 0;
+    var wide = false;
+    for (var i = 0; i < cluster.length; ) {
+      var cp = cluster.codePointAt(i);
+      var cw = lib.wc.charWidth(cp);
+      if (cw === 2) {
+        wide = true;
+      }
+      width += cw;
+      i += cp <= 0xFFFF ? 1 : 2;
+    }
+    return wide ? 2 : width;
+  },
+
+  segments: function(str) {
+    return Array.from(this.seg.segment(str));
+  },
+};
+
+lib.wc.strWidth_original = lib.wc.strWidth;
+lib.wc.strWidth = function(str) {
+  if (!_blinkGrapheme.needed(str)) {
+    return lib.wc.strWidth_original(str);
+  }
+  var width = 0;
+  var segments = _blinkGrapheme.segments(str);
+  for (var i = 0; i < segments.length; i++) {
+    width += _blinkGrapheme.clusterWidth(segments[i].segment);
+  }
+  return width;
+};
+
+lib.wc.substr_original = lib.wc.substr;
+lib.wc.substr = function(str, start, opt_width) {
+  if (!_blinkGrapheme.needed(str)) {
+    return lib.wc.substr_original(str, start, opt_width);
+  }
+
+  var segments = _blinkGrapheme.segments(str);
+  var i = 0;
+  var width = 0;
+
+  // Advance while the next cluster still fits entirely before `start`.
+  for (; i < segments.length; i++) {
+    var cw = _blinkGrapheme.clusterWidth(segments[i].segment);
+    if (width + cw > (start || 0)) {
+      break;
+    }
+    width += cw;
+  }
+
+  var from = i < segments.length ? segments[i].index : str.length;
+  if (opt_width == null) {
+    return str.substr(from);
+  }
+
+  var taken = 0;
+  var to = from;
+  for (var j = i; j < segments.length; j++) {
+    var w = _blinkGrapheme.clusterWidth(segments[j].segment);
+    if (taken + w > opt_width) {
+      break;
+    }
+    taken += w;
+    to = segments[j].index + segments[j].segment.length;
+  }
+  return str.substring(from, to);
+};
+
+hterm.TextAttributes.splitWidecharString_original =
+  hterm.TextAttributes.splitWidecharString;
+hterm.TextAttributes.splitWidecharString = function(str) {
+  if (!_blinkGrapheme.needed(str)) {
+    return hterm.TextAttributes.splitWidecharString_original(str);
+  }
+
+  var out = [];
+  var plain = '';
+  var plainWidth = 0;
+  var ascii = true;
+
+  function flush() {
+    if (!plain) {
+      return;
+    }
+    out.push({ str: plain, asciiNode: ascii, wcStrWidth: plainWidth });
+    plain = '';
+    plainWidth = 0;
+    ascii = true;
+  }
+
+  var segments = _blinkGrapheme.segments(str);
+  for (var i = 0; i < segments.length; i++) {
+    var cluster = segments[i].segment;
+    var width = _blinkGrapheme.clusterWidth(cluster);
+
+    if (width === 2) {
+      flush();
+      // Keeping the whole cluster in one node also lets WebKit compose the
+      // joined glyph, instead of drawing each part separately.
+      out.push({
+        str: cluster, wcNode: true, asciiNode: false, wcStrWidth: 2,
+      });
+    } else {
+      plain += cluster;
+      plainWidth += width;
+      if (cluster.codePointAt(0) > 127) {
+        ascii = false;
+      }
+    }
+  }
+  flush();
+
+  return out;
+};
+
 hterm.Terminal.prototype.print_original = hterm.Terminal.prototype.print;
 
 hterm.Terminal.prototype.print = function(str) {

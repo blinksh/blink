@@ -318,6 +318,12 @@ span.emoji {
      the box so it is not clipped. */
   display: inline-block;
   width: calc(var(--hterm-charsize-width) * 2);
+  /* An inline-block establishes its own formatting context, so without a fixed
+     height and line-height it contributes its own baseline to the line box and
+     rows containing emoji shift by a fraction of a pixel. Pin both so the row
+     height is identical with and without emoji. */
+  height: var(--hterm-charsize-height);
+  line-height: var(--hterm-charsize-height);
   overflow: hidden;
   font-size: calc(1em * var(--blink-emoji-scale, 1));
   vertical-align: top;
