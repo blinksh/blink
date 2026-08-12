@@ -1,3 +1,17 @@
+/* The row renderer alternates each row's inline transform between scale(1) and
+   scale(1.0001) on every re-render to force a repaint. The identity value
+   leaves the row uncomposited while the scaled value promotes it to its own
+   layer, and WebKit rasterises glyphs differently in each, so text and rules
+   shimmer by about a pixel as rows redraw. Pin the scaled value so every row
+   stays composited and rasterisation never switches path.
+
+   This has to be CSS because the renderer ships prebuilt in
+   hterm_all.min.js. Rows still repaint: React re-renders their contents
+   regardless of whether the transform value changed. */
+x-screen x-row {
+  transform: scale(1.0001) !important;
+}
+
 /* DejaVu Sans Mono */
 
 @font-face {
