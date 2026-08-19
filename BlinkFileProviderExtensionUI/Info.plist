@@ -5,16 +5,7 @@
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderActions</key>
-		<array>
-			<dict>
-				<key>NSExtensionFileProviderActionActivationRule</key>
-				<string>TRUEPREDICATE</string>
-				<key>NSExtensionFileProviderActionIdentifier</key>
-				<string>$(BUNDLE_ID).Code</string>
-				<key>NSExtensionFileProviderActionName</key>
-				<string>Code</string>
-			</dict>
-		</array>
+		<array/>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>
 		<key>NSExtensionPointIdentifier</key>
