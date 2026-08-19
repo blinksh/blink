@@ -1,1 +1,16 @@
 /* Bundled */
+/* tune emoji sizes */
+span.emoji {
+  -webkit-text-size-adjust: 80%;
+  vertical-align: top;
+}
+
+/*
+ Disable Contextual Alternates. Fix for https://github.com/blinksh/blink/issues/705
+ https://docs.microsoft.com/en-us/typography/opentype/spec/featurelist
+*/
+html,
+body {
+  font-feature-settings: 'calt' 0;
+}
+
