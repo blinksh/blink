@@ -503,9 +503,10 @@ extension StoreProduct {
 @objc public class PurchasesUserModelObjc: NSObject {
 
   @objc public static func preparePurchasesUserModel() {
-    configureRevCat()
-    EntitlementsManager.shared.startUpdates()
-    _ = PurchasesUserModel.shared
+    // Disabled: RevenueCat networking and product fetching removed for privacy.
+    // configureRevCat()
+    // EntitlementsManager.shared.startUpdates()
+    // _ = PurchasesUserModel.shared
   }
 }
 

@@ -45,7 +45,6 @@ struct NewSecurityKeyView: View {
 
   @StateObject private var _entitlements = EntitlementsManager.shared
   @StateObject private var _state = NewSecurityKeyObservable()
-  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "security_keys_feature")])
 
   var body: some View {
     List {

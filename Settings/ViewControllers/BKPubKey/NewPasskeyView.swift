@@ -43,7 +43,6 @@ struct NewPasskeyView: View {
 
   @StateObject private var _entitlements = EntitlementsManager.shared
   @StateObject private var _state = NewPasskeyObservable()
-  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "passkeys_feature")])
 
   var body: some View {
     List {

@@ -31,7 +31,7 @@
 
 
 import Foundation
-import RevenueCat
+// RevenueCat import removed for privacy - no longer sending user IDs to remote servers
 
 
 struct BuildAccountInfo: Decodable {
@@ -169,73 +169,23 @@ enum BuildAPI {
   }
   
   static func signup(email: String, region: BuildRegion) async throws {
-    guard let receiptB64 = Bundle.main.receiptB64() else {
-      throw BuildAPIError.noReceipt
-    }
-    
-    let (code, data, _) = try await _post(
-      _path("/application/signup"),
-      params: [
-        "email": email,
-        "region": region.rawValue,
-        "rev_cat_user_id": Purchases.shared.appUserID,
-        "receipt_b64": receiptB64
-      ]
-    )
+    // Disabled: App Store receipt and user ID are no longer sent to api.blink.build.
+    throw BuildAPIError.invalidResponse
+  }
 
-    // 409 account exists
-    // 200 ok
-    
-    if code == 200 {
-      try await loginWithToken(token: data)
-    } else if code == 409 {
-      try await self.signin()
-    } else {
-      throw BuildAPIError.unexpectedResponseStatus(code)
-    }
-  }
-  
   static func signin() async throws  {
-    guard let receiptB64 = Bundle.main.receiptB64() else {
-      throw BuildAPIError.noReceipt
-    }
-    
-    let (code, data, _) = try await _post(
-      _path("/application/signin"), params: [
-        "receipt_b64": receiptB64
-      ]
-    )
-    // 409 account exists
-    // 200 OK?
-    
-    if code == 200 {
-      try await loginWithToken(token: data)
-    } else {
-      throw BuildAPIError.unexpectedResponseStatus(code)
-    }
+    // Disabled: App Store receipt is no longer sent to api.blink.build.
+    throw BuildAPIError.invalidResponse
   }
-  
+
   static func trySignin() async throws {
-    guard let receiptB64 = Bundle.main.receiptB64() else {
-      throw BuildAPIError.noReceipt
-    }
-    
-    let (code, data, _) = try await _post(
-      _path("/application/signin"), params: [
-        "receipt_b64": receiptB64
-      ]
-    )
-    
-    if code == 200 {
-        try await loginWithToken(token: data)
-    }
+    // Disabled: App Store receipt is no longer sent to api.blink.build.
+    return
   }
-  
+
   static func loginWithToken(token: Data) async throws {
+    // Disabled: RevenueCat login removed for privacy.
     try token.write(to: BlinkPaths.blinkBuildTokenURL()!)
-    if let buildId = TokioSignals.getBuildId() {
-      let _ = try await Purchases.shared.logIn(buildId)
-    }
   }
 }
 

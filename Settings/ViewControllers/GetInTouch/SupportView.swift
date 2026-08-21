@@ -31,7 +31,7 @@
 
 
 import SwiftUI
-import RevenueCat
+// RevenueCat import removed for privacy
 
 struct SupportView: View {
   @EnvironmentObject private var _nav: Nav
@@ -104,11 +104,7 @@ struct SupportView: View {
       }
 
       Section(header: Text("Internals")) {
-        Button {
-          UIPasteboard.general.string = Purchases.shared.appUserID
-        } label: {
-          Label("Copy User ID", systemImage: "doc.on.clipboard")
-        }
+        // Disabled: RevenueCat user ID copy removed for privacy.
       }
     }
       .listStyle(.grouped)

@@ -34,7 +34,7 @@ import Foundation
 import SafariServices
 import SwiftUI
 
-import RevenueCat
+// RevenueCat import removed for privacy
 
 let Blink15BundleID = "sh.blink.blinkshell"
 
@@ -102,45 +102,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   @objc private func _showPaywallIfNeeded() {
-    let entitlements = EntitlementsManager.shared
-
-    let doShowPaywall = !entitlements.hasActiveSubscriptions()
-
-    guard doShowPaywall else {
-      return
-    }
-
-    guard let windowScene = self.window?.windowScene else {
-      return
-    }
-
-    _ = KBTracker.shared.input?.resignFirstResponder()
-
-    guard self.paywallWindow == nil else {
-      return
-    }
-
-    let paywallWindow = UIWindow(windowScene: windowScene)
-    paywallWindow.windowLevel = .statusBar + 0.5
-    self.paywallWindow = paywallWindow
-
-    let view = NewIntroPageWindow(urlHandler: blink_openurl,
-                                  dismissHandler: {
-                                    UIView.animate(withDuration: 0.5) {
-                                      paywallWindow.layer.opacity = 0;
-                                    } completion: { _ in
-                                      self.paywallWindow = nil
-                                    }
-                                  })
-    let ctrl = StatusBarLessViewController(rootView: view)
-    ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
-    paywallWindow.rootViewController = ctrl
-    paywallWindow.makeKeyAndVisible()
-    paywallWindow.layer.opacity = 0;
-
-    UIView.animate(withDuration: 0.3) {
-      paywallWindow.layer.opacity = 1;
-    }
+    // Disabled: paywall bypassed in privacy-enhanced build (no subscription checks).
+    return
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {

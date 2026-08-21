@@ -40,7 +40,7 @@ class FileLogging {
   public init(to url: URL) throws {
     let fm = FileManager.default
     
-    let attrs: [FileAttributeKey : Any] = [.protectionKey: FileProtectionType.none]
+    let attrs: [FileAttributeKey : Any] = [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
     
     if !fm.fileExists(atPath: url.path) {
       guard fm.createFile(atPath: url.path, contents: nil, attributes: attrs) else {

@@ -33,8 +33,6 @@ import Foundation
 import SwiftUI
 import BlinkConfig
 
-import RevenueCat
-
 extension URLCache {
   static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
 }
@@ -73,24 +71,9 @@ class RowsViewModel: RowsProvider {
 
 extension URL {
   func customerTierURL(additionalParams: [URLQueryItem] = []) -> URL {
-    let tier = {
-      switch EntitlementsManager.shared.customerTier() {
-      case .Plus:
-        return "plus"
-      case .Classic:
-        return "classic"
-      case .TestFlight:
-        return "testflight"
-      case .Free:
-        return "free"
-      }
-    }
+    // Disabled: user ID and subscription tier are no longer sent to remote servers.
     var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
-    components.queryItems = [
-      URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
-      URLQueryItem(name: "customer_tier", value: tier())
-    ] + additionalParams
-    
+    components.queryItems = additionalParams
     return components.url!
   }
 }

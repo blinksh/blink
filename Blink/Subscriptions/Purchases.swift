@@ -78,12 +78,13 @@ fileprivate extension EntitlementPeriodType {
 }
 
 func configureRevCat() {
-  Purchases.logLevel = .debug
-  let cfg = Configuration
-    .builder(withAPIKey: XCConfig.infoPlistRevCatPubliKey())
-    .with(appUserID: nil)
-    .with(userDefaults: UserDefaults.suite)
-    .build()
-
-  Purchases.configure(with: cfg)
+  // Disabled: RevenueCat network initialization removed for privacy.
+  // The SDK is still linked to satisfy type dependencies, but no network calls are made.
+  // Purchases.logLevel = .debug
+  // let cfg = Configuration
+  //   .builder(withAPIKey: XCConfig.infoPlistRevCatPubliKey())
+  //   .with(appUserID: nil)
+  //   .with(userDefaults: UserDefaults.suite)
+  //   .build()
+  // Purchases.configure(with: cfg)
 }

@@ -1096,25 +1096,9 @@ extension SpaceController {
       self.currentTerm()?.resignInput()
       WhatsNewInfo.setNewVersion()
 
-      let urlString = XCConfig.infoPlistWhatsNewGithubURL()
-
-      if let url = URL(string: urlString) {
-        let redirectURL = url.customerTierURL()
-        var request = URLRequest(url: redirectURL)
-        request.httpMethod = "HEAD"
-
-        URLSession.shared.dataTask(with: request) { _, response, error in
-          if error == nil,
-             let httpResponse = response as? HTTPURLResponse,
-             httpResponse.statusCode == 302,
-             let finalURL = response?.url {
-            blink_openurl(finalURL)
-          } else {
-            // Fallback if we cannot get the current announcement
-            blink_openurl(URL(string: "https://github.com/blinksh/blink/discussions/categories/announcements")!)
-          }
-        }.resume()
-      }
+      // Disabled: remote "What's New" HEAD request with user ID removed for privacy.
+      // Open the GitHub announcements page directly instead.
+      blink_openurl(URL(string: "https://github.com/blinksh/blink/discussions/categories/announcements")!)
     }
   }
   
