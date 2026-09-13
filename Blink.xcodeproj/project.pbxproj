@@ -327,6 +327,7 @@
 		D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */; };
 		D241CBD223040734003D64A5 /* KBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC023040733003D64A5 /* KBDevice.swift */; };
 		D241CBD423040734003D64A5 /* KBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC223040733003D64A5 /* KBView.swift */; };
+		ED2086000000000000000001 /* KBDPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2086000000000000000002 /* KBDPadView.swift */; };
 		D241CBD523040734003D64A5 /* KBKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC323040733003D64A5 /* KBKey.swift */; };
 		D241CBD623040734003D64A5 /* KBSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC423040733003D64A5 /* KBSection.swift */; };
 		D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC523040733003D64A5 /* KBKeyShape.swift */; };
@@ -1083,6 +1084,7 @@
 		D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewArrows.swift; sourceTree = "<group>"; };
 		D241CBC023040733003D64A5 /* KBDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBDevice.swift; sourceTree = "<group>"; };
 		D241CBC223040733003D64A5 /* KBView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBView.swift; sourceTree = "<group>"; };
+		ED2086000000000000000002 /* KBDPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBDPadView.swift; sourceTree = "<group>"; };
 		D241CBC323040733003D64A5 /* KBKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKey.swift; sourceTree = "<group>"; };
 		D241CBC423040733003D64A5 /* KBSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSection.swift; sourceTree = "<group>"; };
 		D241CBC523040733003D64A5 /* KBKeyShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyShape.swift; sourceTree = "<group>"; };
@@ -2184,6 +2186,7 @@
 				D241CBC423040733003D64A5 /* KBSection.swift */,
 				D241CBC823040733003D64A5 /* KBTraits.swift */,
 				D241CBC223040733003D64A5 /* KBView.swift */,
+				ED2086000000000000000002 /* KBDPadView.swift */,
 				D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */,
 				D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */,
 				D2B1F8DE23265A4700634D67 /* CommandControl.swift */,
@@ -3539,6 +3542,7 @@
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
+				ED2086000000000000000001 /* KBDPadView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,

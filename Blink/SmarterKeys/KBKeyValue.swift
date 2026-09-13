@@ -81,6 +81,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
   case copy
   case paste
   case hideKB
+  case dPad
   case text(value: String)
   case f(Int8)
   
@@ -98,6 +99,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     case .copy:   return "copy"
     case .paste:  return "paste"
     case .hideKB: return "hideKB"
+    case .dPad: return "dPad"
     case .text(let value): return value
     case .f(let value): return "F\(value)"
     }
@@ -161,6 +163,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     case .tab: return "Tab"
     case .up: return "Up"
     case .hideKB: return "Hide Keyboard"
+    case .dPad: return "Show D-pad"
     case .text(let value): return value
     case .f(let value): return "F\(value)"
     }
@@ -204,6 +207,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     case .copy:   return "doc.on.doc"
     case .paste:  return "doc.on.clipboard"
     case .hideKB: return "keyboard.chevron.compact.down"
+    case .dPad: return "dpad"
     default:      return nil
     }
   }
@@ -219,7 +223,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
   }
   
   static var specials: [Self] {
-    [.cmd, .alt, .ctrl, .esc, .tab, .left, .right, .up, .down, .copy, .paste, .hideKB]
+    [.cmd, .alt, .ctrl, .esc, .tab, .left, .right, .up, .down, .copy, .paste, .hideKB, .dPad]
   }
   
   var isModifier: Bool {

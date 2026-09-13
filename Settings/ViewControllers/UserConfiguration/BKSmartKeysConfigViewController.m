@@ -35,6 +35,7 @@
 
 @property (nonatomic, weak) IBOutlet UISwitch *showWithExternalKeyboard;
 @property (nonatomic, weak) IBOutlet UISwitch *keyboardClicksSoundSwitch;
+@property (nonatomic, weak) IBOutlet UISwitch *useFloatingDPadSwitch;
 
 @end
 
@@ -50,6 +51,7 @@
   [_showWithExternalKeyboard setOn:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]];
   
   [_keyboardClicksSoundSwitch setOn:![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigMuteSmartKeysPlaySound]];
+  [_useFloatingDPadSwitch setOn:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigUseFloatingDPad]];
 }
 
 - (IBAction)didToggleSwitch:(UISwitch *)sender
@@ -58,6 +60,8 @@
     [BKUserConfigurationManager setUserSettingsValue:sender.isOn forKey:BKUserConfigShowSmartKeysWithXKeyBoard];
   } else if (sender == _keyboardClicksSoundSwitch) {
     [BKUserConfigurationManager setUserSettingsValue:!sender.isOn forKey:BKUserConfigMuteSmartKeysPlaySound];
+  } else if (sender == _useFloatingDPadSwitch) {
+    [BKUserConfigurationManager setUserSettingsValue:sender.isOn forKey:BKUserConfigUseFloatingDPad];
   }
 }
 

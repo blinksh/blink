@@ -80,7 +80,10 @@ struct KBKey: Hashable {
   }
   
   static func arrows(traits: KBTraits) -> Self {
-    Self(.arrows, traits: traits)
+    if BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigUseFloatingDPad) {
+      return .wideKey(.dPad, traits: traits)
+    }
+    return Self(.arrows, traits: traits)
   }
   
   var isFlexible: Bool {
