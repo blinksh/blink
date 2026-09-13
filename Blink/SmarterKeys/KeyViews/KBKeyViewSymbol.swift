@@ -100,6 +100,14 @@ class KBKeyViewSymbol: KBKeyView {
     default: return super.shouldAutoRepeat
     }
   }
+
+  override func accessibilityActivate() -> Bool {
+    guard key.shape.primaryValue == .dPad else {
+      return super.accessibilityActivate()
+    }
+    keyDelegate.keyViewTriggered(keyView: self, value: .dPad)
+    return true
+  }
   
   override func turnOff() {
     super.turnOff()

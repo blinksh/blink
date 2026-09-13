@@ -73,8 +73,45 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="UYH-v7-n9w">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="DPd-ce-001">
                                         <rect key="frame" x="0.0" y="62" width="768" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="DPd-ce-001" id="DPd-cv-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use floating D-pad" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DPd-la-001">
+                                                    <rect key="frame" x="20" y="11.5" width="220" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="DPd-lh-001"/>
+                                                        <constraint firstAttribute="width" constant="220" id="DPd-lw-001"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="DPd-sw-001">
+                                                    <rect key="frame" x="694" y="6.5" width="51" height="31"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="31" id="DPd-sh-001"/>
+                                                        <constraint firstAttribute="width" constant="49" id="DPd-sw-002"/>
+                                                    </constraints>
+                                                    <accessibility key="accessibilityConfiguration" label="Use floating D-pad" hint="Replaces the swipe arrow control with a button that opens the floating D-pad."/>
+                                                    <connections>
+                                                        <action selector="didToggleSwitch:" destination="Wbf-Ab-aSe" eventType="valueChanged" id="DPd-ac-001"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="leadingMargin" secondItem="DPd-la-001" secondAttribute="leading" id="DPd-cn-001"/>
+                                                <constraint firstItem="DPd-la-001" firstAttribute="centerY" secondItem="DPd-cv-001" secondAttribute="centerY" id="DPd-cn-002"/>
+                                                <constraint firstItem="DPd-sw-001" firstAttribute="centerY" secondItem="DPd-cv-001" secondAttribute="centerY" id="DPd-cn-003"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="DPd-sw-001" secondAttribute="trailing" constant="5" id="DPd-cn-004"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="UYH-v7-n9w">
+                                        <rect key="frame" x="0.0" y="106" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="UYH-v7-n9w" id="A4z-S5-gnK">
                                             <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
@@ -120,6 +157,7 @@
                     <navigationItem key="navigationItem" title="Smart Keys" id="8ez-BY-Ioa"/>
                     <connections>
                         <outlet property="keyboardClicksSoundSwitch" destination="vlY-oM-hc6" id="GWj-kl-Gfk"/>
+                        <outlet property="useFloatingDPadSwitch" destination="DPd-sw-001" id="DPd-ou-001"/>
                         <outlet property="showWithExternalKeyboard" destination="Xgm-hH-Hby" id="lWd-6w-1CG"/>
                     </connections>
                 </tableViewController>

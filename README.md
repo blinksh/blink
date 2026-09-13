@@ -114,6 +114,7 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Copy and Paste by selecting text o tapping the screen.
 - Run 'config' to setup your keys. Install them to a server through ssh-copy-id.
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
+- Enable **Settings → Smart Keys → Use floating D-pad** to replace the combined swipe-arrow control with a button that opens floating arrow keys. This option is off by default and does not replace separate arrow keys on iPad layouts. Hold an arrow to repeat it, drag the panel by its background or center grip, and tap the × in the upper-left corner to close it. Use the reset button in the upper-right corner to return it to its initial position at the bottom-right of the available area. The panel stays open when you hide the keyboard and keeps its position when reopened in the same window. Disabling the option closes the panel and restores the swipe control immediately.
 - Use 3 finger tap to menu.
 
 # Changelog

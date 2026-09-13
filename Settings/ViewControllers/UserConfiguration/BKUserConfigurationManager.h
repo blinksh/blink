@@ -37,6 +37,7 @@ extern NSString *const BKUserConfigiCloudKeys;
 extern NSString *const BKUserConfigAutoLock;
 extern NSString *const BKUserConfigShowSmartKeysWithXKeyBoard;
 extern NSString *const BKUserConfigMuteSmartKeysPlaySound;
+extern NSString *const BKUserConfigUseFloatingDPad;
 extern NSString *const BKUserConfigChangedNotification;
 
 @interface BKUserConfigurationManager : NSObject
