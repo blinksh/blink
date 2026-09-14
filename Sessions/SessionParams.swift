@@ -130,6 +130,10 @@ public extension EncodedStateBacked {
   /// Consumed once inside `MCPSession.executeWithArgs:`.
   @objc var initialCommand: String? = nil
 
+  /// Opened once `initialCommand` returns. Ephemeral — not encoded, so a restored
+  /// session does not re-fire the callback.
+  @objc var initialCommandSuccessURL: URL? = nil
+
   private enum Key: CodingKey { case childSessionType, childSessionParams }
 
   override init() { super.init() }

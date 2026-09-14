@@ -104,6 +104,13 @@
     NSString *initialCommand = self.sessionParams.initialCommand;
     if (initialCommand.length > 0) {
       [self enqueueCommand:initialCommand];
+      NSURL *successURL = self.sessionParams.initialCommandSuccessURL;
+      if (successURL) {
+        // _cmdQueue is serial, so this cannot run until the command returns.
+        dispatch_async(_cmdQueue, ^{
+          blink_openurl(successURL);
+        });
+      }
       return;
     }
     #if TARGET_OS_MACCATALYST

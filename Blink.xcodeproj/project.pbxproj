@@ -95,6 +95,7 @@
 		BD4DBAFC2CADB3AF00538194 /* WorkingSetDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */; };
 		BD4F79F82CB4975E00FE67EA /* WorkingSetDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4F79F72CB4975E00FE67EA /* WorkingSetDatabaseTests.swift */; };
 		BD4F7A072CBC9FD300FE67EA /* FileTranslatorConnectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD4F7A062CBC9FD300FE67EA /* FileTranslatorConnectionTests.swift */; };
+		BD55A1933059A19F00960998 /* XCallbackUrlSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55A1923059A19F00960998 /* XCallbackUrlSettingsView.swift */; };
 		BD55D6982F7D743500EE80EA /* TerminalStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6952F7D743400EE80EA /* TerminalStyle.swift */; };
 		BD55D6992F7D743500EE80EA /* TerminalStyleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6972F7D743400EE80EA /* TerminalStyleStore.swift */; };
 		BD55D69A2F7D743500EE80EA /* TerminalStyleBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6962F7D743400EE80EA /* TerminalStyleBundle.swift */; };
@@ -860,6 +861,7 @@
 		BD4DBAFB2CADB3AF00538194 /* WorkingSetDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabase.swift; sourceTree = "<group>"; };
 		BD4F79F72CB4975E00FE67EA /* WorkingSetDatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkingSetDatabaseTests.swift; sourceTree = "<group>"; };
 		BD4F7A062CBC9FD300FE67EA /* FileTranslatorConnectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorConnectionTests.swift; sourceTree = "<group>"; };
+		BD55A1923059A19F00960998 /* XCallbackUrlSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCallbackUrlSettingsView.swift; sourceTree = "<group>"; };
 		BD55D6952F7D743400EE80EA /* TerminalStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyle.swift; sourceTree = "<group>"; };
 		BD55D6962F7D743400EE80EA /* TerminalStyleBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleBundle.swift; sourceTree = "<group>"; };
 		BD55D6972F7D743400EE80EA /* TerminalStyleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleStore.swift; sourceTree = "<group>"; };
@@ -1722,6 +1724,7 @@
 				B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */,
 				B752EE2C1DFEF45300E305C8 /* BKSecurityConfigurationViewController.h */,
 				B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */,
+				BD55A1923059A19F00960998 /* XCallbackUrlSettingsView.swift */,
 			);
 			path = UserConfiguration;
 			sourceTree = "<group>";
@@ -3469,6 +3472,7 @@
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
 				BD5A0E3A2F89545B00AB3734 /* 1870Migration.swift in Sources */,
+				BD55A1933059A19F00960998 /* XCallbackUrlSettingsView.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				BDB129F32D077EB3006970A1 /* BookmarkedLocationsManager.swift in Sources */,

@@ -41,6 +41,7 @@ protocol SceneCommand {
 enum SceneCommands {
   static func from(url: URL) -> SceneCommand? {
     OpenSSHCommand(url: url)
+      ?? XCallbackRunCommand(url: url)
       ?? OpenCodeCommand(url: url)
       ?? OpenHTTPCommand(url: url)
   }
@@ -171,5 +172,46 @@ struct OpenHTTPCommand: SceneCommand {
 
   func perform(on spaceController: SpaceController) {
     spaceController.runShellSessionIntent(command: codeCommand)
+  }
+}
+
+
+// blinkshell://run?key=KEY&cmd=CMD&x-success=URL&x-error=URL&x-cancel=URL
+//
+// Answering x-error / x-cancel is part of the contract, so this claims every
+// blinkshell:// URL and validates in perform(on:) — a failable init has no way to
+// report why it failed.
+struct XCallbackRunCommand: SceneCommand {
+  private let host: String?
+  private let items: [URLQueryItem]
+
+  init?(url: URL) {
+    guard url.scheme == "blinkshell" else { return nil }
+    self.host = url.host
+    self.items = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems ?? []
+  }
+
+  func perform(on spaceController: SpaceController) {
+    guard host == "run" else { return _openCallback("x-error") }
+    guard BLKDefaults.isXCallBackURLEnabled() else { return _openCallback("x-cancel") }
+    guard let key = _value(for: "key") else { return _openCallback("x-cancel") }
+    guard key == BLKDefaults.xCallBackURLKey() else { return _openCallback("x-error") }
+    // An empty cmd would open a session that never runs anything, leaving the
+    // caller waiting on an x-success that cannot arrive.
+    guard let cmd = _value(for: "cmd"), !cmd.isEmpty else { return _openCallback("x-error") }
+
+    let successURL = _value(for: "x-success").flatMap { URL(string: $0) }
+    spaceController.runShellSessionIntent(command: cmd, successURL: successURL)
+  }
+
+  private func _value(for name: String) -> String? {
+    items.first(where: { $0.name == name })?.value
+  }
+
+  private func _openCallback(_ name: String) {
+    guard let url = _value(for: name).flatMap({ URL(string: $0) }) else {
+      return
+    }
+    blink_openurl(url)
   }
 }

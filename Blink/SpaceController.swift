@@ -776,10 +776,11 @@ extension SpaceController {
     currentTerm()?.scaleWithPich(pinch)
   }
   
-  private func _newShellAction(command: String = "", animated: Bool = true) {
+  private func _newShellAction(command: String = "", successURL: URL? = nil, animated: Bool = true) {
     let params = MCPParams()
     if !command.isEmpty {
       params.initialCommand = command
+      params.initialCommandSuccessURL = successURL
     }
     let payload = MCPSessionPayload(params: params)
     _createTerminal(userActivity: nil, animated: animated, sessionPayload: payload)
@@ -1273,9 +1274,14 @@ extension SpaceController: SnippetContext {
 
 // MARK: SceneIntent handlers
 extension SpaceController {
+  // Kept single-argument: BlinkMenu.m calls runShellSessionIntentWithCommand:.
   @objc func runShellSessionIntent(command: String = "") {
+    runShellSessionIntent(command: command, successURL: nil)
+  }
+
+  func runShellSessionIntent(command: String, successURL: URL?) {
     DispatchQueue.main.async {
-      self._newShellAction(command: command)
+      self._newShellAction(command: command, successURL: successURL)
     }
   }
 

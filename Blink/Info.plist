@@ -96,6 +96,7 @@
 				<string>https</string>
 				<string>http</string>
 				<string>ssh</string>
+				<string>blinkshell</string>
 				<string>${BLINK_MIGRATION_SCHEME}</string>
 				<string>vscode</string>
 			</array>

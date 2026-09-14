@@ -68,6 +68,8 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 @property (nonatomic) BOOL keycasts;
 @property (nonatomic) BKLayoutMode layoutMode;
 @property (nonatomic) BKOverscanCompensation overscanCompensation;
+@property (nonatomic) BOOL xCallBackURLEnabled;
+@property (nonatomic) NSString *xCallBackURLKey;
 @property (nonatomic) BOOL disableCustomKeyboards;
 @property (nonatomic) BOOL playSoundOnBell;
 @property (nonatomic) BOOL notificationOnBellUnfocused;
@@ -86,6 +88,8 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 + (void)setEnableBold:(NSUInteger)state;
 + (void)setAlternateAppIcon:(BOOL)state;
 + (void)setKeycasts:(BOOL)state;
++ (void)setXCallBackURLEnabled:(BOOL)state;
++ (void)setXCallBackURLKey:(NSString *)key;
 + (void)setDisableCustomKeyboards:(BOOL)state;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
@@ -109,6 +113,8 @@ typedef NS_ENUM(NSInteger, BKSnippetDefaultLocation) {
 + (BOOL)isBoldAsBright;
 + (BOOL)isAlternateAppIcon;
 + (BOOL)isKeyCastsOn;
++ (BOOL)isXCallBackURLEnabled;
++ (NSString *)xCallBackURLKey;
 + (BOOL)disableCustomKeyboards;
 + (void)setDefaultUserName:(NSString*)name;
 + (void)saveGlobalSSHConfig;
