@@ -34,6 +34,7 @@
 }
 
 
+import BlinkConfig
 import MBProgressHUD
 import SwiftUI
 
@@ -62,6 +63,11 @@ class SpaceController: UIViewController {
   private var _hud: MBProgressHUD? = nil
   
   private var _overlay = UIView()
+  // SmartKeys dictation: one recorder per space, the strip above the keyboard, and the
+  // hold-or-tap state of the mic key.
+  private lazy var _voice: VoiceDictation = _makeVoice()
+  private let _voiceStrip = VoiceStripView()
+  private var _micPress = MicInteraction()
   private var _spaceControllerAnimating: Bool = false
   var stuckKeyCode: KeyCode? = nil
   
@@ -211,6 +217,43 @@ class SpaceController: UIViewController {
       _overlay.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
       _overlay.bottomAnchor.constraint(equalTo: keyboardGuide.topAnchor)
     ])
+
+    // The dictation strip sits just above the keyboard (the overlay's bottom edge).
+    _overlay.addSubview(_voiceStrip)
+    NSLayoutConstraint.activate([
+      _voiceStrip.leadingAnchor.constraint(equalTo: _overlay.leadingAnchor, constant: 8),
+      _voiceStrip.trailingAnchor.constraint(equalTo: _overlay.trailingAnchor, constant: -8),
+      _voiceStrip.bottomAnchor.constraint(equalTo: _overlay.bottomAnchor, constant: -6)
+    ])
+  }
+
+  // MARK: - SmartKeys dictation
+
+  private func _makeVoice() -> VoiceDictation {
+    let voice = VoiceDictation.live()
+    voice.onUpdate = { [weak self] snap in self?._voiceStrip.render(snap) }
+    voice.onFinish = { [weak self] text in
+      guard let self else { return }
+      self._micPress.reset()
+      guard let text, self.foregroundActive,
+            let input = self.currentDevice?.view?.browserView ?? self.currentDevice?.view?.webView
+      else { return }
+      // Typed, not pasted: the same raw-input path the SmartKeys use, so the words land
+      // wherever the cursor is (shell, vim, a Claude Code prompt) with no bracketed paste.
+      input.reportHex(VoiceInsert.hex(text))
+    }
+    return voice
+  }
+
+  /// The mic key on the SmartKeys bar: hold to talk (release stops), or tap to start and
+  /// tap again to stop. Called by SmarterTermInput on press and release.
+  func voiceKey(down: Bool) {
+    let now = Date()
+    switch down ? _micPress.down(at: now) : _micPress.up(at: now) {
+    case .start: _voice.start()
+    case .stop: _voice.stop()
+    case .none: break
+    }
   }
   
   deinit {
@@ -331,6 +374,12 @@ Please go to your subscriptions and cancel one of them!
           view.window?.windowScene === scene
     else {
       return
+    }
+    
+    // A dictation in flight ends with what was heard (the mic can't run in the background).
+    if _voice.state == .recording || _voice.state == .starting {
+      _micPress.reset()
+      _voice.stop()
     }
     
     let currentTerm = currentTerm()

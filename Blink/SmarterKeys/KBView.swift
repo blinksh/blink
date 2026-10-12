@@ -354,6 +354,12 @@ extension KBView: KBKeyViewDelegate {
   func keyViewOn(keyView: KBKeyView, value: KBKeyValue) {
     stopRepeats()
     
+    // Dictation key: press/release drive the recorder (hold to talk, or tap to toggle).
+    if case .mic = value {
+      keyInput?.voiceKey(down: true)
+      return
+    }
+    
     _toggleModifier(kbKeyValue: value, value: true)
     if value.isModifier {
       _onModifiersSet.insert(keyView)
@@ -365,6 +371,10 @@ extension KBView: KBKeyViewDelegate {
   
   
   func keyViewOff(keyView: KBKeyView, value: KBKeyValue) {
+    if case .mic = value {
+      keyInput?.voiceKey(down: false)
+      return
+    }
     _toggleModifier(kbKeyValue: value, value: false)
     _onModifiersSet.remove(keyView)
     stopRepeats()
@@ -426,6 +436,11 @@ extension KBView: KBKeyViewDelegate {
 
     guard let keyInput = keyInput
     else {
+      return
+    }
+
+    // Dictation key: handled on press/release (keyViewOn/Off); nothing to type here.
+    if case .mic = value {
       return
     }
 
