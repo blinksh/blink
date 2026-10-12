@@ -103,6 +103,10 @@
 		BD55D6992F7D743500EE80EA /* TerminalStyleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6972F7D743400EE80EA /* TerminalStyleStore.swift */; };
 		BD55D69A2F7D743500EE80EA /* TerminalStyleBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D6962F7D743400EE80EA /* TerminalStyleBundle.swift */; };
 		BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */; };
+		BDA0C0022FB0000100A1D001 /* VoiceDictation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA0C0012FB0000100A1D001 /* VoiceDictation.swift */; };
+		BDA0C0042FB0000100A1D001 /* VoiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA0C0032FB0000100A1D001 /* VoiceEngine.swift */; };
+		BDA0C0062FB0000100A1D001 /* VoiceRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA0C0052FB0000100A1D001 /* VoiceRules.swift */; };
+		BDA0C0082FB0000100A1D001 /* VoiceRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDA0C0072FB0000100A1D001 /* VoiceRulesTests.swift */; };
 		BD55D6A02F8D000100EE80EA /* StyleCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */; };
 		BD55D6A12F8D000100EE80EA /* DisplaySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */; };
 		BD55D7152F816AFC00EE80EA /* 1860Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD55D7142F816AFC00EE80EA /* 1860Migration.swift */; };
@@ -874,6 +878,10 @@
 		BD55D6962F7D743400EE80EA /* TerminalStyleBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleBundle.swift; sourceTree = "<group>"; };
 		BD55D6972F7D743400EE80EA /* TerminalStyleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleStore.swift; sourceTree = "<group>"; };
 		BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalStyleTests.swift; sourceTree = "<group>"; };
+		BDA0C0012FB0000100A1D001 /* VoiceDictation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceDictation.swift; sourceTree = "<group>"; };
+		BDA0C0032FB0000100A1D001 /* VoiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEngine.swift; sourceTree = "<group>"; };
+		BDA0C0052FB0000100A1D001 /* VoiceRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRules.swift; sourceTree = "<group>"; };
+		BDA0C0072FB0000100A1D001 /* VoiceRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRulesTests.swift; sourceTree = "<group>"; };
 		BD55D69E2F8D000100EE80EA /* StyleCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleCustomizationView.swift; sourceTree = "<group>"; };
 		BD55D69F2F8D000100EE80EA /* DisplaySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplaySettingsView.swift; sourceTree = "<group>"; };
 		BD55D7142F816AFC00EE80EA /* 1860Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 1860Migration.swift; sourceTree = "<group>"; };
@@ -1475,6 +1483,7 @@
 				D265FBC7231904B50017EAC4 /* Foundation */,
 				D2A52225231304A90010AC04 /* UIKit */,
 				D241CB93230406E2003D64A5 /* SmarterKeys */,
+				BDA0C0092FB0000100A1D001 /* Voice */,
 				BD1FFF752E4B466500DB5AF9 /* Terminal */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D2F330C520A6C8E20074ADD7 /* Commands */,
@@ -2169,6 +2178,16 @@
 			path = udptunnel;
 			sourceTree = "<group>";
 		};
+		BDA0C0092FB0000100A1D001 /* Voice */ = {
+			isa = PBXGroup;
+			children = (
+				BDA0C0012FB0000100A1D001 /* VoiceDictation.swift */,
+				BDA0C0032FB0000100A1D001 /* VoiceEngine.swift */,
+				BDA0C0052FB0000100A1D001 /* VoiceRules.swift */,
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
 		D241CB93230406E2003D64A5 /* SmarterKeys */ = {
 			isa = PBXGroup;
 			children = (
@@ -2235,6 +2254,7 @@
 				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
 				BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */,
 				BD55D69B2F7D744B00EE80EA /* TerminalStyleTests.swift */,
+				BDA0C0072FB0000100A1D001 /* VoiceRulesTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -3435,6 +3455,7 @@
 				BDE7C45C29DCAEFA005E033E /* FileLocationPathTests.swift in Sources */,
 				BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */,
 				BD55D69C2F7D744B00EE80EA /* TerminalStyleTests.swift in Sources */,
+				BDA0C0082FB0000100A1D001 /* VoiceRulesTests.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
 				D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */,
@@ -3513,6 +3534,9 @@
 				BD9EA1FF271A148700874007 /* 1400Migration.swift in Sources */,
 				D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */,
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
+				BDA0C0022FB0000100A1D001 /* VoiceDictation.swift in Sources */,
+				BDA0C0042FB0000100A1D001 /* VoiceEngine.swift in Sources */,
+				BDA0C0062FB0000100A1D001 /* VoiceRules.swift in Sources */,
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D22278012A26204900D4C708 /* EditorViewController.swift in Sources */,

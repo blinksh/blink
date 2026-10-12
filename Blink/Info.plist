@@ -126,6 +126,10 @@
 	<string>Use Face ID with Auto Lock</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow geo command to track coordinates only while blink is running</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The dictation key on the SmartKeys bar listens only while you hold or toggle it; the words are typed into the terminal.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Dictation is transcribed on this device and typed into the terminal. Audio never leaves the phone.</string>
 	<key>NSSiriUsageDescription</key>
 	<string>storing commands</string>
 	<key>NSUbiquitousContainers</key>

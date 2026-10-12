@@ -345,6 +345,11 @@ extension SmarterTermInput {
     spCtrl._onCommand(cmd)
   }
   
+  /// The SmartKeys dictation key, pressed (true) or released (false).
+  func voiceKey(down: Bool) {
+    spaceController?.voiceKey(down: down)
+  }
+  
   var spaceController: SpaceController? {
     var n = next
     while let responder = n {
