@@ -127,18 +127,6 @@ hterm.Terminal.prototype.getSelectionText = function() {
   return lib.wc.substring(rv, startOffset, lib.wc.strWidth(rv) - endOffset);
 };
 
-// NOTE(@nanzhong) hterm does not support DEC mode 1003 (any mouse event reporting mode).
-// DEC mode 1003 and DEC mode 1002 (which hterm does support) are almost identical. The only difference is that mode 1003 includes mouse movement tracking events which are rarely used.
-// This patches hterm to treat DEC mode 1003 the same as DEC mode 1002.
-
-hterm.VT.prototype.setDECMode_original = hterm.VT.prototype.setDECMode;
-hterm.VT.prototype.setDECMode = function(code, state) {
-  if (code === "1003") {
-    code = "1002";
-  }
-  hterm.VT.prototype.setDECMode_original.call(this, code, state);
-};
-
 // Normalize before changing alpha.
 // Upstream has fixed other paths like b7e97ea1, but it won't hit this one
 // when injeting themes, which is why we are patching here.

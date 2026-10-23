@@ -115,6 +115,8 @@ fileprivate struct TermCell: Equatable {
   private var _mouseDragStartPoint: CGPoint? = nil
   private var _lastDragPoint: CGPoint? = nil
   private var _lastDragCell: TermCell? = nil
+  private var _mouseHoverMode: Bool = false
+  private var _lastHoverCell: TermCell? = nil
   private var _isPrimaryScreen: Bool = true
 
   @objc var focused: Bool = false {
@@ -327,8 +329,22 @@ fileprivate struct TermCell: Equatable {
     _mouseDragStartPoint = nil
     _lastDragPoint = nil
     _lastDragCell = nil
+    _lastHoverCell = nil
     _1fPanRecognizer.isEnabled = false
     _applyPanEnablement()
+  }
+
+  private func _hoverMouse(to point: CGPoint) {
+    guard _mouseHoverMode, !_mouseDragMode else {
+      return
+    }
+
+    let cell = _cell(for: point)
+    if let cell = cell, cell == _lastHoverCell {
+      return
+    }
+    _lastHoverCell = cell
+    _reportMouse("mousemove", at: point, buttons: 0)
   }
 
   private func _applyPanEnablement() {
@@ -505,6 +521,7 @@ fileprivate struct TermCell: Equatable {
     case .began, .changed:
       _scrollPointTrackpad = point
       _moveMouseDrag(to: point)
+      _hoverMouse(to: point)
     default: break
     }
   }
@@ -669,7 +686,10 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
       }
       // TODO: debounce?
       _scrollView.setContentOffset(offset, animated: animated)
-      
+
+    case "mouseHover":
+      _mouseHoverMode = msg["enabled"] as? Bool ?? false
+      _lastHoverCell = nil
       
     default: break
     }
