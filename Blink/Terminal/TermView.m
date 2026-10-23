@@ -74,7 +74,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   id<UIInteraction> _editMenuIteraction;
 
+  // The view controls the geometry
   CGSize _lockedSuperviewSize;
+  BOOL _inView;
+  TermViewPresenceLock *_presenceLock;
 
   // The interface style the terminal theme was last rendered for. Keep to guard re-theming on layout passes.
   UIUserInterfaceStyle _appliedInterfaceStyle;
@@ -89,6 +92,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     return self;
   }
   _touchID = 1000;
+  _inView = YES;
 
   _selectionRect = CGRectZero;
   _layoutDebounceTimer = nil;
@@ -126,8 +130,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   // Lock freezes the working surface. If the user changes that surface
   // (window resize, rotation), release the lock and fall back to the
   // current layout mode. Keyboard appearance does not change our bounds,
-  // so it does not trigger this.
-  if (_layoutLocked && !CGSizeEqualToSize(_lockedSuperviewSize, self.bounds.size)) {
+  // so it does not trigger this. Out of view, size changes are not the
+  // user's (background snapshots, hidden pages), so the check waits for return.
+  if (_inView && _layoutLocked && !CGSizeEqualToSize(_lockedSuperviewSize, self.bounds.size)) {
     [self _unlockLayout];
   }
 
@@ -1209,11 +1214,66 @@ static NSString * _sanitizeTextForClipboard(NSString *text) {
   
   // Update constraint manager
   if (self.constraintManager) {
-    [self.constraintManager setLayoutLocked:NO withFrame:CGRectZero];
+    if (_inView) {
+      [self.constraintManager setLayoutLocked:NO withFrame:CGRectZero];
+    } else {
+      // Out of view, the geometry stays held where it is.
+      [self.constraintManager setLayoutLocked:YES withFrame:_webView.frame];
+    }
   }
   
   // Trigger layout update
   [self setNeedsLayout];
+}
+
+// Projection has the fixed size of its display.
+- (BOOL)_isProjected {
+  UIWindow *window = self.window;
+  return window == ShadowWindow.shared || window.windowScene.session.role == UIWindowSceneSessionRoleExternalDisplayNonInteractive;
+}
+
+- (void)didAppear {
+  if ([self _isProjected]) {
+    _presenceLock = nil;
+    [self _setInView:YES];
+    return;
+  }
+
+  if (!_presenceLock) {
+    __weak typeof(self) weakSelf = self;
+    _presenceLock = [[TermViewPresenceLock alloc] initWithView:self onChange:^(BOOL present) {
+      [weakSelf _setInView:present];
+    }];
+  }
+  [_presenceLock didAppear];
+}
+
+- (void)willDisappear {
+  [_presenceLock willDisappear];
+}
+
+- (void)_setInView:(BOOL)inView {
+  if (_inView == inView) {
+    return;
+  }
+  _inView = inView;
+
+  // The user lock already holds the geometry, and keeps holding it on return.
+  if (_layoutLocked) {
+    return;
+  }
+
+  if (!inView) {
+    CGRect frame = _webView.frame;
+    // Never laid out: nothing to hold, it sizes itself on first placement.
+    if (CGRectIsEmpty(frame)) {
+      return;
+    }
+    [self.constraintManager setLayoutLocked:YES withFrame:frame];
+  } else {
+    [self.constraintManager setLayoutLocked:NO withFrame:CGRectZero];
+    [self setNeedsLayout];
+  }
 }
 
 @end

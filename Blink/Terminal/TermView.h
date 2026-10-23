@@ -134,4 +134,8 @@ extern NSString * TermViewBrowserReadyNotificationKey;
 - (BKLayoutMode)currentLayoutMode;
 - (BOOL)isLayoutLocked;
 - (void)toggleLayoutLock;
+
+// Control the view as it comes in and out of frame
+- (void)didAppear;
+- (void)willDisappear;
 @end

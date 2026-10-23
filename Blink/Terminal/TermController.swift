@@ -292,6 +292,16 @@ class TermController: UIViewController {
     _termView.termUIState.viewSize = view.bounds.size
   }
 
+  public override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    _termView.didAppear()
+  }
+
+  public override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    _termView.willDisappear()
+  }
+
   @objc public func terminate() {
     NotificationCenter.default.post(name: .deviceTerminated, object: nil, userInfo: ["device": _termDevice])
     _proxyView.destroyControlledView()
