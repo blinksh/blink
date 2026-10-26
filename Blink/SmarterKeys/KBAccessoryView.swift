@@ -41,6 +41,11 @@ class KBAccessoryView: UIInputView {
     translatesAutoresizingMaskIntoConstraints = false
     allowsSelfSizing = true
 
+    _kbView.onHeightChange = { [weak self] in
+      self?.invalidateIntrinsicContentSize()
+      self?.setNeedsLayout()
+    }
+
     self.frame.size.height = _kbView.intrinsicContentSize.height
     
     if #available(iOS 26.0, *) {

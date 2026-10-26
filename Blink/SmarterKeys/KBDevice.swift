@@ -40,6 +40,8 @@ enum KBDevice {
   case in6_1 // iPhone 12 Pro
   case in6_5 // Xr!, Xs Max?         phone_5
   case in6_7
+  case duoCompact
+  case duoRegular
   
   case in9_7 // iPad Mini is the same
   case in10_2
@@ -53,6 +55,8 @@ enum KBDevice {
 
   func layoutFor(lang: String) -> KBLayout {
     switch self {
+    case .duoCompact: return .duoCompact(lang: lang)
+    case .duoRegular: return .duoRegular(lang: lang)
     case .in9_7:   return .iPad_9_7(lang: lang)
     case .in10_2:  return .iPad_9_7(lang: lang)
     case .in10_5:  return .iPad_10_5(lang: lang)
@@ -65,8 +69,12 @@ enum KBDevice {
     }
   }
   
-  func sizesFor(portrait: Bool) -> KBSizes {
+  func sizesFor(portrait: Bool, availableWidth: CGFloat = 0) -> KBSizes {
     switch self {
+    case .duoCompact:
+      return .duoCompact(portrait: portrait, width: availableWidth)
+    case .duoRegular:
+      return .duoRegular(portrait: portrait, width: availableWidth)
     case .in4:    return portrait ? .portrait_iPhone_4   : .landscape_iPhone_4
     case .in4_7:  return portrait ? .portrait_iPhone_4_7 : .landscape_iPhone_4_7
     case .in5_5:  return portrait ? .portrait_iPhone_5_5 : .landscape_iPhone_5_5
@@ -85,8 +93,15 @@ enum KBDevice {
     }
   }
   
-  static func detect() -> Self {
-    let size = UIScreen.main.bounds.size
+  static func detect(size: CGSize = UIScreen.main.bounds.size,
+                     horizontalSizeClass: UIUserInterfaceSizeClass = .unspecified,
+                     verticalSizeClass: UIUserInterfaceSizeClass = .unspecified) -> Self {
+    if DeviceInfo.shared().isDuo {
+      // Prefer current traits; use dimensions until size classes are available.
+      let regularWidth = horizontalSizeClass == .regular
+        || (horizontalSizeClass == .unspecified && min(size.width, size.height) >= 600)
+      return regularWidth && verticalSizeClass != .compact ? .duoRegular : .duoCompact
+    }
     let wideSideSize = Int(max(size.height, size.width))
     
     // ZD  - Zoom Default

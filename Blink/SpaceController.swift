@@ -159,6 +159,12 @@ class SpaceController: UIViewController {
         if t.viewIsLoaded && t.view?.superview == nil {
           _ = t.removeFromContainer()
         }
+        // Corner-adapted regions can change with window geometry even when
+        // safe-area insets and layout margins stay the same. Read after layout.
+        if DeviceInfo.shared().isDuo,
+           LayoutConstraintManager.resolve(t.termView.currentLayoutMode()) == .fill {
+          t.termView.constraintManager?.updateConstraintsForCurrentState()
+        }
       }
     }
     let windowBounds = window.bounds
@@ -169,6 +175,19 @@ class SpaceController: UIViewController {
     
   }
   
+  public override func viewLayoutMarginsDidChange() {
+    super.viewLayoutMarginsDidChange()
+    guard DeviceInfo.shared().isDuo else { return }
+    // Duo Fill depends on this root view's margins, which can change
+    // independently of safe-area insets as the asymmetric system chrome moves.
+    // Wait for the window's geometry to settle before recalculating constraints.
+    DispatchQueue.main.async { [weak self] in
+      self?.forEachActive { term in
+        term.termView.constraintManager?.updateConstraintsForCurrentState()
+      }
+    }
+  }
+
   private func forEachActive(block:(TermController) -> ()) {
     for key in machine.sessionKeys {
       if let ctrl = liveTerm(for: key) {

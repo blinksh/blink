@@ -32,7 +32,7 @@
 import Foundation
 import AVFoundation
 
-struct KBLayout {
+struct KBLayout: Equatable {
   let left:   [KBKey]
   let middle: [KBKey]
   let right:  [KBKey]
@@ -45,6 +45,13 @@ struct KBLayout {
 }
 
 extension KBLayout {
+  static func duoCompact(lang: String) -> Self {
+    .iPhone(lang: lang)
+  }
+
+  static func duoRegular(lang: String) -> Self {
+    .iPhone(lang: lang)
+  }
   
   // MARK: iPhones
   

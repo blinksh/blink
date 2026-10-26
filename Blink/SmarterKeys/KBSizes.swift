@@ -82,6 +82,31 @@ struct KBSizes {
 }
 
 extension KBSizes {
+  // Duo profiles follow the current window rather than a fixed screen diagonal.
+  // Keep key heights and fonts stable; scale widths to the available keyboard.
+  static func duoCompact(portrait: Bool, width: CGFloat) -> Self {
+    let base: Self = portrait ? .portrait_iPhone_6_1 : .landscape_iPhone_6_1
+    return base.fittingDuoWidth(width, referenceWidth: portrait ? 390 : 844,
+                               padding: 0, keyScale: (portrait ? 1.05 : 1) * 1.25)
+  }
+
+  static func duoRegular(portrait: Bool, width: CGFloat) -> Self {
+    let base: Self = portrait ? .portrait_iPad_9_7 : .landscape_iPad_9_7
+    return base.fittingDuoWidth(width, referenceWidth: portrait ? 768 : 1024,
+                               padding: base.kb.padding, keyScale: portrait ? 1.05 : 1)
+  }
+
+  private func fittingDuoWidth(_ width: CGFloat, referenceWidth: CGFloat,
+                              padding: CGFloat, keyScale: CGFloat) -> Self {
+    let scale = width > 0 ? min(1, width / referenceWidth) : 1
+    let widths = key.widths
+    return Self(
+      kb: (kb.height, padding: padding * scale, spacer: kb.spacer * scale),
+      key: (key.fonts, key.insets, key.corner,
+            widths: (widths.icon * scale, key: widths.key * scale * keyScale,
+                     wide: widths.wide * scale * keyScale))
+    )
+  }
   
   // MARK: Portrait iPhone sizes 📱
   

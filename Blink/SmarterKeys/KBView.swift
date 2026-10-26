@@ -52,11 +52,19 @@ class KBView: UIView {
   var kbDevice: KBDevice = .detect() {
     didSet {
       if oldValue != kbDevice {
-        _updateSections()
+        if oldValue.layoutFor(lang: lang) != kbDevice.layoutFor(lang: lang) {
+          reset()
+          _onModifiersSet.removeAll()
+          _untrackedModifiersSet.removeAll()
+          _updateSections()
+        }
+        _updateSizes()
+        setNeedsLayout()
       }
     }
   }
-  var kbSizes: KBSizes = .portrait_iPhone_4
+  private(set) var kbSizes: KBSizes = .portrait_iPhone_4
+  var onHeightChange: (() -> Void)?
   
   private var _onModifiersSet: Set<KBKeyView> = []
   private var _untrackedModifiersSet: Set<KBKeyView> = []
@@ -66,7 +74,6 @@ class KBView: UIView {
   var lang: String = "" {
     didSet {
       if oldValue != lang && traitCollection.userInterfaceIdiom == .pad {
-        traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
         _updateSections()
       }
     }
@@ -79,6 +86,7 @@ class KBView: UIView {
   var traits: KBTraits = .initial {
     didSet {
       if traits != oldValue {
+        _updateSizes()
         setNeedsLayout()
       }
     }
@@ -152,6 +160,7 @@ class KBView: UIView {
   // }
   
   func _updateSections() {
+    _updateSuggestions()
     _leftSection.views.forEach { $0.removeFromSuperview() }
     _middleSection.views.forEach { $0.removeFromSuperview() }
     _rightSection.views.forEach { $0.removeFromSuperview() }
@@ -163,6 +172,31 @@ class KBView: UIView {
     _rightSection  = KBSection(keys:layout.right)
     
     setNeedsLayout()
+  }
+
+  private func _updateSuggestions() {
+    // Suggestions only reserve space when keys overlay the system assistant.
+    // Both Duo profiles have a dedicated accessory, including the regular one.
+    let usesAssistant = traitCollection.userInterfaceIdiom == .pad
+      && kbDevice != .duoRegular && kbDevice != .duoCompact
+    traits.hasSuggestions = usesAssistant && ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
+  }
+
+  func updateLayout(device: KBDevice, portrait: Bool) {
+    kbDevice = device
+    traits.isPortrait = portrait
+    _updateSuggestions()
+    _updateSizes()
+  }
+
+  private func _updateSizes() {
+    let sizes = kbDevice.sizesFor(portrait: traits.isPortrait, availableWidth: bounds.width)
+    let heightChanged = kbSizes.kb.height != sizes.kb.height
+    kbSizes = sizes
+    if heightChanged {
+      invalidateIntrinsicContentSize()
+      onHeightChange?()
+    }
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -194,7 +228,7 @@ class KBView: UIView {
     // }
    
     let strictSpace = !traits.isHKBAttached && traits.hasSuggestions
-    self.kbSizes = kbDevice.sizesFor(portrait: traits.isPortrait)
+    _updateSizes()
     
     let top: CGFloat = 0;
 

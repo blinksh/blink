@@ -53,12 +53,17 @@
     uname(&info);
     
     _machine = @(info.machine);
+#if TARGET_OS_SIMULATOR
+    // Use the simulated model even when the simulator has been renamed.
+    _machine = NSProcessInfo.processInfo.environment[@"SIMULATOR_MODEL_IDENTIFIER"] ?: _machine;
+#endif
     _release_ = @(info.release);
     _sysname = @(info.sysname);
     _nodename = @(info.nodename);
     _version = @(info.version);
     
     NSString *marketingName = self.marketingName;
+    _isDuo = [marketingName isEqualToString:@"iPhone Duo"];
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"]
       || [marketingName hasPrefix:@"iPhone 11"]
@@ -74,7 +79,7 @@
       || [marketingName hasPrefix:@"iPhone 17"]
       || [marketingName hasPrefix:@"iPhone Air"];
 
-    _hasCorners = (_hasNotch || _hasDynamicIsland)
+    _hasCorners = (_hasNotch || _hasDynamicIsland || _isDuo)
       || [_machine hasPrefix:@"iPad8"]
       || [_machine hasPrefix:@"iPad13"]
       || [_machine hasPrefix:@"iPad14"]
@@ -216,6 +221,7 @@
     @"iPhone18,2": @"iPhone 17 Pro Max",
     @"iPhone18,3": @"iPhone 17",
     @"iPhone18,4": @"iPhone Air",
+    @"iPhone19,4": @"iPhone Duo",
     
     @"iPad4,1"   : @"iPad Air",          // 5th Generation iPad (iPad Air) - Wifi
     @"iPad4,2"   : @"iPad Air",          // 5th Generation iPad (iPad Air) - Cellular

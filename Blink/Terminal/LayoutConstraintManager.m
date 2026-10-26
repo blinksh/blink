@@ -53,6 +53,8 @@
 @property (nonatomic, strong) NSLayoutConstraint *heightConstraint;
 @property (nonatomic, assign) BOOL keyboardGuidesInstalled;
 
+- (UIEdgeInsets)additionalCornerInsetsFromRootView:(UIView *)rootView inView:(UIView *)view;
+
 
 @end
 
@@ -171,11 +173,13 @@
 
     UIEdgeInsets insets = [self calculateInsetsForLayoutMode:self.currentLayoutMode];
 
-    self.topConstraint.constant = insets.top;
-    self.leadingConstraint.constant = insets.left;
-    self.trailingConstraint.constant = -insets.right;
-    self.bottomConstraint.constant = -insets.bottom;
-    self.bottomFallbackConstraint.constant = -insets.bottom;
+    if (!UIEdgeInsetsEqualToEdgeInsets(self.currentInsets, insets)) {
+        self.topConstraint.constant = insets.top;
+        self.leadingConstraint.constant = insets.left;
+        self.trailingConstraint.constant = -insets.right;
+        self.bottomConstraint.constant = -insets.bottom;
+        self.bottomFallbackConstraint.constant = -insets.bottom;
+    }
 }
 
 // Freeze the view to an absolute frame, with no kbd pull.
@@ -207,6 +211,29 @@
     } else {
         self.bottomFallbackConstraint.active = YES;
     }
+}
+
+- (UIEdgeInsets)additionalCornerInsetsFromRootView:(UIView *)rootView inView:(UIView *)view {
+    if (@available(iOS 27.1, *)) {
+        UIEdgeInsets base = [rootView edgeInsetsForLayoutRegion:
+            [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisNone]];
+        UIEdgeInsets horizontal = [rootView edgeInsetsForLayoutRegion:
+            [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisHorizontal]];
+        UIEdgeInsets vertical = [rootView edgeInsetsForLayoutRegion:
+            [UIViewLayoutRegion safeAreaLayoutRegionWithCornerAdaptation:UIViewLayoutRegionAdaptivityAxisVertical]];
+        CGRect baseFrame = [rootView convertRect:UIEdgeInsetsInsetRect(rootView.bounds, base) toView:view];
+        CGRect horizontalFrame = [rootView convertRect:UIEdgeInsetsInsetRect(rootView.bounds, horizontal) toView:view];
+        CGRect verticalFrame = [rootView convertRect:UIEdgeInsetsInsetRect(rootView.bounds, vertical) toView:view];
+        // Compare matched regions in the constraint parent's coordinates. Only
+        // add the extra corner clearance, not the full camera/status-bar inset.
+        return UIEdgeInsetsMake(
+            MAX(0, CGRectGetMinY(verticalFrame) - CGRectGetMinY(baseFrame)),
+            MAX(0, CGRectGetMinX(horizontalFrame) - CGRectGetMinX(baseFrame)),
+            MAX(0, CGRectGetMaxY(baseFrame) - CGRectGetMaxY(verticalFrame)),
+            MAX(0, CGRectGetMaxX(baseFrame) - CGRectGetMaxX(horizontalFrame))
+        );
+    }
+    return UIEdgeInsetsZero;
 }
 
 - (UIEdgeInsets)calculateInsetsForLayoutMode:(BKLayoutMode)mode {
@@ -245,6 +272,30 @@
         }
 
         case BKLayoutModeFill: {
+            static const CGFloat kFillMinMargin = 8.0;
+            if (DeviceInfo.shared.isDuo) {
+                // Keep corner avoidance independent of Duo's asymmetric chrome:
+                // a zero safe inset must not erase the corner-padding minimum.
+                UIView *rootView = window.rootViewController.viewIfLoaded;
+                UIEdgeInsets margins = rootView ? rootView.layoutMargins : deviceMargins;
+                UIEdgeInsets safeFit = deviceMargins;
+                UIStatusBarManager *sbm = window.windowScene.statusBarManager;
+                if (sbm) safeFit.top = MAX(safeFit.top, sbm.statusBarFrame.size.height);
+                result = UIEdgeInsetsMake(
+                    MAX(kFillMinMargin, MIN(safeFit.top, margins.top / 3.0)),
+                    MAX(kFillMinMargin, MIN(safeFit.left, margins.left / 3.0)),
+                    MAX(kFillMinMargin, MIN(safeFit.bottom, margins.bottom / 3.0)),
+                    MAX(kFillMinMargin, MIN(safeFit.right, margins.right / 3.0))
+                );
+                if (rootView && view.superview) {
+                    UIEdgeInsets corners = [self additionalCornerInsetsFromRootView:rootView inView:view.superview];
+                    result.top = MAX(result.top, corners.top);
+                    result.left = MAX(result.left, corners.left);
+                    result.bottom = MAX(result.bottom, corners.bottom);
+                    result.right = MAX(result.right, corners.right);
+                }
+                break;
+            }
             if (isExternal) {
                 result = deviceMargins;
                 break;
@@ -253,7 +304,6 @@
                 break;
             }
             // Floor so Fill stays within the view and consistent, also when safeArea may misreport 0.
-            static const CGFloat kFillMinMargin = 8.0;
             CGFloat m = MAX(deviceMargins.top / 3.0, kFillMinMargin);
             result.top = m;
             result.left = m;
@@ -274,8 +324,8 @@
     return UIEdgeInsetsMake(
         self.topConstraint.constant,
         self.leadingConstraint.constant,
-        -self.trailingConstraint.constant,
-        -self.bottomConstraint.constant
+        -self.bottomConstraint.constant,
+        -self.trailingConstraint.constant
     );
 }
 
@@ -297,7 +347,8 @@
 
 + (BOOL)supportsLayoutMode:(BKLayoutMode)mode {
   if (mode == BKLayoutModeFill) {
-    return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+    return UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad
+      || DeviceInfo.shared.isDuo;
   }
   return YES;
 }

@@ -69,20 +69,41 @@ import Combine
     // if shortcuts toggle in Settings.app is off.
     kbView.traits.isHKBAttached = true
     
-    if traitCollection.userInterfaceIdiom == .pad {
-//      _setupAssistantItem()
-    } else {
+    if traitCollection.userInterfaceIdiom != .pad {
       _setupAccessoryView()
     }
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
-   
-    if let value = self.window?.windowScene?.interfaceOrientation.isPortrait  {
-      kbView.traits.isPortrait = value
-    }
+    _updateKeyboardLayout()
     kbView.setNeedsLayout()
+  }
+
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    _updateKeyboardLayout()
+  }
+
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    _updateKeyboardLayout()
+  }
+
+  private func _updateKeyboardLayout() {
+    guard let window = window else { return }
+    if kbView.traits.isFloatingKB {
+      kbView.updateLayout(device: .in6_5, portrait: true)
+    } else if DeviceInfo.shared().isDuo {
+      // Use the app window, whose dimensions survive keyboard presentation.
+      // The terminal/input bounds shrink when the software keyboard appears.
+      let device = KBDevice.detect(size: window.bounds.size,
+                                   horizontalSizeClass: traitCollection.horizontalSizeClass,
+                                   verticalSizeClass: traitCollection.verticalSizeClass)
+      kbView.updateLayout(device: device, portrait: window.bounds.height >= window.bounds.width)
+    } else if let scene = window.windowScene {
+      kbView.updateLayout(device: kbView.kbDevice, portrait: scene.interfaceOrientation.isPortrait)
+    }
   }
   
   func shouldUseWKCopyAndPaste() -> Bool {
@@ -226,23 +247,11 @@ import Combine
   }
 
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {
-    kbView.kbDevice = device
-    
-    defer {
-      
-      kbView.traits = traits
-      
-      if let scene = window?.windowScene {
-        if traitCollection.userInterfaceIdiom == .phone {
-          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-        } else if kbView.traits.isFloatingKB {
-          kbView.traits.isPortrait = true
-        } else {
-          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-        }
-      }
-      
+    if !DeviceInfo.shared().isDuo || window == nil {
+      kbView.kbDevice = device
     }
+    kbView.traits = traits
+    _updateKeyboardLayout()
     
     if traitCollection.userInterfaceIdiom == .phone {
       if hideSmartKeysWithHKB && traits.isHKBAttached {
