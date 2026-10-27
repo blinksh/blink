@@ -5295,7 +5295,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2047;
+				CURRENT_PROJECT_VERSION = 2055;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -5318,7 +5318,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 18.7.1;
+				MARKETING_VERSION = 18.7.2;
 				NEW_SETTING = "";
 				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
@@ -5349,7 +5349,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2047;
+				CURRENT_PROJECT_VERSION = 2055;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = A2H2CL32AG;
@@ -5367,7 +5367,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 18.7.1;
+				MARKETING_VERSION = 18.7.2;
 				NEW_SETTING = "";
 				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
