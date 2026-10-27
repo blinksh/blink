@@ -76,6 +76,12 @@ public struct OutputStream: TextOutputStream {
   public func flush() {
     Darwin.fflush(file)
   }
+
+  // Disable mouse reporting a remote program may have left on, e.g. on a dropped connection.
+  // hterm keeps a single report mode, so 1003l disables 1000/1002/1003 alike.
+  public func resetMouseModes() {
+    write("\u{1b}[?1003l\u{1b}[?1006l")
+  }
   
   static var stdout: OutputStream { .init(file: Darwin.stdout) }
   static var stderr: OutputStream { .init(file: Darwin.stderr) }

@@ -250,6 +250,7 @@ enum MoshError: Error, LocalizedError {
     self.device.rawMode = true
 
     defer {
+      stdout.resetMouseModes()
       device.rawMode = originalRawMode
     }
 

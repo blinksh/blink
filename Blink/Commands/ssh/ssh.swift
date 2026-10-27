@@ -60,6 +60,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   private var _mcp: MCPSession;
 
   var exitCode: Int32 = 0
+  var ptyRequested = false
   var connectionCancellable: AnyCancellable?
   let currentRunLoop = RunLoop.current
   var command: SSHCommand?
@@ -91,6 +92,9 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let originalRawMode = device.rawMode
     defer {
       _mcp.unregisterSSHClient(self)
+      if ptyRequested {
+        stdout.resetMouseModes()
+      }
       device.rawMode = originalRawMode
     }
 
@@ -306,6 +310,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
        ) {       
       pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
       self.device.rawMode = true
+      self.ptyRequested = true
     }
 
     // TERM is explicitely added
