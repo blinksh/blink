@@ -319,18 +319,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   });
 }
 
-- (void)setRawMode:(BOOL)rawMode
-{
-  if (_stream.out) {
-    if (rawMode) {
-      [self setAutoCR: FALSE];
-    } else {
-      [self setAutoCR: TRUE];
-    }
-  }
-  _rawMode = rawMode;
-}
-
 - (void)setAutoCR:(BOOL)autoCR {
   if (autoCR) {
     fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=1\x07");
@@ -374,6 +362,15 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     _readlineResult = nil;
     dispatch_semaphore_signal(_readlineSema);
     _readlineSema = nil;
+  }
+}
+
+// Like a tty hangup, readers of stdin get EOF. Unlike EOT, input is not restored.
+- (void)hangup {
+  [self closeReadline];
+  if (_pinput[1] >= 0) {
+    close(_pinput[1]);
+    _pinput[1] = -1;
   }
 }
 

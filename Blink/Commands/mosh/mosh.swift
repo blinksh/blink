@@ -248,10 +248,12 @@ enum MoshError: Error, LocalizedError {
     
     let originalRawMode = device.rawMode
     self.device.rawMode = true
+    stdout.setAutoCR(false)
 
     defer {
-      stdout.resetMouseModes()
       device.rawMode = originalRawMode
+      stdout.resetMouseModes()
+      stdout.setAutoCR(!originalRawMode)
     }
 
     let _selfRef = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())

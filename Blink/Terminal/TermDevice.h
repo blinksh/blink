@@ -93,6 +93,7 @@
 - (void)prompt:(NSString *)prompt secure:(BOOL)secure shell:(BOOL)shell;
 - (NSString *)readline:(NSString *)prompt secure:(BOOL)secure;
 - (void)closeReadline;
+- (void)hangup;
 
 - (void)focus;
 - (void)blur;

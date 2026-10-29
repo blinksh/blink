@@ -92,10 +92,11 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let originalRawMode = device.rawMode
     defer {
       _mcp.unregisterSSHClient(self)
+      device.rawMode = originalRawMode
       if ptyRequested {
         stdout.resetMouseModes()
+        stdout.setAutoCR(!originalRawMode)
       }
-      device.rawMode = originalRawMode
     }
 
     let cmd: SSHCommand
@@ -310,6 +311,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
        ) {       
       pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
       self.device.rawMode = true
+      self.stdout.setAutoCR(false)
       self.ptyRequested = true
     }
 

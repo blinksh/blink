@@ -82,6 +82,11 @@ public struct OutputStream: TextOutputStream {
   public func resetMouseModes() {
     write("\u{1b}[?1003l\u{1b}[?1006l")
   }
+
+  // Raw sessions handle CR themselves; cooked output relies on the terminal adding it.
+  public func setAutoCR(_ autoCR: Bool) {
+    write("\u{1b}]1337;BlinkAutoCR=\(autoCR ? 1 : 0)\u{07}")
+  }
   
   static var stdout: OutputStream { .init(file: Darwin.stdout) }
   static var stderr: OutputStream { .init(file: Darwin.stderr) }

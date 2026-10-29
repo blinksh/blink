@@ -56,6 +56,9 @@
   dispatch_queue_t _sshQueue;
   TermStream *_cmdStream;
   NSString *_currentCmdLine;
+  // NOTE After kill, commands already queued on _cmdQueue still run before the device closes.
+  // Flag termination here if they ever need to be skipped.
+  // BOOL _terminated;
 }
 
 @dynamic sessionParams;
@@ -294,18 +297,23 @@
         [client kill];
       }
     });
-    
-    return;
   } else if (_childSession) {
     [_childSession kill];
   } else if (_cmdStream) {
     [self setActiveSession];
     ios_kill();
   }
-  
-  ios_closeSession(_sessionUUID.UTF8String);
-  [_device close];
-  _device = NULL;
+
+  // A kill may be ignored or only land at a cancellation point; EOF on stdin releases
+  // commands blocked on input.
+  [_device hangup];
+
+  // _cmdQueue is serial, so the device closes once the running command is done.
+  dispatch_async(_cmdQueue, ^{
+    ios_closeSession(self->_sessionUUID.UTF8String);
+    [self->_device close];
+    self->_device = NULL;
+  });
 }
 
 - (void)suspend
