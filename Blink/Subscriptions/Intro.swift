@@ -573,6 +573,13 @@ struct NewOfferingsView: View {
           }.buttonStyle(BlinkButtonStyle.cta(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
                                              inProgress: _purchases.purchaseInProgress || _purchases.restoreInProgress || _purchases.formattedBlinkPlusPriceWithPeriod() == nil, minWidth: minButtonWidth))
 
+          if let subtext = blinkPlusSubscribeButtonSubtext() {
+            Text(subtext)
+              .foregroundColor(BlinkColors.infoText)
+              .font(BlinkFonts.btnSub)
+              .padding(.top, 4)
+          }
+
           if _purchases.blinkPlusIntroOfferAvailable() {
             TrialSwitch(doTrialNotification: $doTrialNotification)
               .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
@@ -602,6 +609,14 @@ struct NewOfferingsView: View {
     } else {
       return "BUY \(price)"
     }
+  }
+
+  func blinkPlusSubscribeButtonSubtext() -> String? {
+    guard _purchases.blinkPlusIntroOfferAvailable(),
+          let price = _purchases.formattedBlinkPlusPriceWithPeriod() else {
+      return nil
+    }
+    return "then \(price) until cancelled"
   }
   
   func purchaseBlinkPlus() async {
