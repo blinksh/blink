@@ -508,7 +508,8 @@ struct IntroSetupsCarouselView: View {
 
 }
 
-// Takes one presented offering from first look to a settled outcome. Every transition goes
+// Takes one presented offering from first look to a settled outcome. Decides what to ask
+// the store for and what the answer means for this paywall's goal. Every transition goes
 // through handle(_:).
 @MainActor
 final class PaywallFlow: ObservableObject {
@@ -540,9 +541,10 @@ final class PaywallFlow: ObservableObject {
   private enum Event {
     case entitlementsChanged
     case buyStarted
-    case buyFinished(newPurchase: Bool)
+    case linked
+    case bought(PurchaseResult)
     case restoreStarted
-    case restoreFinished
+    case restoreFinished(succeeded: Bool)
   }
 
   @Published private(set) var state: State = .offering
@@ -582,14 +584,19 @@ final class PaywallFlow: ObservableObject {
     }
   }
 
-  func buy(setupTrial: Bool) {
+  func buy(trialReminder: Bool) {
     guard isOffering else {
       return
     }
     handle(.buyStarted)
     Task {
-      let newPurchase = await purchases.buyBlinkPlus(setupTrial: setupTrial, isSatisfied: { self.isSatisfied })
-      handle(.buyFinished(newPurchase: newPurchase))
+      // An existing purchase may already satisfy the goal, so it isn't bought twice.
+      await purchases.link()
+      handle(.linked)
+      guard state == .working(.buying) else {
+        return
+      }
+      handle(.bought(await purchases.purchaseBlinkPlus(trialReminder: trialReminder)))
     }
   }
 
@@ -599,8 +606,7 @@ final class PaywallFlow: ObservableObject {
     }
     handle(.restoreStarted)
     Task {
-      await purchases.restorePurchases(isSatisfied: { self.isSatisfied })
-      handle(.restoreFinished)
+      handle(.restoreFinished(succeeded: await purchases.restore()))
     }
   }
 
@@ -616,11 +622,20 @@ final class PaywallFlow: ObservableObject {
       state = .working(.buying)
     case (.offering, .restoreStarted):
       state = .working(.restoring)
-    case (.working(.buying), .buyFinished(newPurchase: true)):
+    case (.working(.buying), .linked):
+      if isSatisfied {
+        state = .done(.restored)
+      }
+    case (.working(.buying), .bought(.purchased)):
       state = .done(.purchased)
-    case (.working, .buyFinished), (.working, .restoreFinished):
-      // Reported here even if a StoreKit sheet took key while working.
-      state = isSatisfied ? .done(.restored) : .offering
+    case (.working(.buying), .bought):
+      settle()
+    case (.working(.restoring), .restoreFinished(let succeeded)):
+      settle()
+      // Only the goal tells whether what was restored is enough.
+      if succeeded && state == .offering {
+        purchases.reportNothingFound()
+      }
     default:
       // While working, the running action settles with its own result. Done is final.
       break
@@ -630,8 +645,14 @@ final class PaywallFlow: ObservableObject {
       log.info("\(goal) \(event): \(previous) -> \(state)")
     }
   }
+
+  // Reported here even if a StoreKit sheet took key while working.
+  private func settle() {
+    state = isSatisfied ? .done(.restored) : .offering
+  }
 }
 
+// Turns the flow's state into buttons, alerts and navigation, and shows the purchase messages.
 struct NewOfferingsView: View {
   let classicOffering: Bool
   let ctx: PageCtx
@@ -749,10 +770,11 @@ struct NewOfferingsView: View {
           break
         }
       }
+      .alert(errorMessage: $_purchases.alertErrorMessage)
   }
 
   func blinkPlusSubscribeButtonText() -> String {
-    let price = _purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? ""
+    let price = _purchases.formattedBlinkPlusPriceWithPeriod()?.uppercased() ?? ""
 
     if _purchases.blinkPlusIntroOfferAvailable() {
       return "TRY IT FREE FOR 14 DAYS"
@@ -771,7 +793,7 @@ struct NewOfferingsView: View {
   
   func purchaseBlinkPlus() {
     let trialSelection = _purchases.blinkPlusIntroOfferAvailable() ? doTrialNotification : false
-    _flow.buy(setupTrial: trialSelection)
+    _flow.buy(trialReminder: trialSelection)
   }
 }
 
@@ -801,7 +823,6 @@ struct NewIntroPageWindow: View {
 
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
   @State var page = NewIntroPageState.offerings
-  @StateObject var _purchases = PurchasesUserModel.shared
 
   var body: some View {
     GeometryReader { proxy in
@@ -836,8 +857,6 @@ struct NewIntroPageWindow: View {
       .padding(.all, ctx.outterPadding())
       .frame(width: proxy.size.width, height: proxy.size.height)
     }
-    .alert(errorMessage: $_purchases.alertErrorMessage)
-
       .background(LinearGradient(
                     gradient: Gradient(colors: [BlinkColors.linearGradient1, Color.black]),
                     startPoint: .top,

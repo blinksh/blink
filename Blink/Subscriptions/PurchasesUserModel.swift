@@ -34,12 +34,14 @@ import Combine
 import SwiftUI
 import UIKit
 
+// Does things with the store and tells what happened: products, purchases, restores, and the
+// messages about them, shared by any paywall.
 @MainActor
 class PurchasesUserModel: ObservableObject {
   // MARK: products
-  @Published var blinkShellPlusProduct: StoreProduct? = nil
+  // @Published var blinkShellPlusProduct: StoreProduct? = nil
   @Published var buildBasicProduct: StoreProduct? = nil
-  @Published var classicProduct: StoreProduct? = nil
+  // @Published var classicProduct: StoreProduct? = nil
   @Published var blinkPlusBuildBasicProduct: StoreProduct? = nil
   @Published var blinkPlusProduct: StoreProduct? = nil
 
@@ -53,8 +55,6 @@ class PurchasesUserModel: ObservableObject {
 
   @Published var buildBasicTrialEligibility: IntroEligibility? = nil
 
-  @Published var restoredPurchaseMessageVisible = false
-  @Published var restoredPurchaseMessage = ""
   @Published var alertErrorMessage: String = ""
 
   var isBuildBasicTrialEligible: Bool {
@@ -69,20 +69,11 @@ class PurchasesUserModel: ObservableObject {
 #else
     store = RevenueCatStoreClient()
 #endif
-    refreshProducts()
+    fetchProducts()
+    fetchTrialEligibility()
   }
 
   static let shared = PurchasesUserModel()
-
-  private func refreshProducts() {
-    if self.blinkShellPlusProduct == nil
-        || self.classicProduct == nil
-        || self.buildBasicProduct == nil
-        || self.blinkPlusBuildBasicProduct == nil {
-      self.fetchProducts()
-      self.fetchTrialEligibility()
-    }
-  }
 
   private func refreshTokens() {
     BuildAccountModel.shared.checkBuildToken(animated: false)
@@ -123,30 +114,31 @@ class PurchasesUserModel: ObservableObject {
     }
   }
 
-  /// Returns true only for a new purchase. A purchase that already existed on the account
-  /// shows up as an entitlements change instead.
-  func buyBlinkPlus(setupTrial: Bool, isSatisfied: () -> Bool) async -> Bool {
+  // Links purchases made with this Apple ID to the app user. Sync instead of restore, as
+  // RevenueCat warns a programmatic restore may prompt for sign-in.
+  func link() async {
+    try? await store.sync()
+  }
+
+  func purchaseBlinkPlus(trialReminder: Bool) async -> PurchaseResult {
     guard let product = blinkPlusProduct else {
       self.alertErrorMessage = "No valid products selected"
-      return false
+      return .failed
     }
+    return await purchase(product, trialReminder: trialReminder)
+  }
 
-    // Link purchases made with this Apple ID before offering a new one. Sync instead of
-    // restore, as RevenueCat warns a programmatic restore may prompt for sign-in.
-    try? await store.sync()
-    if isSatisfied() {
-      return false
-    }
-
-    if setupTrial {
+  // Trial reminders are set up before the purchase and kept only if it goes through.
+  func purchase(_ product: StoreProduct, trialReminder: Bool) async -> PurchaseResult {
+    if trialReminder {
       guard await _setupTrialProgressNotification(TrialProgressNotification.TwoWeeks) else {
-        return false
+        return .failed
       }
     }
 
-    var keepTrialReminders = false
+    var keepTrialReminder = false
     defer {
-      if setupTrial && !keepTrialReminders {
+      if trialReminder && !keepTrialReminder {
         TrialProgressNotification.cancel()
       }
     }
@@ -154,28 +146,55 @@ class PurchasesUserModel: ObservableObject {
     let purchaseStartedAt = Date()
     do {
       guard case .completed(let purchaseDate) = try await store.purchase(product) else {
-        return false
+        return .cancelled
       }
 
       // StoreKit answers an already active subscription with its existing transaction.
       // The margin absorbs device clock skew.
       if let purchaseDate, purchaseDate < purchaseStartedAt.addingTimeInterval(-5 * 60) {
-        return false
+        return .alreadyOwned
       }
 
-      keepTrialReminders = true
-      return true
+      keepTrialReminder = true
+      return .purchased
     } catch StoreClientError.pending {
-      keepTrialReminders = true
+      keepTrialReminder = true
       self.alertErrorMessage = "Your purchase is pending approval. Blink will unlock as soon as it is approved."
-      return false
+      return .pending
     } catch StoreClientError.alreadyPurchased {
       try? await store.sync()
-      return false
+      return .alreadyOwned
     } catch {
       self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
+      return .failed
+    }
+  }
+
+  // Returns false if the restore failed, after reporting it.
+  @discardableResult
+  func restore() async -> Bool {
+    self.restoreInProgress = true
+
+    defer {
+      self.refreshTokens()
+      self.restoreInProgress = false
+    }
+
+    do {
+      try await store.restore()
+    } catch {
+      self.alertErrorMessage = error.localizedDescription
       return false
     }
+
+    if EntitlementsManager.shared.build.active {
+      await BuildAccountModel.shared.trySignIn()
+    }
+    return true
+  }
+
+  func reportNothingFound() {
+    self.alertErrorMessage = "Could not find an active subscription. Please contact us if you are having trouble."
   }
 
   // func purchaseClassic() {
@@ -200,6 +219,8 @@ class PurchasesUserModel: ObservableObject {
   }
 
   func getUserID() -> String { Purchases.shared.appUserID }
+
+  // MARK: Trial reminders
 
   private func _setupTrialProgressNotification(_ progress: TrialProgressNotification, didPromptSettings: Bool = false) async -> Bool {
     switch await TrialProgressNotification.ensureNotificationsReady() {
@@ -244,7 +265,6 @@ class PurchasesUserModel: ObservableObject {
 
   // MARK: - Friendly helpers
 
-  @MainActor
   private func promptOpenSettings(title: String, message: String) async -> Bool {
     let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
     var open = false
@@ -258,7 +278,6 @@ class PurchasesUserModel: ObservableObject {
     return open
   }
 
-  @MainActor
   private func waitUntilAppBecomesActive() async {
     await withCheckedContinuation { cont in
       var token: NSObjectProtocol?
@@ -280,27 +299,10 @@ class PurchasesUserModel: ObservableObject {
     return base
   }
 
-  @MainActor
-  private func friendlyMessage(for error: Error) -> String {
-    return "Could not enable notifications — \(error.localizedDescription)"
-  }
-
-  func restorePurchases(isSatisfied: () -> Bool) async {
-    guard await _restorePurchases() else {
-      return
-    }
-
-    if !isSatisfied() {
-      self.alertErrorMessage = "Could not find an active subscription. Please contact us if you are having trouble."
-    }
-  }
-
   func restoreBlinkBuildEntitlements(alertIfNone: Bool) async -> Bool {
-    await _restorePurchases()
+    await restore()
     
     if EntitlementsManager.shared.build.active {
-      self.restoredPurchaseMessage = "We have restored your subscriptions. Thanks for your support!"
-      self.restoredPurchaseMessageVisible = true
       return true
     } else {
       if alertIfNone {
@@ -310,31 +312,9 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  @discardableResult
-  private func _restorePurchases() async -> Bool {
-    self.restoreInProgress = true
-
-    defer {
-      self.refreshTokens()
-      self.restoreInProgress = false
-    }
-
-    do {
-      try await store.restore()
-
-      if EntitlementsManager.shared.build.active {
-        await BuildAccountModel.shared.trySignIn()
-      }
-      return true
-    } catch {
-      self.alertErrorMessage = error.localizedDescription
-      return false
-    }
-  }
-
-  func formattedPlusPriceWithPeriod() -> String? {
-    blinkShellPlusProduct?.formattedPriceWithPeriod()
-  }
+  // func formattedPlusPriceWithPeriod() -> String? {
+  //   blinkShellPlusProduct?.formattedPriceWithPeriod()
+  // }
 
   func formattedBuildPriceWithPeriod() -> String? {
     buildBasicProduct?.formattedPriceWithPeriod()
@@ -350,8 +330,8 @@ class PurchasesUserModel: ObservableObject {
 
   private func fetchProducts() {
     Purchases.shared.getProducts([
-      ProductBlinkShellClassicID,
-      ProductBlinkShellPlusID,
+      // ProductBlinkShellClassicID,
+      // ProductBlinkShellPlusID,
       ProductBlinkBuildBasicID,
       ProductBlinkPlusBuildBasicID,
       ProductBlinkPlusID
@@ -360,11 +340,12 @@ class PurchasesUserModel: ObservableObject {
         for product in products {
           let productID = product.productIdentifier
 
-          if productID == ProductBlinkShellPlusID {
-            self.blinkShellPlusProduct = product
-          } else if productID == ProductBlinkShellClassicID {
-            self.classicProduct = product
-          } else if productID == ProductBlinkBuildBasicID {
+          // if productID == ProductBlinkShellPlusID {
+          //   self.blinkShellPlusProduct = product
+          // } else if productID == ProductBlinkShellClassicID {
+          //   self.classicProduct = product
+          // } else
+          if productID == ProductBlinkBuildBasicID {
             self.buildBasicProduct = product
           } else if productID == ProductBlinkPlusBuildBasicID {
             self.blinkPlusBuildBasicProduct = product
@@ -391,11 +372,6 @@ class PurchasesUserModel: ObservableObject {
         }
       })
   }
-
-  private lazy var _emailPredicate: NSPredicate = {
-    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    return NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-  }()
 }
 
 // MARK: Open links
@@ -406,48 +382,6 @@ extension PurchasesUserModel {
 
   func openTermsOfUse() {
     blink_openurl(URL(string: "https://blink.sh/blink-gpl")!)
-  }
-
-  func openHelp() {
-    blink_openurl(URL(string: "https://blink.sh/docs")!)
-  }
-
-  func openMigrationHelp() {
-    blink_openurl(URL(string: "https://docs.blink.sh/migration")!)
-  }
-}
-
-extension StoreProductDiscount {
-  func formattedPriceWithPeriod() -> String? {
-//    priceFormatter.locale = priceLocale
-//    guard let priceStr = priceFormatter.string(for: price) else {
-//      return nil
-//    }
-
-    let priceStr = localizedPriceString
-    let period = self.subscriptionPeriod
-
-    let n = period.value
-
-    if n <= 1 {
-      switch period.unit {
-      case .day: return "\(priceStr)/day"
-      case .week: return "\(priceStr)/week"
-      case .month: return "\(priceStr)/month"
-      case .year: return "\(priceStr)/year"
-      @unknown default:
-        return priceStr
-      }
-    }
-
-    switch period.unit {
-    case .day: return "\(priceStr) / \(n) days"
-    case .week: return "\(priceStr) / \(n) weeks"
-    case .month: return "\(priceStr) / \(n) months"
-    case .year: return "\(priceStr) / \(n) years"
-    @unknown default:
-      return priceStr
-    }
   }
 }
 
@@ -489,6 +423,17 @@ extension StoreProduct {
   }
 }
 
+
+// Failures and pending purchases are reported to the user by the time this is returned.
+enum PurchaseResult {
+  case purchased
+  // The product was already owned by this Apple ID. Its entitlements arrive as an update.
+  case alreadyOwned
+  case cancelled
+  // Waiting for approval, like Ask to Buy. Its entitlements arrive as an update.
+  case pending
+  case failed
+}
 
 enum StorePurchase {
   case completed(purchaseDate: Date?)
