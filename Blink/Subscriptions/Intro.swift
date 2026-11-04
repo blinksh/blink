@@ -744,6 +744,13 @@ struct NewOfferingsView: View {
               .disabled(!_flow.isOffering)
           }
 
+          if !classicOffering {
+            Text("Classic or previous users, tap RESTORE")
+              .foregroundColor(BlinkColors.infoText)
+              .font(BlinkFonts.btnSub)
+              .padding(.top, 8)
+          }
+
           NewOfferingTermsButtons(ctx: ctx, restoreHandler: { _flow.restore() }, urlHandler: urlHandler)
         }
         .padding(.top, 16)
