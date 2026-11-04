@@ -61,7 +61,14 @@ class PurchasesUserModel: ObservableObject {
     self.buildBasicTrialEligibility?.status == .eligible
   }
 
+  private let store: StoreClient
+
   private init() {
+#if BLINK_PUBLISHING_OPTION_TESTAPPSTORE
+    store = PaywallScenarioStoreClient(source: .shared)
+#else
+    store = RevenueCatStoreClient()
+#endif
     refreshProducts()
   }
 
@@ -126,9 +133,7 @@ class PurchasesUserModel: ObservableObject {
 
     // Link purchases made with this Apple ID before offering a new one. Sync instead of
     // restore, as RevenueCat warns a programmatic restore may prompt for sign-in.
-    if let info = try? await Purchases.shared.syncPurchases() {
-      _applyCustomerInfo(info)
-    }
+    try? await store.sync()
     if isSatisfied() {
       return false
     }
@@ -148,33 +153,27 @@ class PurchasesUserModel: ObservableObject {
 
     let purchaseStartedAt = Date()
     do {
-      let result = try await Purchases.shared.purchase(product: product)
-      if result.userCancelled {
+      guard case .completed(let purchaseDate) = try await store.purchase(product) else {
         return false
       }
-      _applyCustomerInfo(result.customerInfo)
 
       // StoreKit answers an already active subscription with its existing transaction.
       // The margin absorbs device clock skew.
-      if let purchaseDate = result.transaction?.purchaseDate,
-         purchaseDate < purchaseStartedAt.addingTimeInterval(-5 * 60) {
+      if let purchaseDate, purchaseDate < purchaseStartedAt.addingTimeInterval(-5 * 60) {
         return false
       }
 
       keepTrialReminders = true
       return true
+    } catch StoreClientError.pending {
+      keepTrialReminders = true
+      self.alertErrorMessage = "Your purchase is pending approval. Blink will unlock as soon as it is approved."
+      return false
+    } catch StoreClientError.alreadyPurchased {
+      try? await store.sync()
+      return false
     } catch {
-      switch error as? RevenueCat.ErrorCode {
-      case .paymentPendingError?:
-        keepTrialReminders = true
-        self.alertErrorMessage = "Your purchase is pending approval. Blink will unlock as soon as it is approved."
-      case .productAlreadyPurchasedError?:
-        if let info = try? await Purchases.shared.syncPurchases() {
-          _applyCustomerInfo(info)
-        }
-      default:
-        self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
-      }
+      self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
       return false
     }
   }
@@ -192,16 +191,15 @@ class PurchasesUserModel: ObservableObject {
   }
 
   func blinkPlusIntroOfferAvailable() -> Bool {
-    blinkPlusIntroOffer?.status == IntroEligibilityStatus.eligible
+#if BLINK_PUBLISHING_OPTION_TESTAPPSTORE
+    if let eligible = PaywallScenario.current.trialEligible {
+      return eligible
+    }
+#endif
+    return blinkPlusIntroOffer?.status == IntroEligibilityStatus.eligible
   }
 
   func getUserID() -> String { Purchases.shared.appUserID }
-
-  // RevenueCat dispatches delegate updates asynchronously. Applying the CustomerInfo a call
-  // returns lets a check right after that call see it, e.g. before offering a purchase.
-  private func _applyCustomerInfo(_ info: CustomerInfo) {
-    Purchases.shared.delegate?.purchases?(Purchases.shared, receivedUpdated: info)
-  }
 
   private func _setupTrialProgressNotification(_ progress: TrialProgressNotification, didPromptSettings: Bool = false) async -> Bool {
     switch await TrialProgressNotification.ensureNotificationsReady() {
@@ -322,8 +320,7 @@ class PurchasesUserModel: ObservableObject {
     }
 
     do {
-      let info = try await Purchases.shared.restorePurchases()
-      _applyCustomerInfo(info)
+      try await store.restore()
 
       if EntitlementsManager.shared.build.active {
         await BuildAccountModel.shared.trySignIn()
@@ -492,6 +489,62 @@ extension StoreProduct {
   }
 }
 
+
+enum StorePurchase {
+  case completed(purchaseDate: Date?)
+  case cancelled
+}
+
+enum StoreClientError: Error {
+  case pending
+  case alreadyPurchased
+}
+
+// The store calls behind the paywall. Each call has brought the entitlements up to date by
+// the time it returns.
+@MainActor
+protocol StoreClient {
+  func sync() async throws
+  func purchase(_ product: StoreProduct) async throws -> StorePurchase
+  func restore() async throws
+}
+
+@MainActor
+struct RevenueCatStoreClient: StoreClient {
+  func sync() async throws {
+    _apply(try await Purchases.shared.syncPurchases())
+  }
+
+  func purchase(_ product: StoreProduct) async throws -> StorePurchase {
+    do {
+      let result = try await Purchases.shared.purchase(product: product)
+      if result.userCancelled {
+        return .cancelled
+      }
+      _apply(result.customerInfo)
+      return .completed(purchaseDate: result.transaction?.purchaseDate)
+    } catch {
+      switch error as? RevenueCat.ErrorCode {
+      case .paymentPendingError?:
+        throw StoreClientError.pending
+      case .productAlreadyPurchasedError?:
+        throw StoreClientError.alreadyPurchased
+      default:
+        throw error
+      }
+    }
+  }
+
+  func restore() async throws {
+    _apply(try await Purchases.shared.restorePurchases())
+  }
+
+  // RevenueCat dispatches delegate updates asynchronously. Applying the CustomerInfo a call
+  // returns lets a check right after that call see it, e.g. before offering a purchase.
+  private func _apply(_ info: CustomerInfo) {
+    Purchases.shared.delegate?.purchases?(Purchases.shared, receivedUpdated: info)
+  }
+}
 
 @objc public class PurchasesUserModelObjc: NSObject {
 

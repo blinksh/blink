@@ -67,6 +67,9 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   static var current: Self  = .developer
 #elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
   static var current: Self  = .testFlight
+#elseif BLINK_PUBLISHING_OPTION_TESTAPPSTORE
+  // App Store behaviour, with purchases answered by PaywallScenario.current.
+  static var current: Self  = .appStore
 #else
   static var current: Self  = .appStore
 #endif

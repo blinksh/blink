@@ -73,7 +73,11 @@ public protocol EntitlementsSource: AnyObject {
 
 public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
+#if BLINK_PUBLISHING_OPTION_TESTAPPSTORE
+  public static let shared = EntitlementsManager([PaywallScenarioEntitlementsSource.shared])
+#else
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
+#endif
   
   @Published var unlimitedTimeAccess: Entitlement = .inactiveUnlimitedScreenTime
   @Published var earlyAccessFeatures: Entitlement = .earlyAccessFeatures

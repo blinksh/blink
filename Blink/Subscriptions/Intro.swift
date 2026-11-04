@@ -539,7 +539,9 @@ final class PaywallFlow: ObservableObject {
 
   private enum Event {
     case entitlementsChanged
+    case buyStarted
     case buyFinished(newPurchase: Bool)
+    case restoreStarted
     case restoreFinished
   }
 
@@ -550,6 +552,7 @@ final class PaywallFlow: ObservableObject {
   private let purchases = PurchasesUserModel.shared
   private let entitlements = EntitlementsManager.shared
   private var entitlementsCancellable: AnyCancellable? = nil
+  private let log = Zuse.logger(.purchases, "Paywall")
 
   init(goal: Goal, isFront: @escaping () -> Bool) {
     self.goal = goal
@@ -583,7 +586,7 @@ final class PaywallFlow: ObservableObject {
     guard isOffering else {
       return
     }
-    state = .working(.buying)
+    handle(.buyStarted)
     Task {
       let newPurchase = await purchases.buyBlinkPlus(setupTrial: setupTrial, isSatisfied: { self.isSatisfied })
       handle(.buyFinished(newPurchase: newPurchase))
@@ -594,7 +597,7 @@ final class PaywallFlow: ObservableObject {
     guard isOffering else {
       return
     }
-    state = .working(.restoring)
+    handle(.restoreStarted)
     Task {
       await purchases.restorePurchases(isSatisfied: { self.isSatisfied })
       handle(.restoreFinished)
@@ -602,21 +605,29 @@ final class PaywallFlow: ObservableObject {
   }
 
   private func handle(_ event: Event) {
+    let previous = state
+
     switch (state, event) {
     case (.offering, .entitlementsChanged):
       if isSatisfied {
         state = .done(isFront() ? .restored : .handedOff)
       }
-    case (.working, .entitlementsChanged):
-      // The running action settles with its own result.
-      break
+    case (.offering, .buyStarted):
+      state = .working(.buying)
+    case (.offering, .restoreStarted):
+      state = .working(.restoring)
     case (.working(.buying), .buyFinished(newPurchase: true)):
       state = .done(.purchased)
     case (.working, .buyFinished), (.working, .restoreFinished):
       // Reported here even if a StoreKit sheet took key while working.
       state = isSatisfied ? .done(.restored) : .offering
-    case (.offering, _), (.done, _):
+    default:
+      // While working, the running action settles with its own result. Done is final.
       break
+    }
+
+    if state != previous {
+      log.info("\(goal) \(event): \(previous) -> \(state)")
     }
   }
 }

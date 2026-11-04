@@ -86,6 +86,7 @@
 		BD19DB412B056E9C003A4367 /* SSHCommandTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD19DB402B056E9C003A4367 /* SSHCommandTest.swift */; };
 		BD1FFF702E4A10C600DB5AF9 /* TermSessionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1FFF6F2E4A10C600DB5AF9 /* TermSessionPayload.swift */; };
 		BD23B6E12CB0585B0041C38D /* ios_patches.m in Sources */ = {isa = PBXBuildFile; fileRef = BD23B6E02CB0585B0041C38D /* ios_patches.m */; };
+		BD2830E0309BBF4700D0B2B5 /* PaywallScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2830DF309BBF4700D0B2B5 /* PaywallScenarios.swift */; };
 		BD2C754E2D75FA85007BFE77 /* Walkthrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */; };
 		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
 		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
@@ -854,6 +855,7 @@
 		BD1FFF6F2E4A10C600DB5AF9 /* TermSessionPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermSessionPayload.swift; sourceTree = "<group>"; };
 		BD23B6DF2CB058550041C38D /* ios_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ios_patches.h; sourceTree = "<group>"; };
 		BD23B6E02CB0585B0041C38D /* ios_patches.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ios_patches.m; sourceTree = "<group>"; };
+		BD2830DF309BBF4700D0B2B5 /* PaywallScenarios.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScenarios.swift; sourceTree = "<group>"; };
 		BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walkthrough.swift; sourceTree = "<group>"; };
 		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
 		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
@@ -2263,6 +2265,7 @@
 			children = (
 				D20394A929E6B30400FB337F /* Receipt.swift */,
 				D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */,
+				BD2830DF309BBF4700D0B2B5 /* PaywallScenarios.swift */,
 				D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */,
 				D2AD8E6727A2BAFA00DED28D /* Purchases.swift */,
 				BDACC7742A6F100D00D0B261 /* TrialNotification.swift */,
@@ -3489,6 +3492,7 @@
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHCommand.swift in Sources */,
+				BD2830E0309BBF4700D0B2B5 /* PaywallScenarios.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
 				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,

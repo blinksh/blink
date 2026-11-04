@@ -46,6 +46,7 @@ final class Zuse {
     case terminal = "Terminal"
     case input    = "Input"
     case config   = "Config"
+    case purchases = "Purchases"
   }
 
   struct LogConfig {
