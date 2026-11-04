@@ -165,7 +165,6 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
 
   public func hasActiveSubscriptions() -> Bool {
-    print(currentPlanName())
     return customerTier() != CustomerTier.Free
   }
   

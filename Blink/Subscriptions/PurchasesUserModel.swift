@@ -116,10 +116,67 @@ class PurchasesUserModel: ObservableObject {
     }
   }
 
-  func purchaseBlinkPlusWithTrialValidation(setupTrial: Bool) async -> Bool {
-    let duration: TrialDuration = setupTrial ? .twoWeeks : .no
-    
-    return await _purchaseWithTrialValidation(product: blinkPlusProduct, setupTrialDuration: duration)
+  /// Returns true only for a new purchase. A purchase that already existed on the account
+  /// shows up as an entitlements change instead.
+  func buyBlinkPlus(setupTrial: Bool, isSatisfied: () -> Bool) async -> Bool {
+    guard let product = blinkPlusProduct else {
+      self.alertErrorMessage = "No valid products selected"
+      return false
+    }
+
+    // Link purchases made with this Apple ID before offering a new one. Sync instead of
+    // restore, as RevenueCat warns a programmatic restore may prompt for sign-in.
+    if let info = try? await Purchases.shared.syncPurchases() {
+      _applyCustomerInfo(info)
+    }
+    if isSatisfied() {
+      return false
+    }
+
+    if setupTrial {
+      guard await _setupTrialProgressNotification(TrialProgressNotification.TwoWeeks) else {
+        return false
+      }
+    }
+
+    var keepTrialReminders = false
+    defer {
+      if setupTrial && !keepTrialReminders {
+        TrialProgressNotification.cancel()
+      }
+    }
+
+    let purchaseStartedAt = Date()
+    do {
+      let result = try await Purchases.shared.purchase(product: product)
+      if result.userCancelled {
+        return false
+      }
+      _applyCustomerInfo(result.customerInfo)
+
+      // StoreKit answers an already active subscription with its existing transaction.
+      // The margin absorbs device clock skew.
+      if let purchaseDate = result.transaction?.purchaseDate,
+         purchaseDate < purchaseStartedAt.addingTimeInterval(-5 * 60) {
+        return false
+      }
+
+      keepTrialReminders = true
+      return true
+    } catch {
+      switch error as? RevenueCat.ErrorCode {
+      case .paymentPendingError?:
+        keepTrialReminders = true
+        self.alertErrorMessage = "Your purchase is pending approval. Blink will unlock as soon as it is approved."
+      case .productAlreadyPurchasedError?:
+        if let info = try? await Purchases.shared.syncPurchases() {
+          _applyCustomerInfo(info)
+        }
+      default:
+        self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
+      }
+      return false
+    }
   }
 
   // func purchaseClassic() {
@@ -140,17 +197,10 @@ class PurchasesUserModel: ObservableObject {
 
   func getUserID() -> String { Purchases.shared.appUserID }
 
-  private func _purchase(_ product: StoreProduct) async -> Bool {
-    do {
-      let result = try await Purchases.shared.purchase(product: product)
-      if result.userCancelled {
-        return false
-      }
-      return true
-    } catch {
-      self.alertErrorMessage = "Purchase cannot be completed. Please try again. Details: \(error.localizedDescription)"
-      return false
-    }
+  // RevenueCat dispatches delegate updates asynchronously. Applying the CustomerInfo a call
+  // returns lets a check right after that call see it, e.g. before offering a purchase.
+  private func _applyCustomerInfo(_ info: CustomerInfo) {
+    Purchases.shared.delegate?.purchases?(Purchases.shared, receivedUpdated: info)
   }
 
   private func _setupTrialProgressNotification(_ progress: TrialProgressNotification, didPromptSettings: Bool = false) async -> Bool {
@@ -194,39 +244,6 @@ class PurchasesUserModel: ObservableObject {
     }
   }
 
-  private func _purchaseWithTrialValidation(product: StoreProduct?, setupTrialDuration: TrialDuration = .no) async -> Bool {
-    guard let product = product else {
-      self.alertErrorMessage = "No valid products selected"
-      return false
-    }
-
-    withAnimation {
-      self.purchaseInProgress = true
-    }
-
-    defer {
-      self.purchaseInProgress = false
-    }
-
-    if let notification: TrialProgressNotification = switch setupTrialDuration {
-    case .no:
-      nil
-    case .oneWeek:
-      TrialProgressNotification.OneWeek
-    case .twoWeeks:
-      TrialProgressNotification.TwoWeeks
-    case .oneMonth:
-      TrialProgressNotification.OneMonth
-    } {
-      let success = await _setupTrialProgressNotification(notification)
-      if !success {
-        return false
-      }
-    }
-
-    return await _purchase(product)
-  }
-  
   // MARK: - Friendly helpers
 
   @MainActor
@@ -270,37 +287,16 @@ class PurchasesUserModel: ObservableObject {
     return "Could not enable notifications — \(error.localizedDescription)"
   }
 
-  func restoreActiveAppSubscriptions(alertIfNone: Bool) async -> Bool {
-    await _restorePurchases()
+  func restorePurchases(isSatisfied: () -> Bool) async {
+    guard await _restorePurchases() else {
+      return
+    }
 
-    if EntitlementsManager.shared.hasActiveSubscriptions() {
-      self.restoredPurchaseMessage = "We have restored your subscriptions. Thanks for your support!"
-      self.restoredPurchaseMessageVisible = true
-      return true
-    } else {
-      if alertIfNone {
-        self.alertErrorMessage = "Could not find an active subscription. Please contact us if you are having trouble."
-      }
-      return false
+    if !isSatisfied() {
+      self.alertErrorMessage = "Could not find an active subscription. Please contact us if you are having trouble."
     }
   }
-  
-  func restoreBlinkPlusEntitlements(alertIfNone: Bool) async -> Bool {
-    await _restorePurchases()
-    
-    if EntitlementsManager.shared.earlyAccessFeatures.active,
-       EntitlementsManager.shared.unlimitedTimeAccess.active {
-      self.restoredPurchaseMessage = "We have restored your subscriptions. Thanks for your support!"
-      self.restoredPurchaseMessageVisible = true
-      return true
-    } else {
-      if alertIfNone {
-        self.alertErrorMessage = "Could not find a valid purchase for Blink Plus."
-      }
-      return false
-    }
-  }
-  
+
   func restoreBlinkBuildEntitlements(alertIfNone: Bool) async -> Bool {
     await _restorePurchases()
     
@@ -316,7 +312,8 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  private func _restorePurchases() async {
+  @discardableResult
+  private func _restorePurchases() async -> Bool {
     self.restoreInProgress = true
 
     defer {
@@ -325,13 +322,16 @@ class PurchasesUserModel: ObservableObject {
     }
 
     do {
-      let _ = try await Purchases.shared.restorePurchases()
+      let info = try await Purchases.shared.restorePurchases()
+      _applyCustomerInfo(info)
 
       if EntitlementsManager.shared.build.active {
         await BuildAccountModel.shared.trySignIn()
       }
+      return true
     } catch {
       self.alertErrorMessage = error.localizedDescription
+      return false
     }
   }
 
@@ -399,13 +399,6 @@ class PurchasesUserModel: ObservableObject {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
     return NSPredicate(format:"SELF MATCHES %@", emailRegEx)
   }()
-
-  private enum TrialDuration {
-    case no
-    case oneWeek
-    case twoWeeks
-    case oneMonth
-  }
 }
 
 // MARK: Open links

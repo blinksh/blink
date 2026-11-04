@@ -282,6 +282,9 @@ extension SceneDelegate {
                                       self?.paywallWindow = nil
                                       self?._activateFrontWindow()
                                     }
+                                  },
+                                  isKeyWindow: { [weak self] in
+                                    self?.paywallWindow?.isKeyWindow ?? false
                                   })
     let ctrl = StatusBarLessViewController(rootView: view)
     ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone

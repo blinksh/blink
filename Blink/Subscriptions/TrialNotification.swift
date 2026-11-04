@@ -96,6 +96,10 @@ extension TrialProgressNotification {
     try await scheduleTrialSupportRequestNotification()
   }
 
+  static func cancel() {
+    unc.removePendingNotificationRequests(withIdentifiers: [trialWillConvertID, trialSupportRequestID])
+  }
+
   private func scheduleTrialWillConvertNotification() async throws {
     let content = UNMutableNotificationContent()
     content.title = "Hope you are enjoying Blink."

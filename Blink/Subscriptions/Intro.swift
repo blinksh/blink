@@ -29,6 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Combine
 import SwiftUI
 
 import ConfettiSwiftUI
@@ -360,17 +361,14 @@ struct NewOfferingTermsButtons: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
   @State var opacity: CGFloat = 0.5
-  let purchaseCompletedHandler: () -> ()
+  let restoreHandler: () -> ()
   let urlHandler: (URL) -> ()
 
   var body: some View {
     VStack {
       HStack {
         Button("RESTORE") {
-          Task {
-            // The UI will show an alert and transition there. No need to check the status here.
-            let _ = await _purchases.restoreActiveAppSubscriptions(alertIfNone: true)
-          }
+          restoreHandler()
         }
           .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
 
@@ -510,15 +508,146 @@ struct IntroSetupsCarouselView: View {
 
 }
 
+// Takes one presented offering from first look to a settled outcome. Every transition goes
+// through handle(_:).
+@MainActor
+final class PaywallFlow: ObservableObject {
+  enum Goal {
+    // Launch paywall: any plan lets the user in, Classic included.
+    case anyPlan
+    // Settings upgrade: offers Blink+ to Classic users who want to support the project.
+    case blinkPlus
+  }
+
+  enum Action {
+    case buying
+    case restoring
+  }
+
+  enum Outcome {
+    case purchased
+    case restored
+    // Another window reports the outcome; this one just gets out of the way.
+    case handedOff
+  }
+
+  enum State: Equatable {
+    case offering
+    case working(Action)
+    case done(Outcome)
+  }
+
+  private enum Event {
+    case entitlementsChanged
+    case buyFinished(newPurchase: Bool)
+    case restoreFinished
+  }
+
+  @Published private(set) var state: State = .offering
+
+  private let goal: Goal
+  private let isFront: () -> Bool
+  private let purchases = PurchasesUserModel.shared
+  private let entitlements = EntitlementsManager.shared
+  private var entitlementsCancellable: AnyCancellable? = nil
+
+  init(goal: Goal, isFront: @escaping () -> Bool) {
+    self.goal = goal
+    self.isFront = isFront
+    // objectWillChange fires before the new values land, so read them on the next turn.
+    entitlementsCancellable = entitlements.objectWillChange
+      .prepend(())
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in self?.handle(.entitlementsChanged) }
+  }
+
+  var isOffering: Bool { state == .offering }
+
+  var isWorking: Bool {
+    if case .working = state {
+      return true
+    }
+    return false
+  }
+
+  var isSatisfied: Bool {
+    switch goal {
+    case .anyPlan:
+      return entitlements.hasActiveSubscriptions()
+    case .blinkPlus:
+      return entitlements.earlyAccessFeatures.active
+    }
+  }
+
+  func buy(setupTrial: Bool) {
+    guard isOffering else {
+      return
+    }
+    state = .working(.buying)
+    Task {
+      let newPurchase = await purchases.buyBlinkPlus(setupTrial: setupTrial, isSatisfied: { self.isSatisfied })
+      handle(.buyFinished(newPurchase: newPurchase))
+    }
+  }
+
+  func restore() {
+    guard isOffering else {
+      return
+    }
+    state = .working(.restoring)
+    Task {
+      await purchases.restorePurchases(isSatisfied: { self.isSatisfied })
+      handle(.restoreFinished)
+    }
+  }
+
+  private func handle(_ event: Event) {
+    switch (state, event) {
+    case (.offering, .entitlementsChanged):
+      if isSatisfied {
+        state = .done(isFront() ? .restored : .handedOff)
+      }
+    case (.working, .entitlementsChanged):
+      // The running action settles with its own result.
+      break
+    case (.working(.buying), .buyFinished(newPurchase: true)):
+      state = .done(.purchased)
+    case (.working, .buyFinished), (.working, .restoreFinished):
+      // Reported here even if a StoreKit sheet took key while working.
+      state = isSatisfied ? .done(.restored) : .offering
+    case (.offering, _), (.done, _):
+      break
+    }
+  }
+}
+
 struct NewOfferingsView: View {
   let classicOffering: Bool
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
+  @StateObject var _flow: PaywallFlow
   //@State var isBlinkPlusIntroOfferAvailable: Bool = false
   @State var doTrialNotification = true
+  @State var restoredAlertVisible = false
   let purchaseCompletedHandler: () -> ()
   let urlHandler: ((URL) -> ())
   let dismissHandler: (() -> ())?
+
+  init(classicOffering: Bool,
+       ctx: PageCtx,
+       purchaseCompletedHandler: @escaping () -> (),
+       urlHandler: @escaping (URL) -> (),
+       dismissHandler: (() -> ())?,
+       isKeyWindow: @escaping () -> Bool = { true }) {
+    self.classicOffering = classicOffering
+    self.ctx = ctx
+    self.purchaseCompletedHandler = purchaseCompletedHandler
+    self.urlHandler = urlHandler
+    self.dismissHandler = dismissHandler
+    self.__flow = StateObject(wrappedValue: PaywallFlow(goal: classicOffering ? .blinkPlus : .anyPlan,
+                                                        isFront: isKeyWindow))
+  }
+
   var osName: String {
     UIDevice.current.userInterfaceIdiom == .pad ? "iPadOS" : "iOS"
   }
@@ -567,11 +696,9 @@ struct NewOfferingsView: View {
 
         VStack {
           Button(blinkPlusSubscribeButtonText()) {
-            Task {
-              await self.purchaseBlinkPlus()
-            }
-          }.buttonStyle(BlinkButtonStyle.cta(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-                                             inProgress: _purchases.purchaseInProgress || _purchases.restoreInProgress || _purchases.formattedBlinkPlusPriceWithPeriod() == nil, minWidth: minButtonWidth))
+            self.purchaseBlinkPlus()
+          }.buttonStyle(BlinkButtonStyle.cta(disabled: !_flow.isOffering,
+                                             inProgress: _flow.isWorking || _purchases.formattedBlinkPlusPriceWithPeriod() == nil, minWidth: minButtonWidth))
 
           if let subtext = blinkPlusSubscribeButtonSubtext() {
             Text(subtext)
@@ -582,23 +709,35 @@ struct NewOfferingsView: View {
 
           if _purchases.blinkPlusIntroOfferAvailable() {
             TrialSwitch(doTrialNotification: $doTrialNotification)
-              .disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
+              .disabled(!_flow.isOffering)
           }
 
-          NewOfferingTermsButtons(ctx: ctx, purchaseCompletedHandler: purchaseCompletedHandler, urlHandler: urlHandler)
+          NewOfferingTermsButtons(ctx: ctx, restoreHandler: { _flow.restore() }, urlHandler: urlHandler)
         }
         .padding(.top, 16)
         .background(BlinkColors.bg.opacity(0.2)) //
-        .alert("Thank you!", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+        .alert("Thank you!", isPresented: $restoredAlertVisible) {
           Button("OK") {
             self.purchaseCompletedHandler()
           }
         } message: {
-          Text(_purchases.restoredPurchaseMessage)
+          Text("We have restored your purchases. Thanks for your support!")
         }
       }
     }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .onChange(of: _flow.state) { state in
+        switch state {
+        case .done(.purchased):
+          purchaseCompletedHandler()
+        case .done(.restored):
+          restoredAlertVisible = true
+        case .done(.handedOff):
+          dismissHandler?()
+        case .offering, .working:
+          break
+        }
+      }
   }
 
   func blinkPlusSubscribeButtonText() -> String {
@@ -619,18 +758,9 @@ struct NewOfferingsView: View {
     return "then \(price) until cancelled"
   }
   
-  func purchaseBlinkPlus() async {
-    // Restore before purchase and check entitlements, because Blink Plus may come from different groups on previous Blink+Build.
-    if await _purchases.restoreBlinkPlusEntitlements(alertIfNone: false) {
-      self.purchaseCompletedHandler()
-      return
-    }
-    
+  func purchaseBlinkPlus() {
     let trialSelection = _purchases.blinkPlusIntroOfferAvailable() ? doTrialNotification : false
-    let success = await _purchases.purchaseBlinkPlusWithTrialValidation(setupTrial: trialSelection)
-    if success {
-      self.purchaseCompletedHandler()
-    }
+    _flow.buy(setupTrial: trialSelection)
   }
 }
 
@@ -656,6 +786,7 @@ struct TrialSwitch: View {
 struct NewIntroPageWindow: View {
   let urlHandler: (URL) -> Void
   let dismissHandler: () -> ()
+  let isKeyWindow: () -> Bool
 
   @Environment(\.dynamicTypeSize) var dynamicTypeSize
   @State var page = NewIntroPageState.offerings
@@ -676,7 +807,7 @@ struct NewIntroPageWindow: View {
 //        Text("hello world")
           switch page {
           case .offerings:
-            NewOfferingsView(classicOffering: false, ctx: ctx, purchaseCompletedHandler: { page = .walkthrough }, urlHandler: urlHandler, dismissHandler: nil)
+            NewOfferingsView(classicOffering: false, ctx: ctx, purchaseCompletedHandler: { page = .walkthrough }, urlHandler: urlHandler, dismissHandler: dismissHandler, isKeyWindow: isKeyWindow)
           case .purchaseCompleted:
             PurchaseCompletedView(ctx: ctx, walkthroughHandler: { page = .walkthrough }, dismissHandler: dismissHandler)
           case .walkthrough:
@@ -734,12 +865,12 @@ fileprivate struct NewOfferingsPreviewWrapper: View {
 
 struct NewIntroPagePreview: PreviewProvider {
   static var previews: some View {
-//    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { })
+//    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { }, isKeyWindow: { true })
 //      .environment(\.sizeCategory, .extraSmall)
 
-    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { })
+    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { }, isKeyWindow: { true })
 
-//    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { })
+//    NewIntroPageWindow(urlHandler: {_ in }, dismissHandler: { }, isKeyWindow: { true })
 //      .environment(\.sizeCategory, .accessibilityExtraLarge)
 
   }
