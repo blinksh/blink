@@ -87,6 +87,7 @@
 		BD1FFF702E4A10C600DB5AF9 /* TermSessionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1FFF6F2E4A10C600DB5AF9 /* TermSessionPayload.swift */; };
 		BD23B6E12CB0585B0041C38D /* ios_patches.m in Sources */ = {isa = PBXBuildFile; fileRef = BD23B6E02CB0585B0041C38D /* ios_patches.m */; };
 		BD2830E0309BBF4700D0B2B5 /* PaywallScenarios.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2830DF309BBF4700D0B2B5 /* PaywallScenarios.swift */; };
+		BD283198309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD283197309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift */; };
 		BD2C754E2D75FA85007BFE77 /* Walkthrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */; };
 		BD33F7822AAA426D00CD16EE /* MoshBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */; };
 		BD33F7872AAA7C4300CD16EE /* MoshBootstrapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */; };
@@ -856,6 +857,7 @@
 		BD23B6DF2CB058550041C38D /* ios_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ios_patches.h; sourceTree = "<group>"; };
 		BD23B6E02CB0585B0041C38D /* ios_patches.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ios_patches.m; sourceTree = "<group>"; };
 		BD2830DF309BBF4700D0B2B5 /* PaywallScenarios.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScenarios.swift; sourceTree = "<group>"; };
+		BD283197309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpaceController+KBDismissHold.swift"; sourceTree = "<group>"; };
 		BD2C754D2D75FA7F007BFE77 /* Walkthrough.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walkthrough.swift; sourceTree = "<group>"; };
 		BD33F7802AAA426D00CD16EE /* MoshBootstrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoshBootstrap.swift; sourceTree = "<group>"; };
 		BD33F7862AAA7C4300CD16EE /* MoshBootstrapTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshBootstrapTests.swift; sourceTree = "<group>"; };
@@ -1486,6 +1488,7 @@
 				D29568B821BE629100480A83 /* bk_getopts.c */,
 				D235579622CE07D20094AADB /* Blink-bridge.h */,
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
+				BD283197309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
 				D2BC514C2355C3AE0034FDD4 /* History.swift */,
@@ -3599,6 +3602,7 @@
 				BDC98C532FE1D8AC002BF2ED /* Zuse.swift in Sources */,
 				BDC98C542FE1D8AC002BF2ED /* SessionLogFile.swift in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
+				BD283198309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift in Sources */,
 				D22277FF2A26204900D4C708 /* SnippetsListView.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
 				BDD1CEB72FB67ACF009BFDF6 /* TerminalEnvironment.swift in Sources */,

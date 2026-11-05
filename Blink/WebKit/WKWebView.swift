@@ -118,6 +118,7 @@ fileprivate struct TermCell: Equatable {
   private var _mouseHoverMode: Bool = false
   private var _lastHoverCell: TermCell? = nil
   private var _isPrimaryScreen: Bool = true
+  private(set) var lastTapBeganAt: TimeInterval = 0
 
   @objc var focused: Bool = false {
     didSet {
@@ -416,8 +417,8 @@ fileprivate struct TermCell: Equatable {
       }
 
       if !cmdPressed && !wasInDragMode {
-        if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
-          target.perform(#selector(focusOnShellAction), with: self)
+        if let target = _wkWebView?.target(forAction: #selector(focusOnShellTapAction(_:)), withSender: self) as? UIResponder {
+          target.perform(#selector(focusOnShellTapAction(_:)), with: self)
         }
       }
     default: break
@@ -534,7 +535,7 @@ fileprivate struct TermCell: Equatable {
 
   }
 
-  @objc func focusOnShellAction() {
+  @objc func focusOnShellTapAction(_ sender: WKWebViewGesturesInteraction) {
 
   }
 
@@ -549,6 +550,13 @@ fileprivate struct TermCell: Equatable {
 }
 
 extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    if gestureRecognizer === _1fTapRecognizer {
+      lastTapBeganAt = touch.timestamp
+    }
+    return true
+  }
+
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
     // When in drag mode, the 1f pan should be exclusive - don't allow other gestures
     if _mouseDragMode && gestureRecognizer === _1fPanRecognizer {

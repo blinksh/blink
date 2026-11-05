@@ -32,9 +32,17 @@
 import MBProgressHUD
 import SwiftUI
 
-
 // MARK: UIViewController
 class SpaceController: UIViewController {
+
+  enum FocusRequest {
+    // Asked for directly: a command, a dismissed sheet, a menu.
+    case explicit
+    // The window came to the front.
+    case activation
+    // A tap on the terminal, with the time its touch began.
+    case tap(began: TimeInterval)
+  }
   
   struct UIState: UserActivityCodable {
     var machineID: UUID? = nil
@@ -71,6 +79,8 @@ class SpaceController: UIViewController {
   private var _snippetsVC: SnippetsViewController? = nil
   private var _blinkMenu: BlinkMenu? = nil
   private var _bottomTapAreaView = UIView()
+
+  var _kbDismissHold = KBDismissHold()
 
   // Snips Input Mode tracking
   private var _isSnipsInputModeActive: Bool = false {
@@ -322,6 +332,8 @@ Please go to your subscriptions and cancel one of them!
     
     nc.addObserver(self, selector:#selector(_didBecomeKeyWindow), name: UIApplication.didBecomeActiveNotification, object: nil)
 
+    _registerForKBDismissHoldNotifications(nc)
+
     nc.addObserver(self, selector: #selector(_UISceneDidEnterBackgroundNotification(_:)),
                    name: UIScene.didEnterBackgroundNotification, object: nil)
     
@@ -378,9 +390,9 @@ Please go to your subscriptions and cancel one of them!
       return
     }
     
-    _focusOnShell()
+    focusOnShell(.activation)
   }
-  
+
   func _createTerminal(
     userActivity: NSUserActivity?,
     animated: Bool,
@@ -469,16 +481,19 @@ Please go to your subscriptions and cancel one of them!
     }
   }
   
-  @objc func _focusOnShell() {
+  func focusOnShell(_ request: FocusRequest = .explicit) {
+    guard _kbDismissHold.admits(request) else {
+      return
+    }
     _attachInputToCurrentTerm()
   }
-  
-  
+
   private func _attachInputToCurrentTerm() {
     // Check capability flag instead of mode directly
     guard canTerminalBecomeFirstResponder else {
       return
     }
+    _kbDismissHold.release()
     currentTerm()?.activateInput()
   }
   
@@ -788,7 +803,11 @@ extension SpaceController {
   }
   
   @objc func focusOnShellAction() {
-    _focusOnShell()
+    focusOnShell()
+  }
+
+  @objc func focusOnShellTapAction(_ sender: WKWebViewGesturesInteraction) {
+    focusOnShell(.tap(began: sender.lastTapBeganAt))
   }
   
   @objc public func scaleWithPich(_ pinch: UIPinchGestureRecognizer) {
@@ -825,7 +844,7 @@ extension SpaceController {
       if currentTerm()?.termView.isFocused() == true {
         currentTerm()?.resignInput()
       } else {
-        _focusOnShell()
+        focusOnShell()
       }
       return
     }
@@ -837,7 +856,7 @@ extension SpaceController {
       shadowScene == window.windowScene,
       shadowWindow !== window {
       shadowWindow.makeKeyAndVisible()
-      shadowWindow.spaceController._focusOnShell()
+      shadowWindow.spaceController.focusOnShell()
       return
     }
           
@@ -857,7 +876,7 @@ extension SpaceController {
       let spaceCtrl = window.rootViewController as? SpaceController {
 
       if window.isKeyWindow {
-        spaceCtrl._focusOnShell()
+        spaceCtrl.focusOnShell()
       } else {
         window.makeKeyAndVisible()
       }
@@ -977,7 +996,7 @@ extension SpaceController {
       let navCtrl = UINavigationController()
       navCtrl.navigationBar.prefersLargeTitles = true
       let s = SettingsHostingController.createSettings(nav: navCtrl, onDismiss: {
-        [weak self] in self?.focusOnShellAction()
+        [weak self] in self?.focusOnShell()
       })
       navCtrl.setViewControllers([s], animated: false)
       self.present(navCtrl, animated: true, completion: nil)
@@ -1281,11 +1300,11 @@ extension SpaceController: SnippetContext {
   
   func dismissSnippetsController() {
     _dismissSnippetsController(ctrl: _interactiveSpaceController())
-    self.focusOnShellAction()
+    self.focusOnShell()
   }
   
   func providerSnippetReceiver() -> (any SnippetReceiver)? {
-    self.focusOnShellAction()
+    self.focusOnShell()
     return self.currentDevice
   }
 

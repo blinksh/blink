@@ -352,7 +352,7 @@ extension SceneDelegate {
         return
       }
       window.makeKey()
-      self._spCtrl.focusOnShellAction()
+      self._spCtrl.focusOnShell(.activation)
     }
   }
 }
