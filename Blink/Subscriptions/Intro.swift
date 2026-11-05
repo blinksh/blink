@@ -732,7 +732,13 @@ struct NewOfferingsView: View {
           }.buttonStyle(BlinkButtonStyle.cta(disabled: !_flow.isOffering,
                                              inProgress: _flow.isWorking || _purchases.formattedBlinkPlusPriceWithPeriod() == nil, minWidth: minButtonWidth))
 
-          if let subtext = blinkPlusSubscribeButtonSubtext() {
+          if let message = _purchases.productsUnavailableMessage {
+            Text(message)
+              .foregroundColor(BlinkColors.infoText)
+              .font(BlinkFonts.btnSub)
+              .multilineTextAlignment(.center)
+              .padding(.top, 4)
+          } else if let subtext = blinkPlusSubscribeButtonSubtext() {
             Text(subtext)
               .foregroundColor(BlinkColors.infoText)
               .font(BlinkFonts.btnSub)

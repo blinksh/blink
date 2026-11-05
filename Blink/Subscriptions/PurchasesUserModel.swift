@@ -31,6 +31,7 @@
 
 import RevenueCat
 import Combine
+import Network
 import SwiftUI
 import UIKit
 
@@ -56,12 +57,15 @@ class PurchasesUserModel: ObservableObject {
   @Published var buildBasicTrialEligibility: IntroEligibility? = nil
 
   @Published var alertErrorMessage: String = ""
+  // Set while products cannot be loaded
+  @Published var productsUnavailableMessage: String? = nil
 
   var isBuildBasicTrialEligible: Bool {
     self.buildBasicTrialEligibility?.status == .eligible
   }
 
   private let store: StoreClient
+  private let pathMonitor = NWPathMonitor()
 
   private init() {
 #if BLINK_PUBLISHING_OPTION_TESTAPPSTORE
@@ -69,8 +73,24 @@ class PurchasesUserModel: ObservableObject {
 #else
     store = RevenueCatStoreClient()
 #endif
-    fetchProducts()
-    fetchTrialEligibility()
+
+    // Products load whenever there is a connection and they are still missing. The first
+    // update arrives right after start, so this is also the initial load.
+    pathMonitor.pathUpdateHandler = { [weak self] path in
+      let online = path.status == .satisfied
+      Task { @MainActor in
+        guard let self else {
+          return
+        }
+        if online {
+          self.fetchProducts()
+          self.fetchTrialEligibility()
+        } else if self.blinkPlusProduct == nil {
+          self.productsUnavailableMessage = "No internet connection. Prices will load once you are back online."
+        }
+      }
+    }
+    pathMonitor.start(queue: .main)
   }
 
   static let shared = PurchasesUserModel()
@@ -329,6 +349,10 @@ class PurchasesUserModel: ObservableObject {
   }
 
   private func fetchProducts() {
+    guard blinkPlusProduct == nil else {
+      return
+    }
+    productsUnavailableMessage = nil
     Purchases.shared.getProducts([
       // ProductBlinkShellClassicID,
       // ProductBlinkShellPlusID,
@@ -353,11 +377,18 @@ class PurchasesUserModel: ObservableObject {
             self.blinkPlusProduct = product
           }
         }
+        if self.blinkPlusProduct == nil {
+          self.productsUnavailableMessage = "Could not reach the App Store. Prices will load once the connection is back."
+        }
       }
     }
   }
 
   private func fetchTrialEligibility() {
+    // Unknown is what comes back without a connection.
+    guard blinkPlusIntroOffer == nil || blinkPlusIntroOffer?.status == .unknown else {
+      return
+    }
     Purchases.shared.checkTrialOrIntroDiscountEligibility(
       productIdentifiers: [
         ProductBlinkBuildBasicID,
