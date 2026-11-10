@@ -33,6 +33,11 @@ KEYCHAIN_ID1 = sh.blink
 SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]   = BLINK_PUBLISHING_OPTION_DEVELOPER
 SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Release] = BLINK_PUBLISHING_OPTION_TESTFLIGHT
 
+// Blink's built-in commands are loaded from the main executable with
+// dlsym(RTLD_MAIN_ONLY, ...). Keep Debug symbols in that executable instead of
+// Xcode's separate debug dylib so commands such as `help` can be resolved.
+ENABLE_DEBUG_DYLIB[config=Debug] = NO
+
 BLINK_MIGRATION_SCHEME = blinkv15
 
 WHATS_NEW_URL = http:/$()/localhost/whats-new
