@@ -228,6 +228,29 @@ class KBTracker: NSObject {
   
   
   @objc private func _keyboardWillChangeFrame(_ notification: Notification) {
+    _detectHardwareKB(notification)
+  }
+
+  /// On iPad the SmartKeys sit in the keyboard's assistant bar and are only offered while
+  /// `isHardwareKB` is false. The flag starts true and this is the one place that learns
+  /// otherwise: with a hardware keyboard the frame is only the shortcuts bar, an on-screen
+  /// keyboard (docked or floating) is far taller. iPhone takes its SmartKeys from `kbTraits`.
+  private func _detectHardwareKB(_ notification: Notification) {
+    guard
+      UIDevice.current.userInterfaceIdiom == .pad,
+      detectHardwareKBWithHeight,
+      let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      frame.height > 0 // an empty frame says nothing
+    else {
+      return
+    }
+    let hardware = frame.height < 150
+    guard hardware != isHardwareKB else {
+      return
+    }
+    isHardwareKB = hardware
+    // The assistant bar was built with the old answer; have it asked again.
+    input?.contentView()?.reloadInputViews()
   }
   
   @objc private func _keyboardDidChangeFrame(_ notification: Notification) {
@@ -239,6 +262,7 @@ class KBTracker: NSObject {
         return
     }
     
+    _detectHardwareKB(notification)
     
     if isHardwareKB {
       if kbTraits.isFloatingKB {
