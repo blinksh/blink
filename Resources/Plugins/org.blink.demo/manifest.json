@@ -1,0 +1,8 @@
+{
+  "manifestVersion": 1,
+  "id": "org.blink.demo",
+  "name": "Plugin Playground",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "permissions": ["storage"]
+}

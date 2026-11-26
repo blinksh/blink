@@ -10,6 +10,7 @@
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
+		CC28B0084D1713A7015F0105 /* Plugins in Resources */ = {isa = PBXBuildFile; fileRef = CC28B0084D1713A7015F0005 /* Plugins */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
@@ -377,6 +378,10 @@
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
 		D27D01272615F1BD00128C23 /* developer_setup.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D27D01232615F1BD00128C23 /* developer_setup.xcconfig */; };
 		D27DD70A2A3B203F009E97BC /* NewSnippetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27DD7092A3B203F009E97BC /* NewSnippetViewController.swift */; };
+		CC28B0084D1713A7015F0101 /* PluginPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC28B0084D1713A7015F0001 /* PluginPackage.swift */; };
+		CC28B0084D1713A7015F0102 /* PluginInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC28B0084D1713A7015F0002 /* PluginInstaller.swift */; };
+		CC28B0084D1713A7015F0103 /* PluginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC28B0084D1713A7015F0003 /* PluginWebView.swift */; };
+		CC28B0084D1713A7015F0104 /* PluginAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC28B0084D1713A7015F0004 /* PluginAppsView.swift */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
 		D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */; };
 		D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */; };
@@ -763,6 +768,7 @@
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0716B53C1CFFAB9300268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
+		CC28B0084D1713A7015F0005 /* Plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Plugins; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
 		0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBProgressHUD.xcodeproj; path = MBProgressHUD/MBProgressHUD.xcodeproj; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -1132,6 +1138,10 @@
 		D27D0117261202A400128C23 /* KeyUIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyUIError.swift; sourceTree = "<group>"; };
 		D27D01232615F1BD00128C23 /* developer_setup.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = developer_setup.xcconfig; sourceTree = "<group>"; };
 		D27DD7092A3B203F009E97BC /* NewSnippetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSnippetViewController.swift; sourceTree = "<group>"; };
+		CC28B0084D1713A7015F0001 /* PluginPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginPackage.swift; sourceTree = "<group>"; };
+		CC28B0084D1713A7015F0002 /* PluginInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginInstaller.swift; sourceTree = "<group>"; };
+		CC28B0084D1713A7015F0003 /* PluginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginWebView.swift; sourceTree = "<group>"; };
+		CC28B0084D1713A7015F0004 /* PluginAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginAppsView.swift; sourceTree = "<group>"; };
 		D2887A5522DC676F00701BD5 /* SpaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceController.swift; sourceTree = "<group>"; };
 		D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+UIScene.swift"; sourceTree = "<group>"; };
@@ -1487,6 +1497,10 @@
 				D29568B721BE629100480A83 /* bk_getopts.h */,
 				D29568B821BE629100480A83 /* bk_getopts.c */,
 				D235579622CE07D20094AADB /* Blink-bridge.h */,
+				CC28B0084D1713A7015F0001 /* PluginPackage.swift */,
+				CC28B0084D1713A7015F0002 /* PluginInstaller.swift */,
+				CC28B0084D1713A7015F0003 /* PluginWebView.swift */,
+				CC28B0084D1713A7015F0004 /* PluginAppsView.swift */,
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
 				BD283197309D0A8F00D0B2B5 /* SpaceController+KBDismissHold.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
@@ -1521,6 +1535,7 @@
 				D2F30EAC205009CD008C5F35 /* base64js.min.js */,
 				D266A9D627295ECE00C85EED /* blink-uio.min.js */,
 				85A34303200A837A009324F1 /* webfontloader.js */,
+				CC28B0084D1713A7015F0005 /* Plugins */,
 				0732F04B1D062B9A00AB5438 /* term.html */,
 				D2496F402003941B00E75FE9 /* term.js */,
 				85A34308200A8FAF009324F1 /* term.css */,
@@ -3223,6 +3238,7 @@
 				D2094662204D3FC5003C4F72 /* cacert.pem in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				D23FFC6A261C2D46003E9227 /* template_setup.xcconfig in Resources */,
+				CC28B0084D1713A7015F0105 /* Plugins in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
 				D21A3FE721943BE200269705 /* dark-app-ipad-76pt@2x.png in Resources */,
@@ -3632,6 +3648,10 @@
 				D22277FA2A26204900D4C708 /* SearchModel.swift in Sources */,
 				D2C24416238E44AB0082C69C /* KBConfig.swift in Sources */,
 				BDD583D8308BC2930076ECEE /* TermView+PresenceLock.swift in Sources */,
+				CC28B0084D1713A7015F0101 /* PluginPackage.swift in Sources */,
+				CC28B0084D1713A7015F0102 /* PluginInstaller.swift in Sources */,
+				CC28B0084D1713A7015F0103 /* PluginWebView.swift in Sources */,
+				CC28B0084D1713A7015F0104 /* PluginAppsView.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
 				D27DD70A2A3B203F009E97BC /* NewSnippetViewController.swift in Sources */,

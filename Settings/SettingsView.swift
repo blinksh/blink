@@ -153,6 +153,11 @@ struct SettingsView: View {
 
       Section("Configuration") {
         Row {
+          Label("Apps (Experimental)", systemImage: "square.grid.2x2")
+        } details: {
+          PluginAppsView()
+        }
+        Row {
           Label("Bookmarks", systemImage: "bookmark")
         } details: {
           BookmarkedLocationsView()
