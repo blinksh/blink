@@ -46,6 +46,7 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
     case tabNew
     case tabClose
     case configShow
+    case appsShow
   }
 
   enum EditMenu: String, CaseIterable {
@@ -119,7 +120,7 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
 
     // For the action to be different, we are passing it as part of the PropertyList.
     // If the shortcut has already been assigned, then we define it as UICommand.
-    if let shortcut = kbConfig.shortcuts.first(where: { s in // s.triggers(command)
+    let configuredShortcut = kbConfig.shortcuts.first(where: { s in
       if case .command(let cmd) = s.action,
          case command = cmd
       {
@@ -127,7 +128,11 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
       }
       return false
     })
-    {
+    let defaultApps = KeyShortcut.appsShowShortcut
+    let fallback = command == .appsShow && !kbConfig.shortcuts.contains {
+      $0.input == defaultApps.input && $0.modifiers == defaultApps.modifiers
+    } ? defaultApps : nil
+    if let shortcut = configuredShortcut ?? fallback {
       // The same shortcut, or the same action, will make this crash with a
       // 'NSInternalInconsistencyException', reason: 'replacement menu has duplicate submenu,
       // command or key command, or a key command is missing input or action'.

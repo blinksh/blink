@@ -760,6 +760,7 @@ extension SpaceController {
     }
 
     switch cmd {
+    case .appsShow: showSettingsScreen(appsOnly: true)
     case .configShow: showConfigAction()
     case .snippetsShow: showSnippetsAction()
     case .scratchShow: showScratchAction()
@@ -980,13 +981,17 @@ extension SpaceController {
   }
   
   @objc func showConfigAction() {
+    showSettingsScreen(appsOnly: false)
+  }
+
+  private func showSettingsScreen(appsOnly: Bool) {
     if let shadowWindow = ShadowWindow.shared,
       view.window == shadowWindow {
       
       _ = currentDevice?.view?.webView.resignFirstResponder()
       
       let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController
-      spCtrl?.showConfigAction()
+      spCtrl?.showSettingsScreen(appsOnly: appsOnly)
       
       return
     }
@@ -995,10 +1000,11 @@ extension SpaceController {
       self.currentTerm()?.resignInput()
       let navCtrl = UINavigationController()
       navCtrl.navigationBar.prefersLargeTitles = true
-      let s = SettingsHostingController.createSettings(nav: navCtrl, onDismiss: {
-        [weak self] in self?.focusOnShell()
-      })
-      navCtrl.setViewControllers([s], animated: false)
+      let onDismiss: () -> Void = { [weak self] in self?.focusOnShell() }
+      let screen = appsOnly
+        ? SettingsHostingController.createApps(nav: navCtrl, onDismiss: onDismiss)
+        : SettingsHostingController.createSettings(nav: navCtrl, onDismiss: onDismiss)
+      navCtrl.setViewControllers([screen], animated: false)
       self.present(navCtrl, animated: true, completion: nil)
     }
   }

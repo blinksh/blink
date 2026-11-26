@@ -1,6 +1,7 @@
 # Portable apps (experimental)
 
-Open Blink Settings (for example, run `config` at the Blink prompt), then
+Press **⌘⇧A** on a hardware keyboard or pick **Shell → Show Apps**.
+You can also open Blink Settings (for example, run `config` at the Blink prompt), then
 choose **Apps (Experimental)** under **Configuration**. Tap **Plugin
 Playground** to try a bundled app, or choose **Install from GitHub…** and
 paste a public repository or plugin-folder URL. For a terminal UI, try:

@@ -33,14 +33,14 @@ import SwiftUI
 import UIKit
 
 
-class SettingsHostingController: UIHostingController<NavView<SettingsView>>, UIAdaptivePresentationControllerDelegate {
+class SettingsHostingController: UIHostingController<NavView<AnyView>>, UIAdaptivePresentationControllerDelegate {
   private let onDismiss: (() -> Void)?
 
-  private init(navController: UINavigationController, onDismiss: (() -> Void)? = nil) {
+  private init(navController: UINavigationController, appsOnly: Bool = false, onDismiss: (() -> Void)? = nil) {
     self.onDismiss = onDismiss
 
     let rootView = NavView(navController: navController) {
-      SettingsView()
+      appsOnly ? AnyView(PluginAppsView()) : AnyView(SettingsView())
     }
 
     super.init(rootView: rootView)
@@ -68,6 +68,10 @@ class SettingsHostingController: UIHostingController<NavView<SettingsView>>, UIA
 
   @objc private func close() {
     dismiss(animated: true) { [weak self] in self?.tearDown() }
+  }
+
+  static func createApps(nav: UINavigationController, onDismiss: (() -> Void)? = nil) -> UIViewController {
+    SettingsHostingController(navController: nav, appsOnly: true, onDismiss: onDismiss)
   }
 
   static func createSettings(nav: UINavigationController, onDismiss: (() -> Void)? = nil) -> UIViewController {

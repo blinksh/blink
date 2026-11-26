@@ -192,6 +192,10 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
     KeyShortcut(.scratchShow, [.command, .shift], ".")
   }
 
+  static var appsShowShortcut: KeyShortcut {
+    KeyShortcut(.appsShow, [.command, .shift], "a")
+  }
+
   static var defaultList: [KeyShortcut] {
     [
       KeyShortcut(.clipboardCopy, .command, "c"),
@@ -216,6 +220,7 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.zoomReset, .command, "="),
 
       KeyShortcut(.configShow, .command, ","),
+      Self.appsShowShortcut,
       Self.snippetsShowShortcut,
       Self.scratchShowShortcut
     ]

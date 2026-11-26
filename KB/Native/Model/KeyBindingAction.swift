@@ -64,6 +64,7 @@ enum Command: String, Codable, CaseIterable {
   case selectionStackOverflow
   case selectionShare
   case configShow
+  case appsShow
   case snippetsShow
   case scratchShow
   case toggleQuickActions
@@ -105,6 +106,7 @@ enum Command: String, Codable, CaseIterable {
     case .selectionGoogle:        return "Google Selection"
     case .selectionStackOverflow: return "StackOverflow Selection"
     case .selectionShare:         return "Share Selection"
+    case .appsShow:               return "Show Apps"
     case .configShow:             return "Show Config"
     case .snippetsShow:           return "Show Snippets"
     case .scratchShow:            return "Show Scratch"
